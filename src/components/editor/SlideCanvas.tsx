@@ -41,160 +41,186 @@ const TYPE_COLORS: Record<string, string> = {
 }
 
 export function SlideCanvas({ slide, slides, selectedIndex, devicePreview, onTitleChange, onCanvasElementsChange, selectedElementId, onSelectElement, onRequestAddImage, onSelectSlide, onPrev, onNext }: SlideCanvasProps) {
-  const slideCardRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const slideRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+  const selectedCardRef = useRef<HTMLDivElement>(null)
 
-  // Mouse wheel to navigate between slides (like PowerPoint)
+  // Scroll selected slide into view when selection changes via thumbnails
   useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
-
-    function onWheel(e: WheelEvent) {
-      // Don't intercept if user is scrolling inside a text element
-      const target = e.target as HTMLElement
-      if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') return
-
-      e.preventDefault()
-      if (e.deltaY > 0) {
-        onNext()
-      } else if (e.deltaY < 0) {
-        onPrev()
-      }
+    if (!slide) return
+    const el = slideRefs.current.get(slide.id)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
+  }, [slide?.id])
 
-    container.addEventListener('wheel', onWheel, { passive: false })
-    return () => container.removeEventListener('wheel', onWheel)
-  }, [onNext, onPrev])
-
-  if (!slide) {
+  if (slides.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center" style={{ background: '#2a2a2e' }}>
+      <div className="flex-1 flex items-center justify-center" style={{ background: '#111111' }}>
         <div className="text-center text-muted-foreground">
           <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
             <FileText className="w-7 h-7 opacity-40" />
           </div>
-          <p className="text-sm font-medium">Select a slide to preview</p>
-          <p className="text-xs opacity-50 mt-1">Or add a new slide to get started</p>
+          <p className="text-sm font-medium">No slides yet</p>
+          <p className="text-xs opacity-50 mt-1">Add a slide to get started</p>
         </div>
       </div>
     )
   }
 
-  const SIcon = TYPE_ICONS[slide.slide_type] || FileText
-  const sColor = TYPE_COLORS[slide.slide_type] || '#6b7280'
-  const sLabel = TYPE_LABELS[slide.slide_type] || slide.slide_type
-
   return (
     <div
       ref={containerRef}
-      className="flex-1 flex flex-col items-center justify-center overflow-hidden relative"
+      className="flex-1 overflow-y-auto overflow-x-hidden"
       style={{
-        // Neutral grey pasteboard with subtle dot pattern (like PowerPoint)
-        backgroundColor: '#2a2a2e',
-        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)',
-        backgroundSize: '20px 20px',
+        backgroundColor: '#111111',
+        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)',
+        backgroundSize: '24px 24px',
       }}
       onClick={(e) => {
-        // Click on pasteboard deselects element
         if (e.target === e.currentTarget && onSelectElement) {
           onSelectElement(null)
         }
       }}
     >
-      {/* Slide number + type badge — top-left */}
-      <div className="absolute top-4 left-5 flex items-center gap-2 z-10">
-        <span className="text-xs font-bold tabular-nums" style={{ color: 'rgba(255,255,255,0.3)' }}>
-          {selectedIndex + 1} / {slides.length}
-        </span>
-        <div className="flex items-center gap-1.5 rounded-md px-2 py-0.5" style={{ background: `${sColor}20` }}>
-          <SIcon style={{ width: 11, height: 11, color: sColor }} />
-          <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: sColor }}>
-            {sLabel}
-          </span>
-        </div>
-      </div>
+      {/* All slides stacked vertically */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: '40px 0',
+        gap: 32,
+      }}>
+        {slides.map((s, i) => {
+          const isSelected = s.id === slide?.id
+          const SIcon = TYPE_ICONS[s.slide_type] || FileText
+          const sColor = TYPE_COLORS[s.slide_type] || '#6b7280'
+          const sLabel = TYPE_LABELS[s.slide_type] || s.slide_type
 
-      {/* The single slide — centered and fitted to fill available space */}
-      <div
-        style={{
-          width: '90%',
-          maxWidth: 1100,
-          padding: '0',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <div
-          ref={slideCardRef}
-          style={{
-            width: '100%',
-            aspectRatio: '16/9',
-            background: '#ffffff',
-            borderRadius: 12,
-            boxShadow: '0 0 0 1px rgba(0,0,0,0.1), 0 20px 60px -15px rgba(0,0,0,0.4)',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'visible',
-            color: '#111827',
-            position: 'relative',
-          }}
-        >
-          {/* Clipping layer for slide content */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            borderRadius: 12,
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-          }}>
-            {/* Slide header */}
-            <div style={{ padding: '24px 32px 12px', flexShrink: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: 5,
-                  background: `${sColor}12`, borderRadius: 6, padding: '3px 8px',
+          return (
+            <div
+              key={s.id}
+              style={{ width: '80%', maxWidth: 960 }}
+            >
+              {/* Slide number label */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                marginBottom: 8,
+                paddingLeft: 4,
+              }}>
+                <span style={{
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: isSelected ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.25)',
+                  fontVariantNumeric: 'tabular-nums',
                 }}>
-                  <SIcon style={{ width: 12, height: 12, color: sColor }} />
-                  <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: sColor }}>
+                  {i + 1}
+                </span>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  background: `${sColor}20`,
+                  borderRadius: 5,
+                  padding: '2px 8px',
+                }}>
+                  <SIcon style={{ width: 10, height: 10, color: sColor }} />
+                  <span style={{
+                    fontSize: 9,
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                    color: sColor,
+                  }}>
                     {sLabel}
                   </span>
                 </div>
               </div>
 
-              <InlineTitle
-                value={slide.title}
-                onChange={onTitleChange}
-                slideType={slide.slide_type}
-              />
-            </div>
+              {/* Slide card */}
+              <div
+                ref={(el) => {
+                  if (el) slideRefs.current.set(s.id, el)
+                  if (isSelected && el) selectedCardRef.current = el
+                }}
+                onClick={() => {
+                  if (onSelectSlide) onSelectSlide(s.id)
+                  if (onSelectElement) onSelectElement(null)
+                }}
+                style={{
+                  width: '100%',
+                  aspectRatio: '16/9',
+                  background: '#ffffff',
+                  borderRadius: 10,
+                  boxShadow: isSelected
+                    ? '0 0 0 3px #dc2626, 0 20px 50px -12px rgba(0,0,0,0.5)'
+                    : '0 0 0 1px rgba(255,255,255,0.08), 0 10px 30px -10px rgba(0,0,0,0.4)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  overflow: 'visible',
+                  color: '#111827',
+                  position: 'relative',
+                  cursor: isSelected ? 'default' : 'pointer',
+                  transition: 'box-shadow 0.2s ease',
+                }}
+              >
+                {/* Clipping layer for slide content */}
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: 10,
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}>
+                  {/* Slide header */}
+                  <div style={{ padding: '24px 32px 12px', flexShrink: 0 }}>
+                    {isSelected ? (
+                      <InlineTitle
+                        value={s.title}
+                        onChange={onTitleChange}
+                        slideType={s.slide_type}
+                      />
+                    ) : (
+                      <h2 style={{
+                        fontSize: 24, fontWeight: 700, color: '#111827', lineHeight: 1.3,
+                        minHeight: '1.3em',
+                      }}>
+                        {s.title || <span style={{ color: '#9ca3af', fontStyle: 'italic', fontWeight: 400 }}>Untitled slide</span>}
+                      </h2>
+                    )}
+                  </div>
 
-            {/* Content */}
-            <div style={{
-              flex: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '0 32px 24px',
-              overflow: 'hidden',
-            }}>
-              <SlidePreview slide={slide} />
-            </div>
-          </div>
+                  {/* Content */}
+                  <div style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0 32px 24px',
+                    overflow: 'hidden',
+                  }}>
+                    <SlidePreview slide={s} />
+                  </div>
+                </div>
 
-          {/* Canvas elements layer — outside clipping so they can overflow */}
-          {onCanvasElementsChange && (
-            <CanvasElementsLayer
-              elements={(slide.content as Record<string, unknown>)?._canvas_elements as CanvasElement[] || []}
-              onChange={onCanvasElementsChange}
-              containerRef={slideCardRef}
-              selectedElementId={selectedElementId}
-              onSelectElement={onSelectElement}
-              onRequestAddImage={onRequestAddImage}
-            />
-          )}
-        </div>
+                {/* Canvas elements layer — only on the selected slide */}
+                {isSelected && onCanvasElementsChange && (
+                  <CanvasElementsLayer
+                    elements={(s.content as Record<string, unknown>)?._canvas_elements as CanvasElement[] || []}
+                    onChange={onCanvasElementsChange}
+                    containerRef={selectedCardRef}
+                    selectedElementId={selectedElementId}
+                    onSelectElement={onSelectElement}
+                    onRequestAddImage={onRequestAddImage}
+                  />
+                )}
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
