@@ -187,9 +187,9 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
       {/* DUAL VIEW: Presenter + Audience Phone */}
       <div className="flex-1 flex overflow-hidden">
         {/* Main content area (presenter + phone centered together) */}
-        <div className="flex-1 flex items-center justify-center gap-8 p-5 overflow-hidden">
+        <div className="flex-1 flex items-center justify-center gap-8 p-5 overflow-hidden min-h-0">
           {/* Left: Presenter Screen with nav arrows */}
-          <div className="relative flex flex-col items-center max-w-[640px] flex-[1_1_640px]">
+          <div className="relative flex flex-col items-center max-w-[900px] flex-[1_1_900px]">
             {/* Label */}
             <div className="flex items-center gap-1.5 mb-2.5">
               <Monitor className="w-[13px] h-[13px] text-muted-foreground/50" />

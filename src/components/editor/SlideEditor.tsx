@@ -52,8 +52,10 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null)
   const [showAddImageDialog, setShowAddImageDialog] = useState(false)
   const [showFileMenu, setShowFileMenu] = useState(false)
+  const [slideListWidth, setSlideListWidth] = useState(220)
   const fileMenuRef = useRef<HTMLDivElement>(null)
   const importInputRef = useRef<HTMLInputElement>(null)
+  const splitterDragging = useRef(false)
   const router = useRouter()
 
   // Debounce refs
@@ -210,6 +212,8 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
 
   const handleDuplicateSlide = useCallback(async () => {
     if (!selectedSlide) return
+    const originalIndex = slides.findIndex(s => s.id === selectedSlide.id)
+    const insertPosition = originalIndex + 1
     pushUndo()
     setSaveStatus('saving')
     const res = await fetch('/api/slides', {
@@ -218,14 +222,18 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       body: JSON.stringify({
         presentation_id: presentation.id,
         slide_type: selectedSlide.slide_type,
-        position: slides.length,
+        position: insertPosition,
         title: `${selectedSlide.title} (copy)`,
         content: selectedSlide.content,
       }),
     })
     if (res.ok) {
       const data = await res.json()
-      setSlides((prev) => [...prev, data.slide])
+      setSlides((prev) => {
+        const next = [...prev]
+        next.splice(insertPosition, 0, data.slide)
+        return next
+      })
       setSelectedSlideId(data.slide.id)
       setSaveStatus('saved')
       toast.success('Slide duplicated')
@@ -233,11 +241,13 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       setSaveStatus('error')
       toast.error('Failed to duplicate slide')
     }
-  }, [selectedSlide, slides.length, presentation.id])
+  }, [selectedSlide, slides, presentation.id])
 
   const handleDuplicateSlideById = useCallback(async (id: string) => {
-    const slide = slides.find(s => s.id === id)
+    const originalIndex = slides.findIndex(s => s.id === id)
+    const slide = slides[originalIndex]
     if (!slide) return
+    const insertPosition = originalIndex + 1
     pushUndo()
     setSaveStatus('saving')
     const res = await fetch('/api/slides', {
@@ -246,14 +256,18 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       body: JSON.stringify({
         presentation_id: presentation.id,
         slide_type: slide.slide_type,
-        position: slides.length,
+        position: insertPosition,
         title: `${slide.title} (copy)`,
         content: slide.content,
       }),
     })
     if (res.ok) {
       const data = await res.json()
-      setSlides((prev) => [...prev, data.slide])
+      setSlides((prev) => {
+        const next = [...prev]
+        next.splice(insertPosition, 0, data.slide)
+        return next
+      })
       setSelectedSlideId(data.slide.id)
       setSaveStatus('saved')
       toast.success('Slide duplicated')
@@ -594,42 +608,70 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       <div className="flex-1 flex overflow-hidden">
         {/* Left panel - slide list */}
         {slideListOpen && (
-          <div className="w-[220px] bg-card border-r border-border flex flex-col shrink-0">
-            <div className="flex items-center justify-between px-3 py-2 border-b border-border shrink-0">
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Slides</span>
-              <button onClick={() => setSlideListOpen(false)}
-                className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                title="Collapse slides">
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-2.5 slide-list-scroll">
-              {slides.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center mb-3">
-                    <Plus className="w-5 h-5 text-muted-foreground" />
+          <>
+            <div style={{ width: slideListWidth }} className="bg-card border-r border-border flex flex-col shrink-0">
+              <div className="flex items-center justify-between px-3 py-2 border-b border-border shrink-0">
+                <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Slides</span>
+                <button onClick={() => setSlideListOpen(false)}
+                  className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  title="Collapse slides">
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-2.5 slide-list-scroll">
+                {slides.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center mb-3">
+                      <Plus className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground text-xs mb-1">No slides yet</p>
+                    <p className="text-muted-foreground/60 text-[11px]">Click below to add your first slide</p>
                   </div>
-                  <p className="text-muted-foreground text-xs mb-1">No slides yet</p>
-                  <p className="text-muted-foreground/60 text-[11px]">Click below to add your first slide</p>
-                </div>
-              ) : (
-                <SlideList
-                  slides={slides}
-                  selectedId={selectedSlideId}
-                  onSelect={(id) => { setSelectedSlideId(id); setSelectedElementId(null) }}
-                  onDelete={handleDeleteSlide}
-                  onDuplicate={handleDuplicateSlideById}
-                  onReorder={handleReorder}
-                />
-              )}
+                ) : (
+                  <SlideList
+                    slides={slides}
+                    selectedId={selectedSlideId}
+                    onSelect={(id) => { setSelectedSlideId(id); setSelectedElementId(null) }}
+                    onDelete={handleDeleteSlide}
+                    onDuplicate={handleDuplicateSlideById}
+                    onReorder={handleReorder}
+                  />
+                )}
+              </div>
+              <div className="p-2.5 border-t border-border">
+                <Button onClick={() => setShowTypeSelector(true)} variant="outline" className="w-full gap-1.5 h-9 text-xs rounded-xl" size="sm">
+                  <Plus className="w-3.5 h-3.5" />
+                  Add slide
+                </Button>
+              </div>
             </div>
-            <div className="p-2.5 border-t border-border">
-              <Button onClick={() => setShowTypeSelector(true)} variant="outline" className="w-full gap-1.5 h-9 text-xs rounded-xl" size="sm">
-                <Plus className="w-3.5 h-3.5" />
-                Add slide
-              </Button>
+            {/* Resizable splitter */}
+            <div
+              className="w-1.5 shrink-0 cursor-col-resize hover:bg-primary/20 active:bg-primary/30 transition-colors relative group"
+              onMouseDown={(e) => {
+                e.preventDefault()
+                splitterDragging.current = true
+                const startX = e.clientX
+                const startWidth = slideListWidth
+                const onMove = (ev: MouseEvent) => {
+                  if (!splitterDragging.current) return
+                  const newWidth = Math.max(160, Math.min(400, startWidth + (ev.clientX - startX)))
+                  setSlideListWidth(newWidth)
+                }
+                const onUp = () => {
+                  splitterDragging.current = false
+                  document.removeEventListener('mousemove', onMove)
+                  document.removeEventListener('mouseup', onUp)
+                }
+                document.addEventListener('mousemove', onMove)
+                document.addEventListener('mouseup', onUp)
+              }}
+            >
+              <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-center">
+                <div className="w-0.5 h-8 rounded-full bg-border group-hover:bg-primary/40 transition-colors" />
+              </div>
             </div>
-          </div>
+          </>
         )}
         {!slideListOpen && (
           <button onClick={() => setSlideListOpen(true)}
