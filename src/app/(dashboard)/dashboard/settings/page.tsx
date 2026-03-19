@@ -1,0 +1,22 @@
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+import { ProfileSettings } from '@/components/settings/ProfileSettings'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = { title: 'Settings' }
+
+export default async function SettingsPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  return (
+    <div className="p-6 md:p-8 max-w-3xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+        <p className="text-muted-foreground text-sm mt-1">Manage your profile and preferences</p>
+      </div>
+      <ProfileSettings user={{ id: user.id, email: user.email || '', displayName: user.user_metadata?.display_name || '' }} />
+    </div>
+  )
+}

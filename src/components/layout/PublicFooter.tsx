@@ -1,0 +1,87 @@
+import Link from 'next/link'
+
+const FOOTER_LINKS = {
+  Platform: [
+    { href: '/#features', label: 'Features' },
+    { href: '/templates', label: 'Templates' },
+    { href: '/pricing', label: 'Pricing' },
+    { href: '/#how-it-works', label: 'How It Works' },
+  ],
+  Services: [
+    { href: '/solutions/fire-rescue', label: 'Fire & Rescue' },
+    { href: '/solutions/police', label: 'Police' },
+    { href: '/solutions/ambulance', label: 'Ambulance' },
+    { href: '/solutions/armed-forces', label: 'Armed Forces' },
+    { href: '/solutions/coastguard', label: 'HM Coastguard' },
+    { href: '/solutions/search-rescue', label: 'Search & Rescue' },
+    { href: '/solutions/prison-probation', label: 'Prison & Probation' },
+    { href: '/solutions/local-authority', label: 'Local Authority' },
+    { href: '/solutions/civil-contingencies', label: 'Civil Contingencies' },
+    { href: '/solutions/nhs-emergency', label: 'NHS Emergency' },
+    { href: '/solutions/voluntary-sector', label: 'Voluntary Sector' },
+  ],
+  Company: [
+    { href: '/about', label: 'About' },
+    { href: '/contact', label: 'Contact' },
+    { href: '/help', label: 'Help Centre' },
+  ],
+  Legal: [
+    { href: '/terms', label: 'Terms' },
+    { href: '/privacy', label: 'Privacy' },
+    { href: '/cookies', label: 'Cookies' },
+    { href: '/accessibility', label: 'Accessibility' },
+    { href: '/dpa', label: 'DPA' },
+  ],
+}
+
+export function PublicFooter() {
+  return (
+    <footer className="border-t border-border">
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+          <div className="col-span-2 md:col-span-1">
+            <Link href="/" className="flex items-center gap-2 font-semibold text-sm text-foreground mb-3">
+              <div className="w-6 h-6 bg-primary rounded-md flex items-center justify-center">
+                <svg viewBox="0 0 24 24" className="w-3 h-3 text-primary-foreground" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+              </div>
+              Command 360
+            </Link>
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-[200px]">
+              Interactive training platform for UK emergency services. Based in Birmingham, West Midlands.
+            </p>
+          </div>
+
+          {Object.entries(FOOTER_LINKS).map(([title, links]) => (
+            <div key={title}>
+              <p className="text-xs font-medium text-foreground mb-3">{title}</p>
+              <ul className="space-y-2">
+                {links.map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-muted-foreground">&copy; 2026 Command 360. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <Link href="/join" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              Join session
+            </Link>
+            <Link href="/sign-in" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              Sign in
+            </Link>
+            <span className="text-xs text-muted-foreground">command360.co.uk</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}

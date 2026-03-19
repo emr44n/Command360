@@ -1,0 +1,782 @@
+'use client'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import type {
+  Slide, PollContent, WordCloudContent, QuizContent, ContentSlideContent,
+  SurveyContent, RatingScaleContent, OpenTextContent,
+} from '@/types/slide'
+import {
+  ArrowLeft, ArrowRight, X, BarChart2, Cloud, HelpCircle,
+  MessageCircle, ClipboardList, FileText, Star, AlignLeft, Monitor,
+  Smartphone, Grid3X3, StickyNote, Timer, Maximize, Minimize,
+  ChevronLeft, ChevronRight, Keyboard, Pause, Play, QrCode, Wifi,
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
+
+interface Props {
+  presentation: { id: string; title: string }
+  slides: Slide[]
+}
+
+const TYPE_ICONS: Record<string, React.ElementType> = {
+  poll: BarChart2, word_cloud: Cloud, quiz: HelpCircle, qna: MessageCircle,
+  survey: ClipboardList, content: FileText, rating_scale: Star, open_text: AlignLeft,
+}
+
+const TYPE_COLORS: Record<string, string> = {
+  poll: '#dc2626', word_cloud: '#3b82f6', quiz: '#10b981', qna: '#f59e0b',
+  survey: '#ec4899', content: '#6b7280', rating_scale: '#f97316', open_text: '#14b8a6',
+}
+
+const TYPE_LABELS: Record<string, string> = {
+  poll: 'Poll', word_cloud: 'Word Cloud', quiz: 'Quiz', qna: 'Q&A',
+  survey: 'Survey', content: 'Content', rating_scale: 'Rating Scale', open_text: 'Open Text',
+}
+
+export function PreviewMode({ presentation, slides }: Props) {
+  const router = useRouter()
+  const [current, setCurrent] = useState(0)
+  const [animClass, setAnimClass] = useState('preview-slide-in')
+  const [showNotes, setShowNotes] = useState(false)
+  const [showGrid, setShowGrid] = useState(false)
+  const [showShortcuts, setShowShortcuts] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [timerSeconds, setTimerSeconds] = useState(0)
+  const [timerRunning, setTimerRunning] = useState(true)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const slide = slides[current] || null
+  const progress = slides.length > 0 ? ((current + 1) / slides.length) * 100 : 0
+
+  // Timer
+  useEffect(() => {
+    if (!timerRunning) return
+    const interval = setInterval(() => setTimerSeconds(s => s + 1), 1000)
+    return () => clearInterval(interval)
+  }, [timerRunning])
+
+  // Fullscreen tracking
+  useEffect(() => {
+    const handleFS = () => setIsFullscreen(!!document.fullscreenElement)
+    document.addEventListener('fullscreenchange', handleFS)
+    return () => document.removeEventListener('fullscreenchange', handleFS)
+  }, [])
+
+  const navigateTo = useCallback((index: number) => {
+    if (index < 0 || index >= slides.length || index === current) return
+    const dir = index > current ? 'preview-slide-in' : 'preview-slide-in-reverse'
+    setAnimClass('preview-slide-out')
+    setTimeout(() => {
+      setCurrent(index)
+      setAnimClass(dir)
+    }, 150)
+  }, [current, slides.length])
+
+  const goNext = useCallback(() => navigateTo(current + 1), [current, navigateTo])
+  const goPrev = useCallback(() => navigateTo(current - 1), [current, navigateTo])
+
+  const toggleFullscreen = useCallback(() => {
+    if (!containerRef.current) return
+    if (document.fullscreenElement) document.exitFullscreen()
+    else containerRef.current.requestFullscreen()
+  }, [])
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (showGrid || showShortcuts) {
+        if (e.key === 'Escape') { setShowGrid(false); setShowShortcuts(false) }
+        if (showGrid && e.key >= '1' && e.key <= '9') {
+          const idx = parseInt(e.key) - 1
+          if (idx < slides.length) { setCurrent(idx); setShowGrid(false) }
+        }
+        return
+      }
+      switch (e.key) {
+        case 'ArrowRight': case ' ': case 'PageDown': e.preventDefault(); goNext(); break
+        case 'ArrowLeft': case 'PageUp': e.preventDefault(); goPrev(); break
+        case 'Escape': router.push(`/presentations/${presentation.id}/edit`); break
+        case 'Home': e.preventDefault(); navigateTo(0); break
+        case 'End': e.preventDefault(); navigateTo(slides.length - 1); break
+        case 'g': case 'G': setShowGrid(true); break
+        case 'n': case 'N': setShowNotes(v => !v); break
+        case 'f': case 'F': toggleFullscreen(); break
+        case '?': setShowShortcuts(v => !v); break
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [goNext, goPrev, router, presentation.id, navigateTo, slides.length, showGrid, showShortcuts, toggleFullscreen])
+
+  function formatTime(secs: number) {
+    const m = Math.floor(secs / 60)
+    const s = secs % 60
+    return `${m}:${s.toString().padStart(2, '0')}`
+  }
+
+  if (slides.length === 0) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-background text-foreground">
+        <div className="text-center">
+          <Monitor className="w-12 h-12 opacity-30 mx-auto mb-4" />
+          <p className="text-muted-foreground">No slides to preview</p>
+          <button
+            onClick={() => router.push(`/presentations/${presentation.id}/edit`)}
+            className="mt-4 px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+          >
+            Back to editor
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const Icon = TYPE_ICONS[slide?.slide_type || 'content'] || FileText
+  const typeColor = TYPE_COLORS[slide?.slide_type || 'content'] || '#6b7280'
+
+  return (
+    <div ref={containerRef} className="h-screen flex flex-col bg-background text-foreground select-none overflow-hidden">
+      {/* Inline keyframes */}
+      <style>{`
+        .preview-slide-in { animation: prevSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .preview-slide-in-reverse { animation: prevSlideInReverse 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .preview-slide-out { animation: prevSlideOut 0.15s ease-in both; }
+        .preview-grid-in { animation: prevGridIn 0.2s ease-out both; }
+        @keyframes prevSlideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes prevSlideInReverse { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes prevSlideOut { from { opacity: 1; } to { opacity: 0; } }
+        @keyframes prevGridIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+      `}</style>
+
+      {/* Progress bar */}
+      <div className="h-[3px] bg-muted shrink-0">
+        <div
+          className="h-full bg-primary shadow-[0_0_8px_rgba(220,38,38,0.4)]"
+          style={{ width: `${progress}%`, transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}
+        />
+      </div>
+
+      {/* Top bar */}
+      <div className="h-11 flex items-center justify-between px-3 bg-card/80 backdrop-blur shrink-0 border-b border-border">
+        <div className="flex items-center gap-2">
+          <TBtn icon={X} title="Back to editor (Esc)" onClick={() => router.push(`/presentations/${presentation.id}/edit`)} />
+          <span className="text-[13px] text-muted-foreground font-medium">{presentation.title}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          {/* Timer */}
+          <div className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted text-xs font-mono text-muted-foreground font-semibold">
+            <Timer className="w-3 h-3" />
+            {formatTime(timerSeconds)}
+            <button
+              onClick={() => setTimerRunning(v => !v)}
+              className="p-0.5 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {timerRunning ? <Pause className="w-2.5 h-2.5" /> : <Play className="w-2.5 h-2.5" />}
+            </button>
+          </div>
+          <div className="px-2.5 py-1 rounded-md bg-muted text-xs text-muted-foreground font-semibold">
+            {current + 1} / {slides.length}
+          </div>
+          <TBtn icon={Grid3X3} title="Grid overview (G)" onClick={() => setShowGrid(true)} />
+          <TBtn icon={StickyNote} title="Speaker notes (N)" onClick={() => setShowNotes(v => !v)} active={showNotes} />
+          <TBtn icon={isFullscreen ? Minimize : Maximize} title="Fullscreen (F)" onClick={toggleFullscreen} />
+          <TBtn icon={Keyboard} title="Shortcuts (?)" onClick={() => setShowShortcuts(v => !v)} />
+        </div>
+      </div>
+
+      {/* DUAL VIEW: Presenter + Audience Phone */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Main content area (presenter + phone centered together) */}
+        <div className="flex-1 flex items-center justify-center gap-8 p-5 overflow-hidden">
+          {/* Left: Presenter Screen with nav arrows */}
+          <div className="relative flex flex-col items-center max-w-[640px] flex-[1_1_640px]">
+            {/* Label */}
+            <div className="flex items-center gap-1.5 mb-2.5">
+              <Monitor className="w-[13px] h-[13px] text-muted-foreground/50" />
+              <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/50">
+                Presenter Screen
+              </span>
+            </div>
+
+            {/* Nav arrow LEFT */}
+            <button
+              onClick={goPrev} disabled={current === 0}
+              className={cn(
+                'absolute left-[-44px] top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-full transition-all',
+                current === 0
+                  ? 'text-muted-foreground/15 cursor-default'
+                  : 'bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer'
+              )}
+            >
+              <ChevronLeft className="w-[18px] h-[18px]" />
+            </button>
+
+            {/* Nav arrow RIGHT */}
+            <button
+              onClick={goNext} disabled={current === slides.length - 1}
+              className={cn(
+                'absolute right-[-44px] top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-full transition-all',
+                current === slides.length - 1
+                  ? 'text-muted-foreground/15 cursor-default'
+                  : 'bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer'
+              )}
+            >
+              <ChevronRight className="w-[18px] h-[18px]" />
+            </button>
+
+            {/* Presenter slide card — always white background for the slide itself */}
+            {slide && (
+              <div
+                className={animClass}
+                style={{
+                  width: '100%', aspectRatio: '16/9',
+                  background: '#ffffff', borderRadius: 14,
+                  padding: '28px 36px', display: 'flex', flexDirection: 'column',
+                  color: '#111827', overflow: 'hidden',
+                  boxShadow: '0 20px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)',
+                }}
+              >
+                {/* Type badge + room code */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: 5,
+                    background: `${typeColor}14`, borderRadius: 6, padding: '3px 10px',
+                  }}>
+                    <Icon style={{ width: 12, height: 12, color: typeColor }} />
+                    <span style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: typeColor }}>
+                      {TYPE_LABELS[slide.slide_type]}
+                    </span>
+                  </div>
+                  <div style={{
+                    marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5,
+                    background: '#f3f4f6', borderRadius: 6, padding: '3px 10px',
+                  }}>
+                    <QrCode style={{ width: 9, height: 9, color: '#6b7280' }} />
+                    <span style={{ fontSize: 9, fontWeight: 700, fontFamily: 'monospace', color: '#374151', letterSpacing: '0.08em' }}>
+                      command360.co.uk/join
+                    </span>
+                  </div>
+                </div>
+
+                {/* Title */}
+                <h2 style={{ fontSize: 22, fontWeight: 700, color: '#111827', marginBottom: 16, lineHeight: 1.2 }}>
+                  {slide.title || 'Untitled slide'}
+                </h2>
+
+                {/* Content */}
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  <PresenterSlideContent slide={slide} />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right: Audience Phone (iPhone-style) */}
+          <div className="flex flex-col items-center shrink-0">
+            {/* Label */}
+            <div className="flex items-center gap-1.5 mb-2.5">
+              <Smartphone className="w-[13px] h-[13px] text-muted-foreground/50" />
+              <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/50">
+                Audience View
+              </span>
+            </div>
+
+            {/* iPhone frame */}
+            <div style={{
+              width: 185,
+              height: 390,
+              background: '#1c1c1c',
+              borderRadius: 36,
+              padding: 5,
+              boxShadow: '0 20px 60px -12px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.08)',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+            }}>
+              {/* Side buttons (decorative) */}
+              <div style={{ position: 'absolute', right: -2.5, top: 76, width: 3, height: 36, background: '#2a2a2a', borderRadius: '0 2px 2px 0' }} />
+              <div style={{ position: 'absolute', left: -2.5, top: 56, width: 3, height: 16, background: '#2a2a2a', borderRadius: '2px 0 0 2px' }} />
+              <div style={{ position: 'absolute', left: -2.5, top: 82, width: 3, height: 28, background: '#2a2a2a', borderRadius: '2px 0 0 2px' }} />
+              <div style={{ position: 'absolute', left: -2.5, top: 116, width: 3, height: 28, background: '#2a2a2a', borderRadius: '2px 0 0 2px' }} />
+
+              {/* Screen */}
+              <div style={{
+                flex: 1, background: '#ffffff', borderRadius: 31,
+                overflow: 'hidden', display: 'flex', flexDirection: 'column',
+              }}>
+                {/* Status bar + Dynamic Island */}
+                <div style={{
+                  padding: '6px 14px 0', flexShrink: 0, display: 'flex',
+                  alignItems: 'flex-start', justifyContent: 'space-between',
+                  position: 'relative', height: 32,
+                }}>
+                  <span style={{ fontSize: 8, fontWeight: 700, color: '#1a1a1a', marginTop: 1 }}>9:41</span>
+                  <div style={{
+                    width: 56, height: 14, background: '#000', borderRadius: 10,
+                    position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: 5,
+                  }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginTop: 1 }}>
+                    <Wifi style={{ width: 7, height: 7, color: '#1a1a1a' }} />
+                    <div style={{ width: 14, height: 7, borderRadius: 2, border: '1px solid #1a1a1a', position: 'relative' }}>
+                      <div style={{ position: 'absolute', inset: 1, background: '#1a1a1a', borderRadius: 1 }} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Phone header */}
+                <div style={{ padding: '8px 14px 8px', flexShrink: 0, borderBottom: '1px solid #f0f0f0' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+                    <Icon style={{ width: 9, height: 9, color: typeColor }} />
+                    <span style={{ fontSize: 7, fontWeight: 600, textTransform: 'uppercase', color: typeColor, letterSpacing: '0.05em' }}>
+                      {TYPE_LABELS[slide?.slide_type || 'content']}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: '#111827', lineHeight: 1.2 }}>
+                    {slide?.title || 'Untitled'}
+                  </p>
+                </div>
+
+                {/* Phone content */}
+                <div style={{ flex: 1, padding: '10px 12px', overflowY: 'auto', overflowX: 'hidden' }}>
+                  {slide && <AudienceSlideContent slide={slide} />}
+                </div>
+
+                {/* Phone footer */}
+                <div style={{
+                  padding: '6px 14px 4px', flexShrink: 0,
+                  borderTop: '1px solid #f0f0f0', textAlign: 'center',
+                }}>
+                  <span style={{ fontSize: 7, color: '#b0b0b0', fontWeight: 500, letterSpacing: '0.04em' }}>
+                    command360.co.uk
+                  </span>
+                </div>
+
+                {/* Home indicator */}
+                <div style={{
+                  width: 60, height: 3, borderRadius: 2, background: '#d4d4d4',
+                  margin: '2px auto 4px',
+                }} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Speaker notes panel */}
+        <div
+          className={cn(
+            'bg-card border-l border-border shrink-0 overflow-hidden transition-all duration-300',
+            showNotes ? 'w-[300px]' : 'w-0'
+          )}
+        >
+          <div className="p-4 w-[300px]">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                Speaker Notes
+              </h3>
+              <button onClick={() => setShowNotes(false)}
+                className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div className="text-[13px] leading-[1.7] text-muted-foreground whitespace-pre-wrap max-h-[calc(100vh-240px)] overflow-y-auto">
+              {slide?.speaker_notes || (
+                <span className="text-muted-foreground/40 italic">No speaker notes for this slide.</span>
+              )}
+            </div>
+            {current < slides.length - 1 && (
+              <div className="mt-5 border-t border-border pt-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/60 mb-2">
+                  Next slide
+                </p>
+                <div className="bg-muted rounded-lg px-3 py-2 text-xs text-muted-foreground">
+                  <p className="font-semibold">{slides[current + 1].title || 'Untitled'}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="h-11 flex items-center justify-center gap-3 bg-card/80 backdrop-blur shrink-0 border-t border-border">
+        <button onClick={goPrev} disabled={current === 0}
+          className={cn('p-1.5 rounded-lg transition-colors', current === 0 ? 'text-muted-foreground/20 cursor-default' : 'text-foreground hover:bg-muted cursor-pointer')}>
+          <ArrowLeft className="w-4 h-4" />
+        </button>
+        <div className="flex items-center gap-1">
+          {slides.map((_, i) => (
+            <button key={i} onClick={() => navigateTo(i)}
+              className="border-none cursor-pointer p-0 transition-all duration-300"
+              style={{
+                width: i === current ? 20 : 6, height: 6, borderRadius: 3,
+                background: i === current ? '#dc2626' : i < current ? 'rgba(220,38,38,0.4)' : 'var(--muted-foreground)',
+                opacity: i === current ? 1 : i < current ? 1 : 0.3,
+              }}
+            />
+          ))}
+        </div>
+        <button onClick={goNext} disabled={current === slides.length - 1}
+          className={cn('p-1.5 rounded-lg transition-colors', current === slides.length - 1 ? 'text-muted-foreground/20 cursor-default' : 'text-foreground hover:bg-muted cursor-pointer')}>
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Grid overlay */}
+      {showGrid && (
+        <div className="fixed inset-0 bg-background/[0.97] z-[100] flex flex-col"
+          onClick={() => setShowGrid(false)}>
+          <div className="h-12 flex items-center justify-between px-5 shrink-0">
+            <h3 className="text-sm font-semibold text-muted-foreground">All Slides</h3>
+            <button onClick={() => setShowGrid(false)}
+              className="p-1.5 rounded-lg bg-muted text-foreground hover:bg-muted/80 transition-colors">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-5 pt-2 grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
+            {slides.map((s, i) => {
+              const GridIcon = TYPE_ICONS[s.slide_type] || FileText
+              const gridColor = TYPE_COLORS[s.slide_type] || '#6b7280'
+              return (
+                <button key={s.id} className="preview-grid-in bg-transparent border-none p-0 cursor-pointer text-left"
+                  style={{ animationDelay: `${i * 30}ms` }}
+                  onClick={(e) => { e.stopPropagation(); setCurrent(i); setShowGrid(false) }}>
+                  <div style={{
+                    background: '#ffffff', borderRadius: 12, overflow: 'hidden',
+                    border: i === current ? '2px solid #dc2626' : '2px solid var(--border)',
+                    aspectRatio: '16/9', display: 'flex', flexDirection: 'column', padding: '12px 14px',
+                    transition: 'all 0.2s',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 6 }}>
+                      <GridIcon style={{ width: 10, height: 10, color: gridColor }} />
+                      <span style={{ fontSize: 8, fontWeight: 600, textTransform: 'uppercase', color: gridColor }}>{TYPE_LABELS[s.slide_type]}</span>
+                    </div>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {s.title || 'Untitled'}
+                    </p>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-1 text-center font-semibold">{i + 1}</p>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Shortcuts overlay */}
+      {showShortcuts && (
+        <div className="fixed inset-0 bg-background/95 z-[100] flex items-center justify-center"
+          onClick={() => setShowShortcuts(false)}>
+          <div className="bg-card rounded-2xl p-7 max-w-[400px] w-[90%] border border-border shadow-2xl"
+            onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-base font-bold text-foreground">Keyboard Shortcuts</h3>
+              <button onClick={() => setShowShortcuts(false)}
+                className="p-1 rounded-md bg-muted text-muted-foreground hover:text-foreground transition-colors">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div className="flex flex-col gap-2">
+              {[
+                ['→ / Space', 'Next slide'], ['← / Backspace', 'Previous slide'],
+                ['Home', 'First slide'], ['End', 'Last slide'],
+                ['G', 'Grid overview'], ['N', 'Toggle notes'],
+                ['F', 'Fullscreen'], ['Esc', 'Exit preview'], ['?', 'Shortcuts'],
+              ].map(([key, desc]) => (
+                <div key={key} className="flex items-center justify-between">
+                  <span className="text-[13px] text-muted-foreground">{desc}</span>
+                  <kbd className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border">{key}</kbd>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* Toolbar Button — theme aware */
+function TBtn({ icon: Icon, title, onClick, active }: { icon: React.ElementType; title: string; onClick: () => void; active?: boolean }) {
+  return (
+    <button onClick={onClick} title={title}
+      className={cn(
+        'p-[5px] rounded-md transition-all',
+        active
+          ? 'bg-primary/20 text-primary'
+          : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'
+      )}
+    >
+      <Icon className="w-[15px] h-[15px]" />
+    </button>
+  )
+}
+
+/* Presenter Slide Content — always on white background */
+function PresenterSlideContent({ slide }: { slide: Slide }) {
+  switch (slide.slide_type) {
+    case 'poll': {
+      const c = slide.content as PollContent
+      return (
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {(c.options || []).map((o, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ width: 24, height: 24, borderRadius: 6, background: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#6b7280', flexShrink: 0 }}>
+                {String.fromCharCode(65 + i)}
+              </span>
+              <div style={{ flex: 1, background: '#f3f4f6', borderRadius: 8, padding: '8px 14px', fontSize: 13, fontWeight: 500, color: '#374151' }}>
+                {o.text || `Option ${i + 1}`}
+              </div>
+              <span style={{ fontSize: 14, fontWeight: 700, color: '#9ca3af', minWidth: 24, textAlign: 'right' }}>0</span>
+            </div>
+          ))}
+        </div>
+      )
+    }
+    case 'quiz': {
+      const c = slide.content as QuizContent
+      return (
+        <div style={{ width: '100%', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+          {(c.options || []).map((o, i) => (
+            <div key={i} style={{
+              background: o.is_correct ? '#dcfce7' : '#f3f4f6',
+              border: o.is_correct ? '2px solid #22c55e' : '2px solid transparent',
+              borderRadius: 10, padding: '10px 14px', fontSize: 12, fontWeight: 500,
+              color: o.is_correct ? '#166534' : '#374151', textAlign: 'center',
+            }}>
+              {o.text || `Option ${i + 1}`}
+            </div>
+          ))}
+        </div>
+      )
+    }
+    case 'word_cloud':
+      return (
+        <div style={{ textAlign: 'center', color: '#9ca3af' }}>
+          <Cloud style={{ width: 48, height: 48, margin: '0 auto 10px', opacity: 0.25 }} />
+          <p style={{ fontSize: 13 }}>Word cloud will appear here</p>
+        </div>
+      )
+    case 'qna':
+      return (
+        <div style={{ textAlign: 'center', color: '#9ca3af' }}>
+          <MessageCircle style={{ width: 48, height: 48, margin: '0 auto 10px', opacity: 0.25 }} />
+          <p style={{ fontSize: 13 }}>Questions will appear here</p>
+        </div>
+      )
+    case 'content': {
+      const c = slide.content as ContentSlideContent
+      if (c.body && c.body.startsWith('<')) {
+        return <div style={{ fontSize: 14, lineHeight: 1.6, color: '#374151', maxWidth: 500 }} dangerouslySetInnerHTML={{ __html: c.body }} />
+      }
+      return (
+        <div style={{ fontSize: 14, whiteSpace: 'pre-wrap', lineHeight: 1.6, textAlign: 'center', maxWidth: 500, color: '#374151' }}>
+          {c.body || 'No content'}
+        </div>
+      )
+    }
+    case 'rating_scale': {
+      const c = slide.content as RatingScaleContent
+      const min = c.min_value ?? 1, max = c.max_value ?? 10
+      return (
+        <div style={{ width: '100%' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginBottom: 8 }}>
+            {Array.from({ length: Math.min(max - min + 1, 10) }, (_, i) => (
+              <div key={i} style={{ width: 36, height: 36, borderRadius: 8, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 600, color: '#374151' }}>
+                {min + i}
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#9ca3af' }}>
+            <span>{c.min_label || 'Low'}</span><span>{c.max_label || 'High'}</span>
+          </div>
+        </div>
+      )
+    }
+    case 'open_text': {
+      const c = slide.content as OpenTextContent
+      return (
+        <div style={{ width: '100%' }}>
+          <div style={{ border: '2px dashed #d1d5db', borderRadius: 10, padding: '12px 16px', color: '#9ca3af', fontSize: 13 }}>
+            {c.placeholder || 'Responses will appear here'}
+          </div>
+        </div>
+      )
+    }
+    case 'survey': {
+      const c = slide.content as SurveyContent
+      return (
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {(c.questions || []).slice(0, 3).map((q, i) => (
+            <div key={i} style={{ background: '#f3f4f6', borderRadius: 8, padding: '8px 14px', fontSize: 12, color: '#374151' }}>
+              {i + 1}. {q.text || `Question ${i + 1}`}
+            </div>
+          ))}
+        </div>
+      )
+    }
+    default:
+      return <div style={{ color: '#9ca3af', fontSize: 13 }}>Interactive slide</div>
+  }
+}
+
+/* Audience Slide Content — always on white phone screen */
+function AudienceSlideContent({ slide }: { slide: Slide }) {
+  switch (slide.slide_type) {
+    case 'poll': {
+      const c = slide.content as PollContent
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+          {(c.options || []).map((o, i) => (
+            <button key={i} style={{
+              width: '100%', padding: '8px 10px', borderRadius: 8,
+              background: '#f3f4f6', border: '2px solid transparent',
+              fontSize: 11, fontWeight: 500, color: '#374151', textAlign: 'left',
+              cursor: 'pointer', transition: 'all 0.15s',
+            }}>
+              {o.text || `Option ${i + 1}`}
+            </button>
+          ))}
+          <button style={{
+            width: '100%', padding: '8px', borderRadius: 8,
+            background: '#dc2626', border: 'none', color: '#fff',
+            fontSize: 11, fontWeight: 600, cursor: 'default', marginTop: 2,
+          }}>
+            Submit Vote
+          </button>
+        </div>
+      )
+    }
+    case 'quiz': {
+      const c = slide.content as QuizContent
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+          {(c.options || []).map((o, i) => (
+            <button key={i} style={{
+              width: '100%', padding: '8px 10px', borderRadius: 8,
+              background: '#f3f4f6', border: '2px solid transparent',
+              fontSize: 11, fontWeight: 500, color: '#374151', textAlign: 'left', cursor: 'pointer',
+            }}>
+              <span style={{ fontWeight: 700, marginRight: 4, color: '#6b7280' }}>{String.fromCharCode(65 + i)}</span>
+              {o.text || `Option ${i + 1}`}
+            </button>
+          ))}
+          {c.time_limit_seconds > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, fontSize: 10, color: '#9ca3af', marginTop: 2 }}>
+              <Timer style={{ width: 9, height: 9 }} />
+              {c.time_limit_seconds}s
+            </div>
+          )}
+        </div>
+      )
+    }
+    case 'word_cloud': {
+      const c = slide.content as WordCloudContent
+      return (
+        <div>
+          <p style={{ fontSize: 10, color: '#6b7280', marginBottom: 6 }}>{c.prompt || 'Enter a word or phrase'}</p>
+          <div style={{ border: '1.5px solid #d1d5db', borderRadius: 8, padding: '8px 10px', fontSize: 11, color: '#9ca3af', marginBottom: 6 }}>
+            Type your word here...
+          </div>
+          <button style={{
+            width: '100%', padding: '7px', borderRadius: 8,
+            background: '#dc2626', border: 'none', color: '#fff',
+            fontSize: 10, fontWeight: 600, cursor: 'default',
+          }}>
+            Submit
+          </button>
+        </div>
+      )
+    }
+    case 'qna':
+      return (
+        <div>
+          <div style={{ border: '1.5px solid #d1d5db', borderRadius: 8, padding: '8px 10px', fontSize: 11, color: '#9ca3af', marginBottom: 6, minHeight: 50 }}>
+            Ask a question...
+          </div>
+          <button style={{
+            width: '100%', padding: '7px', borderRadius: 8,
+            background: '#dc2626', border: 'none', color: '#fff',
+            fontSize: 10, fontWeight: 600, cursor: 'default',
+          }}>
+            Submit Question
+          </button>
+        </div>
+      )
+    case 'content': {
+      const c = slide.content as ContentSlideContent
+      if (c.body && c.body.startsWith('<')) {
+        return <div style={{ fontSize: 11, lineHeight: 1.4, color: '#374151' }} dangerouslySetInnerHTML={{ __html: c.body }} />
+      }
+      return (
+        <div style={{ fontSize: 11, whiteSpace: 'pre-wrap', lineHeight: 1.4, color: '#374151' }}>
+          {c.body || 'Content slide'}
+        </div>
+      )
+    }
+    case 'rating_scale': {
+      const c = slide.content as RatingScaleContent
+      const min = c.min_value ?? 1, max = c.max_value ?? 5
+      return (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 3, flexWrap: 'wrap', marginBottom: 4 }}>
+            {Array.from({ length: Math.min(max - min + 1, 10) }, (_, i) => (
+              <button key={i} style={{
+                width: 24, height: 24, borderRadius: 5, background: '#f3f4f6',
+                border: '1.5px solid transparent', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 10, fontWeight: 600, color: '#374151', cursor: 'pointer',
+              }}>
+                {min + i}
+              </button>
+            ))}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 8, color: '#9ca3af', padding: '0 2px' }}>
+            <span>{c.min_label || 'Low'}</span><span>{c.max_label || 'High'}</span>
+          </div>
+          <button style={{
+            width: '100%', padding: '7px', borderRadius: 8, marginTop: 6,
+            background: '#dc2626', border: 'none', color: '#fff',
+            fontSize: 10, fontWeight: 600, cursor: 'default',
+          }}>
+            Submit
+          </button>
+        </div>
+      )
+    }
+    case 'open_text': {
+      const c = slide.content as OpenTextContent
+      return (
+        <div>
+          <div style={{ border: '1.5px solid #d1d5db', borderRadius: 8, padding: '8px 10px', fontSize: 11, color: '#9ca3af', marginBottom: 6, minHeight: 60 }}>
+            {c.placeholder || 'Type your response...'}
+          </div>
+          {c.max_length > 0 && (
+            <p style={{ fontSize: 8, color: '#9ca3af', textAlign: 'right', marginBottom: 3 }}>0/{c.max_length}</p>
+          )}
+          <button style={{
+            width: '100%', padding: '7px', borderRadius: 8,
+            background: '#dc2626', border: 'none', color: '#fff',
+            fontSize: 10, fontWeight: 600, cursor: 'default',
+          }}>
+            Submit
+          </button>
+        </div>
+      )
+    }
+    case 'survey': {
+      const c = slide.content as SurveyContent
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {(c.questions || []).slice(0, 3).map((q, i) => (
+            <div key={i}>
+              <p style={{ fontSize: 10, fontWeight: 600, color: '#374151', marginBottom: 3 }}>{i + 1}. {q.text}</p>
+              <div style={{ border: '1.5px solid #d1d5db', borderRadius: 6, padding: '5px 8px', fontSize: 10, color: '#9ca3af' }}>
+                Answer here...
+              </div>
+            </div>
+          ))}
+        </div>
+      )
+    }
+    default:
+      return <div style={{ color: '#9ca3af', fontSize: 10, textAlign: 'center' }}>Interactive content</div>
+  }
+}
