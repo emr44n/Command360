@@ -660,27 +660,33 @@ export function TemplateGallery() {
 
               {/* Slide content preview */}
               <div className="flex-1 p-6 flex flex-col items-center justify-center bg-muted/10">
-                <div className="w-full max-w-lg bg-card rounded-2xl border border-border shadow-sm p-6">
-                  {/* Type badge */}
-                  <div className="flex items-center gap-1.5 mb-3">
-                    {(() => {
-                      const s = previewTemplate.slides[previewSlide]
-                      const TypeIcon = TYPE_ICONS[s.slide_type] || FileText
-                      const color = TYPE_COLORS[s.slide_type] || '#6b7280'
-                      return (
-                        <span className="flex items-center gap-1 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-md" style={{ background: `${color}15`, color }}>
-                          <TypeIcon style={{ width: 10, height: 10 }} />
-                          {TYPE_LABELS[s.slide_type] || s.slide_type}
-                        </span>
-                      )
-                    })()}
+                <div className="w-full max-w-lg bg-white rounded-2xl border border-border shadow-sm overflow-hidden relative" style={{ aspectRatio: '16/9' }}>
+                  <div className="absolute inset-0 flex flex-col p-6">
+                    {/* Type badge */}
+                    <div className="flex items-center gap-1.5 mb-3 shrink-0">
+                      {(() => {
+                        const s = previewTemplate.slides[previewSlide]
+                        const TypeIcon = TYPE_ICONS[s.slide_type] || FileText
+                        const color = TYPE_COLORS[s.slide_type] || '#6b7280'
+                        return (
+                          <span className="flex items-center gap-1 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-md" style={{ background: `${color}15`, color }}>
+                            <TypeIcon style={{ width: 10, height: 10 }} />
+                            {TYPE_LABELS[s.slide_type] || s.slide_type}
+                          </span>
+                        )
+                      })()}
+                    </div>
+                    {/* Title */}
+                    <h4 className="font-bold text-gray-900 text-lg mb-2 shrink-0">
+                      {previewTemplate.slides[previewSlide].title}
+                    </h4>
+                    {/* Simple content preview */}
+                    <div className="flex-1 flex items-center justify-center overflow-hidden min-h-0">
+                      <div className="w-full">
+                        <TemplateSlidePreview slide={previewTemplate.slides[previewSlide]} />
+                      </div>
+                    </div>
                   </div>
-                  {/* Title */}
-                  <h4 className="font-bold text-foreground text-lg mb-2">
-                    {previewTemplate.slides[previewSlide].title}
-                  </h4>
-                  {/* Simple content preview */}
-                  <TemplateSlidePreview slide={previewTemplate.slides[previewSlide]} />
                 </div>
 
                 {/* Navigation */}

@@ -13,17 +13,24 @@ interface Props { slide: Slide; session: Session; responseCount: number }
 
 export function PresenterSlideDisplay({ slide, session, responseCount }: Props) {
   return (
-    <div className="bg-card/60 backdrop-blur-sm rounded-2xl overflow-hidden shadow-2xl border border-border">
-      <div className="px-8 pt-8 pb-4">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-primary bg-primary/10 uppercase tracking-wide mb-3">
-          {slide.slide_type.replace('_', ' ')}
-        </span>
-        <h2 className="text-2xl md:text-4xl font-bold text-foreground tracking-tight">
-          {slide.title || <span className="text-muted-foreground italic font-normal">Untitled slide</span>}
-        </h2>
-      </div>
-      <div className="px-8 pb-8">
-        <SlideContent slide={slide} session={session} responseCount={responseCount} />
+    <div
+      className="bg-white rounded-2xl overflow-hidden shadow-2xl border border-border relative"
+      style={{ aspectRatio: '16/9' }}
+    >
+      <div className="absolute inset-0 flex flex-col px-8 pt-8 pb-6">
+        <div className="shrink-0 mb-4">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-primary bg-primary/10 uppercase tracking-wide mb-3">
+            {slide.slide_type.replace('_', ' ')}
+          </span>
+          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 tracking-tight">
+            {slide.title || <span className="text-gray-400 italic font-normal">Untitled slide</span>}
+          </h2>
+        </div>
+        <div className="flex-1 flex items-center justify-center overflow-hidden min-h-0">
+          <div className="w-full">
+            <SlideContent slide={slide} session={session} responseCount={responseCount} />
+          </div>
+        </div>
       </div>
     </div>
   )

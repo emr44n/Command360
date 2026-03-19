@@ -434,7 +434,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
         <div className="w-px h-5 bg-border mx-1" />
 
         {/* File menu dropdown */}
-        <div className="relative" ref={fileMenuRef}>
+        <div className="relative z-[60]" ref={fileMenuRef}>
           <button
             onClick={() => setShowFileMenu(v => !v)}
             className={cn(
@@ -538,29 +538,6 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             title="QR code / join info">
             <QrCode className="w-4 h-4" />
           </button>
-        </div>
-
-        {/* Device preview toggle */}
-        <div className="flex items-center gap-0.5 bg-muted/60 rounded-xl px-1.5 py-1 ml-2">
-          {([
-            { key: 'desktop' as const, icon: Monitor, label: 'Desktop' },
-            { key: 'tablet' as const, icon: Tablet, label: 'Tablet' },
-            { key: 'phone' as const, icon: Smartphone, label: 'Phone' },
-          ]).map(({ key, icon: DevIcon, label }) => (
-            <button
-              key={key}
-              onClick={() => setDevicePreview(key)}
-              className={cn(
-                'p-1.5 rounded-lg transition-all',
-                devicePreview === key
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-background'
-              )}
-              title={label}
-            >
-              <DevIcon className="w-4 h-4" />
-            </button>
-          ))}
         </div>
 
         <div className="flex-1" />
@@ -683,7 +660,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
         )}
 
         {/* Center - canvas + QR + notes */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col min-w-0 min-h-0">
           {/* QR Code / Join bar */}
           {showQR && (
             <div className="bg-card border-b border-border px-4 py-2.5 flex items-center gap-3 shrink-0">
