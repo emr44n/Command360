@@ -616,6 +616,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
               selectedElementId={selectedElementId}
               onSelectElement={setSelectedElementId}
               onRequestAddImage={() => setShowAddImageDialog(true)}
+              onSelectSlide={(id) => { setSelectedSlideId(id); setSelectedElementId(null) }}
               onPrev={selectPrev}
               onNext={selectNext}
             />
