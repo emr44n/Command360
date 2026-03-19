@@ -45,13 +45,16 @@ export function SlideCanvas({ slide, slides, selectedIndex, devicePreview, onTit
   const slideRefs = useRef<Map<string, HTMLDivElement>>(new Map())
   const selectedCardRef = useRef<HTMLDivElement>(null)
 
-  // Scroll selected slide into view when selection changes via thumbnails
+  // Scroll selected slide into view within the canvas container only
   useEffect(() => {
-    if (!slide) return
+    if (!slide || !containerRef.current) return
     const el = slideRefs.current.get(slide.id)
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }
+    if (!el) return
+    const container = containerRef.current
+    const elRect = el.getBoundingClientRect()
+    const containerRect = container.getBoundingClientRect()
+    const scrollTarget = container.scrollTop + (elRect.top - containerRect.top) - (containerRect.height / 2) + (elRect.height / 2)
+    container.scrollTo({ top: scrollTarget, behavior: 'smooth' })
   }, [slide?.id])
 
   if (slides.length === 0) {
@@ -71,7 +74,7 @@ export function SlideCanvas({ slide, slides, selectedIndex, devicePreview, onTit
   return (
     <div
       ref={containerRef}
-      className="flex-1 overflow-y-auto overflow-x-hidden"
+      className="h-full overflow-y-auto overflow-x-hidden"
       style={{
         backgroundColor: '#111111',
         backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)',

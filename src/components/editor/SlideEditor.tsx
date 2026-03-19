@@ -425,7 +425,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   return (
     <div className="h-screen flex flex-col bg-background text-foreground">
       {/* ─── Top bar ─────────────────────────────────────────────── */}
-      <div className="h-14 bg-background/80 backdrop-blur-xl border-b border-border flex items-center gap-2 px-4 shrink-0">
+      <div className="h-14 bg-background/80 backdrop-blur-xl border-b border-border flex items-center gap-2 px-4 shrink-0 relative z-[60]">
         {/* Left: back + File menu + title */}
         <Button variant="ghost" size="icon" onClick={() => router.push('/dashboard')}
           className="text-muted-foreground hover:text-foreground h-8 w-8 shrink-0 rounded-xl">
@@ -434,7 +434,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
         <div className="w-px h-5 bg-border mx-1" />
 
         {/* File menu dropdown */}
-        <div className="relative z-[60]" ref={fileMenuRef}>
+        <div className="relative" ref={fileMenuRef}>
           <button
             onClick={() => setShowFileMenu(v => !v)}
             className={cn(
@@ -683,7 +683,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           )}
 
           {/* Canvas */}
-          <div className="flex-1 min-h-0">
+          <div className="flex-1 min-h-0 overflow-hidden">
             <SlideCanvas
               slide={selectedSlide}
               slides={slides}
