@@ -261,13 +261,17 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
               </div>
             )}
           </div>
-          {showNotes && currentSlide?.speaker_notes && (
-            <div className="w-full max-w-4xl mt-4 bg-muted/40 rounded-xl p-4 border border-border slide-in-up">
-              <div className="flex items-center gap-2 mb-2">
-                <StickyNote className="w-3.5 h-3.5 text-amber-500" />
-                <span className="text-xs font-medium text-amber-500 uppercase tracking-wide">Speaker Notes</span>
+          {showNotes && currentSlide && (
+            <div className="w-full max-w-4xl mt-4 bg-muted/40 rounded-xl p-5 border border-border slide-in-up" style={{ minHeight: 100 }}>
+              <div className="flex items-center gap-2 mb-3">
+                <StickyNote className="w-4 h-4 text-amber-500" />
+                <span className="text-xs font-semibold text-amber-500 uppercase tracking-wider">Speaker Notes</span>
               </div>
-              <p className="text-muted-foreground text-sm leading-relaxed">{currentSlide.speaker_notes}</p>
+              {currentSlide.speaker_notes ? (
+                <p className="text-foreground/80 text-sm leading-relaxed whitespace-pre-wrap">{currentSlide.speaker_notes}</p>
+              ) : (
+                <p className="text-muted-foreground/50 text-sm italic">No notes for this slide. Add notes in the editor to see them here.</p>
+              )}
             </div>
           )}
         </div>

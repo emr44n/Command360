@@ -17,7 +17,8 @@ import {
   Eye, Monitor, Smartphone, Tablet, Copy, Undo2, Redo2,
   ChevronLeft, ChevronRight, ChevronDown, ChevronUp,
   Maximize2, StickyNote, QrCode, Type, ImageIcon,
-  Download, Upload,
+  Download, Upload, Save, FolderOpen, FilePlus, Clock,
+  MoreHorizontal, FileDown,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -50,6 +51,8 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   const [showQR, setShowQR] = useState(false)
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null)
   const [showAddImageDialog, setShowAddImageDialog] = useState(false)
+  const [showFileMenu, setShowFileMenu] = useState(false)
+  const fileMenuRef = useRef<HTMLDivElement>(null)
   const importInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
@@ -89,10 +92,26 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
     }
   }, [])
 
+  // Close file menu on outside click
+  useEffect(() => {
+    if (!showFileMenu) return
+    function onClick(e: MouseEvent) {
+      if (fileMenuRef.current && !fileMenuRef.current.contains(e.target as Node)) {
+        setShowFileMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', onClick)
+    return () => document.removeEventListener('mousedown', onClick)
+  }, [showFileMenu])
+
   // Keyboard shortcuts
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+      if (e.ctrlKey && e.key === 's') {
+        e.preventDefault()
+        flushSaves()
+        toast.success('Saved')
+      } else if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
         e.preventDefault()
         handleUndo()
       } else if (e.ctrlKey && e.key === 'z' && e.shiftKey) {
@@ -393,11 +412,55 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
     <div className="h-screen flex flex-col bg-background text-foreground">
       {/* ─── Top bar ─────────────────────────────────────────────── */}
       <div className="h-14 bg-background/80 backdrop-blur-xl border-b border-border flex items-center gap-2 px-4 shrink-0">
-        {/* Left: back + title */}
+        {/* Left: back + File menu + title */}
         <Button variant="ghost" size="icon" onClick={() => router.push('/dashboard')}
           className="text-muted-foreground hover:text-foreground h-8 w-8 shrink-0 rounded-xl">
           <ArrowLeft className="w-4 h-4" />
         </Button>
+        <div className="w-px h-5 bg-border mx-1" />
+
+        {/* File menu dropdown */}
+        <div className="relative" ref={fileMenuRef}>
+          <button
+            onClick={() => setShowFileMenu(v => !v)}
+            className={cn(
+              'h-8 px-2.5 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all',
+              showFileMenu
+                ? 'bg-muted text-foreground'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+            )}
+          >
+            File
+            <ChevronDown className="w-3 h-3" />
+          </button>
+          {showFileMenu && (
+            <div className="absolute top-full left-0 mt-1 w-64 bg-card border border-border rounded-xl shadow-xl z-50 py-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
+              <FileMenuItem icon={Save} label="Save" shortcut="Ctrl+S" onClick={() => { flushSaves(); toast.success('Saved'); setShowFileMenu(false) }} />
+              <FileMenuItem icon={FilePlus} label="New presentation" onClick={() => { setShowFileMenu(false); router.push('/dashboard') }} />
+              <div className="h-px bg-border mx-2 my-1" />
+              <FileMenuItem icon={FolderOpen} label="Open recent" shortcut="" onClick={() => { setShowFileMenu(false); router.push('/dashboard') }} />
+              <div className="h-px bg-border mx-2 my-1" />
+              <FileMenuItem icon={Copy} label="Duplicate presentation" onClick={async () => {
+                setShowFileMenu(false)
+                const res = await fetch(`/api/presentations/${presentation.id}/duplicate`, { method: 'POST' })
+                if (res.ok) {
+                  const data = await res.json()
+                  toast.success('Presentation duplicated')
+                  router.push(`/presentations/${data.presentation.id}/edit`)
+                } else {
+                  toast.error('Failed to duplicate')
+                }
+              }} />
+              <div className="h-px bg-border mx-2 my-1" />
+              <FileMenuItem icon={FileDown} label="Export as .c360" onClick={() => { setShowFileMenu(false); window.open(`/api/presentations/${presentation.id}/export-c360`, '_blank') }} />
+              <FileMenuItem icon={Upload} label="Import .c360" onClick={() => { setShowFileMenu(false); importInputRef.current?.click() }} />
+              <div className="h-px bg-border mx-2 my-1" />
+              <FileMenuItem icon={Eye} label="Preview" shortcut="" onClick={() => { setShowFileMenu(false); window.open(`/presentations/${presentation.id}/preview`, '_blank') }} />
+              <FileMenuItem icon={BarChart2} label="View results" onClick={() => { setShowFileMenu(false); router.push(`/presentations/${presentation.id}/results`) }} />
+            </div>
+          )}
+        </div>
+
         <div className="w-px h-5 bg-border mx-1" />
         <Input
           value={presentationTitle}
@@ -624,22 +687,23 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
 
           {/* Speaker notes panel */}
           {notesOpen && selectedSlide && (
-            <div className="bg-card border-t border-border shrink-0" style={{ height: 140 }}>
-              <div className="flex items-center justify-between px-4 py-1.5 border-b border-border">
+            <div className="bg-card border-t border-border shrink-0" style={{ height: 220 }}>
+              <div className="flex items-center justify-between px-4 py-2 border-b border-border">
                 <div className="flex items-center gap-2">
-                  <StickyNote className="w-3.5 h-3.5 text-muted-foreground" />
+                  <StickyNote className="w-4 h-4 text-amber-500" />
                   <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Speaker Notes</span>
+                  <span className="text-[10px] text-muted-foreground/50 ml-1">(only visible to you)</span>
                 </div>
-                <button onClick={() => setNotesOpen(false)} className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted">
-                  <ChevronDown className="w-3.5 h-3.5" />
+                <button onClick={() => setNotesOpen(false)} className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                  <ChevronDown className="w-4 h-4" />
                 </button>
               </div>
-              <div className="p-3 h-[calc(100%-32px)]">
+              <div className="p-4 h-[calc(100%-40px)]">
                 <textarea
                   value={selectedSlide.speaker_notes || ''}
                   onChange={(e) => handleSlideChange({ speaker_notes: e.target.value })}
-                  placeholder="Add speaker notes... (only visible to you during presentation)"
-                  className="w-full h-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none"
+                  placeholder="Add speaker notes here... These will be visible to you during presentation mode when you press N."
+                  className="w-full h-full bg-muted/30 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none p-3 border border-border/50 focus:border-border transition-colors"
                 />
               </div>
             </div>
@@ -746,5 +810,21 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
         }}
       />
     </div>
+  )
+}
+
+/* ─── File Menu Item ─── */
+function FileMenuItem({ icon: Icon, label, shortcut, onClick }: {
+  icon: React.ElementType; label: string; shortcut?: string; onClick: () => void
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full flex items-center gap-3 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+    >
+      <Icon className="w-4 h-4 text-muted-foreground shrink-0" />
+      <span className="flex-1 text-left">{label}</span>
+      {shortcut && <span className="text-[10px] text-muted-foreground/60 font-mono">{shortcut}</span>}
+    </button>
   )
 }

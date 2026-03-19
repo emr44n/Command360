@@ -171,25 +171,37 @@ export function ParticipantView({ session: initialSession, slides, participantId
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <div className="bg-card/80 backdrop-blur-sm border-b border-border px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      {/* Header with logo */}
+      <div className="bg-card/80 backdrop-blur-sm border-b border-border px-4 py-3 space-y-2">
+        {/* Top row: Logo */}
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-sm font-medium text-foreground">{displayName}</span>
+            <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
+              <ShieldAlert className="w-4 h-4 text-primary-foreground" />
+            </div>
+            <span className="text-sm font-bold text-foreground tracking-tight">Command 360</span>
           </div>
-          {totalSlides > 0 && (
-            <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-              {slideIndex + 1}/{totalSlides}
-            </span>
+          {score > 0 && (
+            <div className="flex items-center gap-1.5 text-primary font-mono font-bold text-sm bg-primary/10 px-3 py-1 rounded-full">
+              <Trophy className="w-3.5 h-3.5" />
+              {score}
+            </div>
           )}
         </div>
-        {score > 0 && (
-          <div className="flex items-center gap-1.5 text-primary font-mono font-bold text-sm bg-primary/10 px-3 py-1 rounded-full">
-            <Trophy className="w-3.5 h-3.5" />
-            {score}
+        {/* Bottom row: participant info */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-sm font-medium text-foreground">{displayName}</span>
+            </div>
+            {totalSlides > 0 && (
+              <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                {slideIndex + 1}/{totalSlides}
+              </span>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Progress bar */}

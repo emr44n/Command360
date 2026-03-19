@@ -241,8 +241,9 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
       const dy = ((e.clientY - dragStart.current.y) / rect.height) * 100
 
       if (dragging) {
-        const newX = Math.max(0, Math.min(100 - dragStart.current.elW, dragStart.current.elX + dx))
-        const newY = Math.max(0, Math.min(100 - dragStart.current.elH, dragStart.current.elY + dy))
+        // Allow elements to be dragged outside the slide boundary (pasteboard area)
+        const newX = dragStart.current.elX + dx
+        const newY = dragStart.current.elY + dy
         onUpdate({ x: Math.round(newX * 10) / 10, y: Math.round(newY * 10) / 10 })
       }
 
@@ -258,10 +259,10 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
         if (resizing.includes('n')) { newH = Math.max(3, dragStart.current.elH - dy); newY = dragStart.current.elY + dy }
 
         onUpdate({
-          x: Math.round(Math.max(0, newX) * 10) / 10,
-          y: Math.round(Math.max(0, newY) * 10) / 10,
-          width: Math.round(Math.min(100, newW) * 10) / 10,
-          height: Math.round(Math.min(100, newH) * 10) / 10,
+          x: Math.round(newX * 10) / 10,
+          y: Math.round(newY * 10) / 10,
+          width: Math.round(Math.max(5, newW) * 10) / 10,
+          height: Math.round(Math.max(3, newH) * 10) / 10,
         })
       }
     }

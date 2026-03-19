@@ -46,29 +46,48 @@ const DEVICE_STYLES = {
   phone: { maxWidth: 320, aspectRatio: '9/16', borderRadius: 32 },
 }
 
-// Vertical padding/margin around each slide in the scrollable canvas
-const SLIDE_VERTICAL_GAP = 60
-const CANVAS_PADDING = 80
+const SLIDE_GAP = 80
+const CANVAS_PAD_Y = 100
+const CANVAS_PAD_X = 60
+// Extra space around the slide for the "pasteboard" overflow area
+const OVERFLOW_ZONE = 60
 
 export function SlideCanvas({ slide, slides, selectedIndex, devicePreview, onTitleChange, onCanvasElementsChange, selectedElementId, onSelectElement, onRequestAddImage, onSelectSlide, onPrev, onNext }: SlideCanvasProps) {
   const deviceStyle = DEVICE_STYLES[devicePreview]
   const slideCardRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const slideRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+  const slideWrapperRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+  const prevSelectedId = useRef<string | null>(null)
 
-  // Scroll to the selected slide when it changes (e.g. from thumbnail click)
+  // Scroll to the selected slide when it changes (from thumbnail click or canvas click)
   useEffect(() => {
     if (!slide) return
-    const el = slideRefs.current.get(slide.id)
-    if (el && scrollContainerRef.current) {
-      const container = scrollContainerRef.current
-      const containerRect = container.getBoundingClientRect()
-      const elRect = el.getBoundingClientRect()
+    // Only auto-scroll when the selection actually changed (not on re-renders)
+    if (prevSelectedId.current === slide.id) return
+    prevSelectedId.current = slide.id
 
-      // Calculate the offset to center the slide in the viewport
-      const scrollTarget = el.offsetTop - (containerRect.height / 2) + (elRect.height / 2)
-      container.scrollTo({ top: scrollTarget, behavior: 'smooth' })
-    }
+    // Use requestAnimationFrame to ensure DOM has updated
+    requestAnimationFrame(() => {
+      const el = slideWrapperRefs.current.get(slide.id)
+      const container = scrollContainerRef.current
+      if (!el || !container) return
+
+      // Get the element's position relative to the scroll container
+      const containerTop = container.getBoundingClientRect().top
+      const elTop = el.getBoundingClientRect().top
+      const elHeight = el.getBoundingClientRect().height
+      const containerHeight = container.clientHeight
+
+      // Calculate scroll position to center the slide
+      const currentScroll = container.scrollTop
+      const elRelativeTop = elTop - containerTop + currentScroll
+      const targetScroll = elRelativeTop - (containerHeight / 2) + (elHeight / 2)
+
+      container.scrollTo({
+        top: Math.max(0, targetScroll),
+        behavior: 'smooth',
+      })
+    })
   }, [slide?.id])
 
   if (!slide) {
@@ -87,13 +106,25 @@ export function SlideCanvas({ slide, slides, selectedIndex, devicePreview, onTit
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden editor-canvas-bg">
-      {/* Scrollable canvas workspace — like PowerPoint/Canva pasteboard */}
+      {/* Scrollable canvas workspace — PowerPoint/Canva-style pasteboard */}
       <div
         ref={scrollContainerRef}
         className="flex-1 overflow-y-auto overflow-x-hidden"
-        style={{ scrollBehavior: 'smooth' }}
+        onClick={(e) => {
+          // Click on pasteboard background deselects element
+          if (e.target === e.currentTarget && onSelectElement) {
+            onSelectElement(null)
+          }
+        }}
       >
-        <div style={{ padding: `${CANVAS_PADDING}px 40px`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: SLIDE_VERTICAL_GAP, minHeight: '100%' }}>
+        <div style={{
+          padding: `${CANVAS_PAD_Y}px ${CANVAS_PAD_X}px`,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: SLIDE_GAP,
+          minHeight: '100%',
+        }}>
           {slides.map((s, i) => {
             const isSelected = i === selectedIndex
             const SIcon = TYPE_ICONS[s.slide_type] || FileText
@@ -104,23 +135,20 @@ export function SlideCanvas({ slide, slides, selectedIndex, devicePreview, onTit
               <div
                 key={s.id}
                 ref={(el) => {
-                  if (el) slideRefs.current.set(s.id, el)
-                  else slideRefs.current.delete(s.id)
+                  if (el) slideWrapperRefs.current.set(s.id, el)
+                  else slideWrapperRefs.current.delete(s.id)
                 }}
-                className="relative cursor-pointer transition-all duration-200"
+                className="relative transition-all duration-200"
                 style={{
                   maxWidth: deviceStyle.maxWidth,
                   width: '100%',
-                  // Selected slide is full size, others are slightly scaled
+                  cursor: isSelected ? 'default' : 'pointer',
                   transform: isSelected ? 'scale(1)' : 'scale(0.92)',
-                  opacity: isSelected ? 1 : 0.6,
+                  opacity: isSelected ? 1 : 0.55,
                 }}
                 onClick={() => {
                   if (!isSelected && onSelectSlide) {
                     onSelectSlide(s.id)
-                  }
-                  if (onSelectElement) {
-                    onSelectElement(null)
                   }
                 }}
               >
@@ -135,83 +163,109 @@ export function SlideCanvas({ slide, slides, selectedIndex, devicePreview, onTit
                   </div>
                 </div>
 
-                {/* ─── The slide card (the "canvas") ─── */}
-                <div
-                  ref={isSelected ? slideCardRef : undefined}
-                  style={{
-                    width: '100%',
-                    aspectRatio: '16/9',
-                    background: '#ffffff',
-                    borderRadius: 16,
-                    boxShadow: isSelected
-                      ? '0 0 0 3px #dc2626, 0 25px 60px -12px rgba(0,0,0,0.25)'
-                      : '0 0 0 1px rgba(0,0,0,0.06), 0 4px 16px -4px rgba(0,0,0,0.1)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    overflow: 'hidden',
-                    color: '#111827',
-                    position: 'relative',
-                    transition: 'box-shadow 0.2s ease, transform 0.2s ease',
-                  }}
-                >
-                  {/* Canvas elements layer — only for selected slide */}
-                  {isSelected && onCanvasElementsChange && (
-                    <CanvasElementsLayer
-                      elements={(s.content as Record<string, unknown>)?._canvas_elements as CanvasElement[] || []}
-                      onChange={onCanvasElementsChange}
-                      containerRef={slideCardRef}
-                      selectedElementId={selectedElementId}
-                      onSelectElement={onSelectElement}
-                      onRequestAddImage={onRequestAddImage}
-                    />
+                {/* ─── Pasteboard area (allows element overflow) ─── */}
+                <div style={{
+                  position: 'relative',
+                  padding: OVERFLOW_ZONE,
+                }}>
+                  {/* Semi-transparent overlay for overflow areas — only for selected slide */}
+                  {isSelected && (
+                    <>
+                      {/* Top overflow */}
+                      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: OVERFLOW_ZONE, background: 'repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(128,128,128,0.03) 8px, rgba(128,128,128,0.03) 16px)', borderRadius: '12px 12px 0 0', pointerEvents: 'none' }} />
+                      {/* Bottom overflow */}
+                      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: OVERFLOW_ZONE, background: 'repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(128,128,128,0.03) 8px, rgba(128,128,128,0.03) 16px)', borderRadius: '0 0 12px 12px', pointerEvents: 'none' }} />
+                      {/* Left overflow */}
+                      <div style={{ position: 'absolute', top: OVERFLOW_ZONE, bottom: OVERFLOW_ZONE, left: 0, width: OVERFLOW_ZONE, background: 'repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(128,128,128,0.03) 8px, rgba(128,128,128,0.03) 16px)', pointerEvents: 'none' }} />
+                      {/* Right overflow */}
+                      <div style={{ position: 'absolute', top: OVERFLOW_ZONE, bottom: OVERFLOW_ZONE, right: 0, width: OVERFLOW_ZONE, background: 'repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(128,128,128,0.03) 8px, rgba(128,128,128,0.03) 16px)', pointerEvents: 'none' }} />
+                    </>
                   )}
 
-                  {/* Slide header */}
-                  <div style={{ padding: '24px 32px 12px', flexShrink: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                  {/* The actual slide card */}
+                  <div
+                    ref={isSelected ? slideCardRef : undefined}
+                    style={{
+                      width: '100%',
+                      aspectRatio: '16/9',
+                      background: '#ffffff',
+                      borderRadius: 16,
+                      boxShadow: isSelected
+                        ? '0 0 0 3px #dc2626, 0 25px 60px -12px rgba(0,0,0,0.25)'
+                        : '0 0 0 1px rgba(0,0,0,0.06), 0 4px 16px -4px rgba(0,0,0,0.1)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      // IMPORTANT: overflow visible so elements can extend beyond the slide
+                      overflow: 'visible',
+                      color: '#111827',
+                      position: 'relative',
+                      transition: 'box-shadow 0.2s ease',
+                    }}
+                  >
+                    {/* Clipping layer — clips the slide content but NOT canvas elements */}
+                    <div style={{
+                      position: 'absolute',
+                      inset: 0,
+                      borderRadius: 16,
+                      overflow: 'hidden',
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}>
+                      {/* Slide header */}
+                      <div style={{ padding: '24px 32px 12px', flexShrink: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                          <div style={{
+                            display: 'flex', alignItems: 'center', gap: 5,
+                            background: `${sColor}12`, borderRadius: 6, padding: '3px 8px',
+                          }}>
+                            <SIcon style={{ width: 12, height: 12, color: sColor }} />
+                            <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: sColor }}>
+                              {sLabel}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Title — editable only for selected slide */}
+                        {isSelected ? (
+                          <InlineTitle
+                            value={s.title}
+                            onChange={onTitleChange}
+                            slideType={s.slide_type}
+                            compact={false}
+                          />
+                        ) : (
+                          <h2 style={{ fontSize: 24, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>
+                            {s.title || <span style={{ color: '#9ca3af', fontStyle: 'italic', fontWeight: 400 }}>Untitled slide</span>}
+                          </h2>
+                        )}
+                      </div>
+
+                      {/* Content */}
                       <div style={{
-                        display: 'flex', alignItems: 'center', gap: 5,
-                        background: `${sColor}12`, borderRadius: 6, padding: '3px 8px',
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '0 32px 24px',
+                        overflow: 'hidden',
                       }}>
-                        <SIcon style={{ width: 12, height: 12, color: sColor }} />
-                        <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: sColor }}>
-                          {sLabel}
-                        </span>
+                        <SlidePreview slide={s} compact={false} />
                       </div>
                     </div>
 
-                    {/* Title — editable only for selected slide */}
-                    {isSelected ? (
-                      <InlineTitle
-                        value={s.title}
-                        onChange={onTitleChange}
-                        slideType={s.slide_type}
-                        compact={false}
+                    {/* Canvas elements layer — OUTSIDE the clipping layer so they can overflow */}
+                    {isSelected && onCanvasElementsChange && (
+                      <CanvasElementsLayer
+                        elements={(s.content as Record<string, unknown>)?._canvas_elements as CanvasElement[] || []}
+                        onChange={onCanvasElementsChange}
+                        containerRef={slideCardRef}
+                        selectedElementId={selectedElementId}
+                        onSelectElement={onSelectElement}
+                        onRequestAddImage={onRequestAddImage}
                       />
-                    ) : (
-                      <h2 style={{ fontSize: 24, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>
-                        {s.title || <span style={{ color: '#9ca3af', fontStyle: 'italic', fontWeight: 400 }}>Untitled slide</span>}
-                      </h2>
                     )}
                   </div>
-
-                  {/* Content */}
-                  <div style={{
-                    flex: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '0 32px 24px',
-                    overflow: 'hidden',
-                  }}>
-                    <SlidePreview slide={s} compact={false} />
-                  </div>
                 </div>
-
-                {/* Selected indicator — subtle red line under the slide */}
-                {isSelected && (
-                  <div className="mx-auto mt-3 w-16 h-1 rounded-full bg-red-500/40" />
-                )}
               </div>
             )
           })}
