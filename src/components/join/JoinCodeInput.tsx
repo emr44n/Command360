@@ -29,7 +29,7 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
 
   if (variant === 'compact') {
     return (
-      <form onSubmit={handleSubmit} className={`flex items-center gap-2 ${className}`}>
+      <form onSubmit={handleSubmit} className={`flex items-center gap-3 ${className}`}>
         <input
           ref={inputRef}
           value={code}
@@ -37,14 +37,14 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
           placeholder="Enter code"
           maxLength={6}
           autoCapitalize="characters"
-          className="w-32 text-center text-xs font-mono font-semibold tracking-widest px-3 py-1.5 rounded-lg border border-border bg-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:tracking-normal"
+          className="flex-1 min-w-[140px] max-w-[180px] text-center text-base font-mono font-semibold tracking-widest px-4 h-12 rounded-xl border border-border bg-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:tracking-normal placeholder:text-sm"
         />
         <button
           type="submit"
           disabled={code.trim().length < 4 || joining}
-          className="p-1.5 rounded-lg bg-primary text-primary-foreground disabled:opacity-40 transition-all hover:bg-primary/90 btn-animated"
+          className="h-12 w-12 flex items-center justify-center rounded-xl bg-primary text-primary-foreground disabled:opacity-40 transition-all hover:bg-primary/90 btn-animated shrink-0"
         >
-          {joining ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ArrowRight className="w-3.5 h-3.5" />}
+          {joining ? <Loader2 className="w-5 h-5 animate-spin" /> : <ArrowRight className="w-5 h-5" />}
         </button>
       </form>
     )
