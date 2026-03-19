@@ -17,6 +17,7 @@ import {
   Eye, Monitor, Smartphone, Tablet, Copy, Undo2, Redo2,
   ChevronLeft, ChevronRight, ChevronDown, ChevronUp,
   Maximize2, StickyNote, QrCode, Type, ImageIcon,
+  Download, Upload,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -44,10 +45,12 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   const [starting, setStarting] = useState(false)
   const [devicePreview, setDevicePreview] = useState<DevicePreview>('desktop')
   const [settingsOpen, setSettingsOpen] = useState(true)
+  const [slideListOpen, setSlideListOpen] = useState(true)
   const [notesOpen, setNotesOpen] = useState(false)
   const [showQR, setShowQR] = useState(false)
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null)
   const [showAddImageDialog, setShowAddImageDialog] = useState(false)
+  const importInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
   // Debounce refs
@@ -318,6 +321,31 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
     setSaveStatus(results.every(Boolean) ? 'saved' : 'error')
   }, [])
 
+  const handleImportC360 = useCallback(async (file: File) => {
+    try {
+      const text = await file.text()
+      const data = JSON.parse(text)
+      if (data.format !== 'c360') {
+        toast.error('Invalid file format. Expected a .c360 file.')
+        return
+      }
+      const res = await fetch('/api/presentations/import-c360', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: text,
+      })
+      if (res.ok) {
+        const { presentation: newPres } = await res.json()
+        toast.success('Deck imported successfully!')
+        router.push(`/presentations/${newPres.id}/edit`)
+      } else {
+        toast.error('Failed to import deck')
+      }
+    } catch {
+      toast.error('Invalid .c360 file')
+    }
+  }, [router])
+
   function handleTitleChange(value: string) {
     setPresentationTitle(value)
     setSaveStatus('saving')
@@ -414,6 +442,15 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             <Copy className="w-4 h-4" />
           </button>
           <div className="w-px h-4 bg-border mx-1" />
+          <button onClick={handleAddTextElement} disabled={!selectedSlide}
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all" title="Add text">
+            <Type className="w-4 h-4" />
+          </button>
+          <button onClick={handleAddImageElement} disabled={!selectedSlide}
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all" title="Add image">
+            <ImageIcon className="w-4 h-4" />
+          </button>
+          <div className="w-px h-4 bg-border mx-1" />
           <button onClick={() => setNotesOpen(v => !v)}
             className={cn('p-1.5 rounded-lg transition-all', notesOpen ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-background')}
             title="Speaker notes">
@@ -455,6 +492,20 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm"
             className="gap-1.5 text-muted-foreground hover:text-foreground h-8 text-xs rounded-xl"
+            onClick={() => {
+              window.open(`/api/presentations/${presentation.id}/export-c360`, '_blank')
+            }}>
+            <Download className="w-3.5 h-3.5" />
+            Export
+          </Button>
+          <Button variant="outline" size="sm"
+            className="gap-1.5 text-muted-foreground hover:text-foreground h-8 text-xs rounded-xl"
+            onClick={() => importInputRef.current?.click()}>
+            <Upload className="w-3.5 h-3.5" />
+            Import
+          </Button>
+          <Button variant="outline" size="sm"
+            className="gap-1.5 text-muted-foreground hover:text-foreground h-8 text-xs rounded-xl"
             onClick={() => window.open(`/presentations/${presentation.id}/preview`, '_blank')}>
             <Maximize2 className="w-3.5 h-3.5" />
             Preview
@@ -479,34 +530,52 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       {/* ─── Main layout ─────────────────────────────────────────── */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left panel - slide list */}
-        <div className="w-[220px] bg-card border-r border-border flex flex-col shrink-0">
-          <div className="flex-1 overflow-y-auto p-2.5 slide-list-scroll">
-            {slides.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center mb-3">
-                  <Plus className="w-5 h-5 text-muted-foreground" />
+        {slideListOpen && (
+          <div className="w-[220px] bg-card border-r border-border flex flex-col shrink-0">
+            <div className="flex items-center justify-between px-3 py-2 border-b border-border shrink-0">
+              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Slides</span>
+              <button onClick={() => setSlideListOpen(false)}
+                className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                title="Collapse slides">
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-2.5 slide-list-scroll">
+              {slides.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center mb-3">
+                    <Plus className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  <p className="text-muted-foreground text-xs mb-1">No slides yet</p>
+                  <p className="text-muted-foreground/60 text-[11px]">Click below to add your first slide</p>
                 </div>
-                <p className="text-muted-foreground text-xs mb-1">No slides yet</p>
-                <p className="text-muted-foreground/60 text-[11px]">Click below to add your first slide</p>
-              </div>
-            ) : (
-              <SlideList
-                slides={slides}
-                selectedId={selectedSlideId}
-                onSelect={(id) => { setSelectedSlideId(id); setSelectedElementId(null) }}
-                onDelete={handleDeleteSlide}
-                onDuplicate={handleDuplicateSlideById}
-                onReorder={handleReorder}
-              />
-            )}
+              ) : (
+                <SlideList
+                  slides={slides}
+                  selectedId={selectedSlideId}
+                  onSelect={(id) => { setSelectedSlideId(id); setSelectedElementId(null) }}
+                  onDelete={handleDeleteSlide}
+                  onDuplicate={handleDuplicateSlideById}
+                  onReorder={handleReorder}
+                />
+              )}
+            </div>
+            <div className="p-2.5 border-t border-border">
+              <Button onClick={() => setShowTypeSelector(true)} variant="outline" className="w-full gap-1.5 h-9 text-xs rounded-xl" size="sm">
+                <Plus className="w-3.5 h-3.5" />
+                Add slide
+              </Button>
+            </div>
           </div>
-          <div className="p-2.5 border-t border-border">
-            <Button onClick={() => setShowTypeSelector(true)} variant="outline" className="w-full gap-1.5 h-9 text-xs rounded-xl" size="sm">
-              <Plus className="w-3.5 h-3.5" />
-              Add slide
-            </Button>
-          </div>
-        </div>
+        )}
+        {!slideListOpen && (
+          <button onClick={() => setSlideListOpen(true)}
+            className="w-10 bg-card border-r border-border flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
+            title="Show slides">
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-[9px] font-semibold [writing-mode:vertical-lr] rotate-180">Slides</span>
+          </button>
+        )}
 
         {/* Center - canvas + QR + notes */}
         <div className="flex-1 flex flex-col overflow-hidden">
@@ -663,6 +732,18 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       {showTypeSelector && (
         <SlideTypeSelector onSelect={handleAddSlide} onClose={() => setShowTypeSelector(false)} />
       )}
+
+      <input
+        ref={importInputRef}
+        type="file"
+        accept=".c360"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0]
+          if (file) handleImportC360(file)
+          e.target.value = ''
+        }}
+      />
     </div>
   )
 }

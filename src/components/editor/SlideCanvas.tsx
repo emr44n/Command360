@@ -6,9 +6,8 @@ import type {
 } from '@/types/slide'
 import {
   BarChart2, Cloud, HelpCircle, MessageCircle, ClipboardList,
-  FileText, Star, AlignLeft, ChevronLeft, ChevronRight,
+  FileText, Star, AlignLeft,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { CanvasElementsLayer } from './CanvasElementsLayer'
 
 interface SlideCanvasProps {
@@ -50,6 +49,16 @@ export function SlideCanvas({ slide, slides, selectedIndex, devicePreview, onTit
   const deviceStyle = DEVICE_STYLES[devicePreview]
   const slideCardRef = useRef<HTMLDivElement>(null)
 
+  // Auto-scroll to selected slide when selection changes
+  useEffect(() => {
+    if (slide) {
+      const el = document.getElementById(`canvas-slide-${slide.id}`)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      }
+    }
+  }, [slide?.id])
+
   if (!slide) {
     return (
       <div className="flex-1 flex items-center justify-center editor-canvas-bg">
@@ -64,130 +73,117 @@ export function SlideCanvas({ slide, slides, selectedIndex, devicePreview, onTit
     )
   }
 
-  const Icon = TYPE_ICONS[slide.slide_type] || FileText
-  const typeColor = TYPE_COLORS[slide.slide_type] || '#6b7280'
-  const typeLabel = TYPE_LABELS[slide.slide_type] || slide.slide_type
-
   return (
     <div className="flex-1 flex flex-col overflow-hidden editor-canvas-bg">
-      {/* Canvas area */}
-      <div className="flex-1 flex items-center justify-center p-6 relative">
-        {/* Prev/Next arrows */}
-        {selectedIndex > 0 && (
-          <button
-            onClick={onPrev}
-            className="absolute left-4 z-10 p-2 rounded-full transition-all hover:scale-110 bg-muted/60 text-muted-foreground hover:text-foreground"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-        )}
-        {selectedIndex < slides.length - 1 && (
-          <button
-            onClick={onNext}
-            className="absolute right-4 z-10 p-2 rounded-full transition-all hover:scale-110 bg-muted/60 text-muted-foreground hover:text-foreground"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        )}
+      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        {slides.map((s, i) => {
+          const isSelected = i === selectedIndex
+          const SIcon = TYPE_ICONS[s.slide_type] || FileText
+          const sColor = TYPE_COLORS[s.slide_type] || '#6b7280'
+          const sLabel = TYPE_LABELS[s.slide_type] || s.slide_type
 
-        {/* Device frame */}
-        <div
-          className="relative transition-all duration-300 ease-out"
-          style={{
-            width: '100%',
-            maxWidth: deviceStyle.maxWidth,
-            aspectRatio: deviceStyle.aspectRatio,
-            maxHeight: '100%',
-          }}
-        >
-          {/* Phone notch */}
-          {devicePreview === 'phone' && (
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-5 rounded-xl bg-background z-10" />
-          )}
-
-          {/* Slide card */}
-          <div
-            ref={slideCardRef}
-            style={{
-              width: '100%',
-              height: '100%',
-              background: '#ffffff',
-              borderRadius: deviceStyle.borderRadius,
-              boxShadow: '0 0 0 1px rgba(255,255,255,0.06), 0 25px 60px -12px rgba(0,0,0,0.5)',
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
-              color: '#111827',
-              position: 'relative',
-            }}
-          >
-            {/* Canvas elements layer (text + images) */}
-            {onCanvasElementsChange && (
-              <CanvasElementsLayer
-                elements={(slide.content as Record<string, unknown>)?._canvas_elements as CanvasElement[] || []}
-                onChange={onCanvasElementsChange}
-                containerRef={slideCardRef}
-                selectedElementId={selectedElementId}
-                onSelectElement={onSelectElement}
-                onRequestAddImage={onRequestAddImage}
-              />
-            )}
-            {/* Slide header area */}
-            <div style={{
-              padding: devicePreview === 'phone' ? '40px 20px 12px' : '32px 40px 16px',
-              flexShrink: 0,
-            }}>
-              {/* Type badge */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: 5,
-                  background: `${typeColor}12`, borderRadius: 6, padding: '3px 8px',
-                }}>
-                  <Icon style={{ width: 12, height: 12, color: typeColor }} />
-                  <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: typeColor }}>
-                    {typeLabel}
-                  </span>
+          return (
+            <div
+              key={s.id}
+              id={`canvas-slide-${s.id}`}
+              className="mx-auto cursor-pointer transition-all"
+              style={{
+                maxWidth: deviceStyle.maxWidth,
+                width: '100%',
+              }}
+              onClick={() => {
+                // When clicking a non-selected slide, select it
+                if (!isSelected && onSelectElement) {
+                  onSelectElement(null)
+                }
+              }}
+            >
+              {/* Slide number label */}
+              <div className="flex items-center gap-2 mb-1.5 px-1">
+                <span className="text-[11px] font-semibold text-muted-foreground/50">{i + 1}</span>
+                <div className="flex items-center gap-1">
+                  <SIcon style={{ width: 10, height: 10, color: sColor }} />
+                  <span style={{ fontSize: 10, fontWeight: 600, color: sColor, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{sLabel}</span>
                 </div>
               </div>
 
-              {/* Inline editable title */}
-              <InlineTitle
-                value={slide.title}
-                onChange={onTitleChange}
-                slideType={slide.slide_type}
-                compact={devicePreview === 'phone'}
-              />
-            </div>
+              {/* Slide card */}
+              <div
+                ref={isSelected ? slideCardRef : undefined}
+                style={{
+                  width: '100%',
+                  aspectRatio: '16/9',
+                  background: '#ffffff',
+                  borderRadius: 16,
+                  boxShadow: isSelected
+                    ? '0 0 0 2px #dc2626, 0 25px 60px -12px rgba(0,0,0,0.3)'
+                    : '0 0 0 1px rgba(0,0,0,0.08), 0 4px 20px -4px rgba(0,0,0,0.15)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  overflow: 'hidden',
+                  color: '#111827',
+                  position: 'relative',
+                  transition: 'box-shadow 0.2s, transform 0.2s',
+                  transform: isSelected ? 'scale(1)' : 'scale(0.98)',
+                  opacity: isSelected ? 1 : 0.85,
+                }}
+              >
+                {/* Canvas elements layer only for selected slide */}
+                {isSelected && onCanvasElementsChange && (
+                  <CanvasElementsLayer
+                    elements={(s.content as Record<string, unknown>)?._canvas_elements as CanvasElement[] || []}
+                    onChange={onCanvasElementsChange}
+                    containerRef={slideCardRef}
+                    selectedElementId={selectedElementId}
+                    onSelectElement={onSelectElement}
+                    onRequestAddImage={onRequestAddImage}
+                  />
+                )}
 
-            {/* Content area */}
-            <div style={{
-              flex: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: devicePreview === 'phone' ? '0 20px 20px' : '0 40px 32px',
-              overflow: 'hidden',
-            }}>
-              <SlidePreview slide={slide} compact={devicePreview === 'phone'} />
-            </div>
-          </div>
-        </div>
-      </div>
+                {/* Slide header */}
+                <div style={{ padding: '24px 32px 12px', flexShrink: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: 5,
+                      background: `${sColor}12`, borderRadius: 6, padding: '3px 8px',
+                    }}>
+                      <SIcon style={{ width: 12, height: 12, color: sColor }} />
+                      <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: sColor }}>
+                        {sLabel}
+                      </span>
+                    </div>
+                  </div>
 
-      {/* Bottom bar */}
-      <div className="h-10 flex items-center justify-center gap-1 shrink-0 bg-muted/50 border-t border-border">
-        {slides.map((s, i) => (
-          <div
-            key={s.id}
-            className={cn(
-              'h-1.5 rounded-full transition-all duration-250',
-              i === selectedIndex ? 'w-5 bg-primary' : 'w-1.5 bg-muted-foreground/25'
-            )}
-          />
-        ))}
-        <span className="text-[11px] text-muted-foreground/50 ml-2 tabular-nums">
-          {selectedIndex + 1} / {slides.length}
-        </span>
+                  {/* Title - editable only for selected slide */}
+                  {isSelected ? (
+                    <InlineTitle
+                      value={s.title}
+                      onChange={onTitleChange}
+                      slideType={s.slide_type}
+                      compact={false}
+                    />
+                  ) : (
+                    <h2 style={{ fontSize: 24, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>
+                      {s.title || <span style={{ color: '#9ca3af', fontStyle: 'italic', fontWeight: 400 }}>Untitled slide</span>}
+                    </h2>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0 32px 24px',
+                  overflow: 'hidden',
+                }}>
+                  <SlidePreview slide={s} compact={false} />
+                </div>
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )

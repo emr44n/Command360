@@ -5,8 +5,10 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Preview — Command 360' }
 
-export default async function PreviewPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PreviewPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ slide?: string }> }) {
   const { id } = await params
+  const resolvedSearchParams = await searchParams
+  const startSlide = resolvedSearchParams.slide ? Math.max(0, parseInt(resolvedSearchParams.slide, 10) || 0) : 0
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -26,5 +28,5 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
     .eq('presentation_id', id)
     .order('position', { ascending: true })
 
-  return <PreviewMode presentation={presentation} slides={slides || []} />
+  return <PreviewMode presentation={presentation} slides={slides || []} startSlide={startSlide} />
 }
