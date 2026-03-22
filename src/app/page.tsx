@@ -151,20 +151,19 @@ export default function LandingPage() {
           {/* Badge */}
           <div className="hero-fade-up hero-fade-up-1 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-[13px] text-white/60 mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 pulse-dot" />
-            Built for emergency services
+            The secure training platform for emergency services
           </div>
 
           {/* Heading */}
           <h1 className="hero-fade-up hero-fade-up-2 text-[clamp(2.5rem,7vw,4.5rem)] font-bold tracking-tight leading-[1.08] text-white mb-6">
-            Interactive training
+            Brief. Train. Debrief.{' '}
             <br className="hidden sm:block" />
-            that{' '}
-            <span className="bg-gradient-to-r from-red-400 via-red-500 to-orange-500 gradient-text">saves lives</span>
+            <span className="bg-gradient-to-r from-red-400 via-red-500 to-orange-500 gradient-text">With confidence.</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="hero-fade-up hero-fade-up-3 text-base md:text-lg text-white/45 max-w-lg leading-relaxed mb-10">
-            Live polls, quizzes, word clouds and AI insights — purpose-built for Fire, Police, Ambulance and Armed Forces teams.
+          <p className="hero-fade-up hero-fade-up-3 text-base md:text-lg text-white/45 max-w-xl leading-relaxed mb-10">
+            A specialist environment where your teams can speak openly, test knowledge, and learn together — anonymously and securely. Built exclusively for Fire, Police, Ambulance, and Armed Forces.
           </p>
 
           {/* CTAs */}

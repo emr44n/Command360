@@ -66,20 +66,15 @@ export function FloatingJoinDock() {
           : 'translate-y-full opacity-0 pointer-events-none'
       }`}
     >
-      <div className="mx-auto w-full max-w-md sm:max-w-xl px-4">
+      <div className="mx-auto w-fit px-4">
         {/* Animated red glow behind the dock */}
         <div className="relative">
           <div className="absolute -inset-2 rounded-3xl bg-primary/20 blur-xl dock-glow-pulse" />
 
-          <div className="relative flex items-center justify-center gap-2 sm:gap-3 rounded-2xl border border-primary/30 bg-card/95 backdrop-blur-xl px-3 sm:px-4 py-3 shadow-xl shadow-primary/10">
+          <div className="relative flex items-center gap-2.5 rounded-2xl border border-primary/30 bg-card/95 backdrop-blur-xl px-3 py-2.5 shadow-xl shadow-primary/10">
             {/* Brand mark */}
-            <div className="flex items-center gap-2 sm:gap-2.5 pr-2 sm:pr-3 border-r border-border">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 bg-primary rounded-lg flex items-center justify-center shrink-0">
-                <ShieldAlert className="w-4 h-4 sm:w-5 sm:h-5 text-primary-foreground" />
-              </div>
-              <span className="text-sm font-semibold text-foreground whitespace-nowrap hidden sm:inline">
-                Join
-              </span>
+            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shrink-0">
+              <ShieldAlert className="w-5 h-5 text-primary-foreground" />
             </div>
 
             {/* Join input */}
@@ -88,10 +83,10 @@ export function FloatingJoinDock() {
             {/* Dismiss */}
             <button
               onClick={handleDismiss}
-              className="h-10 w-10 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
+              className="w-10 h-10 flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0"
               aria-label="Dismiss join dock"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
