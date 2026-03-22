@@ -73,7 +73,7 @@ export function SlideCanvas({ slide, slides, selectedIndex, onTitleChange, onCan
   return (
     <div
       ref={containerRef}
-      className="h-full overflow-y-auto overflow-x-hidden"
+      className="h-full overflow-y-auto overflow-x-hidden canvas-scroll"
       style={{
         backgroundColor: '#111111',
         backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)',
