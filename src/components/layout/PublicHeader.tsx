@@ -38,7 +38,7 @@ export function PublicHeader() {
   const onHero = !scrolled
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 overflow-x-hidden ${
       scrolled
         ? 'backdrop-blur-xl bg-background/80 border-b border-border shadow-sm'
         : 'bg-transparent'

@@ -71,13 +71,13 @@ export function FloatingJoinDock() {
         <div className="relative">
           <div className="absolute -inset-2 rounded-3xl bg-primary/20 blur-xl dock-glow-pulse" />
 
-          <div className="relative flex items-center justify-center gap-3 rounded-2xl border border-primary/30 bg-card/95 backdrop-blur-xl px-4 py-3 shadow-xl shadow-primary/10">
+          <div className="relative flex items-center justify-center gap-2 sm:gap-3 rounded-2xl border border-primary/30 bg-card/95 backdrop-blur-xl px-3 sm:px-4 py-3 shadow-xl shadow-primary/10">
             {/* Brand mark */}
-            <div className="flex items-center gap-2.5 pr-3 border-r border-border">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center shrink-0">
-                <ShieldAlert className="w-5 h-5 text-primary-foreground" />
+            <div className="flex items-center gap-2 sm:gap-2.5 pr-2 sm:pr-3 border-r border-border">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 bg-primary rounded-lg flex items-center justify-center shrink-0">
+                <ShieldAlert className="w-4 h-4 sm:w-5 sm:h-5 text-primary-foreground" />
               </div>
-              <span className="text-sm font-semibold text-foreground whitespace-nowrap">
+              <span className="text-sm font-semibold text-foreground whitespace-nowrap hidden sm:inline">
                 Join
               </span>
             </div>
