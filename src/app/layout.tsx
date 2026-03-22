@@ -65,7 +65,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${inter.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
         <TooltipProvider>
           {children}
           <Toaster richColors position="top-right" />

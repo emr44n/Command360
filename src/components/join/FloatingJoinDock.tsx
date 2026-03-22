@@ -66,7 +66,7 @@ export function FloatingJoinDock() {
           : 'translate-y-full opacity-0 pointer-events-none'
       }`}
     >
-      <div className="mx-auto w-full max-w-xl px-3 sm:px-4">
+      <div className="mx-auto w-full max-w-md sm:max-w-xl px-4">
         {/* Animated red glow behind the dock */}
         <div className="relative">
           <div className="absolute -inset-2 rounded-3xl bg-primary/20 blur-xl dock-glow-pulse" />
