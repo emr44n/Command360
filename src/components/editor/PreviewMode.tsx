@@ -374,6 +374,14 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                   </div>
                 </div>
 
+                {/* Logo bar */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3, padding: '5px 14px 4px', flexShrink: 0, borderBottom: '1px solid #f0f0f0' }}>
+                  <div style={{ width: 12, height: 12, borderRadius: 3, background: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg viewBox="0 0 24 24" style={{ width: 7, height: 7 }} fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                  </div>
+                  <span style={{ fontSize: 8, fontWeight: 700, color: '#374151', letterSpacing: '-0.01em' }}>Command 360</span>
+                </div>
+
                 {/* Phone header */}
                 <div style={{ padding: '8px 14px 8px', flexShrink: 0, borderBottom: '1px solid #f0f0f0' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
