@@ -232,7 +232,14 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
       `}</style>
 
       {/* Join banner */}
-      <div className="h-10 bg-card flex items-center justify-center gap-4 shrink-0 border-b border-border">
+      <div className="h-10 bg-card flex items-center justify-center gap-4 shrink-0 border-b border-border relative">
+        {/* Center logo */}
+        <div className="absolute left-4 flex items-center gap-1.5">
+          <div className="w-5 h-5 rounded-md bg-primary flex items-center justify-center">
+            <svg viewBox="0 0 24 24" className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+          </div>
+          <span className="text-xs font-semibold text-muted-foreground tracking-tight hidden md:inline">Command 360</span>
+        </div>
         <span className="text-muted-foreground text-sm">
           Join at <span className="text-foreground font-medium">{joinUrl.replace(/^https?:\/\//, '')}</span>
         </span>

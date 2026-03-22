@@ -157,10 +157,17 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
       </div>
 
       {/* Top bar */}
-      <div className="h-11 flex items-center justify-between px-3 bg-card/80 backdrop-blur shrink-0 border-b border-border">
+      <div className="h-11 flex items-center justify-between px-3 bg-card/80 backdrop-blur shrink-0 border-b border-border relative">
         <div className="flex items-center gap-2">
           <TBtn icon={X} title="Back to editor (Esc)" onClick={() => router.push(`/presentations/${presentation.id}/edit`)} />
           <span className="text-[13px] text-muted-foreground font-medium">{presentation.title}</span>
+        </div>
+        {/* Center logo */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+          <div className="w-5 h-5 rounded-md bg-primary flex items-center justify-center">
+            <svg viewBox="0 0 24 24" className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+          </div>
+          <span className="text-xs font-semibold text-muted-foreground tracking-tight">Command 360</span>
         </div>
         <div className="flex items-center gap-1">
           {/* Timer */}
@@ -476,7 +483,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
               <X className="w-4 h-4" />
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-5 pt-2 grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
+          <div className="flex-1 overflow-y-auto p-5 pt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 content-start">
             {slides.map((s, i) => {
               const GridIcon = TYPE_ICONS[s.slide_type] || FileText
               const gridColor = TYPE_COLORS[s.slide_type] || '#6b7280'
