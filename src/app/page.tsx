@@ -3,7 +3,7 @@ import {
   BarChart2, Cloud, HelpCircle, MessageCircle, ClipboardList, Sparkles,
   ArrowRight, Users, CheckCircle2, Flame, Siren,
   Radio, Shield, Anchor, Search, Building2, Lock, FileText, Check, Zap,
-  Heart, Globe, Quote, MapPin, Mail, Target,
+  Heart, Quote, Target,
 } from 'lucide-react'
 import { ScrollReveal } from '@/components/home/ScrollReveal'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
@@ -520,93 +520,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════
-          ABOUT
-          ═══════════════════════════════════════════ */}
-      <section id="about" className="bg-muted/40">
-        <div className="max-w-3xl mx-auto px-5 py-24 md:py-32 text-center">
-          <ScrollReveal>
-            <span className="feature-badge bg-primary/10 text-primary">About</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-4 mb-6">About Command 360</h2>
-            <p className="text-muted-foreground leading-relaxed text-base mb-6">
-              Command 360 is based in Birmingham, West Midlands. Our mission is to improve emergency services training through interactive technology that makes every session count.
-            </p>
-            <p className="text-muted-foreground leading-relaxed text-base mb-6">
-              Founded by people who understand operational training, we built Command 360 because we saw first-hand how traditional briefings and debriefs failed to capture every voice. Too often, only the most confident speak up while critical insights go unheard.
-            </p>
-            <p className="text-muted-foreground leading-relaxed text-base">
-              Our platform gives every participant an equal voice through live polls, anonymous Q&A, knowledge checks, and AI-powered analysis — turning passive briefings into genuinely interactive 360-degree training sessions.
-            </p>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════
-          CONTACT
-          ═══════════════════════════════════════════ */}
-      <section id="contact" className="bg-background">
-        <div className="max-w-5xl mx-auto px-5 py-24 md:py-32">
-          <ScrollReveal className="text-center mb-14">
-            <span className="feature-badge bg-primary/10 text-primary">Contact</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-4">Get in touch</h2>
-            <p className="text-muted-foreground mt-4 max-w-lg mx-auto">Have a question or want to see a demo? We&apos;d love to hear from you.</p>
-          </ScrollReveal>
-
-          <ScrollReveal>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Map */}
-              <div className="rounded-2xl overflow-hidden border border-border h-[320px] md:h-full min-h-[320px]">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d77965.63652610841!2d-1.9535!3d52.4862!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4870942d1b417173%3A0xca81fef0aeee7998!2sBirmingham%2C%20UK!5e0!3m2!1sen!2suk!4v1710000000000!5m2!1sen!2suk"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Command 360 location — Birmingham, West Midlands"
-                />
-              </div>
-
-              {/* Contact info */}
-              <div className="flex flex-col justify-center space-y-8">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <Mail className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-sm mb-1">Email</h3>
-                    <a href="mailto:hello@command360.co.uk" className="text-muted-foreground text-sm hover:text-primary transition-colors">hello@command360.co.uk</a>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <MapPin className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-sm mb-1">Location</h3>
-                    <p className="text-muted-foreground text-sm">Birmingham, West Midlands, UK</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <Globe className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-sm mb-1">Website</h3>
-                    <p className="text-muted-foreground text-sm">command360.co.uk</p>
-                  </div>
-                </div>
-                <div className="pt-4">
-                  <Link href="/contact" className="group inline-flex items-center gap-2 px-6 h-11 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer">
-                    Send us a message <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
 
       {/* ═══════════════════════════════════════════
           CTA — Dark section

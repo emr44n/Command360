@@ -9,7 +9,7 @@ const NAV = [
   { href: '/#services', label: 'Services' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/templates', label: 'Templates' },
-  { href: '/#about', label: 'About' },
+  { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ]
 
@@ -89,10 +89,10 @@ export function PublicHeader() {
           {/* Join dropdown */}
           <div className="relative">
             <button onClick={() => setJoinOpen(!joinOpen)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[13px] rounded-md transition-colors cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] rounded-lg transition-colors cursor-pointer ${
                 onHero
-                  ? 'text-white/60 hover:text-white hover:bg-white/[0.06]'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  ? 'text-white/70 hover:text-white border border-white/[0.1] hover:border-white/[0.2] hover:bg-white/[0.06]'
+                  : 'text-muted-foreground hover:text-foreground border border-border hover:bg-muted'
               }`}>
               <LogIn className="w-3.5 h-3.5" />
               Join
@@ -100,8 +100,7 @@ export function PublicHeader() {
             {joinOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setJoinOpen(false)} />
-                <div className="absolute right-0 top-full mt-2 z-50 bg-card border border-border rounded-xl shadow-lg p-4 slide-down min-w-[260px]">
-                  <p className="text-xs text-muted-foreground mb-2">Enter room code to join</p>
+                <div className="absolute right-0 top-full mt-2.5 z-50 bg-card border border-border rounded-xl shadow-xl p-3 slide-down">
                   <JoinCodeInput variant="compact" />
                 </div>
               </>

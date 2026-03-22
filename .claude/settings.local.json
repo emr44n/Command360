@@ -71,7 +71,31 @@
       "Bash(uipro init --ai claude)",
       "WebFetch(domain:circle.so)",
       "Bash(grep -r \"download\\\\|export.*presentation\" 'D:\\\\My Products\\\\Command360\\\\src\\\\components' --include=*.tsx --include=*.ts)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(gh auth:*)",
+      "Read(//c/Program Files/GitHub CLI/**)",
+      "Read(//c/Users/Administrator/AppData/Local/GitHub CLI/**)",
+      "Bash(winget install:*)",
+      "Bash(export PATH=\"$PATH:/c/Program Files/GitHub CLI\")",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" --version)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth status)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth login --web --git-protocol https)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" repo create Command360 --private --source=. --remote=origin --push)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth setup-git)",
+      "Bash(GIT_TRACE=1 git push origin main)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" api repos/emr44n/Command360/commits?per_page=5 --jq '.[].sha[:7] + \"\" \"\" + \\(.[].commit.message | split\\(\"\"\\\\n\"\"\\)[0]\\)')",
+      "WebSearch",
+      "Bash(find 'D:\\\\My Products\\\\Command360' -type f \\\\\\(-name *route* -o -name *api* \\\\\\))",
+      "Bash(find 'D:\\\\My Products\\\\Command360' -path */.next -prune -o -type f \\\\\\(-name *.ts -o -name *.tsx -o -name *.js -o -name *.jsx \\\\\\) -print)",
+      "Bash(grep -r admin 'D:\\\\My Products\\\\Command360/src' --include=*.ts --include=*.tsx --include=*.js --include=*.jsx)",
+      "Bash(grep -ri \"permission\\\\|role\\\\|guard\" 'D:\\\\My Products\\\\Command360/src' --include=*.ts --include=*.tsx)",
+      "Bash(grep -ri \"owner\\\\|admin\\\\|editor\\\\|presenter\\\\|viewer\" 'D:\\\\My Products\\\\Command360/src' --include=*.ts --include=*.tsx)",
+      "Bash(grep -ri \"dashboard\\\\|settings\" 'D:\\\\My Products\\\\Command360/src/app' --include=*.tsx)",
+      "Bash(grep -r \"admin\\\\|ADMIN\" 'D:\\\\My Products\\\\Command360' --include=.env* --include=*.json)",
+      "Bash(grep -r \"team\\\\|role\" 'D:\\\\My Products\\\\Command360/src' --include=*.ts --include=*.tsx)",
+      "Bash(grep -l \"admin\" \"D:\\\\My Products\\\\Command360/src/app\"/**/*.tsx)",
+      "Bash(grep -r \"ROLES\\\\|role.*=\" 'D:\\\\My Products\\\\Command360/src' --include=*.tsx --include=*.ts)",
+      "Bash(grep -rn \"owner\\\\|admin\\\\|editor\\\\|presenter\\\\|viewer\" 'D:\\\\My Products\\\\Command360/src' --include=*.tsx --include=*.ts)"
     ]
   }
 }

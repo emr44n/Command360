@@ -28,6 +28,7 @@ interface ServiceData {
   color: string
   bg: string
   gradient: string
+  heroGlow: string
   heroTitle: string
   heroDescription: string
   heroStats: { value: string; label: string }[]
@@ -172,6 +173,7 @@ const SERVICES: ServiceData[] = [
     color: 'text-orange-500',
     bg: 'bg-orange-500/10',
     gradient: 'from-orange-500/10 to-red-500/5',
+    heroGlow: 'rgba(249,115,22,0.15)',
     heroTitle: 'Interactive training built for Fire & Rescue teams',
     heroDescription: 'From watch-level safety briefings to post-incident hot debriefs, Command 360 helps your crews engage, learn, and feed back — all in real time, on any device.',
     heroStats: [
@@ -208,6 +210,7 @@ const SERVICES: ServiceData[] = [
     color: 'text-blue-500',
     bg: 'bg-blue-500/10',
     gradient: 'from-blue-500/10 to-indigo-500/5',
+    heroGlow: 'rgba(59,130,246,0.15)',
     heroTitle: 'Interactive briefings built for Police teams',
     heroDescription: 'Deliver consistent policy training, knowledge assessments, and shift briefings with instant feedback, anonymous participation, and audit-ready reporting.',
     heroStats: [
@@ -244,6 +247,7 @@ const SERVICES: ServiceData[] = [
     color: 'text-emerald-500',
     bg: 'bg-emerald-500/10',
     gradient: 'from-emerald-500/10 to-teal-500/5',
+    heroGlow: 'rgba(16,185,129,0.15)',
     heroTitle: 'Interactive training built for Ambulance services',
     heroDescription: 'Run clinical protocol training, CPD sessions, and welfare checks with anonymous response options — all from a phone, tablet, or laptop at station.',
     heroStats: [
@@ -280,6 +284,7 @@ const SERVICES: ServiceData[] = [
     color: 'text-slate-600',
     bg: 'bg-slate-500/10',
     gradient: 'from-slate-500/10 to-gray-500/5',
+    heroGlow: 'rgba(100,116,139,0.15)',
     heroTitle: 'Interactive training built for the Armed Forces',
     heroDescription: 'Conduct operational briefings, readiness assessments, and training evaluations at scale across units, formations, and locations.',
     heroStats: [
@@ -316,6 +321,7 @@ const SERVICES: ServiceData[] = [
     color: 'text-sky-500',
     bg: 'bg-sky-500/10',
     gradient: 'from-sky-500/10 to-blue-500/5',
+    heroGlow: 'rgba(14,165,233,0.15)',
     heroTitle: 'Interactive training built for HM Coastguard',
     heroDescription: 'Maritime safety training, operational briefings, and volunteer coordination sessions with real-time participation from any device.',
     heroStats: [
@@ -352,6 +358,7 @@ const SERVICES: ServiceData[] = [
     color: 'text-amber-500',
     bg: 'bg-amber-500/10',
     gradient: 'from-amber-500/10 to-orange-500/5',
+    heroGlow: 'rgba(245,158,11,0.15)',
     heroTitle: 'Interactive training built for Search & Rescue teams',
     heroDescription: 'Team training exercises, equipment familiarisation, and operational readiness assessments designed for volunteer and professional SAR teams.',
     heroStats: [
@@ -388,6 +395,7 @@ const SERVICES: ServiceData[] = [
     color: 'text-zinc-500',
     bg: 'bg-zinc-500/10',
     gradient: 'from-zinc-500/10 to-gray-500/5',
+    heroGlow: 'rgba(113,113,122,0.15)',
     heroTitle: 'Interactive training built for Prison & Probation staff',
     heroDescription: 'Staff training, security procedure assessments, and policy awareness sessions with secure, anonymous participation for sensitive environments.',
     heroStats: [
@@ -424,6 +432,7 @@ const SERVICES: ServiceData[] = [
     color: 'text-violet-500',
     bg: 'bg-violet-500/10',
     gradient: 'from-violet-500/10 to-purple-500/5',
+    heroGlow: 'rgba(139,92,246,0.15)',
     heroTitle: 'Interactive training built for Local Authority teams',
     heroDescription: 'Emergency planning exercises, council briefings, and community resilience training with full participation tracking and exportable data.',
     heroStats: [
@@ -460,6 +469,7 @@ const SERVICES: ServiceData[] = [
     color: 'text-red-500',
     bg: 'bg-red-500/10',
     gradient: 'from-red-500/10 to-orange-500/5',
+    heroGlow: 'rgba(239,68,68,0.15)',
     heroTitle: 'Interactive training built for Civil Contingencies',
     heroDescription: 'Multi-agency exercises, table-top scenarios, and emergency response plan testing with real-time feedback collection and AI-powered analysis.',
     heroStats: [
@@ -496,6 +506,7 @@ const SERVICES: ServiceData[] = [
     color: 'text-pink-500',
     bg: 'bg-pink-500/10',
     gradient: 'from-pink-500/10 to-rose-500/5',
+    heroGlow: 'rgba(236,72,153,0.15)',
     heroTitle: 'Interactive training built for NHS Emergency Departments',
     heroDescription: 'Clinical governance training, major incident briefings, and team development sessions with confidential feedback and exportable evidence.',
     heroStats: [
@@ -532,6 +543,7 @@ const SERVICES: ServiceData[] = [
     color: 'text-teal-500',
     bg: 'bg-teal-500/10',
     gradient: 'from-teal-500/10 to-emerald-500/5',
+    heroGlow: 'rgba(20,184,166,0.15)',
     heroTitle: 'Interactive training built for Voluntary Sector organisations',
     heroDescription: 'Volunteer induction, skills assessment, and coordination briefings for community response teams, charities, and voluntary organisations.',
     heroStats: [
@@ -608,27 +620,31 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
   return (
     <PublicLayout>
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden">
-        {/* Background gradient */}
-        <div className={`absolute inset-0 -z-10 bg-gradient-to-b ${service.gradient} to-transparent`} />
-        <div className="absolute inset-0 -z-10 hero-grid opacity-50" />
+      <section className="relative bg-[#07070a] overflow-hidden">
+        {/* Background effects */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 80% 50% at 50% -20%, ${service.heroGlow}, transparent)` }} />
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#07070a] to-transparent" />
+        </div>
 
-        <div className="max-w-6xl mx-auto px-5 pt-24 pb-16">
+        <div className="relative max-w-6xl mx-auto px-5 pt-32 pb-16">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: hero text */}
             <div className="text-center lg:text-left">
               <ScrollReveal direction="up">
-                <div className={`w-16 h-16 rounded-2xl ${service.bg} flex items-center justify-center mx-auto lg:mx-0 mb-6`}>
-                  <Icon className={`w-8 h-8 ${service.color}`} />
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/8 bg-white/6 mb-6 mx-auto lg:mx-0">
+                  <Icon className={`w-4 h-4 ${service.color}`} />
+                  <span className="text-sm font-medium text-white/60">{service.name}</span>
                 </div>
               </ScrollReveal>
 
               <ScrollReveal direction="up">
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-5">{service.heroTitle}</h1>
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-5 text-white">{service.heroTitle}</h1>
               </ScrollReveal>
 
               <ScrollReveal direction="up">
-                <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0 mb-8 leading-relaxed">
+                <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto lg:mx-0 mb-8 leading-relaxed">
                   {service.heroDescription}
                 </p>
               </ScrollReveal>
@@ -638,7 +654,7 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
                   <AuthAwareCTA size="lg" />
                   <Link
                     href="/contact"
-                    className="inline-flex items-center gap-2 px-8 h-12 rounded-full text-base font-medium border border-border hover:bg-muted transition-colors btn-animated"
+                    className="inline-flex items-center gap-2 px-8 h-12 rounded-full text-base font-medium border border-white/10 text-white/70 hover:bg-white/5 transition-colors btn-animated"
                   >
                     Book a demo
                   </Link>
@@ -650,8 +666,8 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
                 <div className="grid grid-cols-3 gap-6 max-w-lg mx-auto lg:mx-0">
                   {service.heroStats.map((stat) => (
                     <div key={stat.label} className="text-center lg:text-left">
-                      <p className="text-2xl md:text-3xl font-bold text-primary">{stat.value}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
+                      <p className={`text-2xl md:text-3xl font-bold ${service.color}`}>{stat.value}</p>
+                      <p className="text-xs text-white/40 mt-1">{stat.label}</p>
                     </div>
                   ))}
                 </div>
