@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   Plus, Play, ArrowLeft, BarChart2, Check, Loader2, AlertCircle,
-  Eye, Monitor, Smartphone, Tablet, Copy, Undo2, Redo2,
+  Eye, Copy, Undo2, Redo2,
   ChevronLeft, ChevronRight, ChevronDown, ChevronUp,
   Maximize2, StickyNote, QrCode, Type, ImageIcon,
   Download, Upload, Save, FolderOpen, FilePlus, Clock,
@@ -35,8 +35,6 @@ interface SlideEditorProps {
 }
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
-type DevicePreview = 'desktop' | 'tablet' | 'phone'
-
 export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   const [slides, setSlides] = useState<Slide[]>(initialSlides)
   const [selectedSlideId, setSelectedSlideId] = useState<string | null>(initialSlides[0]?.id || null)
@@ -44,7 +42,6 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   const [presentationTitle, setPresentationTitle] = useState(presentation.title)
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
   const [starting, setStarting] = useState(false)
-  const [devicePreview, setDevicePreview] = useState<DevicePreview>('desktop')
   const [settingsOpen, setSettingsOpen] = useState(true)
   const [slideListOpen, setSlideListOpen] = useState(true)
   const [notesOpen, setNotesOpen] = useState(false)
@@ -688,7 +685,6 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
               slide={selectedSlide}
               slides={slides}
               selectedIndex={selectedIndex}
-              devicePreview={devicePreview}
               onTitleChange={(title) => { if (selectedSlide) handleSlideChange({ title }) }}
               onCanvasElementsChange={(canvas_elements) => {
                 if (selectedSlide) {

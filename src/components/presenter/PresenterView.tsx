@@ -250,8 +250,9 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
 
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
-        <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-10">
-          <div key={slideKey} className={`w-full max-w-4xl ${slideDirection === 'next' ? 'slide-next' : 'slide-prev'}`}>
+        <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-10 min-h-0">
+          <div key={slideKey} className={`w-full ${slideDirection === 'next' ? 'slide-next' : 'slide-prev'}`}
+            style={{ maxWidth: 'min(64rem, calc((100vh - 12rem) * 16 / 9))' }}>
             {currentSlide ? (
               <PresenterSlideDisplay slide={currentSlide} session={session} responseCount={responseCount} />
             ) : (

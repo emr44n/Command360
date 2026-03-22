@@ -14,7 +14,6 @@ interface SlideCanvasProps {
   slide: Slide | null
   slides: Slide[]
   selectedIndex: number
-  devicePreview: 'desktop' | 'tablet' | 'phone'
   onTitleChange?: (title: string) => void
   onCanvasElementsChange?: (elements: CanvasElement[]) => void
   selectedElementId?: string | null
@@ -40,7 +39,7 @@ const TYPE_COLORS: Record<string, string> = {
   survey: '#ec4899', content: '#6b7280', rating_scale: '#f97316', open_text: '#14b8a6',
 }
 
-export function SlideCanvas({ slide, slides, selectedIndex, devicePreview, onTitleChange, onCanvasElementsChange, selectedElementId, onSelectElement, onRequestAddImage, onSelectSlide, onPrev, onNext }: SlideCanvasProps) {
+export function SlideCanvas({ slide, slides, selectedIndex, onTitleChange, onCanvasElementsChange, selectedElementId, onSelectElement, onRequestAddImage, onSelectSlide, onPrev, onNext }: SlideCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const slideRefs = useRef<Map<string, HTMLDivElement>>(new Map())
   const selectedCardRef = useRef<HTMLDivElement>(null)
