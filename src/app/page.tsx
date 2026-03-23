@@ -3,7 +3,7 @@ import {
   BarChart2, Cloud, HelpCircle, MessageCircle, ClipboardList, Sparkles,
   ArrowRight, Users, CheckCircle2, Flame, Siren,
   Radio, Shield, Anchor, Search, Building2, Lock, FileText, Check, Zap,
-  Heart, Quote, Target,
+  Heart, Quote, Target, ShieldCheck, Eye, EyeOff, Brain,
 } from 'lucide-react'
 import { ScrollReveal } from '@/components/home/ScrollReveal'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
@@ -13,37 +13,70 @@ import { PricingToggle } from '@/components/pricing/PricingToggle'
 
 /* ── DATA ── */
 
-const FEATURES = [
+const BENTO_FEATURES = [
   {
-    badge: 'Live Interaction',
-    badgeClass: 'bg-red-500/10 text-red-600 dark:bg-red-500/15 dark:text-red-400',
-    title: 'Every voice heard, every time',
-    description: 'Run live polls, word clouds, and Q&A sessions that engage your entire team. Responses appear instantly on the presenter screen with animated visualisations.',
-    bullets: ['Live polling with animated bar charts', 'Word clouds that grow in real-time', 'Anonymous Q&A with upvoting', 'Multi-question surveys'],
+    icon: BarChart2,
+    label: 'Live Interaction',
+    title: 'Every voice heard',
+    description: 'Run live polls, word clouds, and Q&A that engage your entire team. Responses appear instantly with animated visualisations.',
+    color: 'text-red-400',
+    borderHover: 'hover:border-red-500/20',
+    span: 'md:col-span-2 md:row-span-2',
   },
   {
-    badge: 'Knowledge Testing',
-    badgeClass: 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400',
-    title: 'Test understanding instantly',
-    description: 'Create timed quizzes with leaderboards and scoring. Perfect for competency checks, CPD assessments, and post-incident learning verification.',
-    bullets: ['Scored quizzes with countdown timers', 'Leaderboard rankings after each round', 'Instant correct/wrong feedback', 'Export results for training records'],
+    icon: ShieldCheck,
+    label: 'Anonymous & Secure',
+    title: 'Speak without fear',
+    description: 'Fully anonymous responses. No names, no judgement. Your team can be honest about what matters.',
+    color: 'text-emerald-400',
+    borderHover: 'hover:border-emerald-500/20',
+    span: 'md:col-span-1 md:row-span-1',
   },
   {
-    badge: 'AI-Powered',
-    badgeClass: 'bg-violet-500/10 text-violet-600 dark:bg-violet-500/15 dark:text-violet-400',
-    title: 'AI analysis of every session',
-    description: 'Get instant AI-generated summaries, key themes, and sentiment analysis. Understand what your team thinks without reading every individual response.',
-    bullets: ['Automatic session summaries', 'Key theme extraction', 'Quiz question generation from any topic', 'Actionable recommendations'],
+    icon: Brain,
+    label: 'AI-Powered',
+    title: 'Instant AI analysis',
+    description: 'Auto-generated summaries, key themes, and sentiment analysis after every session.',
+    color: 'text-violet-400',
+    borderHover: 'hover:border-violet-500/20',
+    span: 'md:col-span-1 md:row-span-1',
+  },
+  {
+    icon: HelpCircle,
+    label: 'Knowledge Testing',
+    title: 'Test understanding',
+    description: 'Timed quizzes with leaderboards and scoring. Perfect for competency checks and CPD assessments.',
+    color: 'text-blue-400',
+    borderHover: 'hover:border-blue-500/20',
+    span: 'md:col-span-1 md:row-span-1',
+  },
+  {
+    icon: Eye,
+    label: 'Real-time Results',
+    title: 'See it live',
+    description: 'Watch responses flow in with animated bar charts, word clouds, and live vote tallies.',
+    color: 'text-amber-400',
+    borderHover: 'hover:border-amber-500/20',
+    span: 'md:col-span-1 md:row-span-1',
+  },
+  {
+    icon: FileText,
+    label: 'Export & Compliance',
+    title: 'Audit-ready records',
+    description: 'Export session data as CSV or PDF for training records, compliance documentation, and evaluation logs.',
+    color: 'text-sky-400',
+    borderHover: 'hover:border-sky-500/20',
+    span: 'md:col-span-2 md:row-span-1',
   },
 ]
 
 const SLIDE_TYPES = [
-  { icon: BarChart2, label: 'Live Polling', description: 'Gauge opinions and readiness with animated bar charts.', color: 'text-red-500', bg: 'bg-red-500/10' },
-  { icon: Cloud, label: 'Word Clouds', description: 'Capture collective sentiment with growing word clouds.', color: 'text-sky-500', bg: 'bg-sky-500/10' },
-  { icon: HelpCircle, label: 'Quizzes', description: 'Scored, timed knowledge checks with leaderboards.', color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-  { icon: MessageCircle, label: 'Q&A', description: 'Anonymous questions with upvoting and moderation.', color: 'text-amber-500', bg: 'bg-amber-500/10' },
-  { icon: ClipboardList, label: 'Surveys', description: 'Multi-question feedback forms for structured data.', color: 'text-rose-500', bg: 'bg-rose-500/10' },
-  { icon: Sparkles, label: 'AI Insights', description: 'AI summaries, quiz generation, and session analysis.', color: 'text-violet-500', bg: 'bg-violet-500/10' },
+  { icon: BarChart2, label: 'Live Polling', description: 'Gauge opinions and readiness with animated bar charts.', color: 'text-red-500', bg: 'bg-red-500/10', borderColor: 'hover:border-red-500/20' },
+  { icon: Cloud, label: 'Word Clouds', description: 'Capture collective sentiment with growing word clouds.', color: 'text-sky-500', bg: 'bg-sky-500/10', borderColor: 'hover:border-sky-500/20' },
+  { icon: HelpCircle, label: 'Quizzes', description: 'Scored, timed knowledge checks with leaderboards.', color: 'text-emerald-500', bg: 'bg-emerald-500/10', borderColor: 'hover:border-emerald-500/20' },
+  { icon: MessageCircle, label: 'Q&A', description: 'Anonymous questions with upvoting and moderation.', color: 'text-amber-500', bg: 'bg-amber-500/10', borderColor: 'hover:border-amber-500/20' },
+  { icon: ClipboardList, label: 'Surveys', description: 'Multi-question feedback forms for structured data.', color: 'text-rose-500', bg: 'bg-rose-500/10', borderColor: 'hover:border-rose-500/20' },
+  { icon: Sparkles, label: 'AI Insights', description: 'AI summaries, quiz generation, and session analysis.', color: 'text-violet-500', bg: 'bg-violet-500/10', borderColor: 'hover:border-violet-500/20' },
 ]
 
 const STEPS = [
@@ -129,71 +162,81 @@ const FAQ_ITEMS = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: 'Command 360', applicationCategory: 'PresentationApplication', description: 'Interactive training and briefing platform for emergency services.', operatingSystem: 'Web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'GBP' } }) }} />
 
       <HomepageClient />
 
       {/* ═══════════════════════════════════════════
-          HERO — Always dark, regardless of theme
+          HERO
           ═══════════════════════════════════════════ */}
       <section className="relative min-h-[95vh] flex flex-col bg-[#07070a] overflow-hidden">
         {/* Background layers */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(220,38,38,0.15),transparent)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_80%,rgba(220,38,38,0.06),transparent)]" />
-          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(220,38,38,0.12),transparent)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_80%,rgba(220,38,38,0.05),transparent)]" />
+          <div
+            className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
+              backgroundSize: '64px 64px',
+              maskImage: 'radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 70%)',
+              WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 70%)',
+            }}
+          />
           <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#07070a] to-transparent" />
         </div>
 
         {/* Hero content */}
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center max-w-4xl mx-auto px-5 pt-32 pb-8">
           {/* Badge */}
-          <div className="hero-fade-up hero-fade-up-1 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-[13px] text-white/60 mb-8">
+          <div className="hero-fade-up hero-fade-up-1 inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] text-[11px] uppercase tracking-[0.15em] text-white/50 mb-8 font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 pulse-dot" />
-            The secure training platform for emergency services
+            Built for UK emergency services
           </div>
 
           {/* Heading */}
-          <h1 className="hero-fade-up hero-fade-up-2 text-[clamp(2.5rem,7vw,4.5rem)] font-bold tracking-tight leading-[1.08] text-white mb-6">
-            Brief. Train. Debrief.{' '}
+          <h1 className="hero-fade-up hero-fade-up-2 text-[clamp(2.2rem,6.5vw,4.2rem)] font-bold tracking-tight leading-[1.08] text-white mb-6">
+            The secure space where{' '}
             <br className="hidden sm:block" />
-            <span className="bg-gradient-to-r from-red-400 via-red-500 to-orange-500 gradient-text">With confidence.</span>
+            emergency teams{' '}
+            <span className="bg-gradient-to-r from-red-400 via-red-500 to-orange-500 gradient-text">speak freely.</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="hero-fade-up hero-fade-up-3 text-base md:text-lg text-white/45 max-w-xl leading-relaxed mb-10">
-            A specialist environment where your teams can speak openly, test knowledge, and learn together — anonymously and securely. Built exclusively for Fire, Police, Ambulance, and Armed Forces.
+          <p className="hero-fade-up hero-fade-up-3 text-base md:text-lg text-white/40 max-w-2xl leading-relaxed mb-10">
+            Brief, train, and debrief with confidence. Anonymous feedback, live interaction,
+            and AI-powered insights — built exclusively for those who protect and serve.
           </p>
 
           {/* CTAs */}
           <div className="hero-fade-up hero-fade-up-4 flex flex-col sm:flex-row items-center gap-3">
-            <Link href="/register" className="group inline-flex items-center gap-2 px-7 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-500/25 cursor-pointer">
+            <Link href="/register" className="group inline-flex items-center gap-2 px-7 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 cursor-pointer">
               Start free trial <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </Link>
-            <a href="#how-it-works" className="inline-flex items-center gap-2 px-7 h-12 rounded-xl text-sm font-medium border border-white/[0.12] text-white/70 hover:text-white hover:border-white/[0.25] hover:bg-white/[0.04] transition-all cursor-pointer">
+            <a href="#how-it-works" className="inline-flex items-center gap-2 px-7 h-12 rounded-xl text-sm font-medium border border-white/[0.1] text-white/60 hover:text-white hover:border-white/[0.2] hover:bg-white/[0.03] transition-all duration-200 cursor-pointer">
               See how it works
             </a>
           </div>
 
           {/* Join code section */}
           <div id="hero-join" className="hero-fade-up hero-fade-up-5 mt-10 flex flex-col items-center gap-3">
-            <p className="text-white/30 text-xs uppercase tracking-widest font-medium">Have a join code?</p>
+            <p className="text-white/25 text-[10px] uppercase tracking-[0.2em] font-medium">Have a join code?</p>
             <JoinCodeInput variant="hero" />
           </div>
         </div>
 
-        {/* Product mockup — browser frame */}
+        {/* Product mockup */}
         <div className="relative z-10 mx-auto max-w-4xl w-full px-5 mt-8 mb-[-80px] hero-fade-up hero-fade-up-5">
-          <div className="absolute inset-0 -m-10 bg-red-500/[0.06] blur-[60px] rounded-full pointer-events-none" />
+          <div className="absolute inset-0 -m-10 bg-red-500/[0.05] blur-[60px] rounded-full pointer-events-none" />
 
-          <div className="relative rounded-xl border border-white/[0.08] overflow-hidden shadow-2xl shadow-black/60 bg-[#0c0c10]">
+          <div className="relative rounded-2xl border border-white/[0.08] overflow-hidden shadow-2xl shadow-black/60 bg-[#0c0c10]">
             {/* Chrome bar */}
-            <div className="flex items-center gap-2 px-4 h-9 bg-white/[0.03] border-b border-white/[0.06]">
+            <div className="flex items-center gap-2 px-4 h-9 bg-white/[0.02] border-b border-white/[0.06]">
               <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]/50" />
-                <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]/50" />
-                <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]/50" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]/40" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]/40" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]/40" />
               </div>
               <div className="flex-1 max-w-[240px] mx-auto h-5 rounded-md bg-white/[0.04] flex items-center justify-center">
                 <span className="text-[9px] text-white/20 font-mono">command360.co.uk/present</span>
@@ -257,10 +300,10 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           TRUST STRIP
           ═══════════════════════════════════════════ */}
-      <section className="pt-32 pb-20 bg-background">
+      <section className="pt-32 pb-16 bg-[#07070a] border-t border-white/[0.04]">
         <ScrollReveal>
           <div className="max-w-4xl mx-auto px-5 text-center">
-            <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium mb-8">Trusted by emergency services across the UK</p>
+            <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-medium mb-8">Trusted by emergency services across the UK</p>
             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
               {[
                 { icon: Flame, label: 'Fire & Rescue' },
@@ -270,8 +313,8 @@ export default function LandingPage() {
                 { icon: Radio, label: 'Resilience' },
                 { icon: Building2, label: 'Local Authority' },
               ].map((item) => (
-                <span key={item.label} className="flex items-center gap-2 text-sm text-muted-foreground/50">
-                  <item.icon className="w-4 h-4" />
+                <span key={item.label} className="flex items-center gap-2 text-xs text-white/25">
+                  <item.icon className="w-3.5 h-3.5" />
                   {item.label}
                 </span>
               ))}
@@ -281,34 +324,89 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          FEATURE SECTIONS
+          BENTO FEATURES
           ═══════════════════════════════════════════ */}
-      <div id="features">
-        {FEATURES.map((feature, idx) => {
-          const isReversed = idx % 2 !== 0
-          const mockups = [<PollingMockup key="poll" />, <QuizMockup key="quiz" />, <AIMockup key="ai" />]
+      <section id="features" className="bg-[#07070a] pb-24 md:pb-32">
+        <div className="max-w-5xl mx-auto px-5">
+          <ScrollReveal className="text-center mb-14">
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[10px] uppercase tracking-[0.2em] text-white/40 font-medium">Platform</span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5 text-white">Everything you need to engage your team</h2>
+            <p className="text-white/35 mt-4 max-w-lg mx-auto text-sm">Six powerful tools in one secure environment, designed for the realities of operational training.</p>
+          </ScrollReveal>
 
+          <ScrollReveal stagger>
+            <div className="grid grid-cols-1 md:grid-cols-4 md:auto-rows-[180px] gap-3">
+              {BENTO_FEATURES.map((f) => (
+                <div
+                  key={f.title}
+                  className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl p-6 border border-white/[0.06] bg-white/[0.02] ${f.borderHover} hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-0.5 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] ${f.span}`}
+                >
+                  <div>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center">
+                        <f.icon className={`w-4 h-4 ${f.color}`} />
+                      </div>
+                      <span className="text-[10px] uppercase tracking-[0.15em] text-white/30 font-medium">{f.label}</span>
+                    </div>
+                    <h3 className="text-base font-semibold text-white mb-2">{f.title}</h3>
+                    <p className="text-sm text-white/35 leading-relaxed">{f.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          FEATURE DEEP DIVES (mockups)
+          ═══════════════════════════════════════════ */}
+      <div>
+        {[
+          {
+            badge: 'Live Interaction',
+            badgeClass: 'bg-red-500/10 text-red-400',
+            title: 'Every voice heard, every time',
+            description: 'Run live polls, word clouds, and Q&A sessions that engage your entire team. Responses appear instantly on the presenter screen with animated visualisations.',
+            bullets: ['Live polling with animated bar charts', 'Word clouds that grow in real-time', 'Anonymous Q&A with upvoting', 'Multi-question surveys'],
+            mockup: <PollingMockup />,
+          },
+          {
+            badge: 'Knowledge Testing',
+            badgeClass: 'bg-blue-500/10 text-blue-400',
+            title: 'Test understanding instantly',
+            description: 'Create timed quizzes with leaderboards and scoring. Perfect for competency checks, CPD assessments, and post-incident learning verification.',
+            bullets: ['Scored quizzes with countdown timers', 'Leaderboard rankings after each round', 'Instant correct/wrong feedback', 'Export results for training records'],
+            mockup: <QuizMockup />,
+          },
+          {
+            badge: 'AI-Powered',
+            badgeClass: 'bg-violet-500/10 text-violet-400',
+            title: 'AI analysis of every session',
+            description: 'Get instant AI-generated summaries, key themes, and sentiment analysis. Understand what your team thinks without reading every individual response.',
+            bullets: ['Automatic session summaries', 'Key theme extraction', 'Quiz question generation from any topic', 'Actionable recommendations'],
+            mockup: <AIMockup />,
+          },
+        ].map((feature, idx) => {
+          const isReversed = idx % 2 !== 0
           return (
-            <section key={feature.title} className={idx % 2 === 0 ? 'bg-background' : 'bg-muted/40'}>
-              <div className="max-w-5xl mx-auto px-5 py-24 md:py-32">
+            <section key={feature.title} className={`${idx % 2 === 0 ? 'bg-background' : 'bg-muted/30'} border-t border-border/50`}>
+              <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
                 <div className={`flex flex-col gap-12 md:gap-16 items-center ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'}`}>
-                  {/* Text */}
                   <ScrollReveal direction={isReversed ? 'right' : 'left'} className="flex-1 space-y-5">
-                    <span className={`feature-badge ${feature.badgeClass}`}>{feature.badge}</span>
-                    <h2 className="text-2xl md:text-4xl font-bold tracking-tight leading-tight">{feature.title}</h2>
-                    <p className="text-muted-foreground leading-relaxed text-base">{feature.description}</p>
-                    <ul className="space-y-3 pt-2">
+                    <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.15em] font-medium border border-white/[0.06] ${feature.badgeClass}`}>{feature.badge}</span>
+                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight leading-tight">{feature.title}</h2>
+                    <p className="text-muted-foreground leading-relaxed text-sm">{feature.description}</p>
+                    <ul className="space-y-2.5 pt-2">
                       {feature.bullets.map((pt) => (
                         <li key={pt} className="flex items-start gap-3 text-sm text-muted-foreground">
-                          <Check className="w-4 h-4 text-primary mt-0.5 shrink-0" />{pt}
+                          <Check className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />{pt}
                         </li>
                       ))}
                     </ul>
                   </ScrollReveal>
-
-                  {/* Mockup */}
                   <ScrollReveal direction={isReversed ? 'left' : 'right'} className="flex-1 w-full">
-                    {mockups[idx]}
+                    {feature.mockup}
                   </ScrollReveal>
                 </div>
               </div>
@@ -320,23 +418,23 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           SLIDE TYPES
           ═══════════════════════════════════════════ */}
-      <section id="slide-types" className="bg-background">
-        <div className="max-w-5xl mx-auto px-5 py-24 md:py-32">
+      <section id="slide-types" className="bg-background border-t border-border/50">
+        <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-14">
-            <span className="feature-badge bg-primary/10 text-primary">Interactive Tools</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-4">Six ways to engage your team</h2>
-            <p className="text-muted-foreground mt-4 max-w-lg mx-auto">Mix and match any combination in a single training session.</p>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Interactive Tools</span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Six ways to engage your team</h2>
+            <p className="text-muted-foreground mt-4 max-w-lg mx-auto text-sm">Mix and match any combination in a single training session.</p>
           </ScrollReveal>
 
           <ScrollReveal stagger>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {SLIDE_TYPES.map((s) => (
-                <div key={s.label} className="group p-6 rounded-2xl border border-border bg-card hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all cursor-default">
-                  <div className={`w-10 h-10 rounded-xl ${s.bg} flex items-center justify-center mb-4`}>
+                <div key={s.label} className={`group p-6 rounded-2xl border border-border/60 bg-card/50 ${s.borderColor} hover:shadow-lg transition-all duration-200 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset]`}>
+                  <div className={`w-10 h-10 rounded-xl ${s.bg} border border-white/[0.06] flex items-center justify-center mb-4`}>
                     <s.icon className={`w-5 h-5 ${s.color}`} />
                   </div>
-                  <h3 className="font-semibold mb-2">{s.label}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{s.description}</p>
+                  <h3 className="font-semibold text-sm mb-2">{s.label}</h3>
+                  <p className="text-muted-foreground text-xs leading-relaxed">{s.description}</p>
                 </div>
               ))}
             </div>
@@ -347,22 +445,22 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           HOW IT WORKS
           ═══════════════════════════════════════════ */}
-      <section id="how-it-works" className="bg-muted/40">
-        <div className="max-w-5xl mx-auto px-5 py-24 md:py-32">
+      <section id="how-it-works" className="bg-muted/30 border-t border-border/50">
+        <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-14">
-            <span className="feature-badge bg-primary/10 text-primary">How It Works</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-4">Up and running in minutes</h2>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">How It Works</span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Up and running in minutes</h2>
           </ScrollReveal>
 
           <ScrollReveal stagger>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {STEPS.map((step) => (
-                <div key={step.n} className="relative bg-card rounded-2xl border border-border p-8 text-center">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
+                <div key={step.n} className="relative bg-card/50 rounded-2xl border border-border/60 p-8 text-center [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset]">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-5">
                     <step.icon className="w-5 h-5 text-primary" />
                   </div>
-                  <span className="text-xs font-bold text-primary/40 uppercase tracking-widest">Step {step.n}</span>
-                  <h3 className="text-lg font-bold mt-2 mb-3">{step.title}</h3>
+                  <span className="text-[10px] font-bold text-primary/40 uppercase tracking-[0.2em]">Step {step.n}</span>
+                  <h3 className="text-base font-bold mt-2 mb-3">{step.title}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">{step.desc}</p>
                 </div>
               ))}
@@ -372,22 +470,22 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          SERVICES (USE CASES) — All 11
+          SERVICES
           ═══════════════════════════════════════════ */}
-      <section id="services" className="bg-background">
-        <div className="max-w-5xl mx-auto px-5 py-24 md:py-32">
+      <section id="services" className="bg-background border-t border-border/50">
+        <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-14">
-            <span className="feature-badge bg-primary/10 text-primary">Solutions</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-4">Purpose-built for every service</h2>
-            <p className="text-muted-foreground mt-4 max-w-lg mx-auto">Tailored templates, language, and workflows for operational training.</p>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Solutions</span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Purpose-built for every service</h2>
+            <p className="text-muted-foreground mt-4 max-w-lg mx-auto text-sm">Tailored templates, language, and workflows for operational training.</p>
           </ScrollReveal>
 
           <ScrollReveal stagger>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
               {USE_CASES.map((uc) => (
                 <Link key={uc.slug} href={`/solutions/${uc.slug}`}
-                  className="group p-5 rounded-2xl border border-border bg-card hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all">
-                  <uc.icon className="w-5 h-5 mb-3 text-primary" />
+                  className="group p-5 rounded-2xl border border-border/60 bg-card/50 hover:border-primary/20 hover:shadow-lg transition-all duration-200 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset]">
+                  <uc.icon className="w-4 h-4 mb-3 text-primary" />
                   <h3 className="text-sm font-bold mb-1 group-hover:text-primary transition-colors">{uc.label}</h3>
                   <p className="text-muted-foreground text-xs leading-relaxed">{uc.desc}</p>
                 </Link>
@@ -398,24 +496,24 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          OUTCOMES / STATS
+          OUTCOMES
           ═══════════════════════════════════════════ */}
-      <section className="bg-muted/40">
-        <div className="max-w-5xl mx-auto px-5 py-24 md:py-32">
+      <section className="bg-muted/30 border-t border-border/50">
+        <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-14">
-            <span className="feature-badge bg-primary/10 text-primary">Impact</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-4">Measurable impact on training</h2>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Impact</span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Measurable impact on training</h2>
           </ScrollReveal>
 
           <ScrollReveal stagger>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
                 { stat: '3x', label: 'More participation than traditional hand-raising', desc: 'Everyone contributes, not just the loudest voices.' },
                 { stat: '90%', label: 'Of crews prefer interactive briefings', desc: 'Engagement that keeps your team focused and alert.' },
                 { stat: '60%', label: 'Faster feedback capture vs paper forms', desc: 'Results ready instantly, not after hours of data entry.' },
               ].map((s) => (
-                <div key={s.label} className="text-center bg-card rounded-2xl border border-border p-8">
-                  <p className="text-5xl font-bold text-primary mb-3">{s.stat}</p>
+                <div key={s.label} className="text-center bg-card/50 rounded-2xl border border-border/60 p-8 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset]">
+                  <p className="text-5xl font-bold bg-gradient-to-b from-primary to-primary/60 gradient-text mb-3">{s.stat}</p>
                   <p className="font-semibold text-sm mb-2">{s.label}</p>
                   <p className="text-muted-foreground text-xs">{s.desc}</p>
                 </div>
@@ -428,18 +526,18 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           TEMPLATES
           ═══════════════════════════════════════════ */}
-      <section id="templates" className="bg-background">
-        <div className="max-w-5xl mx-auto px-5 py-24 md:py-32">
+      <section id="templates" className="bg-background border-t border-border/50">
+        <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-10">
-            <span className="feature-badge bg-primary/10 text-primary">Templates</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-4">Start with a ready-made deck</h2>
-            <p className="text-muted-foreground mt-4 max-w-lg mx-auto">Purpose-built templates for operational training, debriefs, and learning capture.</p>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Templates</span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Start with a ready-made deck</h2>
+            <p className="text-muted-foreground mt-4 max-w-lg mx-auto text-sm">Purpose-built templates for operational training, debriefs, and learning capture.</p>
           </ScrollReveal>
 
           <ScrollReveal stagger>
             <div className="flex flex-wrap items-center justify-center gap-2.5">
               {TEMPLATE_EXAMPLES.map((t) => (
-                <span key={t} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-card text-sm font-medium hover:border-primary/20 hover:shadow-md transition-all cursor-default">
+                <span key={t} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border/60 bg-card/50 text-sm font-medium hover:border-primary/20 transition-all duration-200 cursor-default">
                   <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
                   {t}
                 </span>
@@ -457,12 +555,12 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           PRICING
           ═══════════════════════════════════════════ */}
-      <section id="pricing" className="bg-muted/40">
-        <div className="max-w-5xl mx-auto px-5 py-24 md:py-32">
+      <section id="pricing" className="bg-muted/30 border-t border-border/50">
+        <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-10">
-            <span className="feature-badge bg-primary/10 text-primary">Pricing</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-4">Simple, transparent pricing</h2>
-            <p className="text-muted-foreground mt-4 max-w-lg mx-auto">Start free for 30 days. No credit card required.</p>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Pricing</span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Simple, transparent pricing</h2>
+            <p className="text-muted-foreground mt-4 max-w-lg mx-auto text-sm">Start free for 30 days. No credit card required.</p>
           </ScrollReveal>
 
           <ScrollReveal>
@@ -475,9 +573,9 @@ export default function LandingPage() {
               <h3 className="text-xl md:text-2xl font-bold tracking-tight">Frequently asked questions</h3>
             </ScrollReveal>
             <ScrollReveal stagger>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {FAQ_ITEMS.map((item) => (
-                  <div key={item.q} className="bg-card border border-border rounded-xl p-5">
+                  <div key={item.q} className="bg-card/50 border border-border/60 rounded-xl p-5 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset]">
                     <h4 className="font-semibold text-sm mb-2">{item.q}</h4>
                     <p className="text-muted-foreground text-sm leading-relaxed">{item.a}</p>
                   </div>
@@ -491,26 +589,26 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           TESTIMONIALS
           ═══════════════════════════════════════════ */}
-      <section id="testimonials" className="bg-background">
-        <div className="max-w-5xl mx-auto px-5 py-24 md:py-32">
+      <section id="testimonials" className="bg-background border-t border-border/50">
+        <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-14">
-            <span className="feature-badge bg-primary/10 text-primary">Testimonials</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-4">Trusted by those who serve</h2>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Testimonials</span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Trusted by those who serve</h2>
           </ScrollReveal>
 
           <ScrollReveal stagger>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {TESTIMONIALS.map((t) => (
-                <div key={t.name} className="bg-card border border-border rounded-2xl p-6 flex flex-col">
-                  <Quote className="w-8 h-8 text-primary/20 mb-4 shrink-0" />
+                <div key={t.name} className="bg-card/50 border border-border/60 rounded-2xl p-6 flex flex-col [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset]">
+                  <Quote className="w-7 h-7 text-primary/15 mb-4 shrink-0" />
                   <p className="text-sm text-muted-foreground leading-relaxed mb-6 flex-1">&ldquo;{t.quote}&rdquo;</p>
-                  <div className="flex items-center gap-3 pt-4 border-t border-border">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <div className="flex items-center gap-3 pt-4 border-t border-border/50">
+                    <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                       <t.icon className="w-4 h-4 text-primary" />
                     </div>
                     <div>
                       <p className="text-sm font-semibold">{t.name}</p>
-                      <p className="text-xs text-muted-foreground">{t.role}, {t.org}</p>
+                      <p className="text-[11px] text-muted-foreground">{t.role}, {t.org}</p>
                     </div>
                   </div>
                 </div>
@@ -520,27 +618,26 @@ export default function LandingPage() {
         </div>
       </section>
 
-
       {/* ═══════════════════════════════════════════
-          CTA — Dark section
+          CTA
           ═══════════════════════════════════════════ */}
-      <section className="relative bg-[#07070a] overflow-hidden">
+      <section className="relative bg-[#07070a] overflow-hidden border-t border-white/[0.04]">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_100%,rgba(220,38,38,0.12),transparent)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_100%,rgba(220,38,38,0.1),transparent)]" />
         </div>
         <div className="relative max-w-3xl mx-auto px-5 py-24 md:py-32 text-center">
           <ScrollReveal>
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-6">
               Ready to transform your training?
             </h2>
-            <p className="text-white/40 text-lg mb-10 max-w-lg mx-auto">
+            <p className="text-white/35 text-base md:text-lg mb-10 max-w-lg mx-auto">
               Free for 30 days. No credit card required. Built for those who serve.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link href="/register" className="group inline-flex items-center gap-2 px-8 h-13 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-500/25 cursor-pointer">
+              <Link href="/register" className="group inline-flex items-center gap-2 px-8 h-13 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 cursor-pointer">
                 Start free trial <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
-              <Link href="/contact" className="inline-flex items-center gap-2 px-8 h-13 rounded-xl text-sm font-medium border border-white/[0.12] text-white/70 hover:text-white hover:border-white/[0.25] transition-all cursor-pointer">
+              <Link href="/contact" className="inline-flex items-center gap-2 px-8 h-13 rounded-xl text-sm font-medium border border-white/[0.1] text-white/60 hover:text-white hover:border-white/[0.2] transition-all duration-200 cursor-pointer">
                 Book a demo
               </Link>
             </div>
@@ -551,7 +648,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           FOOTER
           ═══════════════════════════════════════════ */}
-      <footer className="border-t border-border bg-background">
+      <footer className="border-t border-border/50 bg-background">
         <div className="max-w-6xl mx-auto px-5 py-12">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-10">
             {/* Brand */}
@@ -570,7 +667,7 @@ export default function LandingPage() {
 
             {/* Services */}
             <div>
-              <h4 className="text-xs font-semibold mb-4">Services</h4>
+              <h4 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-4">Services</h4>
               <ul className="space-y-2 text-xs text-muted-foreground">
                 {USE_CASES.map((uc) => (
                   <li key={uc.slug}><Link href={`/solutions/${uc.slug}`} className="hover:text-foreground transition-colors">{uc.label}</Link></li>
@@ -580,7 +677,7 @@ export default function LandingPage() {
 
             {/* Platform */}
             <div>
-              <h4 className="text-xs font-semibold mb-4">Platform</h4>
+              <h4 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-4">Platform</h4>
               <ul className="space-y-2.5 text-xs text-muted-foreground">
                 <li><a href="#features" className="hover:text-foreground transition-colors">Features</a></li>
                 <li><Link href="/templates" className="hover:text-foreground transition-colors">Templates</Link></li>
@@ -591,17 +688,17 @@ export default function LandingPage() {
 
             {/* Company */}
             <div>
-              <h4 className="text-xs font-semibold mb-4">Company</h4>
+              <h4 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-4">Company</h4>
               <ul className="space-y-2.5 text-xs text-muted-foreground">
-                <li><a href="#about" className="hover:text-foreground transition-colors">About</a></li>
-                <li><a href="#contact" className="hover:text-foreground transition-colors">Contact</a></li>
+                <li><Link href="/about" className="hover:text-foreground transition-colors">About</Link></li>
+                <li><Link href="/contact" className="hover:text-foreground transition-colors">Contact</Link></li>
                 <li><Link href="/help" className="hover:text-foreground transition-colors">Help</Link></li>
               </ul>
             </div>
 
             {/* Legal */}
             <div>
-              <h4 className="text-xs font-semibold mb-4">Legal</h4>
+              <h4 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-4">Legal</h4>
               <ul className="space-y-2.5 text-xs text-muted-foreground">
                 <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link></li>
                 <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link></li>
@@ -611,7 +708,7 @@ export default function LandingPage() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+          <div className="border-t border-border/50 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
             <p>&copy; 2026 Command 360. All rights reserved.</p>
             <div className="flex gap-4">
               <Link href="/join" className="hover:text-foreground transition-colors">Join session</Link>
@@ -632,8 +729,8 @@ function PollingMockup() {
   return (
     <div className="relative">
       <div className="absolute inset-0 -m-4 bg-red-500/5 dark:bg-red-500/10 blur-2xl rounded-3xl pointer-events-none" />
-      <div className="relative rounded-2xl border border-border bg-card overflow-hidden shadow-xl dark:shadow-black/20 mockup-card">
-        <div className="px-5 py-3 border-b border-border flex items-center gap-2">
+      <div className="relative rounded-2xl border border-border/60 bg-card/80 overflow-hidden shadow-xl dark:shadow-black/20 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
+        <div className="px-5 py-3 border-b border-border/50 flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-red-500" />
           <span className="text-[11px] font-semibold text-foreground">Live Poll Results</span>
           <span className="ml-auto text-[10px] text-muted-foreground">24 responses</span>
@@ -650,7 +747,7 @@ function PollingMockup() {
                 <span>{bar.label}</span>
                 <span className="font-semibold">{bar.pct}%</span>
               </div>
-              <div className="h-2.5 rounded-full bg-muted overflow-hidden">
+              <div className="h-2 rounded-full bg-muted overflow-hidden">
                 <div className={`h-full rounded-full ${bar.barColor} transition-all duration-1000`} style={{ width: `${bar.pct}%` }} />
               </div>
             </div>
@@ -673,8 +770,8 @@ function QuizMockup() {
   return (
     <div className="relative">
       <div className="absolute inset-0 -m-4 bg-blue-500/5 dark:bg-blue-500/10 blur-2xl rounded-3xl pointer-events-none" />
-      <div className="relative rounded-2xl border border-border bg-card overflow-hidden shadow-xl dark:shadow-black/20 mockup-card">
-        <div className="px-5 py-3 border-b border-border flex items-center gap-2">
+      <div className="relative rounded-2xl border border-border/60 bg-card/80 overflow-hidden shadow-xl dark:shadow-black/20 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
+        <div className="px-5 py-3 border-b border-border/50 flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-blue-500" />
           <span className="text-[11px] font-semibold text-foreground">Knowledge Check</span>
           <span className="ml-auto text-[10px] text-muted-foreground">&#9201; 0:28</span>
@@ -691,12 +788,12 @@ function QuizMockup() {
               <div key={opt.label} className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm border transition-all ${
                 opt.correct && opt.selected
                   ? 'border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-400'
-                  : 'border-border text-muted-foreground'
+                  : 'border-border/60 text-muted-foreground'
               }`}>
                 {opt.correct && opt.selected ? (
                   <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
                 ) : (
-                  <div className="w-4 h-4 rounded-full border border-border shrink-0" />
+                  <div className="w-4 h-4 rounded-full border border-border/60 shrink-0" />
                 )}
                 <span>{opt.label}</span>
               </div>
@@ -716,29 +813,29 @@ function AIMockup() {
   return (
     <div className="relative">
       <div className="absolute inset-0 -m-4 bg-violet-500/5 dark:bg-violet-500/10 blur-2xl rounded-3xl pointer-events-none" />
-      <div className="relative rounded-2xl border border-border bg-card overflow-hidden shadow-xl dark:shadow-black/20 mockup-card">
-        <div className="px-5 py-3 border-b border-border flex items-center gap-2">
+      <div className="relative rounded-2xl border border-border/60 bg-card/80 overflow-hidden shadow-xl dark:shadow-black/20 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
+        <div className="px-5 py-3 border-b border-border/50 flex items-center gap-2">
           <Sparkles className="w-3.5 h-3.5 text-violet-500" />
           <span className="text-[11px] font-semibold text-foreground">AI Session Summary</span>
           <span className="ml-auto text-[10px] text-muted-foreground">Generated in 3s</span>
         </div>
         <div className="p-5 space-y-4">
           <div>
-            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Key Themes</h4>
+            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.15em] mb-2">Key Themes</h4>
             <div className="flex flex-wrap gap-1.5">
               {['Equipment readiness', 'Communication gaps', 'Protocol adherence', 'Team morale'].map((tag) => (
-                <span key={tag} className="px-2.5 py-1 rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400 text-[10px] font-medium">{tag}</span>
+                <span key={tag} className="px-2.5 py-1 rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400 text-[10px] font-medium border border-violet-500/10">{tag}</span>
               ))}
             </div>
           </div>
           <div>
-            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Summary</h4>
+            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.15em] mb-2">Summary</h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
               The team demonstrated strong awareness of evacuation procedures. Key areas for improvement include radio communication during multi-floor operations and equipment inventory checks.
             </p>
           </div>
           <div>
-            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Recommendations</h4>
+            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.15em] mb-2">Recommendations</h4>
             <ul className="space-y-1.5">
               {['Schedule radio protocol refresher', 'Update equipment checklist', 'Run scenario drill next watch'].map((rec) => (
                 <li key={rec} className="flex items-start gap-2 text-xs text-muted-foreground">
