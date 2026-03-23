@@ -39,7 +39,7 @@ const TESTIMONIALS = [
 
 function TestimonialCard({ t }: { t: typeof TESTIMONIALS[number] }) {
   return (
-    <div className="w-[320px] shrink-0 p-5 rounded-2xl border border-white/[0.06] bg-white/[0.02] [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
+    <div className="w-[320px] shrink-0 p-5 rounded-2xl border border-white/[0.06] bg-white/[0.02] [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:border-white/[0.12] hover:[box-shadow:0_0_30px_-10px_var(--glow-color,rgba(220,38,38,0.15)),0_-20px_80px_-20px_rgba(255,255,255,0.05)_inset] transition-all duration-300" style={{ '--glow-color': `${t.color}20` } as React.CSSProperties}>
       <div className="flex items-center gap-3 mb-4">
         <div
           className="w-9 h-9 rounded-full flex items-center justify-center"

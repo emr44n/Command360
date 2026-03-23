@@ -12,6 +12,7 @@ import { FloatingJoinDock } from '@/components/join/FloatingJoinDock'
 import { PricingToggle } from '@/components/pricing/PricingToggle'
 import { HeroMockup } from '@/components/home/HeroMockup'
 import { TestimonialMarquee } from '@/components/home/TestimonialMarquee'
+import { FaqAccordion } from '@/components/home/FaqAccordion'
 
 /* ── DATA ── */
 
@@ -181,14 +182,14 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_75%_15%,rgba(249,115,22,0.1),transparent_50%)]" />
           {/* Secondary cool accent at bottom */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_70%_80%,rgba(59,130,246,0.05),transparent_50%)]" />
-          {/* Fine grid — more visible, red-tinted, wider coverage */}
+          {/* Grid — prominent, red-tinted, full coverage */}
           <div
-            className="absolute inset-0 opacity-[0.07]"
+            className="absolute inset-0 opacity-[0.12]"
             style={{
-              backgroundImage: 'linear-gradient(rgba(220,38,38,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(220,38,38,0.3) 1px, transparent 1px)',
-              backgroundSize: '48px 48px',
-              maskImage: 'radial-gradient(ellipse 90% 70% at 50% 35%, black 30%, transparent 75%)',
-              WebkitMaskImage: 'radial-gradient(ellipse 90% 70% at 50% 35%, black 30%, transparent 75%)',
+              backgroundImage: 'linear-gradient(rgba(220,38,38,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(220,38,38,0.4) 1px, transparent 1px)',
+              backgroundSize: '56px 56px',
+              maskImage: 'radial-gradient(ellipse 100% 80% at 50% 40%, black 20%, transparent 80%)',
+              WebkitMaskImage: 'radial-gradient(ellipse 100% 80% at 50% 40%, black 20%, transparent 80%)',
             }}
           />
           {/* Bottom fade to black */}
@@ -279,22 +280,32 @@ export default function LandingPage() {
           </ScrollReveal>
 
           <ScrollReveal stagger>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 md:auto-rows-[170px] gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {BENTO_FEATURES.map((f) => (
                 <div
                   key={f.title}
-                  className={`group relative flex flex-col overflow-hidden rounded-2xl p-5 border border-white/[0.06] bg-white/[0.02] ${f.borderHover} hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-0.5 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] ${f.span}`}
+                  className={`group relative flex flex-col overflow-hidden rounded-2xl p-5 border border-white/[0.06] bg-white/[0.02] ${f.borderHover} hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-0.5 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]`}
                 >
-                  {/* Subtle colored glow in top-left */}
-                  <div className="absolute -top-12 -left-12 w-32 h-32 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-3xl pointer-events-none" style={{ backgroundColor: f.color.includes('red') ? 'rgba(220,38,38,0.08)' : f.color.includes('emerald') ? 'rgba(16,185,129,0.08)' : f.color.includes('violet') ? 'rgba(139,92,246,0.08)' : f.color.includes('blue') ? 'rgba(59,130,246,0.08)' : f.color.includes('amber') ? 'rgba(245,158,11,0.08)' : 'rgba(14,165,233,0.08)' }} />
+                  {/* Color accent line at top */}
+                  <div className="absolute top-0 left-0 right-0 h-px opacity-40" style={{ background: `linear-gradient(90deg, transparent 10%, var(--accent-color, rgba(255,255,255,0.1)) 50%, transparent 90%)` }} />
+                  {/* Corner glow on hover */}
+                  <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-3xl pointer-events-none" style={{ backgroundColor: f.color.includes('red') ? 'rgba(220,38,38,0.06)' : f.color.includes('emerald') ? 'rgba(16,185,129,0.06)' : f.color.includes('violet') ? 'rgba(139,92,246,0.06)' : f.color.includes('blue') ? 'rgba(59,130,246,0.06)' : f.color.includes('amber') ? 'rgba(245,158,11,0.06)' : 'rgba(14,165,233,0.06)' }} />
                   <div className="flex items-center gap-2.5 mb-3">
-                    <div className="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
                       <f.icon className={`w-3.5 h-3.5 ${f.color}`} />
                     </div>
                     <span className={`text-[9px] uppercase tracking-[0.15em] font-semibold ${f.color}`}>{f.label}</span>
                   </div>
                   <h3 className="text-sm font-semibold text-white mb-1.5">{f.title}</h3>
-                  <p className="text-xs text-white/35 leading-relaxed">{f.description}</p>
+                  <p className="text-xs text-white/35 leading-relaxed mb-3">{f.description}</p>
+                  {/* Mini visual bar */}
+                  <div className="mt-auto flex items-center gap-1.5">
+                    {[40, 65, 25, 80, 50].map((w, i) => (
+                      <div key={i} className="h-1 rounded-full bg-white/[0.06] flex-1">
+                        <div className="h-full rounded-full transition-all duration-700 group-hover:opacity-100 opacity-40" style={{ width: `${w}%`, backgroundColor: f.color.includes('red') ? '#dc2626' : f.color.includes('emerald') ? '#10b981' : f.color.includes('violet') ? '#8b5cf6' : f.color.includes('blue') ? '#3b82f6' : f.color.includes('amber') ? '#f59e0b' : '#0ea5e9' }} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
@@ -404,13 +415,19 @@ export default function LandingPage() {
           </ScrollReveal>
 
           <ScrollReveal stagger>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {STEPS.map((step) => (
-                <div key={step.n} className="relative bg-card/50 rounded-2xl border border-border/60 p-8 text-center [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset]">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-5">
-                    <step.icon className="w-5 h-5 text-primary" />
+            <div className="relative grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Connecting line on desktop */}
+              <div className="hidden md:block absolute top-[60px] left-[16.67%] right-[16.67%] h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+              {STEPS.map((step, i) => (
+                <div key={step.n} className="relative bg-card/50 rounded-2xl border border-border/60 p-8 text-center [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] hover:-translate-y-0.5 transition-all duration-300 group">
+                  {/* Numbered circle */}
+                  <div className="relative mx-auto mb-5">
+                    <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
+                      <step.icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">{i + 1}</div>
                   </div>
-                  <span className="text-[10px] font-bold text-primary/40 uppercase tracking-[0.2em]">Step {step.n}</span>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[9px] uppercase tracking-[0.15em] font-semibold border border-primary/15 mb-3">Step {step.n}</span>
                   <h3 className="text-base font-bold mt-2 mb-3">{step.title}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">{step.desc}</p>
                 </div>
@@ -432,11 +449,10 @@ export default function LandingPage() {
           </ScrollReveal>
 
           <ScrollReveal stagger>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            <div className="flex flex-wrap justify-center gap-3">
               {USE_CASES.map((uc) => (
                 <Link key={uc.slug} href={`/solutions/${uc.slug}`}
-                  className="group p-5 rounded-2xl border border-border/60 bg-card/50 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] relative overflow-hidden"
-                  style={{ '--service-color': uc.color } as React.CSSProperties}
+                  className="group p-5 rounded-2xl border border-border/60 bg-card/50 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] relative overflow-hidden w-full sm:w-[calc(50%-6px)] lg:w-[calc(25%-9px)]"
                 >
                   {/* Top accent line */}
                   <div className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(90deg, transparent, ${uc.color}50, transparent)` }} />
@@ -444,7 +460,7 @@ export default function LandingPage() {
                     <div className={`w-8 h-8 rounded-lg ${uc.bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
                       <uc.icon className={`w-3.5 h-3.5 ${uc.text}`} />
                     </div>
-                    <h3 className={`text-sm font-bold group-hover:${uc.text} transition-colors`} style={{ color: undefined }}>{uc.label}</h3>
+                    <h3 className="text-sm font-bold transition-colors">{uc.label}</h3>
                   </div>
                   <p className="text-muted-foreground text-xs leading-relaxed">{uc.desc}</p>
                 </Link>
@@ -498,21 +514,24 @@ export default function LandingPage() {
             <p className="text-muted-foreground mt-4 max-w-lg mx-auto text-sm">Purpose-built templates for operational training, debriefs, and learning capture.</p>
           </ScrollReveal>
 
-          <ScrollReveal stagger>
-            <div className="flex flex-wrap items-center justify-center gap-2.5">
-              {TEMPLATE_EXAMPLES.map((t) => (
-                <span key={t} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border/60 bg-card/50 text-sm font-medium hover:border-primary/20 transition-all duration-200 cursor-default">
+          <div className="relative overflow-hidden">
+            <div className="flex gap-3 animate-[marqueeLeft_30s_linear_infinite] hover:[animation-play-state:paused]">
+              {[...TEMPLATE_EXAMPLES, ...TEMPLATE_EXAMPLES, ...TEMPLATE_EXAMPLES, ...TEMPLATE_EXAMPLES].map((t, i) => (
+                <span key={`${t}-${i}`} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border/60 bg-card/50 text-sm font-medium whitespace-nowrap shrink-0 hover:border-primary/20 hover:bg-card transition-all duration-200 cursor-default">
                   <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
                   {t}
                 </span>
               ))}
             </div>
-            <div className="text-center mt-8">
-              <Link href="/templates" className="inline-flex items-center gap-2 text-sm text-primary font-medium hover:underline transition-all">
-                View all templates <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </ScrollReveal>
+            {/* Fade edges */}
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-background to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-background to-transparent" />
+          </div>
+          <div className="text-center mt-8">
+            <Link href="/templates" className="inline-flex items-center gap-2 text-sm text-primary font-medium hover:underline transition-all">
+              View all templates <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -536,15 +555,8 @@ export default function LandingPage() {
             <ScrollReveal className="text-center mb-10">
               <h3 className="text-xl md:text-2xl font-bold tracking-tight">Frequently asked questions</h3>
             </ScrollReveal>
-            <ScrollReveal stagger>
-              <div className="space-y-3">
-                {FAQ_ITEMS.map((item) => (
-                  <div key={item.q} className="bg-card/50 border border-border/60 rounded-xl p-5 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset]">
-                    <h4 className="font-semibold text-sm mb-2">{item.q}</h4>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{item.a}</p>
-                  </div>
-                ))}
-              </div>
+            <ScrollReveal>
+              <FaqAccordion items={FAQ_ITEMS} />
             </ScrollReveal>
           </div>
         </div>
@@ -570,12 +582,20 @@ export default function LandingPage() {
           ═══════════════════════════════════════════ */}
       <section className="relative bg-[#07070a] overflow-hidden border-t border-white/[0.04]">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_100%,rgba(220,38,38,0.1),transparent)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_100%,rgba(220,38,38,0.18),transparent)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(220,38,38,0.08),transparent)]" />
+          {/* Grid texture */}
+          <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
         </div>
         <div className="relative max-w-3xl mx-auto px-5 py-24 md:py-32 text-center">
           <ScrollReveal>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[10px] uppercase tracking-[0.15em] text-white/40 font-medium mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 pulse-dot" />
+              Get started today
+            </div>
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-6">
-              Ready to transform your training?
+              Ready to transform{' '}
+              <span className="bg-gradient-to-r from-red-400 to-orange-500 gradient-text">your training?</span>
             </h2>
             <p className="text-white/35 text-base md:text-lg mb-10 max-w-lg mx-auto">
               Free for 30 days. No credit card required. Built for those who serve.
@@ -595,7 +615,9 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           FOOTER
           ═══════════════════════════════════════════ */}
-      <footer className="border-t border-border/50 bg-background">
+      <footer className="border-t border-border/50 bg-background relative">
+        {/* Subtle grid texture */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
         <div className="max-w-6xl mx-auto px-5 py-12">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-10">
             {/* Brand */}
