@@ -11,6 +11,7 @@ import { HomepageClient } from '@/components/home/HomepageClient'
 import { FloatingJoinDock } from '@/components/join/FloatingJoinDock'
 import { PricingToggle } from '@/components/pricing/PricingToggle'
 import { HeroMockup } from '@/components/home/HeroMockup'
+import { TestimonialMarquee } from '@/components/home/TestimonialMarquee'
 
 /* ── DATA ── */
 
@@ -87,17 +88,17 @@ const STEPS = [
 ]
 
 const USE_CASES = [
-  { icon: Flame, label: 'Fire & Rescue', slug: 'fire-rescue', desc: 'Safety briefings, incident debriefs, and operational learning.' },
-  { icon: Shield, label: 'Police', slug: 'police', desc: 'Training days, knowledge checks, and community engagement.' },
-  { icon: Siren, label: 'Ambulance', slug: 'ambulance', desc: 'Clinical updates, CPD sessions, and crew welfare checks.' },
-  { icon: Target, label: 'Armed Forces', slug: 'armed-forces', desc: 'Operational readiness, doctrine training, and lessons learned.' },
-  { icon: Anchor, label: 'HM Coastguard', slug: 'coastguard', desc: 'Safety training, equipment checks, and incident reviews.' },
-  { icon: Search, label: 'Search & Rescue', slug: 'search-rescue', desc: 'Scenario learning, volunteer training, and skills checks.' },
-  { icon: Lock, label: 'Prison & Probation', slug: 'prison-probation', desc: 'Staff training, incident reviews, and compliance checks.' },
-  { icon: Building2, label: 'Local Authority', slug: 'local-authority', desc: 'Emergency planning, business continuity, and team training.' },
-  { icon: Radio, label: 'Civil Contingencies', slug: 'civil-contingencies', desc: 'Multi-agency exercises, resilience planning, and debriefs.' },
-  { icon: Heart, label: 'NHS Emergency Departments', slug: 'nhs-emergency', desc: 'Clinical governance, major incident training, and team briefings.' },
-  { icon: Users, label: 'Voluntary Sector', slug: 'voluntary-sector', desc: 'Volunteer inductions, skills development, and safeguarding training.' },
+  { icon: Flame, label: 'Fire & Rescue', slug: 'fire-rescue', desc: 'Safety briefings, incident debriefs, and operational learning.', color: '#f97316', bg: 'bg-orange-500/10', text: 'text-orange-400' },
+  { icon: Shield, label: 'Police', slug: 'police', desc: 'Training days, knowledge checks, and community engagement.', color: '#3b82f6', bg: 'bg-blue-500/10', text: 'text-blue-400' },
+  { icon: Siren, label: 'Ambulance', slug: 'ambulance', desc: 'Clinical updates, CPD sessions, and crew welfare checks.', color: '#10b981', bg: 'bg-emerald-500/10', text: 'text-emerald-400' },
+  { icon: Target, label: 'Armed Forces', slug: 'armed-forces', desc: 'Operational readiness, doctrine training, and lessons learned.', color: '#64748b', bg: 'bg-slate-500/10', text: 'text-slate-400' },
+  { icon: Anchor, label: 'HM Coastguard', slug: 'coastguard', desc: 'Safety training, equipment checks, and incident reviews.', color: '#0ea5e9', bg: 'bg-sky-500/10', text: 'text-sky-400' },
+  { icon: Search, label: 'Search & Rescue', slug: 'search-rescue', desc: 'Scenario learning, volunteer training, and skills checks.', color: '#f59e0b', bg: 'bg-amber-500/10', text: 'text-amber-400' },
+  { icon: Lock, label: 'Prison & Probation', slug: 'prison-probation', desc: 'Staff training, incident reviews, and compliance checks.', color: '#71717a', bg: 'bg-zinc-500/10', text: 'text-zinc-400' },
+  { icon: Building2, label: 'Local Authority', slug: 'local-authority', desc: 'Emergency planning, business continuity, and team training.', color: '#8b5cf6', bg: 'bg-violet-500/10', text: 'text-violet-400' },
+  { icon: Radio, label: 'Civil Contingencies', slug: 'civil-contingencies', desc: 'Multi-agency exercises, resilience planning, and debriefs.', color: '#ef4444', bg: 'bg-red-500/10', text: 'text-red-400' },
+  { icon: Heart, label: 'NHS Emergency Departments', slug: 'nhs-emergency', desc: 'Clinical governance, major incident training, and team briefings.', color: '#ec4899', bg: 'bg-pink-500/10', text: 'text-pink-400' },
+  { icon: Users, label: 'Voluntary Sector', slug: 'voluntary-sector', desc: 'Volunteer inductions, skills development, and safeguarding training.', color: '#14b8a6', bg: 'bg-teal-500/10', text: 'text-teal-400' },
 ]
 
 const TEMPLATE_EXAMPLES = [
@@ -174,20 +175,20 @@ export default function LandingPage() {
       <section className="relative min-h-[95vh] flex flex-col bg-[#07070a] overflow-hidden">
         {/* Background layers — prominent aurora gradient */}
         <div className="absolute inset-0 pointer-events-none">
-          {/* Main red/orange aurora glow */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_60%_at_50%_-30%,rgba(220,38,38,0.25),transparent_60%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_20%_20%,rgba(249,115,22,0.12),transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_10%,rgba(220,38,38,0.1),transparent_50%)]" />
-          {/* Secondary cool accent */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_70%_80%,rgba(59,130,246,0.06),transparent_50%)]" />
-          {/* Fine grid with radial mask */}
+          {/* Main red aurora glow — prominent and wide */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_140%_70%_at_50%_-20%,rgba(220,38,38,0.3),transparent_65%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_60%_at_30%_10%,rgba(220,38,38,0.15),transparent_55%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_75%_15%,rgba(249,115,22,0.1),transparent_50%)]" />
+          {/* Secondary cool accent at bottom */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_70%_80%,rgba(59,130,246,0.05),transparent_50%)]" />
+          {/* Fine grid — more visible, red-tinted, wider coverage */}
           <div
-            className="absolute inset-0 opacity-[0.04]"
+            className="absolute inset-0 opacity-[0.07]"
             style={{
-              backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(220,38,38,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(220,38,38,0.3) 1px, transparent 1px)',
               backgroundSize: '48px 48px',
-              maskImage: 'radial-gradient(ellipse 70% 50% at 50% 40%, black 20%, transparent 70%)',
-              WebkitMaskImage: 'radial-gradient(ellipse 70% 50% at 50% 40%, black 20%, transparent 70%)',
+              maskImage: 'radial-gradient(ellipse 90% 70% at 50% 35%, black 30%, transparent 75%)',
+              WebkitMaskImage: 'radial-gradient(ellipse 90% 70% at 50% 35%, black 30%, transparent 75%)',
             }}
           />
           {/* Bottom fade to black */}
@@ -278,22 +279,22 @@ export default function LandingPage() {
           </ScrollReveal>
 
           <ScrollReveal stagger>
-            <div className="grid grid-cols-1 md:grid-cols-4 md:auto-rows-[180px] gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 md:auto-rows-[170px] gap-3">
               {BENTO_FEATURES.map((f) => (
                 <div
                   key={f.title}
-                  className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl p-6 border border-white/[0.06] bg-white/[0.02] ${f.borderHover} hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-0.5 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] ${f.span}`}
+                  className={`group relative flex flex-col overflow-hidden rounded-2xl p-5 border border-white/[0.06] bg-white/[0.02] ${f.borderHover} hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-0.5 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] ${f.span}`}
                 >
-                  <div>
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center">
-                        <f.icon className={`w-4 h-4 ${f.color}`} />
-                      </div>
-                      <span className="text-[10px] uppercase tracking-[0.15em] text-white/30 font-medium">{f.label}</span>
+                  {/* Subtle colored glow in top-left */}
+                  <div className="absolute -top-12 -left-12 w-32 h-32 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-3xl pointer-events-none" style={{ backgroundColor: f.color.includes('red') ? 'rgba(220,38,38,0.08)' : f.color.includes('emerald') ? 'rgba(16,185,129,0.08)' : f.color.includes('violet') ? 'rgba(139,92,246,0.08)' : f.color.includes('blue') ? 'rgba(59,130,246,0.08)' : f.color.includes('amber') ? 'rgba(245,158,11,0.08)' : 'rgba(14,165,233,0.08)' }} />
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <div className="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center shrink-0">
+                      <f.icon className={`w-3.5 h-3.5 ${f.color}`} />
                     </div>
-                    <h3 className="text-base font-semibold text-white mb-2">{f.title}</h3>
-                    <p className="text-sm text-white/35 leading-relaxed">{f.description}</p>
+                    <span className={`text-[9px] uppercase tracking-[0.15em] font-semibold ${f.color}`}>{f.label}</span>
                   </div>
+                  <h3 className="text-sm font-semibold text-white mb-1.5">{f.title}</h3>
+                  <p className="text-xs text-white/35 leading-relaxed">{f.description}</p>
                 </div>
               ))}
             </div>
@@ -372,11 +373,18 @@ export default function LandingPage() {
           <ScrollReveal stagger>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {SLIDE_TYPES.map((s) => (
-                <div key={s.label} className={`group p-6 rounded-2xl border border-border/60 bg-card/50 ${s.borderColor} hover:shadow-lg transition-all duration-200 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset]`}>
-                  <div className={`w-10 h-10 rounded-xl ${s.bg} border border-white/[0.06] flex items-center justify-center mb-4`}>
-                    <s.icon className={`w-5 h-5 ${s.color}`} />
+                <div key={s.label} className={`group p-5 rounded-2xl border border-border/60 bg-card/50 ${s.borderColor} hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] relative overflow-hidden`}>
+                  {/* Color accent line at top */}
+                  <div className={`absolute top-0 left-0 right-0 h-px ${s.bg.replace('/10', '/30')}`} style={{ background: `linear-gradient(90deg, transparent, ${s.color === 'text-red-500' ? '#dc2626' : s.color === 'text-sky-500' ? '#0ea5e9' : s.color === 'text-emerald-500' ? '#10b981' : s.color === 'text-amber-500' ? '#f59e0b' : s.color === 'text-rose-500' ? '#f43f5e' : '#8b5cf6'}40, transparent)` }} />
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className={`w-9 h-9 rounded-xl ${s.bg} border border-white/[0.06] flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                      <s.icon className={`w-4 h-4 ${s.color}`} />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-sm">{s.label}</h3>
+                      <span className={`text-[9px] uppercase tracking-[0.12em] font-medium ${s.color} opacity-60`}>Interactive</span>
+                    </div>
                   </div>
-                  <h3 className="font-semibold text-sm mb-2">{s.label}</h3>
                   <p className="text-muted-foreground text-xs leading-relaxed">{s.description}</p>
                 </div>
               ))}
@@ -427,9 +435,17 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
               {USE_CASES.map((uc) => (
                 <Link key={uc.slug} href={`/solutions/${uc.slug}`}
-                  className="group p-5 rounded-2xl border border-border/60 bg-card/50 hover:border-primary/20 hover:shadow-lg transition-all duration-200 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset]">
-                  <uc.icon className="w-4 h-4 mb-3 text-primary" />
-                  <h3 className="text-sm font-bold mb-1 group-hover:text-primary transition-colors">{uc.label}</h3>
+                  className="group p-5 rounded-2xl border border-border/60 bg-card/50 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] relative overflow-hidden"
+                  style={{ '--service-color': uc.color } as React.CSSProperties}
+                >
+                  {/* Top accent line */}
+                  <div className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(90deg, transparent, ${uc.color}50, transparent)` }} />
+                  <div className="flex items-center gap-2.5 mb-2.5">
+                    <div className={`w-8 h-8 rounded-lg ${uc.bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                      <uc.icon className={`w-3.5 h-3.5 ${uc.text}`} />
+                    </div>
+                    <h3 className={`text-sm font-bold group-hover:${uc.text} transition-colors`} style={{ color: undefined }}>{uc.label}</h3>
+                  </div>
                   <p className="text-muted-foreground text-xs leading-relaxed">{uc.desc}</p>
                 </Link>
               ))}
@@ -441,24 +457,29 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           OUTCOMES
           ═══════════════════════════════════════════ */}
-      <section className="bg-muted/30 border-t border-border/50">
-        <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
+      <section className="relative bg-[#07070a] border-t border-white/[0.04] overflow-hidden">
+        {/* Background effects */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_50%,rgba(220,38,38,0.08),transparent)]" />
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+        </div>
+        <div className="relative max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-14">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Impact</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Measurable impact on training</h2>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] text-white/40 text-[10px] uppercase tracking-[0.15em] font-medium border border-white/[0.08]">Impact</span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5 text-white">Measurable impact on training</h2>
           </ScrollReveal>
 
           <ScrollReveal stagger>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { stat: '3x', label: 'More participation than traditional hand-raising', desc: 'Everyone contributes, not just the loudest voices.' },
-                { stat: '90%', label: 'Of crews prefer interactive briefings', desc: 'Engagement that keeps your team focused and alert.' },
-                { stat: '60%', label: 'Faster feedback capture vs paper forms', desc: 'Results ready instantly, not after hours of data entry.' },
+                { stat: '3x', label: 'More participation than hand-raising', desc: 'Everyone contributes, not just the loudest voices.', color: 'from-red-400 to-orange-500' },
+                { stat: '90%', label: 'Of crews prefer interactive briefings', desc: 'Engagement that keeps your team focused and alert.', color: 'from-blue-400 to-cyan-400' },
+                { stat: '60%', label: 'Faster feedback vs paper forms', desc: 'Results ready instantly, not after hours of data entry.', color: 'from-emerald-400 to-green-400' },
               ].map((s) => (
-                <div key={s.label} className="text-center bg-card/50 rounded-2xl border border-border/60 p-8 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset]">
-                  <p className="text-5xl font-bold bg-gradient-to-b from-primary to-primary/60 gradient-text mb-3">{s.stat}</p>
-                  <p className="font-semibold text-sm mb-2">{s.label}</p>
-                  <p className="text-muted-foreground text-xs">{s.desc}</p>
+                <div key={s.label} className="text-center rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 transition-all duration-300">
+                  <p className={`text-5xl font-bold bg-gradient-to-r ${s.color} gradient-text mb-3`}>{s.stat}</p>
+                  <p className="font-semibold text-sm text-white/80 mb-2">{s.label}</p>
+                  <p className="text-white/35 text-xs">{s.desc}</p>
                 </div>
               ))}
             </div>
@@ -532,32 +553,15 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           TESTIMONIALS
           ═══════════════════════════════════════════ */}
-      <section id="testimonials" className="bg-background border-t border-border/50">
-        <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
-          <ScrollReveal className="text-center mb-14">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Testimonials</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Trusted by those who serve</h2>
+      <section id="testimonials" className="relative bg-[#07070a] border-t border-white/[0.04] overflow-hidden">
+        <div className="py-20 md:py-28">
+          <ScrollReveal className="text-center mb-14 px-5">
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] text-white/40 text-[10px] uppercase tracking-[0.15em] font-medium border border-white/[0.08]">Testimonials</span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5 text-white">Trusted by those who serve</h2>
+            <p className="text-white/35 mt-4 max-w-lg mx-auto text-sm">Hear from emergency service professionals already using Command 360.</p>
           </ScrollReveal>
 
-          <ScrollReveal stagger>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {TESTIMONIALS.map((t) => (
-                <div key={t.name} className="bg-card/50 border border-border/60 rounded-2xl p-6 flex flex-col [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset]">
-                  <Quote className="w-7 h-7 text-primary/15 mb-4 shrink-0" />
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-6 flex-1">&ldquo;{t.quote}&rdquo;</p>
-                  <div className="flex items-center gap-3 pt-4 border-t border-border/50">
-                    <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                      <t.icon className="w-4 h-4 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold">{t.name}</p>
-                      <p className="text-[11px] text-muted-foreground">{t.role}, {t.org}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollReveal>
+          <TestimonialMarquee />
         </div>
       </section>
 

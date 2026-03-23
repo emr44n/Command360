@@ -154,6 +154,14 @@ html, body {
   0% { opacity: 0; transform: translateY(8px); }
   100% { opacity: 1; transform: translateY(0); }
 }
+@keyframes marqueeLeft {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes marqueeRight {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
 .hero-fade-up { animation: hero-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .hero-fade-up-1 { animation-delay: 0.05s; }
 .hero-fade-up-2 { animation-delay: 0.15s; }
