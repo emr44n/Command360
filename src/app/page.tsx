@@ -10,6 +10,7 @@ import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 import { HomepageClient } from '@/components/home/HomepageClient'
 import { FloatingJoinDock } from '@/components/join/FloatingJoinDock'
 import { PricingToggle } from '@/components/pricing/PricingToggle'
+import { HeroMockup } from '@/components/home/HeroMockup'
 
 /* ── DATA ── */
 
@@ -171,20 +172,26 @@ export default function LandingPage() {
           HERO
           ═══════════════════════════════════════════ */}
       <section className="relative min-h-[95vh] flex flex-col bg-[#07070a] overflow-hidden">
-        {/* Background layers */}
+        {/* Background layers — prominent aurora gradient */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(220,38,38,0.12),transparent)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_80%,rgba(220,38,38,0.05),transparent)]" />
+          {/* Main red/orange aurora glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_60%_at_50%_-30%,rgba(220,38,38,0.25),transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_20%_20%,rgba(249,115,22,0.12),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_10%,rgba(220,38,38,0.1),transparent_50%)]" />
+          {/* Secondary cool accent */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_70%_80%,rgba(59,130,246,0.06),transparent_50%)]" />
+          {/* Fine grid with radial mask */}
           <div
-            className="absolute inset-0 opacity-[0.03]"
+            className="absolute inset-0 opacity-[0.04]"
             style={{
               backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
-              backgroundSize: '64px 64px',
-              maskImage: 'radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 70%)',
-              WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 70%)',
+              backgroundSize: '48px 48px',
+              maskImage: 'radial-gradient(ellipse 70% 50% at 50% 40%, black 20%, transparent 70%)',
+              WebkitMaskImage: 'radial-gradient(ellipse 70% 50% at 50% 40%, black 20%, transparent 70%)',
             }}
           />
-          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#07070a] to-transparent" />
+          {/* Bottom fade to black */}
+          <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-[#07070a] via-[#07070a]/80 to-transparent" />
         </div>
 
         {/* Hero content */}
@@ -192,21 +199,21 @@ export default function LandingPage() {
           {/* Badge */}
           <div className="hero-fade-up hero-fade-up-1 inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] text-[11px] uppercase tracking-[0.15em] text-white/50 mb-8 font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 pulse-dot" />
-            Built for UK emergency services
+            The interactive learning platform for emergency services
           </div>
 
           {/* Heading */}
           <h1 className="hero-fade-up hero-fade-up-2 text-[clamp(2.2rem,6.5vw,4.2rem)] font-bold tracking-tight leading-[1.08] text-white mb-6">
-            The secure space where{' '}
+            Where emergency teams{' '}
             <br className="hidden sm:block" />
-            emergency teams{' '}
-            <span className="bg-gradient-to-r from-red-400 via-red-500 to-orange-500 gradient-text">speak freely.</span>
+            <span className="bg-gradient-to-r from-red-400 via-red-500 to-orange-500 gradient-text">learn, grow, and lead.</span>
           </h1>
 
           {/* Subtitle */}
           <p className="hero-fade-up hero-fade-up-3 text-base md:text-lg text-white/40 max-w-2xl leading-relaxed mb-10">
-            Brief, train, and debrief with confidence. Anonymous feedback, live interaction,
-            and AI-powered insights — built exclusively for those who protect and serve.
+            An interactive training environment that transforms briefings, debriefs, and CPD sessions
+            into engaging learning experiences. Live polls, quizzes, and AI insights — helping your crews
+            build knowledge and confidence together.
           </p>
 
           {/* CTAs */}
@@ -226,74 +233,10 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Product mockup */}
-        <div className="relative z-10 mx-auto max-w-4xl w-full px-5 mt-8 mb-[-80px] hero-fade-up hero-fade-up-5">
-          <div className="absolute inset-0 -m-10 bg-red-500/[0.05] blur-[60px] rounded-full pointer-events-none" />
-
-          <div className="relative rounded-2xl border border-white/[0.08] overflow-hidden shadow-2xl shadow-black/60 bg-[#0c0c10]">
-            {/* Chrome bar */}
-            <div className="flex items-center gap-2 px-4 h-9 bg-white/[0.02] border-b border-white/[0.06]">
-              <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]/40" />
-                <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]/40" />
-                <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]/40" />
-              </div>
-              <div className="flex-1 max-w-[240px] mx-auto h-5 rounded-md bg-white/[0.04] flex items-center justify-center">
-                <span className="text-[9px] text-white/20 font-mono">command360.co.uk/present</span>
-              </div>
-            </div>
-
-            {/* Presenter view */}
-            <div className="aspect-[16/9] p-4 md:p-6 grid grid-cols-1 md:grid-cols-[1fr_180px] gap-4">
-              {/* Main slide */}
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-red-500/15 text-red-400 uppercase tracking-wider">Live Poll</span>
-                  <span className="text-[9px] text-white/15">Slide 3 of 8</span>
-                </div>
-                <p className="text-white/90 text-xs md:text-sm font-medium mb-5">Which evacuation protocol applies to this scenario?</p>
-
-                <div className="space-y-2.5 flex-1">
-                  {[
-                    { label: 'Protocol Alpha', pct: 65 },
-                    { label: 'Protocol Bravo', pct: 22 },
-                    { label: 'Protocol Charlie', pct: 13 },
-                  ].map((bar) => (
-                    <div key={bar.label} className="flex items-center gap-2">
-                      <div className="flex-1 h-5 md:h-7 rounded-lg bg-white/[0.04] overflow-hidden relative">
-                        <div className="absolute inset-y-0 left-0 rounded-lg bg-gradient-to-r from-red-500/30 to-red-500/15 shimmer-bar" style={{ width: `${bar.pct}%` }} />
-                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[9px] md:text-[10px] text-white/50">{bar.label}</span>
-                      </div>
-                      <span className="text-[9px] text-white/25 w-7 text-right font-mono">{bar.pct}%</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex items-center gap-2 mt-4">
-                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/[0.03] text-[8px] text-white/20">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500/70" />24 connected
-                  </div>
-                  <div className="px-2 py-1 rounded-md bg-white/[0.03] text-[8px] text-white/20">
-                    Code: C360-7K
-                  </div>
-                </div>
-              </div>
-
-              {/* Right panel */}
-              <div className="hidden md:block border-l border-white/[0.04] pl-4">
-                <span className="text-[8px] text-white/15 uppercase tracking-wider font-medium">Responses</span>
-                <div className="mt-2 space-y-1">
-                  {['Station Officer', 'Crew Manager', 'Watch B', 'FF Jones', 'FF Smith', 'FF Taylor'].map((n) => (
-                    <div key={n} className="flex items-center gap-1.5 px-2 py-1 rounded bg-white/[0.02]">
-                      <div className="w-3.5 h-3.5 rounded-full bg-white/[0.05]" />
-                      <span className="text-[8px] text-white/20 flex-1 truncate">{n}</span>
-                      <span className="text-[7px] text-green-400/50">&#10003;</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Animated product mockup */}
+        <div className="relative z-10 mx-auto max-w-3xl w-full px-5 mt-8 mb-[-80px] hero-fade-up hero-fade-up-5">
+          <div className="absolute inset-0 -m-10 bg-red-500/[0.06] blur-[80px] rounded-full pointer-events-none" />
+          <HeroMockup />
         </div>
       </section>
 
