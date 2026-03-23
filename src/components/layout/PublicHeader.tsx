@@ -38,7 +38,7 @@ export function PublicHeader() {
   const onHero = !scrolled
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 overflow-x-hidden ${
+    <header className={`fixed top-0 left-0 right-0 z-[70] transition-all duration-300 ${
       scrolled
         ? 'backdrop-blur-xl bg-background/80 border-b border-border shadow-sm'
         : 'bg-transparent'
@@ -99,8 +99,9 @@ export function PublicHeader() {
             </button>
             {joinOpen && (
               <>
-                <div className="fixed inset-0 z-40" onClick={() => setJoinOpen(false)} />
-                <div className="absolute right-0 top-full mt-2.5 z-50 bg-card border border-border rounded-xl shadow-xl p-3 slide-down">
+                <div className="fixed inset-0 z-[80]" onClick={() => setJoinOpen(false)} />
+                <div className="absolute right-0 top-full mt-2.5 z-[90] bg-card/95 backdrop-blur-xl border border-border/60 rounded-xl shadow-2xl shadow-black/20 dark:shadow-black/40 p-4 slide-down min-w-[260px]">
+                  <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium mb-2.5">Enter room code</p>
                   <JoinCodeInput variant="compact" />
                 </div>
               </>

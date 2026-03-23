@@ -95,7 +95,10 @@
       "Bash(grep -r \"team\\\\|role\" 'D:\\\\My Products\\\\Command360/src' --include=*.ts --include=*.tsx)",
       "Bash(grep -l \"admin\" \"D:\\\\My Products\\\\Command360/src/app\"/**/*.tsx)",
       "Bash(grep -r \"ROLES\\\\|role.*=\" 'D:\\\\My Products\\\\Command360/src' --include=*.tsx --include=*.ts)",
-      "Bash(grep -rn \"owner\\\\|admin\\\\|editor\\\\|presenter\\\\|viewer\" 'D:\\\\My Products\\\\Command360/src' --include=*.tsx --include=*.ts)"
+      "Bash(grep -rn \"owner\\\\|admin\\\\|editor\\\\|presenter\\\\|viewer\" 'D:\\\\My Products\\\\Command360/src' --include=*.tsx --include=*.ts)",
+      "Bash(claude mcp:*)",
+      "Bash(tasklist)",
+      "mcp__magic__21st_magic_component_inspiration"
     ]
   }
 }

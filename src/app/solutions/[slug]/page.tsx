@@ -623,8 +623,17 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
       <section className="relative bg-[#07070a] overflow-hidden">
         {/* Background effects */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 80% 50% at 50% -20%, ${service.heroGlow}, transparent)` }} />
-          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
+          <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 90% 60% at 50% -20%, ${service.heroGlow}, transparent)` }} />
+          {/* Enhanced red-tinted grid texture */}
+          <div
+            className="absolute inset-0 opacity-[0.10]"
+            style={{
+              backgroundImage: `linear-gradient(rgba(255,100,100,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,100,100,0.4) 1px, transparent 1px)`,
+              backgroundSize: '64px 64px',
+              mask: 'radial-gradient(ellipse 80% 70% at 50% 40%, black, transparent)',
+              WebkitMask: 'radial-gradient(ellipse 80% 70% at 50% 40%, black, transparent)',
+            }}
+          />
           <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#07070a] to-transparent" />
         </div>
 
@@ -635,7 +644,7 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
               <ScrollReveal direction="up">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/8 bg-white/6 mb-6 mx-auto lg:mx-0">
                   <Icon className={`w-4 h-4 ${service.color}`} />
-                  <span className="text-sm font-medium text-white/60">{service.name}</span>
+                  <span className="text-[10px] uppercase tracking-[0.15em] font-semibold text-white/60">{service.name}</span>
                 </div>
               </ScrollReveal>
 
@@ -674,10 +683,17 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
               </ScrollReveal>
             </div>
 
-            {/* Right: mockup */}
+            {/* Right: mockup with animated glow */}
             <ScrollReveal direction="up" delay={200}>
-              <div className="hidden lg:block">
-                <ServiceMockup name={service.name} color={service.color} bg={service.bg} />
+              <div className="hidden lg:block relative">
+                {/* Animated glow behind mockup */}
+                <div
+                  className="absolute -inset-8 rounded-full blur-3xl opacity-30 animate-pulse"
+                  style={{ background: `radial-gradient(circle, ${service.heroGlow}, transparent 70%)` }}
+                />
+                <div className="relative">
+                  <ServiceMockup name={service.name} color={service.color} bg={service.bg} />
+                </div>
               </div>
             </ScrollReveal>
           </div>
@@ -685,8 +701,10 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
       </section>
 
       {/* ── Use cases ── */}
-      <section className="py-20 px-5 bg-muted/40 border-y border-border">
-        <div className="max-w-5xl mx-auto">
+      <section className="relative py-20 px-5 overflow-hidden border-t border-border/50">
+        {/* Colored blur orb */}
+        <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full blur-3xl pointer-events-none opacity-[0.04]" style={{ background: service.heroGlow }} />
+        <div className="relative max-w-5xl mx-auto">
           <ScrollReveal direction="up">
             <div className="text-center mb-14">
               <span className="feature-badge bg-primary/10 text-primary">Use Cases</span>
@@ -703,8 +721,14 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
                 return (
                   <div
                     key={uc.title}
-                    className="group p-5 rounded-2xl border border-border bg-card hover:border-primary/20 card-hover"
+                    className="group relative p-5 rounded-2xl border border-border bg-card hover:border-primary/20 hover:-translate-y-0.5 transition-all duration-300"
+                    style={{ boxShadow: '0 -20px 80px -20px rgba(255,255,255,0.03) inset' }}
                   >
+                    {/* Colored top accent line on hover */}
+                    <div
+                      className="absolute top-0 left-4 right-4 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style={{ background: `linear-gradient(90deg, transparent, ${service.heroGlow.replace('0.15', '0.6')}, transparent)` }}
+                    />
                     <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
                       <UCIcon className="w-5 h-5 text-primary" />
                     </div>
@@ -719,8 +743,10 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
       </section>
 
       {/* ── How It Works ── */}
-      <section className="py-20 px-5 bg-background">
-        <div className="max-w-4xl mx-auto">
+      <section className="relative py-20 px-5 overflow-hidden border-t border-border/50">
+        {/* Colored blur orb */}
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full blur-3xl pointer-events-none opacity-[0.04]" style={{ background: service.heroGlow }} />
+        <div className="relative max-w-4xl mx-auto">
           <ScrollReveal direction="up">
             <div className="text-center mb-14">
               <span className="feature-badge bg-primary/10 text-primary">How It Works</span>
@@ -731,12 +757,22 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
           </ScrollReveal>
 
           <ScrollReveal direction="up" stagger>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="relative grid md:grid-cols-3 gap-8">
+              {/* Connecting line between steps (desktop) */}
+              <div className="hidden md:block absolute top-10 left-[20%] right-[20%] h-px bg-gradient-to-r from-border via-primary/20 to-border" />
+
               {HOW_IT_WORKS_STEPS.map((step) => (
-                <div key={step.number} className="text-center">
-                  <div className={`w-14 h-14 rounded-2xl ${service.bg} flex items-center justify-center mx-auto mb-4`}>
-                    <span className={`text-2xl font-bold ${service.color}`}>{step.number}</span>
+                <div key={step.number} className="group relative text-center hover:-translate-y-0.5 transition-transform duration-300">
+                  {/* Numbered circle badge */}
+                  <div className="relative mx-auto mb-4">
+                    <div className={`w-14 h-14 rounded-full ${service.bg} flex items-center justify-center mx-auto border-4 border-background relative z-10`}>
+                      <span className={`text-2xl font-bold ${service.color}`}>{step.number}</span>
+                    </div>
                   </div>
+                  {/* Pill step label */}
+                  <span className="inline-flex items-center px-3 py-0.5 rounded-full bg-muted text-[10px] uppercase tracking-[0.12em] font-semibold text-muted-foreground mb-3">
+                    Step {step.number}
+                  </span>
                   <h3 className="font-semibold text-lg mb-2">{step.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
                 </div>
@@ -746,9 +782,11 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
         </div>
       </section>
 
-      {/* ── Slide type showcase ── */}
-      <section className="py-20 px-5 bg-muted/40">
-        <div className="max-w-5xl mx-auto">
+      {/* ── Slide type showcase (Interactive Tools) ── */}
+      <section className="relative py-20 px-5 overflow-hidden border-t border-border/50">
+        {/* Colored blur orb */}
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-96 rounded-full blur-3xl pointer-events-none opacity-[0.03]" style={{ background: service.heroGlow }} />
+        <div className="relative max-w-5xl mx-auto">
           <ScrollReveal direction="left">
             <div className="text-center mb-14">
               <span className="feature-badge bg-primary/10 text-primary">Interactive Tools</span>
@@ -768,12 +806,16 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
                 return (
                   <div
                     key={s.label}
-                    className="group text-center p-5 rounded-2xl border border-border bg-card hover:border-primary/20 card-hover"
+                    className="group relative text-center p-5 rounded-2xl border border-border bg-card hover:border-primary/20 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden"
                   >
+                    {/* Color accent line at top */}
+                    <div className={`absolute top-0 left-0 right-0 h-0.5 ${s.bg.replace('/10', '/40')}`} />
                     <div className={`w-12 h-12 rounded-xl ${s.bg} flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300`}>
                       <SIcon className={`w-6 h-6 ${s.color}`} />
                     </div>
-                    <h3 className="font-semibold text-sm mb-1">{s.label}</h3>
+                    <h3 className="font-semibold text-sm mb-0.5">{s.label}</h3>
+                    {/* "Interactive" sub-label in accent color */}
+                    <p className={`text-[10px] uppercase tracking-[0.1em] font-semibold ${s.color} mb-1.5`}>Interactive</p>
                     <p className="text-xs text-muted-foreground leading-relaxed">{s.description}</p>
                   </div>
                 )
@@ -784,8 +826,10 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
       </section>
 
       {/* ── Benefits ── */}
-      <section className="py-20 px-5 bg-background">
-        <div className="max-w-5xl mx-auto">
+      <section className="relative py-20 px-5 overflow-hidden border-t border-border/50">
+        {/* Colored blur orb glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-3xl pointer-events-none opacity-[0.05]" style={{ background: service.heroGlow }} />
+        <div className="relative max-w-5xl mx-auto">
           <ScrollReveal direction="right">
             <div className="text-center mb-14">
               <span className="feature-badge bg-primary/10 text-primary">Benefits</span>
@@ -797,15 +841,31 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
 
           <ScrollReveal direction="right" stagger>
             <div className="grid md:grid-cols-3 gap-6">
-              {service.benefits.map((b) => {
+              {service.benefits.map((b, i) => {
                 const BIcon = b.icon
                 return (
-                  <div key={b.title} className="p-6 rounded-2xl border border-border bg-card">
-                    <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center mb-4">
+                  <div
+                    key={b.title}
+                    className="group p-6 rounded-2xl border border-border bg-card hover:border-primary/20 hover:-translate-y-0.5 transition-all duration-300"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                       <BIcon className="w-5 h-5 text-primary" />
                     </div>
                     <h3 className="font-semibold mb-2">{b.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{b.description}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-4">{b.description}</p>
+                    {/* Mini visual bars */}
+                    <div className="flex items-center gap-1">
+                      {[60, 80, 45, 90, 70].map((w, j) => (
+                        <div
+                          key={j}
+                          className="h-1 rounded-full"
+                          style={{
+                            width: `${w * 0.3}px`,
+                            background: service.heroGlow.replace('0.15', `${0.15 + (j * 0.08)}`),
+                          }}
+                        />
+                      ))}
+                    </div>
                   </div>
                 )
               })}
@@ -814,9 +874,10 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
         </div>
       </section>
 
-      {/* ── Templates ── */}
-      <section className="py-20 px-5 bg-muted/40">
-        <div className="max-w-4xl mx-auto text-center">
+      {/* ── Templates (scrolling marquee) ── */}
+      <section className="relative py-20 px-5 overflow-hidden border-t border-border/50">
+        <div className="absolute -bottom-40 right-0 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-[0.04]" style={{ background: service.heroGlow }} />
+        <div className="relative max-w-4xl mx-auto text-center">
           <ScrollReveal direction="up">
             <span className="feature-badge bg-primary/10 text-primary">Ready-Made Decks</span>
             <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-4 mb-4">
@@ -827,25 +888,39 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
             </p>
           </ScrollReveal>
 
-          <ScrollReveal direction="up" stagger>
-            <div className="flex items-center justify-center gap-2.5 flex-wrap">
-              {service.templateSuggestions.map((t) => (
+          {/* Scrolling marquee */}
+          <div className="relative overflow-hidden py-4">
+            {/* Fade edges */}
+            <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+            <div className="flex animate-[marquee_20s_linear_infinite] gap-3 w-max">
+              {/* Double the items for seamless loop */}
+              {[...service.templateSuggestions, ...service.templateSuggestions].map((t, i) => (
                 <span
-                  key={t}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-card text-sm font-medium hover:border-primary/20 hover:shadow-sm transition-all cursor-default"
+                  key={`${t}-${i}`}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border bg-card text-sm font-medium hover:border-primary/20 hover:shadow-sm transition-all cursor-default shrink-0"
                 >
-                  <CheckCircle className="w-3.5 h-3.5 text-primary" />
+                  <CheckCircle className="w-3.5 h-3.5 text-primary shrink-0" />
                   {t}
                 </span>
               ))}
             </div>
-          </ScrollReveal>
+          </div>
+
+          {/* Marquee keyframes */}
+          <style>{`
+            @keyframes marquee {
+              from { transform: translateX(0); }
+              to { transform: translateX(-50%); }
+            }
+          `}</style>
         </div>
       </section>
 
       {/* ── FAQ ── */}
-      <section className="py-20 px-5 bg-background">
-        <div className="max-w-2xl mx-auto">
+      <section className="relative py-20 px-5 overflow-hidden border-t border-border/50">
+        <div className="absolute -top-40 -left-40 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-[0.03]" style={{ background: service.heroGlow }} />
+        <div className="relative max-w-2xl mx-auto">
           <ScrollReveal direction="up">
             <div className="text-center mb-10">
               <span className="feature-badge bg-primary/10 text-primary">FAQ</span>
@@ -861,14 +936,32 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
       </section>
 
       {/* ── Bottom CTA ── */}
-      <section className="py-20 px-5 bg-muted/40">
+      <section className="relative py-20 px-5 overflow-hidden border-t border-border/50 pb-28">
         <ScrollReveal direction="fade">
           <div className="max-w-3xl mx-auto relative bg-primary rounded-3xl px-8 py-14 text-center overflow-hidden">
+            {/* Grid texture background */}
+            <div
+              className="absolute inset-0 opacity-[0.08]"
+              style={{
+                backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
+                backgroundSize: '32px 32px',
+              }}
+            />
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.3) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
             <div className="relative">
-              <span className="feature-badge bg-white/20 text-primary-foreground">Get Started</span>
-              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4 mt-4 text-primary-foreground">
-                {service.ctaHeadline}
+              {/* Pill badge with pulsing dot */}
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 text-[10px] uppercase tracking-[0.15em] font-semibold text-primary-foreground mb-4">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+                </span>
+                Get Started
+              </span>
+              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4 mt-2 text-primary-foreground">
+                {/* Gradient text on key phrase */}
+                <span className="bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text text-transparent">
+                  {service.ctaHeadline}
+                </span>
               </h2>
               <p className="text-primary-foreground/70 mb-8 text-base">
                 Free to get started. No credit card required. Built for those who serve.
