@@ -237,7 +237,11 @@ export default function LandingPage() {
 
         {/* Animated product mockup */}
         <div className="relative z-10 mx-auto max-w-3xl w-full px-5 mt-8 mb-[-80px] hero-fade-up hero-fade-up-5">
-          <div className="absolute inset-0 -m-10 bg-red-500/[0.06] blur-[80px] rounded-full pointer-events-none" />
+          {/* Animated sweeping glow behind mockup */}
+          <div className="absolute inset-0 -m-16 pointer-events-none">
+            <div className="absolute inset-0 bg-red-500/[0.12] blur-[100px] rounded-full glow-sweep" />
+            <div className="absolute inset-0 bg-orange-500/[0.06] blur-[80px] rounded-full float-glow" style={{ animationDelay: '-4s' }} />
+          </div>
           <HeroMockup />
         </div>
       </section>
@@ -245,7 +249,10 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           TRUST STRIP
           ═══════════════════════════════════════════ */}
-      <section className="pt-32 pb-16 bg-[#07070a] border-t border-white/[0.04]">
+      <section className="pt-32 pb-16 bg-[#07070a] dark:bg-[#07070a] border-t border-white/[0.04] relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[200px] bg-red-500/[0.04] blur-[120px] rounded-full" />
+        </div>
         <ScrollReveal>
           <div className="max-w-4xl mx-auto px-5 text-center">
             <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-medium mb-8">Trusted by emergency services across the UK</p>
@@ -345,7 +352,7 @@ export default function LandingPage() {
         ].map((feature, idx) => {
           const isReversed = idx % 2 !== 0
           return (
-            <section key={feature.title} className={`${idx % 2 === 0 ? 'bg-background' : 'bg-muted/30'} border-t border-border/50`}>
+            <section key={feature.title} className={`${idx % 2 === 0 ? 'bg-background' : 'bg-muted/30 dark:bg-muted/10'} border-t border-border/50 relative overflow-hidden`}>
               <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
                 <div className={`flex flex-col gap-12 md:gap-16 items-center ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'}`}>
                   <ScrollReveal direction={isReversed ? 'right' : 'left'} className="flex-1 space-y-5">
@@ -373,7 +380,11 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           SLIDE TYPES
           ═══════════════════════════════════════════ */}
-      <section id="slide-types" className="bg-background border-t border-border/50">
+      <section id="slide-types" className="bg-background border-t border-border/50 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none dark:block hidden">
+          <div className="absolute top-0 left-1/4 w-[500px] h-[400px] bg-red-500/[0.03] blur-[120px] rounded-full" />
+          <div className="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-blue-500/[0.03] blur-[100px] rounded-full" />
+        </div>
         <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-14">
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Interactive Tools</span>
@@ -407,7 +418,10 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           HOW IT WORKS
           ═══════════════════════════════════════════ */}
-      <section id="how-it-works" className="bg-muted/30 border-t border-border/50">
+      <section id="how-it-works" className="bg-muted/30 border-t border-border/50 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none dark:block hidden">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[300px] bg-primary/[0.04] blur-[120px] rounded-full" />
+        </div>
         <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-14">
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">How It Works</span>
@@ -440,7 +454,11 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           SERVICES
           ═══════════════════════════════════════════ */}
-      <section id="services" className="bg-background border-t border-border/50">
+      <section id="services" className="bg-background border-t border-border/50 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none dark:block hidden">
+          <div className="absolute top-1/3 right-0 w-[500px] h-[500px] bg-orange-500/[0.03] blur-[150px] rounded-full" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/[0.02] blur-[120px] rounded-full" />
+        </div>
         <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-14">
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Solutions</span>
@@ -506,7 +524,10 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           TEMPLATES
           ═══════════════════════════════════════════ */}
-      <section id="templates" className="bg-background border-t border-border/50">
+      <section id="templates" className="bg-background border-t border-border/50 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none dark:block hidden">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-violet-500/[0.04] blur-[120px] rounded-full" />
+        </div>
         <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-10">
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Templates</span>
@@ -538,7 +559,10 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           PRICING
           ═══════════════════════════════════════════ */}
-      <section id="pricing" className="bg-muted/30 border-t border-border/50">
+      <section id="pricing" className="bg-muted/30 dark:bg-muted/10 border-t border-border/50 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none dark:block hidden">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-primary/[0.03] blur-[120px] rounded-full" />
+        </div>
         <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-10">
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Pricing</span>
@@ -566,7 +590,11 @@ export default function LandingPage() {
           TESTIMONIALS
           ═══════════════════════════════════════════ */}
       <section id="testimonials" className="relative bg-[#07070a] border-t border-white/[0.04] overflow-hidden">
-        <div className="py-20 md:py-28">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-red-500/[0.06] blur-[150px] rounded-full float-glow" />
+          <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-blue-500/[0.04] blur-[100px] rounded-full float-glow" style={{ animationDelay: '-6s' }} />
+        </div>
+        <div className="relative py-20 md:py-28">
           <ScrollReveal className="text-center mb-14 px-5">
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] text-white/40 text-[10px] uppercase tracking-[0.15em] font-medium border border-white/[0.08]">Testimonials</span>
             <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5 text-white">Trusted by those who serve</h2>
@@ -615,9 +643,12 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           FOOTER
           ═══════════════════════════════════════════ */}
-      <footer className="border-t border-border/50 bg-background relative">
-        {/* Subtle grid texture */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
+      <footer className="border-t border-border/50 relative bg-gradient-to-b from-background via-background to-muted/30 dark:from-[#0a0a0e] dark:via-[#0c0c12] dark:to-[#111118]">
+        {/* Grid texture + top glow */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.04]" style={{ backgroundImage: 'linear-gradient(rgba(128,128,128,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(128,128,128,0.4) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-primary/[0.03] blur-[100px] rounded-full hidden dark:block" />
+        </div>
         <div className="max-w-6xl mx-auto px-5 py-12">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-10">
             {/* Brand */}
