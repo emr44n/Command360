@@ -41,7 +41,9 @@ export function TrialBanner({ createdAt }: TrialBannerProps) {
 
   if (expired) {
     return (
-      <div className="relative bg-gradient-to-r from-amber-500/10 via-red-500/10 to-amber-500/10 border border-red-500/20 rounded-2xl p-5">
+      <div className="relative overflow-hidden bg-gradient-to-r from-amber-500/10 via-red-500/10 to-amber-500/10 border border-red-500/20 rounded-2xl p-5 dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
+        {/* Top accent line */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent" />
         <button
           onClick={() => setDismissed(true)}
           className="absolute top-3 right-3 p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
@@ -60,7 +62,7 @@ export function TrialBanner({ createdAt }: TrialBannerProps) {
           </div>
           <Link
             href="/pricing"
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-500/25 shrink-0"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-500/25 hover:-translate-y-0.5 shrink-0"
           >
             Upgrade now <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -72,11 +74,13 @@ export function TrialBanner({ createdAt }: TrialBannerProps) {
   const isLow = timeLeft.days <= 7
 
   return (
-    <div className={`relative border rounded-2xl p-5 ${
+    <div className={`relative overflow-hidden border rounded-2xl p-5 dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] ${
       isLow
         ? 'bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-amber-500/5 border-amber-500/20'
         : 'bg-gradient-to-r from-primary/5 via-violet-500/5 to-primary/5 border-primary/20'
     }`}>
+      {/* Top accent line */}
+      <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent ${isLow ? 'via-amber-500/40' : 'via-primary/40'} to-transparent`} />
       <button
         onClick={() => setDismissed(true)}
         className="absolute top-3 right-3 p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
@@ -117,14 +121,14 @@ export function TrialBanner({ createdAt }: TrialBannerProps) {
               }`}>
                 {String(unit.value).padStart(2, '0')}
               </div>
-              <span className="text-[10px] text-muted-foreground mt-1 block">{unit.label}</span>
+              <span className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground mt-1 block">{unit.label}</span>
             </div>
           ))}
         </div>
 
         <Link
           href="/pricing"
-          className={`inline-flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-lg shrink-0 ${
+          className={`inline-flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-lg hover:-translate-y-0.5 shrink-0 ${
             isLow
               ? 'bg-amber-600 hover:bg-amber-500 hover:shadow-amber-500/25'
               : 'bg-primary hover:bg-primary/90 hover:shadow-primary/25'

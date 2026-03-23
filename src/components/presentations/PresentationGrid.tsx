@@ -89,7 +89,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
   if (presentations.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center mb-5 animate-pulse">
+        <div className="w-20 h-20 rounded-2xl bg-muted/50 border border-border/50 flex items-center justify-center mb-5 animate-pulse">
           <Presentation className="w-10 h-10 text-muted-foreground/30" />
         </div>
         <h3 className="text-lg font-semibold mb-2">No presentations yet</h3>
@@ -258,7 +258,9 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
       {/* Empty search */}
       {filtered.length === 0 && search && (
         <div className="text-center py-16 text-muted-foreground">
-          <Search className="w-10 h-10 mx-auto mb-3 opacity-20" />
+          <div className="w-16 h-16 rounded-2xl bg-muted/50 border border-border/50 flex items-center justify-center mx-auto mb-3">
+            <Search className="w-8 h-8 opacity-20" />
+          </div>
           <p className="text-sm">No presentations matching &quot;{search}&quot;</p>
           <button onClick={() => setSearch('')} className="text-primary text-xs mt-2 hover:underline">
             Clear search
@@ -282,14 +284,18 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
               <div
                 key={pres.id}
                 className={`
-                  group bg-card border border-border rounded-2xl overflow-hidden
+                  group relative bg-card border border-border rounded-2xl overflow-hidden
                   transition-all duration-300 ease-out
                   hover:shadow-lg hover:shadow-black/5 hover:-translate-y-0.5 hover:border-primary/20
+                  dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]
                   ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
                   ${isLoading ? 'pointer-events-none opacity-70' : ''}
                 `}
                 style={{ transitionDelay: mounted ? `${Math.min(index * 50, 400)}ms` : '0ms' }}
               >
+                {/* Top accent line */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent group-hover:via-primary/30 transition-colors duration-300 z-10" />
+
                 {/* Card thumbnail area */}
                 <Link href={`/presentations/${pres.id}/edit`} className="block">
                   <div className="h-36 bg-muted/50 flex items-center justify-center group-hover:bg-muted/30 transition-all duration-300 relative overflow-hidden">
@@ -466,14 +472,18 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
               <div
                 key={pres.id}
                 className={`
-                  group relative flex items-center gap-4 bg-card border border-border rounded-2xl p-4
+                  group relative flex items-center gap-4 bg-card border border-border rounded-2xl p-4 overflow-hidden
                   transition-all duration-300 ease-out
-                  hover:shadow-md hover:shadow-black/5 hover:border-primary/20
+                  hover:shadow-md hover:shadow-black/5 hover:border-primary/20 hover:-translate-y-0.5
+                  dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]
                   ${mounted ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}
                   ${isLoading ? 'pointer-events-none opacity-70' : ''}
                 `}
                 style={{ transitionDelay: mounted ? `${Math.min(index * 40, 300)}ms` : '0ms' }}
               >
+                {/* Top accent line */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent group-hover:via-primary/30 transition-colors duration-300" />
+
                 <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0 group-hover:bg-muted/70 transition-colors">
                   <TypeIcon className={`w-5 h-5 opacity-60 group-hover:opacity-80 transition-opacity ${typeColor}`} />
                 </div>

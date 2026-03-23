@@ -90,7 +90,8 @@ export default async function SessionsPage() {
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto">
-      <div className="mb-6">
+      <div className="mb-8">
+        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-1.5">Dashboard</p>
         <h1 className="text-2xl font-bold tracking-tight">Sessions</h1>
         <p className="text-muted-foreground text-sm mt-1">
           View and manage your presentation sessions
@@ -98,33 +99,40 @@ export default async function SessionsPage() {
       </div>
 
       {/* Summary stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <div className="bg-card border border-border rounded-2xl p-5">
-          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Total sessions</p>
-          <p className="text-2xl font-bold text-foreground mt-1">{enrichedSessions.length}</p>
+      <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-2.5">Overview</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+        <div className="relative bg-card border border-border rounded-2xl p-5 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden group">
+          <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
+          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium">Total sessions</p>
+          <p className="text-2xl font-bold text-foreground mt-1.5">{enrichedSessions.length}</p>
         </div>
-        <div className="bg-card border border-border rounded-2xl p-5">
+        <div className="relative bg-card border border-border rounded-2xl p-5 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden group">
+          <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
           <div className="flex items-center gap-2">
-            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Live now</p>
+            <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium">Live now</p>
             {activeCount > 0 && (
               <span className="relative flex h-2 w-2">
+                <span className="absolute -inset-1 rounded-full bg-emerald-400/20 blur-sm" />
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
             )}
           </div>
-          <p className={`text-2xl font-bold mt-1 ${activeCount > 0 ? 'text-emerald-600' : 'text-foreground'}`}>{activeCount}</p>
+          <p className={`text-2xl font-bold mt-1.5 ${activeCount > 0 ? 'text-emerald-500' : 'text-foreground'}`}>{activeCount}</p>
         </div>
-        <div className="bg-card border border-border rounded-2xl p-5">
-          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Participants</p>
-          <p className="text-2xl font-bold text-foreground mt-1">{totalParticipants}</p>
+        <div className="relative bg-card border border-border rounded-2xl p-5 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden group">
+          <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
+          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium">Participants</p>
+          <p className="text-2xl font-bold text-foreground mt-1.5">{totalParticipants}</p>
         </div>
-        <div className="bg-card border border-border rounded-2xl p-5">
-          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Responses</p>
-          <p className="text-2xl font-bold text-foreground mt-1">{totalResponses}</p>
+        <div className="relative bg-card border border-border rounded-2xl p-5 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden group">
+          <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-amber-500/40 to-transparent" />
+          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium">Responses</p>
+          <p className="text-2xl font-bold text-foreground mt-1.5">{totalResponses}</p>
         </div>
       </div>
 
+      <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-2.5">All Sessions</p>
       <SessionsList sessions={enrichedSessions} />
     </div>
   )

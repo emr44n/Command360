@@ -103,7 +103,8 @@ export default async function ReportsPage() {
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto">
-      <div className="mb-6">
+      <div className="mb-8">
+        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-1.5">Analytics</p>
         <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
         <p className="text-muted-foreground text-sm mt-1">
           View results and analytics for your sessions
@@ -121,46 +122,52 @@ export default async function ReportsPage() {
       ) : (
         <>
           {/* Summary stats */}
+          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-2.5">Overview</p>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
-            <div className="bg-card border border-border rounded-2xl p-4">
-              <div className="flex items-center gap-2 text-muted-foreground mb-1">
+            <div className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
+              <div className="flex items-center gap-2 text-muted-foreground/60 mb-1.5">
                 <FileText className="w-3.5 h-3.5" />
-                <span className="text-[11px] font-medium uppercase tracking-wider">Decks</span>
+                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Decks</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{decksWithSessions.length}</p>
             </div>
-            <div className="bg-card border border-border rounded-2xl p-4">
-              <div className="flex items-center gap-2 text-muted-foreground mb-1">
+            <div className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+              <div className="flex items-center gap-2 text-muted-foreground/60 mb-1.5">
                 <Clock className="w-3.5 h-3.5" />
-                <span className="text-[11px] font-medium uppercase tracking-wider">Sessions</span>
+                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Sessions</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{totalSessions}</p>
             </div>
-            <div className="bg-card border border-border rounded-2xl p-4">
-              <div className="flex items-center gap-2 text-muted-foreground mb-1">
+            <div className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
+              <div className="flex items-center gap-2 text-muted-foreground/60 mb-1.5">
                 <Users className="w-3.5 h-3.5" />
-                <span className="text-[11px] font-medium uppercase tracking-wider">Participants</span>
+                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Participants</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{totalParticipants}</p>
             </div>
-            <div className="bg-card border border-border rounded-2xl p-4">
-              <div className="flex items-center gap-2 text-muted-foreground mb-1">
+            <div className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-amber-500/40 to-transparent" />
+              <div className="flex items-center gap-2 text-muted-foreground/60 mb-1.5">
                 <MessageSquare className="w-3.5 h-3.5" />
-                <span className="text-[11px] font-medium uppercase tracking-wider">Responses</span>
+                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Responses</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{totalResponses}</p>
             </div>
-            <div className="bg-card border border-border rounded-2xl p-4">
-              <div className="flex items-center gap-2 text-muted-foreground mb-1">
+            <div className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-rose-500/40 to-transparent" />
+              <div className="flex items-center gap-2 text-muted-foreground/60 mb-1.5">
                 <TrendingUp className="w-3.5 h-3.5" />
-                <span className="text-[11px] font-medium uppercase tracking-wider">Avg per user</span>
+                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Avg per user</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{avgResponsesPerParticipant}</p>
             </div>
           </div>
 
           {/* Deck list with engagement bars */}
-          <h2 className="text-sm font-semibold text-foreground mb-3">Deck Results</h2>
+          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-2.5">Deck Results</p>
           <div className="grid gap-3">
             {decksWithSessions.map((deck) => {
               const barWidth = Math.max((deck.response_count / maxResponses) * 100, 2)
@@ -168,45 +175,48 @@ export default async function ReportsPage() {
                 <Link
                   key={deck.id}
                   href={`/presentations/${deck.id}/results`}
-                  className="bg-card border border-border rounded-2xl p-4 hover:border-primary/20 hover:shadow-md transition-all group relative overflow-hidden"
+                  className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-primary/20 transition-all duration-300 group overflow-hidden"
                 >
+                  {/* Colored top accent */}
+                  <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+
                   {/* Engagement bar background */}
                   <div
-                    className="absolute left-0 top-0 bottom-0 bg-primary/5 transition-all duration-500"
+                    className="absolute left-0 top-0 bottom-0 bg-primary/[0.04] transition-all duration-500"
                     style={{ width: `${barWidth}%` }}
                   />
 
                   <div className="relative flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-200">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/[0.08] flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-primary/15 transition-all duration-200">
                       <BarChart2 className="w-5 h-5 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">
+                      <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors duration-200">
                         {deck.title}
                       </p>
                       <div className="flex items-center gap-3 mt-1">
-                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <span className="text-xs text-muted-foreground/70 flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {deck.session_count} session{deck.session_count !== 1 ? 's' : ''}
                         </span>
-                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <span className="text-xs text-muted-foreground/70 flex items-center gap-1">
                           <Users className="w-3 h-3" />
                           {deck.participant_count}
                         </span>
-                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <span className="text-xs text-muted-foreground/70 flex items-center gap-1">
                           <MessageSquare className="w-3 h-3" />
                           {deck.response_count} response{deck.response_count !== 1 ? 's' : ''}
                         </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-muted-foreground/60">
                         {deck.latest_session
                           ? new Date(deck.latest_session).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                           : new Date(deck.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
                         }
                       </span>
-                      <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-200" />
                     </div>
                   </div>
                 </Link>

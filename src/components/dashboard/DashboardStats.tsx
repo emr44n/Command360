@@ -42,6 +42,7 @@ const STATS_CONFIG = [
     iconBg: 'bg-primary/15',
     iconColor: 'text-primary',
     valueColor: 'text-primary',
+    accentColor: 'via-primary/40',
   },
   {
     key: 'sessions',
@@ -51,6 +52,7 @@ const STATS_CONFIG = [
     iconBg: 'bg-blue-500/15',
     iconColor: 'text-blue-500',
     valueColor: 'text-blue-600 dark:text-blue-400',
+    accentColor: 'via-blue-500/40',
   },
   {
     key: 'participants',
@@ -60,6 +62,7 @@ const STATS_CONFIG = [
     iconBg: 'bg-emerald-500/15',
     iconColor: 'text-emerald-500',
     valueColor: 'text-emerald-600 dark:text-emerald-400',
+    accentColor: 'via-emerald-500/40',
   },
   {
     key: 'responses',
@@ -69,6 +72,7 @@ const STATS_CONFIG = [
     iconBg: 'bg-amber-500/15',
     iconColor: 'text-amber-500',
     valueColor: 'text-amber-600 dark:text-amber-400',
+    accentColor: 'via-amber-500/40',
   },
 ]
 
@@ -85,8 +89,11 @@ export function DashboardStats({ totalPresentations, totalSessions, totalPartici
       {STATS_CONFIG.map((stat) => (
         <div
           key={stat.key}
-          className={`relative bg-gradient-to-br ${stat.gradient} border border-border rounded-2xl p-5 transition-all hover:shadow-md hover:border-border/80 group`}
+          className={`relative overflow-hidden bg-gradient-to-br ${stat.gradient} border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-md hover:border-border/80 hover:-translate-y-0.5 group dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]`}
         >
+          {/* Top accent line */}
+          <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent ${stat.accentColor} to-transparent`} />
+
           <div className="flex items-center justify-between mb-3">
             <div className={`w-10 h-10 rounded-xl ${stat.iconBg} flex items-center justify-center transition-transform group-hover:scale-110 duration-200`}>
               <stat.icon className={`w-[18px] h-[18px] ${stat.iconColor}`} />
@@ -104,7 +111,7 @@ export function DashboardStats({ totalPresentations, totalSessions, totalPartici
           <p className={`text-2xl font-bold ${stat.valueColor} tabular-nums`}>
             <AnimatedCounter target={values[stat.key]} />
           </p>
-          <p className="text-xs text-muted-foreground mt-0.5">{stat.label}</p>
+          <p className="text-[10px] uppercase tracking-[0.15em] font-medium text-muted-foreground mt-1">{stat.label}</p>
         </div>
       ))}
     </div>

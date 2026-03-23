@@ -75,14 +75,17 @@ function RecentCard({ item }: { item: RecentItem }) {
   return (
     <Link
       href={`/presentations/${item.id}/edit`}
-      className="group relative flex-shrink-0 w-[220px] rounded-xl border border-border bg-card hover:border-primary/30 hover:shadow-lg transition-all duration-200 overflow-hidden"
+      className="group relative flex-shrink-0 w-[220px] rounded-xl border border-border bg-card hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 overflow-hidden dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]"
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
     >
+      {/* Top accent line */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent group-hover:via-primary/30 transition-colors duration-300" />
+
       {/* Mini preview area */}
       <div className="relative h-[120px] bg-muted/40 flex items-center justify-center border-b border-border/50">
         {/* Fake slide preview */}
-        <div className="w-[160px] h-[90px] rounded-lg bg-white shadow-sm border border-border/40 flex flex-col items-center justify-center gap-1.5 px-3">
+        <div className="w-[160px] h-[90px] rounded-lg bg-white dark:bg-white/10 shadow-sm border border-border/40 flex flex-col items-center justify-center gap-1.5 px-3">
           <div className="w-full h-1.5 rounded-full bg-muted" />
           <div className="w-3/4 h-1.5 rounded-full bg-muted" />
           <div className="w-1/2 h-1.5 rounded-full bg-muted/60 mt-1" />
@@ -90,7 +93,7 @@ function RecentCard({ item }: { item: RecentItem }) {
 
         {/* Hover quick-actions overlay */}
         <div
-          className="absolute inset-0 bg-black/50 flex items-center justify-center gap-2 transition-opacity duration-200"
+          className="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center gap-2 transition-opacity duration-200"
           style={{ opacity: hovering ? 1 : 0, pointerEvents: hovering ? 'auto' : 'none' }}
         >
           <button
@@ -147,9 +150,9 @@ export function RecentlyOpened({ items }: { items: RecentItem[] }) {
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2.5">
           <Pin className="w-3.5 h-3.5 text-muted-foreground/60" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">Pinned</h3>
+          <h3 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground/60">Pinned</h3>
         </div>
-        <div className="flex items-center gap-2 px-3 py-3 rounded-xl border border-dashed border-border bg-muted/20">
+        <div className="flex items-center gap-2 px-3 py-3 rounded-xl border border-dashed border-border/60 bg-muted/10">
           <Pin className="w-4 h-4 text-muted-foreground/30" />
           <p className="text-xs text-muted-foreground/50">
             Right-click a presentation and pin it here for quick access
@@ -161,7 +164,7 @@ export function RecentlyOpened({ items }: { items: RecentItem[] }) {
       <div>
         <div className="flex items-center gap-2 mb-3">
           <Clock className="w-3.5 h-3.5 text-muted-foreground" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Recent</h3>
+          <h3 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground">Recently Opened</h3>
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
           {items.map((item) => (

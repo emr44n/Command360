@@ -74,9 +74,12 @@ export function DashboardSidebar() {
 
   return (
     <aside className={cn(
-      'bg-background border-r border-border flex flex-col h-full shrink-0 transition-all duration-300 ease-in-out',
+      'relative bg-background border-r border-border flex flex-col h-full shrink-0 transition-all duration-300 ease-in-out',
       collapsed ? 'w-[68px]' : 'w-[220px]'
     )}>
+      {/* Subtle right-edge glow for dark mode */}
+      <div className="pointer-events-none absolute inset-y-0 -right-px w-px dark:shadow-[0_0_12px_1px_rgba(var(--primary-rgb,239,68,68),0.08)]" />
+
       {/* Logo */}
       <div className={cn('h-16 flex items-center border-b border-border', collapsed ? 'px-3 justify-center' : 'px-5')}>
         <Link href="/dashboard" className="flex items-center gap-2.5 font-semibold text-sm text-foreground">
@@ -92,7 +95,7 @@ export function DashboardSidebar() {
         {collapsed ? (
           <button
             onClick={() => router.push('/dashboard')}
-            className="w-full flex items-center justify-center p-2.5 rounded-xl bg-red-600 text-white hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-500/20 group relative"
+            className="w-full flex items-center justify-center p-2.5 rounded-xl bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 active:scale-95 group relative"
             title="New Deck"
           >
             <Plus className="w-4 h-4" />
@@ -103,7 +106,7 @@ export function DashboardSidebar() {
         ) : (
           <button
             onClick={() => router.push('/dashboard')}
-            className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-red-600 text-white text-[13px] font-semibold hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-500/20"
+            className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-red-600 text-white text-[13px] font-semibold hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 active:scale-[0.98]"
           >
             <Plus className="w-4 h-4" />
             New Deck
@@ -111,65 +114,87 @@ export function DashboardSidebar() {
         )}
       </div>
 
+      {/* Separator */}
+      <div className={cn('pt-3', collapsed ? 'px-4' : 'px-5')}>
+        <div className="h-px bg-border/60" />
+      </div>
+
       {/* Navigation */}
       <nav className={cn('flex-1 py-3 space-y-0.5', collapsed ? 'px-2.5' : 'px-3')}>
-        {NAV_ITEMS.map((item) => {
+        {NAV_ITEMS.map((item, index) => {
           const active = isActive(item)
           const hasBadge = item.label === 'Sessions' && activeSessions > 0
 
+          /* Insert a separator before "Reports" to visually group nav sections */
+          const showSeparator = item.label === 'Reports'
+
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              title={collapsed ? item.label : undefined}
-              className={cn(
-                'relative flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-200 group',
-                collapsed ? 'px-0 py-2.5 justify-center' : 'px-3 py-2.5',
-                active
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/80'
-              )}
-            >
-              {/* Active indicator line */}
-              {active && (
-                <div className={cn(
-                  'absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-r-full bg-primary transition-all',
-                  collapsed ? 'h-4' : 'h-5'
-                )} />
-              )}
-
-              <item.icon className={cn('shrink-0', collapsed ? 'w-[18px] h-[18px]' : 'w-4 h-4')} />
-              {!collapsed && (
-                <>
-                  <span className="flex-1">{item.label}</span>
-                  {hasBadge && (
-                    <span className="flex items-center justify-center min-w-[20px] h-5 rounded-full bg-emerald-500 text-white text-[10px] font-bold px-1.5">
-                      {activeSessions}
-                    </span>
-                  )}
-                </>
-              )}
-              {collapsed && hasBadge && (
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-background" />
-              )}
-
-              {/* Tooltip for collapsed mode */}
-              {collapsed && (
-                <div className="absolute left-full ml-2.5 px-2.5 py-1.5 rounded-lg bg-popover text-popover-foreground text-xs font-medium border border-border shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50">
-                  {item.label}
-                  {hasBadge && <span className="ml-1.5 text-emerald-500">({activeSessions})</span>}
+            <div key={item.href}>
+              {showSeparator && (
+                <div className={cn('py-2', collapsed ? 'px-1.5' : 'px-2')}>
+                  <div className="h-px bg-border/60" />
                 </div>
               )}
-            </Link>
+              <Link
+                href={item.href}
+                title={collapsed ? item.label : undefined}
+                className={cn(
+                  'relative flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-200 group',
+                  collapsed ? 'px-0 py-2.5 justify-center' : 'px-3 py-2.5',
+                  active
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/80'
+                )}
+              >
+                {/* Active indicator line */}
+                <div className={cn(
+                  'absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-r-full bg-primary transition-all duration-300',
+                  collapsed ? 'h-4' : 'h-5',
+                  active ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'
+                )} />
+
+                <item.icon className={cn(
+                  'shrink-0 transition-all duration-200',
+                  collapsed ? 'w-[18px] h-[18px]' : 'w-4 h-4',
+                  active ? '' : 'group-hover:scale-110'
+                )} />
+                {!collapsed && (
+                  <>
+                    <span className="flex-1">{item.label}</span>
+                    {hasBadge && (
+                      <span className="flex items-center justify-center min-w-[20px] h-5 rounded-full bg-emerald-500 text-white text-[10px] font-bold px-1.5">
+                        {activeSessions}
+                      </span>
+                    )}
+                  </>
+                )}
+                {collapsed && hasBadge && (
+                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-background" />
+                )}
+
+                {/* Tooltip for collapsed mode */}
+                {collapsed && (
+                  <div className="absolute left-full ml-2.5 px-2.5 py-1.5 rounded-lg bg-popover text-popover-foreground text-xs font-medium border border-border shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50">
+                    {item.label}
+                    {hasBadge && <span className="ml-1.5 text-emerald-500">({activeSessions})</span>}
+                  </div>
+                )}
+              </Link>
+            </div>
           )
         })}
       </nav>
+
+      {/* Separator before controls */}
+      <div className={cn(collapsed ? 'px-4' : 'px-5')}>
+        <div className="h-px bg-border/60" />
+      </div>
 
       {/* Theme toggle + Collapse */}
       <div className={cn('px-3 py-2 flex items-center', collapsed ? 'flex-col gap-1 px-2.5' : 'gap-1')}>
         <button
           onClick={toggleTheme}
-          className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all group relative"
+          className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200 group relative"
           title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         >
           {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -184,7 +209,7 @@ export function DashboardSidebar() {
         )}
         <button
           onClick={() => setCollapsed(v => !v)}
-          className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all"
+          className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200"
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -200,7 +225,7 @@ export function DashboardSidebar() {
               className="flex items-center justify-center p-1.5 group relative"
               title={userName || userEmail}
             >
-              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors duration-200">
                 <span className="text-[11px] font-bold text-primary">{initials}</span>
               </div>
               <div className="absolute left-full ml-2.5 px-2.5 py-1.5 rounded-lg bg-popover text-popover-foreground text-xs font-medium border border-border shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50">
@@ -209,7 +234,7 @@ export function DashboardSidebar() {
             </Link>
             <button
               onClick={handleSignOut}
-              className="flex items-center justify-center p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/80 w-full transition-all group relative"
+              className="flex items-center justify-center p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/80 w-full transition-all duration-200 group relative"
               title="Sign out"
             >
               <LogOut className="w-4 h-4" />
@@ -221,8 +246,8 @@ export function DashboardSidebar() {
         ) : (
           <>
             {(userName || userEmail) && (
-              <Link href="/dashboard/settings" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-muted/80 transition-all group">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+              <Link href="/dashboard/settings" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-muted/80 transition-all duration-200 group">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors duration-200">
                   <span className="text-[11px] font-bold text-primary">{initials}</span>
                 </div>
                 <div className="min-w-0 flex-1">
@@ -232,7 +257,7 @@ export function DashboardSidebar() {
               </Link>
             )}
             <button onClick={handleSignOut}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/80 w-full transition-all">
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/80 w-full transition-all duration-200">
               <LogOut className="w-4 h-4" />
               Sign out
             </button>
