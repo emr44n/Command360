@@ -3,16 +3,19 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import { Stage, Layer, Rect, Text, Image as KonvaImage, Transformer } from 'react-konva'
 import type Konva from 'konva'
-import type { StudioLayer, StudioLayerState } from '@/types/slide'
+import type { StudioLayer, StudioTrack, StudioLayerState } from '@/types/slide'
+import { computeLayerStatesAtTime } from '@/lib/studio/playback-engine'
 
 interface StudioCanvasProps {
   layers: StudioLayer[]
-  layerStates: Record<string, StudioLayerState>
+  tracks: StudioTrack[]
+  currentTime: number
   canvasConfig: { width: number; height: number; backgroundColor: string }
   interactive?: boolean
   selectedLayerId?: string | null
   onSelectLayer?: (id: string | null) => void
   onUpdateLayer?: (id: string, updates: Partial<StudioLayer>) => void
+  onDropAsset?: (type: 'image' | 'video', src: string, x: number, y: number) => void
 }
 
 const ASPECT_RATIO = 16 / 9
@@ -317,15 +320,23 @@ function ShapeLayerNode({
 
 export function StudioCanvas({
   layers,
-  layerStates,
+  tracks,
+  currentTime,
   canvasConfig,
   interactive = false,
   selectedLayerId = null,
   onSelectLayer,
   onUpdateLayer,
+  onDropAsset,
 }: StudioCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [stageSize, setStageSize] = useState({ width: 960, height: 540 })
+
+  // Compute layer states from timeline
+  const layerStates = useMemo(
+    () => computeLayerStatesAtTime(layers, tracks, currentTime),
+    [layers, tracks, currentTime]
+  )
 
   // Maintain 16:9 aspect ratio based on container width
   const updateSize = useCallback(() => {
@@ -404,10 +415,43 @@ export function StudioCanvas({
     )
   }
 
+  // ── Drop zone handlers ──
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'copy'
+  }, [])
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault()
+      if (!onDropAsset || !containerRef.current) return
+
+      const assetType = e.dataTransfer.getData('studio/asset-type') as 'image' | 'video'
+      const assetSrc = e.dataTransfer.getData('studio/asset-src')
+      if (!assetType || !assetSrc) return
+
+      // Calculate drop position relative to the stage
+      const rect = containerRef.current.getBoundingClientRect()
+      // Stage is centered in the container
+      const stageLeft = (rect.width - stageSize.width) / 2
+      const stageTop = (rect.height - stageSize.height) / 2
+      const dropX = e.clientX - rect.left - stageLeft
+      const dropY = e.clientY - rect.top - stageTop
+
+      const xPct = px2pct(Math.max(0, dropX), stageSize.width)
+      const yPct = px2pct(Math.max(0, dropY), stageSize.height)
+
+      onDropAsset(assetType, assetSrc, xPct, yPct)
+    },
+    [onDropAsset, stageSize]
+  )
+
   return (
     <div
       ref={containerRef}
       className="relative flex h-full w-full items-center justify-center overflow-hidden bg-black/30"
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
     >
       {/* Konva stage for non-video layers */}
       <div className="relative" style={{ width: stageSize.width, height: stageSize.height }}>

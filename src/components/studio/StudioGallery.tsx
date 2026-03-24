@@ -7,16 +7,23 @@ import {
   LayersIcon,
   PlusIcon,
   UploadIcon,
+  CalendarIcon,
+  Trash2Icon,
+  ZapIcon,
 } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
-import type { StudioLayer } from '@/types/slide'
+import { Input } from '@/components/ui/input'
+import type { StudioLayer, StudioTimelineEvent } from '@/types/slide'
 import { generateLayerId } from '@/lib/utils/studio-utils'
 
 interface StudioGalleryProps {
   layers: StudioLayer[]
   onAddLayer: (layer: Partial<StudioLayer>) => void
   onSelectLayer: (id: string) => void
+  timelineEvents?: StudioTimelineEvent[]
+  onAddTimelineEvent?: (event: Omit<StudioTimelineEvent, 'id'>) => void
+  onRemoveTimelineEvent?: (eventId: string) => void
 }
 
 interface AssetItem {
@@ -30,9 +37,13 @@ export function StudioGallery({
   layers,
   onAddLayer,
   onSelectLayer,
+  timelineEvents = [],
+  onAddTimelineEvent,
+  onRemoveTimelineEvent,
 }: StudioGalleryProps) {
   const [images, setImages] = useState<AssetItem[]>([])
   const [videos, setVideos] = useState<AssetItem[]>([])
+  const [newEventName, setNewEventName] = useState('')
   const imageInputRef = useRef<HTMLInputElement>(null)
   const videoInputRef = useRef<HTMLInputElement>(null)
 
@@ -69,6 +80,17 @@ export function StudioGallery({
     e.target.value = ''
   }
 
+  // Drag start handler for assets
+  const handleAssetDragStart = (
+    e: React.DragEvent<HTMLButtonElement>,
+    asset: AssetItem
+  ) => {
+    e.dataTransfer.setData('studio/asset-type', asset.type)
+    e.dataTransfer.setData('studio/asset-src', asset.url)
+    e.dataTransfer.effectAllowed = 'copy'
+  }
+
+  // Click-to-add still works as fallback
   const addImageToCanvas = (asset: AssetItem) => {
     onAddLayer({
       id: generateLayerId(),
@@ -108,6 +130,18 @@ export function StudioGallery({
     })
   }
 
+  const handleAddEvent = () => {
+    if (!newEventName.trim() || !onAddTimelineEvent) return
+    onAddTimelineEvent({
+      name: newEventName.trim(),
+      color: '#6366f1',
+      timelinePosition: 0,
+      duration: 2000,
+      trigger: 'manual',
+    })
+    setNewEventName('')
+  }
+
   const typeIcon = (type: StudioLayer['type']) => {
     switch (type) {
       case 'image':
@@ -135,6 +169,9 @@ export function StudioGallery({
           </TabsTrigger>
           <TabsTrigger value="placed" className="gap-1 text-xs">
             <LayersIcon className="size-3.5" /> Placed
+          </TabsTrigger>
+          <TabsTrigger value="events" className="gap-1 text-xs">
+            <ZapIcon className="size-3.5" /> Events
           </TabsTrigger>
         </TabsList>
 
@@ -167,14 +204,16 @@ export function StudioGallery({
             {images.map((asset) => (
               <button
                 key={asset.id}
-                className="group relative aspect-video overflow-hidden rounded border border-zinc-700 bg-zinc-800 hover:border-zinc-500"
+                className="group relative aspect-video overflow-hidden rounded border border-zinc-700 bg-zinc-800 hover:border-zinc-500 cursor-grab active:cursor-grabbing"
+                draggable
+                onDragStart={(e) => handleAssetDragStart(e, asset)}
                 onClick={() => addImageToCanvas(asset)}
-                title={asset.name}
+                title={`${asset.name} — drag to canvas or click to add`}
               >
                 <img
                   src={asset.url}
                   alt={asset.name}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover pointer-events-none"
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
                   <PlusIcon className="size-5 text-white" />
@@ -216,13 +255,15 @@ export function StudioGallery({
             {videos.map((asset) => (
               <button
                 key={asset.id}
-                className="group relative aspect-video overflow-hidden rounded border border-zinc-700 bg-zinc-800 hover:border-zinc-500"
+                className="group relative aspect-video overflow-hidden rounded border border-zinc-700 bg-zinc-800 hover:border-zinc-500 cursor-grab active:cursor-grabbing"
+                draggable
+                onDragStart={(e) => handleAssetDragStart(e, asset)}
                 onClick={() => addVideoToCanvas(asset)}
-                title={asset.name}
+                title={`${asset.name} — drag to canvas or click to add`}
               >
                 <video
                   src={asset.url}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover pointer-events-none"
                   muted
                   playsInline
                 />
@@ -259,6 +300,70 @@ export function StudioGallery({
                 )}
               </button>
             ))}
+          </div>
+        </TabsContent>
+
+        {/* Events Tab */}
+        <TabsContent value="events" className="flex-1 overflow-y-auto px-2 pb-2">
+          <div className="mt-2 space-y-2">
+            {/* Add new event */}
+            <div className="flex gap-1.5">
+              <Input
+                value={newEventName}
+                onChange={(e) => setNewEventName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleAddEvent()
+                }}
+                placeholder="Event name..."
+                className="h-7 flex-1 border-zinc-700 bg-zinc-800 text-xs text-zinc-100 placeholder:text-zinc-500"
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 shrink-0 border-zinc-600 bg-zinc-800 px-2 text-zinc-300 hover:bg-zinc-700"
+                onClick={handleAddEvent}
+                disabled={!newEventName.trim()}
+              >
+                <PlusIcon className="size-3.5" />
+              </Button>
+            </div>
+
+            {timelineEvents.length === 0 && (
+              <p className="mt-4 text-center text-xs text-zinc-500">
+                No timeline events yet
+              </p>
+            )}
+
+            {/* Event list */}
+            <div className="space-y-1">
+              {timelineEvents.map((evt) => (
+                <div
+                  key={evt.id}
+                  className="flex items-center gap-2 rounded px-2 py-1.5 text-xs hover:bg-zinc-800 group"
+                >
+                  <div
+                    className="size-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: evt.color || '#6366f1' }}
+                  />
+                  <span className="flex-1 truncate">{evt.name}</span>
+                  <span className="text-[10px] text-zinc-500">
+                    {evt.trigger === 'vote' ? 'vote' : 'manual'}
+                  </span>
+                  <span className="text-[10px] text-zinc-600">
+                    {Math.round(evt.timelinePosition / 1000)}s
+                  </span>
+                  {onRemoveTimelineEvent && (
+                    <button
+                      className="p-0.5 text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all"
+                      onClick={() => onRemoveTimelineEvent(evt.id)}
+                      title="Remove event"
+                    >
+                      <Trash2Icon className="size-3" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </TabsContent>
       </Tabs>

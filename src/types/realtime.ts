@@ -11,6 +11,10 @@ export type BroadcastEvent =
   | { event: 'STUDIO_VOTE_STARTED'; payload: { slide_id: string; event_id: string; question: string; options: { id: string; label: string }[] } }
   | { event: 'STUDIO_VOTE_RESULT'; payload: { slide_id: string; event_id: string; winning_option_id: string; results: Record<string, number> } }
   | { event: 'STUDIO_LAYER_ADDED'; payload: { slide_id: string; layer: StudioLayer } }
+  /* Command Studio v2 playback events */
+  | { event: 'STUDIO_PLAYBACK_START'; payload: { slide_id: string; startTime: number; eventId?: string } }
+  | { event: 'STUDIO_PLAYBACK_PAUSE'; payload: { slide_id: string; currentTime: number } }
+  | { event: 'STUDIO_LAYER_STATES_UPDATE'; payload: { slide_id: string; layerStates: Record<string, StudioLayerState> } }
 
 export type PresenceState = {
   role: 'presenter' | 'participant'

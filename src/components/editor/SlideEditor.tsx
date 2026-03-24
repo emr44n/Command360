@@ -9,11 +9,8 @@ import { SlideSettings } from './SlideSettings'
 import { SlideTypeSelector } from './SlideTypeSelector'
 import { ElementSettings } from './ElementSettings'
 import { AddImageDialog } from './AddImageDialog'
-import type { CanvasElement, StudioContent, StudioLayer, StudioEvent, StudioEventCategory } from '@/types/slide'
-import { StudioGallery } from '@/components/studio/StudioGallery'
-import { StudioCanvas } from '@/components/studio/StudioCanvas'
-import { StudioProperties } from '@/components/studio/StudioProperties'
-import { StudioEvents } from '@/components/studio/StudioEvents'
+import type { CanvasElement, StudioContent } from '@/types/slide'
+import { StudioEditor } from '@/components/studio/StudioEditor'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -68,82 +65,23 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   const [undoStack, setUndoStack] = useState<Slide[][]>([])
   const [redoStack, setRedoStack] = useState<Slide[][]>([])
 
-  const [studioSelectedLayerId, setStudioSelectedLayerId] = useState<string | null>(null)
-
   const selectedSlide = slides.find((s) => s.id === selectedSlideId) || null
   const selectedIndex = slides.findIndex((s) => s.id === selectedSlideId)
   const isStudioSlide = selectedSlide?.slide_type === 'studio'
 
-  // Studio content helpers
+  // Studio content — passed directly to StudioEditor
   const studioContent: StudioContent | null = isStudioSlide
     ? (selectedSlide.content as unknown as StudioContent) ?? {
         canvas: { width: 1920, height: 1080, backgroundColor: '#1a1a2e' },
         layers: [],
         eventCategories: [],
         events: [],
+        tracks: [],
+        timelineEvents: [],
+        totalDuration: 10000,
         votingEnabled: false,
       }
     : null
-
-  const studioLayers = studioContent?.layers ?? []
-  const studioLayerStates = Object.fromEntries(
-    studioLayers.map((l) => [
-      l.id,
-      { visible: l.visible, opacity: l.opacity, x: l.x, y: l.y, width: l.width, height: l.height, rotation: l.rotation, src: l.src },
-    ])
-  )
-
-  function updateStudioContent(updates: Partial<StudioContent>) {
-    if (!selectedSlide || !studioContent) return
-    handleSlideChange({ content: { ...studioContent, ...updates } as unknown as Slide['content'] })
-  }
-
-  function handleStudioAddLayer(partial: Partial<StudioLayer>) {
-    const layer: StudioLayer = {
-      id: `layer_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-      name: partial.name || 'New Layer',
-      type: partial.type || 'image',
-      src: partial.src,
-      x: partial.x ?? 10,
-      y: partial.y ?? 10,
-      width: partial.width ?? 30,
-      height: partial.height ?? 30,
-      rotation: 0,
-      zIndex: studioLayers.length,
-      opacity: 1,
-      blendMode: 'normal',
-      visible: true,
-      locked: false,
-      ...partial,
-    } as StudioLayer
-    updateStudioContent({ layers: [...studioLayers, layer] })
-    setStudioSelectedLayerId(layer.id)
-  }
-
-  function handleStudioUpdateLayer(id: string, updates: Partial<StudioLayer>) {
-    updateStudioContent({
-      layers: studioLayers.map((l) => (l.id === id ? { ...l, ...updates } : l)),
-    })
-  }
-
-  function handleStudioDeleteLayer(id: string) {
-    updateStudioContent({ layers: studioLayers.filter((l) => l.id !== id) })
-    if (studioSelectedLayerId === id) setStudioSelectedLayerId(null)
-  }
-
-  function handleStudioDuplicateLayer(id: string) {
-    const original = studioLayers.find((l) => l.id === id)
-    if (!original) return
-    const dup: StudioLayer = {
-      ...original,
-      id: `layer_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-      name: `${original.name} (copy)`,
-      x: original.x + 2,
-      y: original.y + 2,
-    }
-    updateStudioContent({ layers: [...studioLayers, dup] })
-    setStudioSelectedLayerId(dup.id)
-  }
 
   // Helper to get canvas elements from current slide
   function getCanvasElements(): CanvasElement[] {
@@ -736,76 +674,12 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
 
         {/* Center + Right: Studio layout vs normal layout */}
         {isStudioSlide && studioContent ? (
-          <>
-            {/* Studio: Left gallery panel */}
-            <div className="w-[240px] bg-card border-r border-border flex flex-col shrink-0">
-              <StudioGallery
-                layers={studioLayers}
-                onAddLayer={handleStudioAddLayer}
-                onSelectLayer={(id) => setStudioSelectedLayerId(id)}
-              />
-            </div>
-
-            {/* Studio: Center canvas + bottom events */}
-            <div className="flex-1 flex flex-col min-w-0 min-h-0">
-              <div className="flex-1 min-h-0 overflow-hidden">
-                <StudioCanvas
-                  layers={studioLayers}
-                  layerStates={studioLayerStates}
-                  canvasConfig={studioContent.canvas}
-                  interactive
-                  selectedLayerId={studioSelectedLayerId}
-                  onSelectLayer={setStudioSelectedLayerId}
-                  onUpdateLayer={handleStudioUpdateLayer}
-                />
-              </div>
-
-              {/* Studio: Bottom events panel */}
-              <div className="h-[220px] border-t border-border shrink-0">
-                <StudioEvents
-                  events={studioContent.events}
-                  eventCategories={studioContent.eventCategories}
-                  layers={studioLayers}
-                  onUpdateEvents={(events) => updateStudioContent({ events })}
-                  onUpdateCategories={(eventCategories) => updateStudioContent({ eventCategories })}
-                />
-              </div>
-            </div>
-
-            {/* Studio: Right properties panel */}
-            <div className={cn(
-              'bg-card border-l border-border flex flex-col shrink-0 transition-all duration-200',
-              settingsOpen ? 'w-[300px]' : 'w-0 overflow-hidden'
-            )}>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Layer Properties
-                </h3>
-                <button onClick={() => setSettingsOpen(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-muted">
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="flex-1 overflow-y-auto settings-scroll">
-                <StudioProperties
-                  layer={studioLayers.find((l) => l.id === studioSelectedLayerId) ?? null}
-                  onUpdate={(updates) => {
-                    if (studioSelectedLayerId) handleStudioUpdateLayer(studioSelectedLayerId, updates)
-                  }}
-                  onDelete={(id) => handleStudioDeleteLayer(id)}
-                  onDuplicate={(id) => handleStudioDuplicateLayer(id)}
-                />
-              </div>
-            </div>
-
-            {/* Settings toggle when collapsed (studio) */}
-            {!settingsOpen && (
-              <button onClick={() => setSettingsOpen(true)}
-                className="w-10 bg-card border-l border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
-                title="Open properties">
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-            )}
-          </>
+          <StudioEditor
+            content={studioContent}
+            onContentChange={(updated) => {
+              handleSlideChange({ content: updated as unknown as Slide['content'] })
+            }}
+          />
         ) : (
           <>
             {/* Normal: Center canvas + QR + notes */}

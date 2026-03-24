@@ -14,7 +14,7 @@ const NAV_ITEMS = [
   { href: '/dashboard', label: 'Presentations', icon: LayoutDashboard, exact: true },
   { href: '/dashboard/sessions', label: 'Sessions', icon: Radio },
   { href: '/dashboard/templates', label: 'Templates', icon: LayoutTemplate },
-  { href: '/command-studio', label: 'Command Studio', icon: Monitor, badge: 'New' },
+  { href: '/dashboard/studio', label: 'Command Studio', icon: Monitor, badge: 'New' },
   { href: '/dashboard/reports', label: 'Reports', icon: BarChart2 },
   { href: '/dashboard/team', label: 'Team', icon: Users },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },

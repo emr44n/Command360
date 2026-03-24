@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Trash2Icon,
   CopyIcon,
@@ -8,6 +8,9 @@ import {
   EyeOffIcon,
   LockIcon,
   UnlockIcon,
+  PlusIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -21,27 +24,83 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { StudioLayer } from '@/types/slide'
+import type { StudioLayer, StudioClip, StudioKeyframe } from '@/types/slide'
 
 interface StudioPropertiesProps {
   layer: StudioLayer | null
   onUpdate: (updates: Partial<StudioLayer>) => void
   onDelete: (id: string) => void
   onDuplicate: (id: string) => void
+  selectedClip?: StudioClip | null
+  onUpdateClip?: (updates: Partial<StudioClip>) => void
+  onAddKeyframe?: (property: string, value: number | boolean, time: number) => void
+  onDeleteKeyframe?: (keyframeId: string) => void
+  currentTime?: number
 }
+
+const KEYFRAME_PROPERTIES = [
+  { value: 'opacity', label: 'Opacity' },
+  { value: 'x', label: 'X' },
+  { value: 'y', label: 'Y' },
+  { value: 'width', label: 'Width' },
+  { value: 'height', label: 'Height' },
+  { value: 'rotation', label: 'Rotation' },
+  { value: 'visible', label: 'Visible' },
+] as const
+
+const EASING_OPTIONS = [
+  { value: 'linear', label: 'Linear' },
+  { value: 'ease-in', label: 'Ease In' },
+  { value: 'ease-out', label: 'Ease Out' },
+  { value: 'ease-in-out', label: 'Ease In-Out' },
+] as const
 
 export function StudioProperties({
   layer,
   onUpdate,
   onDelete,
   onDuplicate,
+  selectedClip,
+  onUpdateClip,
+  onAddKeyframe,
+  onDeleteKeyframe,
+  currentTime = 0,
 }: StudioPropertiesProps) {
+  const [clipInfoOpen, setClipInfoOpen] = useState(true)
+  const [keyframesOpen, setKeyframesOpen] = useState(true)
+  const [fadeOpen, setFadeOpen] = useState(true)
+  const [newKfProperty, setNewKfProperty] = useState<string>('opacity')
+  const [fadeInDuration, setFadeInDuration] = useState(500)
+  const [fadeOutDuration, setFadeOutDuration] = useState(500)
+
   if (!layer) {
     return (
       <div className="flex h-full items-center justify-center bg-zinc-900 p-4 text-zinc-500">
         <p className="text-center text-xs">Select a layer to edit its properties</p>
       </div>
     )
+  }
+
+  const sortedKeyframes = selectedClip
+    ? [...selectedClip.keyframes].sort((a, b) => a.time - b.time)
+    : []
+
+  // Compute clip-local time for "Add Keyframe" button
+  const clipLocalTime = selectedClip
+    ? Math.max(0, currentTime - selectedClip.startTime)
+    : 0
+
+  const handleAddFadeIn = () => {
+    if (!onAddKeyframe || !selectedClip) return
+    onAddKeyframe('opacity', 0, 0)
+    onAddKeyframe('opacity', 1, fadeInDuration)
+  }
+
+  const handleAddFadeOut = () => {
+    if (!onAddKeyframe || !selectedClip) return
+    const clipEnd = selectedClip.duration
+    onAddKeyframe('opacity', 1, Math.max(0, clipEnd - fadeOutDuration))
+    onAddKeyframe('opacity', 0, clipEnd)
   }
 
   return (
@@ -296,6 +355,241 @@ export function StudioProperties({
                 />
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ── Clip Info Section ── */}
+        {selectedClip && onUpdateClip && (
+          <div className="border-t border-zinc-800 pt-3">
+            <button
+              className="flex w-full items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-400 hover:text-zinc-200 transition-colors"
+              onClick={() => setClipInfoOpen(!clipInfoOpen)}
+            >
+              {clipInfoOpen ? (
+                <ChevronDownIcon className="size-3" />
+              ) : (
+                <ChevronRightIcon className="size-3" />
+              )}
+              Clip Info
+            </button>
+            {clipInfoOpen && (
+              <div className="mt-2 space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="mb-1 text-[10px] text-zinc-400">Start (ms)</Label>
+                    <Input
+                      type="number"
+                      value={selectedClip.startTime}
+                      min={0}
+                      step={100}
+                      onChange={(e) =>
+                        onUpdateClip({ startTime: parseInt(e.target.value) || 0 })
+                      }
+                      className="h-7 border-zinc-700 bg-zinc-800 text-xs text-zinc-100"
+                    />
+                  </div>
+                  <div>
+                    <Label className="mb-1 text-[10px] text-zinc-400">Duration (ms)</Label>
+                    <Input
+                      type="number"
+                      value={selectedClip.duration}
+                      min={1}
+                      step={100}
+                      onChange={(e) =>
+                        onUpdateClip({ duration: parseInt(e.target.value) || 1000 })
+                      }
+                      className="h-7 border-zinc-700 bg-zinc-800 text-xs text-zinc-100"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="mb-1 text-[10px] text-zinc-400">Trim Start (ms)</Label>
+                    <Input
+                      type="number"
+                      value={selectedClip.trimStart}
+                      min={0}
+                      step={100}
+                      onChange={(e) =>
+                        onUpdateClip({ trimStart: parseInt(e.target.value) || 0 })
+                      }
+                      className="h-7 border-zinc-700 bg-zinc-800 text-xs text-zinc-100"
+                    />
+                  </div>
+                  <div>
+                    <Label className="mb-1 text-[10px] text-zinc-400">Trim End (ms)</Label>
+                    <Input
+                      type="number"
+                      value={selectedClip.trimEnd}
+                      min={0}
+                      step={100}
+                      onChange={(e) =>
+                        onUpdateClip({ trimEnd: parseInt(e.target.value) || 0 })
+                      }
+                      className="h-7 border-zinc-700 bg-zinc-800 text-xs text-zinc-100"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Keyframes Section ── */}
+        {selectedClip && onAddKeyframe && onDeleteKeyframe && (
+          <div className="border-t border-zinc-800 pt-3">
+            <button
+              className="flex w-full items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-400 hover:text-zinc-200 transition-colors"
+              onClick={() => setKeyframesOpen(!keyframesOpen)}
+            >
+              {keyframesOpen ? (
+                <ChevronDownIcon className="size-3" />
+              ) : (
+                <ChevronRightIcon className="size-3" />
+              )}
+              Keyframes ({sortedKeyframes.length})
+            </button>
+            {keyframesOpen && (
+              <div className="mt-2 space-y-1.5">
+                {sortedKeyframes.length === 0 && (
+                  <p className="text-[10px] text-zinc-500 italic">No keyframes yet</p>
+                )}
+
+                {sortedKeyframes.map((kf) => (
+                  <div
+                    key={kf.id}
+                    className="flex items-center gap-1.5 rounded bg-zinc-800/60 px-2 py-1 text-[10px]"
+                  >
+                    <span className="w-10 shrink-0 font-mono text-zinc-400">
+                      {kf.time}ms
+                    </span>
+                    <span className="w-12 shrink-0 truncate text-zinc-300">
+                      {kf.property}
+                    </span>
+                    <span className="flex-1 truncate text-zinc-400">
+                      {String(kf.value)}
+                    </span>
+                    <span className="w-12 shrink-0 truncate text-zinc-500">
+                      {kf.easing}
+                    </span>
+                    <button
+                      className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors"
+                      onClick={() => onDeleteKeyframe(kf.id)}
+                      title="Delete keyframe"
+                    >
+                      <Trash2Icon className="size-3" />
+                    </button>
+                  </div>
+                ))}
+
+                {/* Add keyframe at current time */}
+                <div className="flex items-center gap-1.5 pt-1">
+                  <Select
+                    value={newKfProperty}
+                    onValueChange={setNewKfProperty}
+                  >
+                    <SelectTrigger className="h-6 w-24 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {KEYFRAME_PROPERTIES.map((p) => (
+                        <SelectItem key={p.value} value={p.value} className="text-xs">
+                          {p.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 flex-1 border-zinc-600 bg-zinc-800 text-[10px] text-zinc-300 hover:bg-zinc-700"
+                    onClick={() => {
+                      // Use current layer value as default
+                      const prop = newKfProperty as keyof StudioLayer
+                      let value: number | boolean = 1
+                      if (prop === 'visible') {
+                        value = layer.visible
+                      } else if (prop in layer) {
+                        const layerVal = layer[prop]
+                        if (typeof layerVal === 'number') value = layerVal
+                        if (typeof layerVal === 'boolean') value = layerVal
+                      }
+                      onAddKeyframe(newKfProperty, value, clipLocalTime)
+                    }}
+                  >
+                    <PlusIcon className="mr-1 size-3" />
+                    Add at {Math.round(clipLocalTime)}ms
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Fade Controls Section ── */}
+        {selectedClip && onAddKeyframe && (
+          <div className="border-t border-zinc-800 pt-3">
+            <button
+              className="flex w-full items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-400 hover:text-zinc-200 transition-colors"
+              onClick={() => setFadeOpen(!fadeOpen)}
+            >
+              {fadeOpen ? (
+                <ChevronDownIcon className="size-3" />
+              ) : (
+                <ChevronRightIcon className="size-3" />
+              )}
+              Fade Controls
+            </button>
+            {fadeOpen && (
+              <div className="mt-2 space-y-2">
+                <div className="flex items-end gap-2">
+                  <div className="flex-1">
+                    <Label className="mb-1 text-[10px] text-zinc-400">
+                      Fade In (ms)
+                    </Label>
+                    <Input
+                      type="number"
+                      value={fadeInDuration}
+                      min={0}
+                      step={100}
+                      onChange={(e) => setFadeInDuration(parseInt(e.target.value) || 0)}
+                      className="h-7 border-zinc-700 bg-zinc-800 text-xs text-zinc-100"
+                    />
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 shrink-0 border-zinc-600 bg-zinc-800 text-[10px] text-zinc-300 hover:bg-zinc-700"
+                    onClick={handleAddFadeIn}
+                  >
+                    Apply
+                  </Button>
+                </div>
+                <div className="flex items-end gap-2">
+                  <div className="flex-1">
+                    <Label className="mb-1 text-[10px] text-zinc-400">
+                      Fade Out (ms)
+                    </Label>
+                    <Input
+                      type="number"
+                      value={fadeOutDuration}
+                      min={0}
+                      step={100}
+                      onChange={(e) => setFadeOutDuration(parseInt(e.target.value) || 0)}
+                      className="h-7 border-zinc-700 bg-zinc-800 text-xs text-zinc-100"
+                    />
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 shrink-0 border-zinc-600 bg-zinc-800 text-[10px] text-zinc-300 hover:bg-zinc-700"
+                    onClick={handleAddFadeOut}
+                  >
+                    Apply
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

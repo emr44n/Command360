@@ -170,6 +170,50 @@ export interface StudioLayerState {
   src?: string
 }
 
+/* ── Timeline types (v2) ── */
+
+export interface StudioTrack {
+  id: string
+  layerId: string
+  name: string
+  muted: boolean
+  hidden: boolean
+  locked: boolean
+  color: string
+  clips: StudioClip[]
+}
+
+export interface StudioClip {
+  id: string
+  trackId: string
+  startTime: number    // ms from timeline start
+  duration: number     // ms
+  trimStart: number    // ms trimmed from beginning
+  trimEnd: number      // ms trimmed from end
+  keyframes: StudioKeyframe[]
+}
+
+export interface StudioKeyframe {
+  id: string
+  time: number         // ms offset within clip
+  property: 'x' | 'y' | 'width' | 'height' | 'rotation' | 'opacity' | 'visible' | 'src'
+  value: number | boolean | string
+  easing: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out'
+}
+
+export interface StudioTimelineEvent {
+  id: string
+  name: string
+  categoryId?: string
+  color?: string
+  icon?: string
+  timelinePosition: number  // ms where on timeline this event starts
+  duration: number          // ms how long the event segment lasts
+  trigger: 'manual' | 'vote'
+  voteQuestion?: string
+  voteOptions?: StudioVoteOption[]
+}
+
 export interface StudioContent {
   canvas: {
     width: number
@@ -178,7 +222,10 @@ export interface StudioContent {
   }
   layers: StudioLayer[]
   eventCategories: StudioEventCategory[]
-  events: StudioEvent[]
+  events: StudioEvent[]           // legacy action-based events (v1)
+  tracks?: StudioTrack[]          // timeline tracks (v2)
+  timelineEvents?: StudioTimelineEvent[]  // timeline event markers (v2)
+  totalDuration?: number          // ms (v2)
   votingEnabled: boolean
   description?: string
   image_url?: string
