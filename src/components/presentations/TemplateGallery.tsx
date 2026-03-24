@@ -5,11 +5,36 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from '@/components/ui/dropdown-menu'
+import {
   Shield, AlertTriangle, Flame, Radio, BookOpen, ClipboardList,
   HelpCircle, Users, Heart, BarChart2, Star, FileText,
   Search, ArrowRight, Loader2, Layers, Clock, Eye, X,
   Cloud, MessageCircle, AlignLeft, ChevronLeft, ChevronRight,
   Sparkles, Monitor, LayoutGrid, List, Trash2, Bookmark,
+  FolderOpen, Plus, Pencil, MoreVertical, FolderInput,
+  Briefcase, Zap, Target, Flag, Award, Lightbulb, Settings2,
 } from 'lucide-react'
 
 // ─── Template definitions ──────────────────────────────────────────────
@@ -310,12 +335,40 @@ const TEMPLATES: Template[] = [
   },
 ]
 
-const CATEGORIES = ['All', 'Briefings & Debriefs', 'Training & Assessment', 'Wellbeing & Feedback']
+// ─── Default built-in categories ──────────────────────────────────────────────
+const DEFAULT_CATEGORIES = ['Briefings & Debriefs', 'Training & Assessment', 'Wellbeing & Feedback']
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
   'Briefings & Debriefs': Radio,
   'Training & Assessment': BookOpen,
   'Wellbeing & Feedback': Heart,
+}
+
+// ─── Preset icons for custom categories ──────────────────────────────────────
+const PRESET_ICONS: { value: string; label: string; Icon: React.ElementType }[] = [
+  { value: 'FolderOpen', label: 'Folder', Icon: FolderOpen },
+  { value: 'Briefcase', label: 'Briefcase', Icon: Briefcase },
+  { value: 'Zap', label: 'Zap', Icon: Zap },
+  { value: 'Target', label: 'Target', Icon: Target },
+  { value: 'Flag', label: 'Flag', Icon: Flag },
+  { value: 'Award', label: 'Award', Icon: Award },
+  { value: 'Lightbulb', label: 'Lightbulb', Icon: Lightbulb },
+  { value: 'Star', label: 'Star', Icon: Star },
+  { value: 'Shield', label: 'Shield', Icon: Shield },
+  { value: 'Users', label: 'Users', Icon: Users },
+  { value: 'BookOpen', label: 'Book', Icon: BookOpen },
+  { value: 'Settings2', label: 'Settings', Icon: Settings2 },
+]
+
+function getPresetIcon(value: string): React.ElementType {
+  return PRESET_ICONS.find((p) => p.value === value)?.Icon || FolderOpen
+}
+
+// ─── Custom category type ──────────────────────────────────────────────
+interface CustomCategory {
+  id: string
+  name: string
+  icon: string
 }
 
 interface UserTemplate {
@@ -325,6 +378,62 @@ interface UserTemplate {
   updated_at: string
 }
 
+// ─── localStorage helpers ──────────────────────────────────────────────
+function loadFavorites(): string[] {
+  if (typeof window === 'undefined') return []
+  try {
+    return JSON.parse(localStorage.getItem('c360-template-favorites') || '[]')
+  } catch { return [] }
+}
+
+function saveFavorites(favs: string[]) {
+  localStorage.setItem('c360-template-favorites', JSON.stringify(favs))
+}
+
+function loadCustomCategories(): CustomCategory[] {
+  if (typeof window === 'undefined') return []
+  try {
+    return JSON.parse(localStorage.getItem('c360-template-categories') || '[]')
+  } catch { return [] }
+}
+
+function saveCustomCategories(cats: CustomCategory[]) {
+  localStorage.setItem('c360-template-categories', JSON.stringify(cats))
+}
+
+function loadCategoryMap(): Record<string, string> {
+  if (typeof window === 'undefined') return {}
+  try {
+    return JSON.parse(localStorage.getItem('c360-template-category-map') || '{}')
+  } catch { return {} }
+}
+
+function saveCategoryMap(map: Record<string, string>) {
+  localStorage.setItem('c360-template-category-map', JSON.stringify(map))
+}
+
+// ─── Heart button component ──────────────────────────────────────────────
+function HeartButton({ templateId, favorites, onToggle, className = '' }: {
+  templateId: string
+  favorites: string[]
+  onToggle: (id: string) => void
+  className?: string
+}) {
+  const isFav = favorites.includes(templateId)
+  return (
+    <button
+      onClick={(e) => { e.stopPropagation(); onToggle(templateId) }}
+      className={`p-1.5 rounded-lg transition-all hover:scale-110 ${className}`}
+      title={isFav ? 'Remove from favourites' : 'Add to favourites'}
+    >
+      <Heart
+        className={`w-3.5 h-3.5 transition-colors ${isFav ? 'fill-red-500 text-red-500' : 'text-muted-foreground hover:text-red-400'}`}
+      />
+    </button>
+  )
+}
+
+// ─── Main Component ──────────────────────────────────────────────────────────
 export function TemplateGallery() {
   const router = useRouter()
   const [creating, setCreating] = useState<string | null>(null)
@@ -341,6 +450,41 @@ export function TemplateGallery() {
   const [userTemplates, setUserTemplates] = useState<UserTemplate[]>([])
   const [loadingUserTemplates, setLoadingUserTemplates] = useState(true)
   const [deletingTemplate, setDeletingTemplate] = useState<string | null>(null)
+
+  // Delete confirmation dialog state
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+  const [templateToDelete, setTemplateToDelete] = useState<{ id: string; title: string } | null>(null)
+
+  // Favorites
+  const [favorites, setFavorites] = useState<string[]>(() => loadFavorites())
+
+  // Custom categories
+  const [customCategories, setCustomCategories] = useState<CustomCategory[]>(() => loadCustomCategories())
+  const [categoryMap, setCategoryMap] = useState<Record<string, string>>(() => loadCategoryMap())
+
+  // Manage categories dialog
+  const [manageCatsOpen, setManageCatsOpen] = useState(false)
+  const [newCatName, setNewCatName] = useState('')
+  const [newCatIcon, setNewCatIcon] = useState('FolderOpen')
+  const [editingCat, setEditingCat] = useState<string | null>(null)
+  const [editCatName, setEditCatName] = useState('')
+
+  function toggleFavorite(id: string) {
+    setFavorites((prev) => {
+      const next = prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
+      saveFavorites(next)
+      return next
+    })
+  }
+
+  // All categories (default + custom)
+  const allCategories = [
+    ...DEFAULT_CATEGORIES,
+    ...customCategories.map((c) => c.name),
+  ]
+
+  // Category dropdown options
+  const categoryOptions = ['All Templates', ...allCategories]
 
   useEffect(() => {
     async function fetchUserTemplates() {
@@ -359,13 +503,32 @@ export function TemplateGallery() {
     fetchUserTemplates()
   }, [])
 
-  async function handleDeleteUserTemplate(id: string, title: string) {
-    if (!confirm(`Delete template "${title}"? This cannot be undone.`)) return
+  function promptDeleteUserTemplate(id: string, title: string) {
+    setTemplateToDelete({ id, title })
+    setDeleteConfirmOpen(true)
+  }
+
+  async function handleDeleteUserTemplate() {
+    if (!templateToDelete) return
+    const { id } = templateToDelete
     setDeletingTemplate(id)
+    setDeleteConfirmOpen(false)
     try {
       const res = await fetch(`/api/templates/${id}`, { method: 'DELETE' })
       if (res.ok) {
         setUserTemplates((prev) => prev.filter((t) => t.id !== id))
+        // Also remove from favorites and category map
+        setFavorites((prev) => {
+          const next = prev.filter((f) => f !== id)
+          saveFavorites(next)
+          return next
+        })
+        setCategoryMap((prev) => {
+          const next = { ...prev }
+          delete next[id]
+          saveCategoryMap(next)
+          return next
+        })
         toast.success('Template deleted')
       } else {
         toast.error('Failed to delete template')
@@ -374,6 +537,7 @@ export function TemplateGallery() {
       toast.error('Failed to delete template')
     } finally {
       setDeletingTemplate(null)
+      setTemplateToDelete(null)
     }
   }
 
@@ -395,14 +559,105 @@ export function TemplateGallery() {
     }
   }
 
+  // Move template to category
+  function moveToCategory(templateId: string, categoryName: string | null) {
+    setCategoryMap((prev) => {
+      const next = { ...prev }
+      if (categoryName === null) {
+        delete next[templateId]
+      } else {
+        next[templateId] = categoryName
+      }
+      saveCategoryMap(next)
+      return next
+    })
+    toast.success(categoryName ? `Moved to ${categoryName}` : 'Removed from category')
+  }
+
+  // Custom category management
+  function addCustomCategory() {
+    if (!newCatName.trim()) return
+    if (allCategories.includes(newCatName.trim())) {
+      toast.error('Category already exists')
+      return
+    }
+    const cat: CustomCategory = {
+      id: `cat-${Date.now()}`,
+      name: newCatName.trim(),
+      icon: newCatIcon,
+    }
+    setCustomCategories((prev) => {
+      const next = [...prev, cat]
+      saveCustomCategories(next)
+      return next
+    })
+    setNewCatName('')
+    setNewCatIcon('FolderOpen')
+    toast.success('Category created')
+  }
+
+  function renameCustomCategory(id: string) {
+    if (!editCatName.trim()) return
+    setCustomCategories((prev) => {
+      const old = prev.find((c) => c.id === id)
+      const oldName = old?.name
+      const next = prev.map((c) => c.id === id ? { ...c, name: editCatName.trim() } : c)
+      saveCustomCategories(next)
+      // Update category map references
+      if (oldName) {
+        setCategoryMap((prevMap) => {
+          const nextMap: Record<string, string> = {}
+          for (const [k, v] of Object.entries(prevMap)) {
+            nextMap[k] = v === oldName ? editCatName.trim() : v
+          }
+          saveCategoryMap(nextMap)
+          return nextMap
+        })
+      }
+      return next
+    })
+    setEditingCat(null)
+    setEditCatName('')
+    toast.success('Category renamed')
+  }
+
+  function deleteCustomCategory(id: string) {
+    const cat = customCategories.find((c) => c.id === id)
+    if (!cat) return
+    setCustomCategories((prev) => {
+      const next = prev.filter((c) => c.id !== id)
+      saveCustomCategories(next)
+      return next
+    })
+    // Move templates in that category to uncategorised
+    setCategoryMap((prev) => {
+      const next: Record<string, string> = {}
+      for (const [k, v] of Object.entries(prev)) {
+        if (v !== cat.name) next[k] = v
+      }
+      saveCategoryMap(next)
+      return next
+    })
+    if (activeCategory === cat.name) setActiveCategory('All')
+    toast.success('Category deleted')
+  }
+
+  // Resolve the effective category for a built-in template
+  function getEffectiveCategory(t: Template): string {
+    return categoryMap[t.id] || t.category
+  }
+
   const filteredUserTemplates = userTemplates.filter((t) => {
     if (!search) return true
     const q = search.toLowerCase()
     return t.title.toLowerCase().includes(q) || (t.description || '').toLowerCase().includes(q)
   })
 
+  const selectedCategory = activeCategory === 'All' ? null : activeCategory
+
   const filtered = TEMPLATES.filter((t) => {
-    const matchesCategory = activeCategory === 'All' || t.category === activeCategory
+    const effectiveCat = getEffectiveCategory(t)
+    const matchesCategory = !selectedCategory || effectiveCat === selectedCategory
     const matchesSearch =
       search === '' ||
       t.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -411,15 +666,22 @@ export function TemplateGallery() {
     return matchesCategory && matchesSearch
   })
 
-  const featuredTemplates = TEMPLATES.filter(t => t.featured)
+  // Group by effective category for display
+  const displayCategories = selectedCategory
+    ? [selectedCategory]
+    : [...DEFAULT_CATEGORIES, ...customCategories.map((c) => c.name)]
 
-  // Group by category for display
-  const grouped = activeCategory === 'All'
-    ? CATEGORIES.filter((c) => c !== 'All').map((cat) => ({
-        category: cat,
-        templates: filtered.filter((t) => t.category === cat),
-      })).filter((g) => g.templates.length > 0)
-    : [{ category: activeCategory, templates: filtered }]
+  const grouped = displayCategories
+    .map((cat) => ({
+      category: cat,
+      templates: filtered.filter((t) => getEffectiveCategory(t) === cat),
+    }))
+    .filter((g) => g.templates.length > 0)
+
+  // Favourites: all template IDs (built-in + user) that are hearted
+  const favBuiltIn = TEMPLATES.filter((t) => favorites.includes(t.id))
+  const favUser = userTemplates.filter((t) => favorites.includes(t.id))
+  const hasFavorites = favBuiltIn.length > 0 || favUser.length > 0
 
   const createFromTemplate = useCallback(async (template: Template) => {
     setCreating(template.id)
@@ -454,80 +716,51 @@ export function TemplateGallery() {
     setPreviewSlide(0)
   }
 
+  // Get icon for a category (built-in or custom)
+  function getCategoryIcon(catName: string): React.ElementType | null {
+    if (CATEGORY_ICONS[catName]) return CATEGORY_ICONS[catName]
+    const custom = customCategories.find((c) => c.name === catName)
+    if (custom) return getPresetIcon(custom.icon)
+    return null
+  }
+
+  // ─── Move-to-category dropdown for template cards ──────────────
+  function MoveToCategoryMenu({ templateId }: { templateId: string }) {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            onClick={(e) => e.stopPropagation()}
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            title="Move to category"
+          >
+            <FolderInput className="w-3.5 h-3.5" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48" onClick={(e) => e.stopPropagation()}>
+          <DropdownMenuLabel className="text-xs">Move to category</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => moveToCategory(templateId, null)}>
+            <X className="w-3 h-3 mr-2" /> Remove category
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          {allCategories.map((cat) => {
+            const CIcon = getCategoryIcon(cat)
+            return (
+              <DropdownMenuItem key={cat} onClick={() => moveToCategory(templateId, cat)}>
+                {CIcon && <CIcon className="w-3 h-3 mr-2" />}
+                {cat}
+              </DropdownMenuItem>
+            )
+          })}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
+
   return (
     <div className="space-y-8">
-      {/* Featured section — shown when no search active and "All" selected */}
-      {!search && activeCategory === 'All' && (
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="w-4 h-4 text-amber-500" />
-            <h3 className="text-sm font-semibold text-foreground">Popular Templates</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
-            {featuredTemplates.map((t) => {
-              const duration = estimateDuration(t.slides)
-              const uniqueTypes = [...new Set(t.slides.map(s => s.slide_type))]
-              return (
-                <div
-                  key={t.id}
-                  className="bg-gradient-to-br from-card to-muted/30 border border-border rounded-2xl p-5 hover:shadow-lg hover:border-primary/30 transition-all group cursor-pointer relative overflow-hidden"
-                  onClick={() => openPreview(t)}
-                >
-                  {/* Featured badge */}
-                  <div className="absolute top-3 right-3">
-                    <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600">
-                      Popular
-                    </span>
-                  </div>
-
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${t.color} group-hover:scale-110 transition-transform duration-200`}>
-                      <t.icon className="w-5 h-5" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">
-                        {t.title}
-                      </h4>
-                      <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-1">
-                        <span className="flex items-center gap-1"><FileText className="w-3 h-3" />{t.slides.length} slides</span>
-                        <span className="text-border">|</span>
-                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" />~{duration} min</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-muted-foreground leading-relaxed mb-3 line-clamp-2">
-                    {t.description}
-                  </p>
-
-                  {/* Slide type icons */}
-                  <div className="flex items-center gap-1.5">
-                    {uniqueTypes.slice(0, 5).map(type => {
-                      const TypeIcon = TYPE_ICONS[type] || FileText
-                      const color = TYPE_COLORS[type] || '#6b7280'
-                      return (
-                        <div
-                          key={type}
-                          className="w-6 h-6 rounded-md flex items-center justify-center"
-                          style={{ background: `${color}15` }}
-                          title={TYPE_LABELS[type] || type}
-                        >
-                          <TypeIcon style={{ width: 11, height: 11, color }} />
-                        </div>
-                      )
-                    })}
-                    {uniqueTypes.length > 5 && (
-                      <span className="text-[10px] text-muted-foreground">+{uniqueTypes.length - 5}</span>
-                    )}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Search + filters + view toggle */}
+      {/* Search + Category dropdown + View toggle — all in one row */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -538,25 +771,35 @@ export function TemplateGallery() {
             className="pl-9 bg-background border-border text-sm"
           />
         </div>
-        <div className="flex gap-1.5 flex-wrap">
-          {CATEGORIES.map((cat) => {
-            const CatIcon = cat === 'All' ? Layers : CATEGORY_ICONS[cat]
-            return (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
-                  activeCategory === cat
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'bg-card text-muted-foreground border-border hover:border-primary/30 hover:text-foreground'
-                }`}
-              >
-                {CatIcon && <CatIcon className="w-3 h-3" />}
-                {cat}
-              </button>
-            )
-          })}
-        </div>
+
+        {/* Category dropdown */}
+        <Select
+          value={activeCategory === 'All' ? 'All Templates' : activeCategory}
+          onValueChange={(val) => setActiveCategory(val === 'All Templates' ? 'All' : val)}
+        >
+          <SelectTrigger className="w-[220px] text-sm">
+            <SelectValue placeholder="All Templates" />
+          </SelectTrigger>
+          <SelectContent>
+            {categoryOptions.map((opt) => (
+              <SelectItem key={opt} value={opt}>
+                {opt}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Manage Categories button */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5 text-xs shrink-0"
+          onClick={() => setManageCatsOpen(true)}
+        >
+          <Settings2 className="w-3.5 h-3.5" />
+          Manage Categories
+        </Button>
+
         {/* View toggle */}
         <div className="flex items-center rounded-xl border border-border overflow-hidden shrink-0">
           <button
@@ -578,105 +821,50 @@ export function TemplateGallery() {
         </div>
       </div>
 
-      {/* User-saved templates */}
-      {(activeCategory === 'All' || activeCategory === 'My Templates') && filteredUserTemplates.length > 0 && (
+      {/* ─── Favourites section ─── */}
+      {hasFavorites && !search && activeCategory === 'All' && (
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <Heart className="w-4 h-4 text-red-500 fill-red-500" />
+            <h3 className="text-sm font-semibold text-foreground">Favourites</h3>
+            <span className="text-xs text-muted-foreground">({favBuiltIn.length + favUser.length})</span>
+          </div>
+          <div className={view === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3' : 'space-y-2'}>
+            {/* Fav built-in */}
+            {favBuiltIn.map((t) => (
+              view === 'grid'
+                ? <BuiltInGridCard key={t.id} t={t} creating={creating} createFromTemplate={createFromTemplate} openPreview={openPreview} favorites={favorites} toggleFavorite={toggleFavorite} MoveToCategoryMenu={MoveToCategoryMenu} />
+                : <BuiltInListCard key={t.id} t={t} creating={creating} createFromTemplate={createFromTemplate} openPreview={openPreview} favorites={favorites} toggleFavorite={toggleFavorite} MoveToCategoryMenu={MoveToCategoryMenu} />
+            ))}
+            {/* Fav user templates */}
+            {favUser.map((t) => (
+              view === 'grid'
+                ? <UserGridCard key={t.id} t={t} creating={creating} deletingTemplate={deletingTemplate} handleUseUserTemplate={handleUseUserTemplate} promptDeleteUserTemplate={promptDeleteUserTemplate} favorites={favorites} toggleFavorite={toggleFavorite} MoveToCategoryMenu={MoveToCategoryMenu} />
+                : <UserListCard key={t.id} t={t} creating={creating} deletingTemplate={deletingTemplate} handleUseUserTemplate={handleUseUserTemplate} promptDeleteUserTemplate={promptDeleteUserTemplate} favorites={favorites} toggleFavorite={toggleFavorite} MoveToCategoryMenu={MoveToCategoryMenu} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ─── User-saved templates ─── */}
+      {(activeCategory === 'All') && filteredUserTemplates.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-3">
             <Bookmark className="w-4 h-4 text-primary" />
             <h3 className="text-sm font-semibold text-foreground">My Templates</h3>
             <span className="text-xs text-muted-foreground">({filteredUserTemplates.length})</span>
           </div>
-          {view === 'grid' ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-              {filteredUserTemplates.map((t) => (
-                <div
-                  key={t.id}
-                  className="bg-card border border-border rounded-2xl p-5 hover:shadow-md hover:border-primary/20 transition-all group"
-                >
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-primary bg-primary/10 group-hover:scale-110 transition-transform duration-200">
-                      <Bookmark className="w-5 h-5" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors truncate">
-                        {t.title}
-                      </h4>
-                      {t.description && (
-                        <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{t.description.replace(/^\[TEMPLATE\]\s*/, '')}</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-1.5 flex-1 rounded-full text-xs group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors"
-                      onClick={() => handleUseUserTemplate(t.id)}
-                      disabled={creating !== null}
-                    >
-                      {creating === t.id ? (
-                        <><Loader2 className="w-3 h-3 animate-spin" /> Creating...</>
-                      ) : (
-                        <>Use <ArrowRight className="w-3 h-3" /></>
-                      )}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="gap-1.5 text-xs text-muted-foreground hover:text-destructive"
-                      onClick={() => handleDeleteUserTemplate(t.id, t.title)}
-                      disabled={deletingTemplate === t.id}
-                    >
-                      {deletingTemplate === t.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {filteredUserTemplates.map((t) => (
-                <div
-                  key={t.id}
-                  className="group relative flex items-center gap-4 bg-card border border-border rounded-2xl p-4 overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5"
-                >
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-primary bg-primary/10">
-                    <Bookmark className="w-5 h-5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="font-medium text-foreground text-sm group-hover:text-primary transition-colors truncate">{t.title}</h4>
-                    {t.description && (
-                      <p className="text-xs text-muted-foreground mt-0.5 truncate">{t.description.replace(/^\[TEMPLATE\]\s*/, '')}</p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-1.5 text-xs rounded-full"
-                      onClick={() => handleUseUserTemplate(t.id)}
-                      disabled={creating !== null}
-                    >
-                      {creating === t.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <>Use <ArrowRight className="w-3 h-3" /></>}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-xs text-muted-foreground hover:text-destructive"
-                      onClick={() => handleDeleteUserTemplate(t.id, t.title)}
-                      disabled={deletingTemplate === t.id}
-                    >
-                      {deletingTemplate === t.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <div className={view === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3' : 'space-y-2'}>
+            {filteredUserTemplates.map((t) => (
+              view === 'grid'
+                ? <UserGridCard key={t.id} t={t} creating={creating} deletingTemplate={deletingTemplate} handleUseUserTemplate={handleUseUserTemplate} promptDeleteUserTemplate={promptDeleteUserTemplate} favorites={favorites} toggleFavorite={toggleFavorite} MoveToCategoryMenu={MoveToCategoryMenu} />
+                : <UserListCard key={t.id} t={t} creating={creating} deletingTemplate={deletingTemplate} handleUseUserTemplate={handleUseUserTemplate} promptDeleteUserTemplate={promptDeleteUserTemplate} favorites={favorites} toggleFavorite={toggleFavorite} MoveToCategoryMenu={MoveToCategoryMenu} />
+            ))}
+          </div>
         </div>
       )}
 
-      {/* Template groups */}
+      {/* ─── Built-in template groups ─── */}
       {filtered.length === 0 && filteredUserTemplates.length === 0 ? (
         <div className="text-center py-12">
           <Layers className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
@@ -687,7 +875,7 @@ export function TemplateGallery() {
         </div>
       ) : view === 'grid' ? (
         grouped.map((group) => {
-          const CatIcon = CATEGORY_ICONS[group.category]
+          const CatIcon = getCategoryIcon(group.category)
           return (
             <div key={group.category}>
               {activeCategory === 'All' && (
@@ -698,92 +886,16 @@ export function TemplateGallery() {
                 </div>
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                {group.templates.map((t) => {
-                  const duration = estimateDuration(t.slides)
-                  const uniqueTypes = [...new Set(t.slides.map(s => s.slide_type))]
-                  return (
-                    <div
-                      key={t.id}
-                      className="bg-card border border-border rounded-2xl p-5 hover:shadow-md hover:border-primary/20 transition-all group"
-                    >
-                      <div className="flex items-start gap-3 mb-3">
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${t.color} group-hover:scale-110 transition-transform duration-200`}>
-                          <t.icon className="w-5 h-5" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors truncate">
-                            {t.title}
-                          </h4>
-                          <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
-                            <span>{t.slides.length} slides</span>
-                            <span className="text-border">|</span>
-                            <span className="flex items-center gap-1"><Clock className="w-3 h-3" />~{duration} min</span>
-                          </div>
-                        </div>
-                      </div>
-                      <p className="text-xs text-muted-foreground leading-relaxed mb-3 line-clamp-2">
-                        {t.description}
-                      </p>
-
-                      {/* Slide type pills */}
-                      <div className="flex flex-wrap gap-1 mb-4">
-                        {uniqueTypes.slice(0, 4).map((type) => {
-                          const TypeIcon = TYPE_ICONS[type] || FileText
-                          const color = TYPE_COLORS[type] || '#6b7280'
-                          return (
-                            <span key={type} className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                              <TypeIcon style={{ width: 9, height: 9, color }} />
-                              {TYPE_LABELS[type] || type}
-                            </span>
-                          )
-                        })}
-                        {uniqueTypes.length > 4 && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                            +{uniqueTypes.length - 4}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="gap-1.5 flex-1 text-xs text-muted-foreground hover:text-foreground"
-                          onClick={() => openPreview(t)}
-                        >
-                          <Eye className="w-3 h-3" />
-                          Preview
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="gap-1.5 flex-1 rounded-full text-xs group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors"
-                          onClick={() => createFromTemplate(t)}
-                          disabled={creating !== null}
-                        >
-                          {creating === t.id ? (
-                            <>
-                              <Loader2 className="w-3 h-3 animate-spin" />
-                              Creating...
-                            </>
-                          ) : (
-                            <>
-                              Use <ArrowRight className="w-3 h-3" />
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  )
-                })}
+                {group.templates.map((t) => (
+                  <BuiltInGridCard key={t.id} t={t} creating={creating} createFromTemplate={createFromTemplate} openPreview={openPreview} favorites={favorites} toggleFavorite={toggleFavorite} MoveToCategoryMenu={MoveToCategoryMenu} />
+                ))}
               </div>
             </div>
           )
         })
       ) : (
-        /* List view for built-in templates */
         grouped.map((group) => {
-          const CatIcon = CATEGORY_ICONS[group.category]
+          const CatIcon = getCategoryIcon(group.category)
           return (
             <div key={group.category}>
               {activeCategory === 'All' && (
@@ -794,68 +906,141 @@ export function TemplateGallery() {
                 </div>
               )}
               <div className="space-y-2 mb-6">
-                {group.templates.map((t) => {
-                  const duration = estimateDuration(t.slides)
-                  const uniqueTypes = [...new Set(t.slides.map(s => s.slide_type))]
-                  return (
-                    <div
-                      key={t.id}
-                      className="group relative flex items-center gap-4 bg-card border border-border rounded-2xl p-4 overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5"
-                    >
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${t.color}`}>
-                        <t.icon className="w-5 h-5" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-medium text-foreground text-sm group-hover:text-primary transition-colors truncate">{t.title}</h4>
-                          {t.featured && (
-                            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 shrink-0">Popular</span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
-                          <span>{t.slides.length} slides</span>
-                          <span className="text-border">|</span>
-                          <span className="flex items-center gap-1"><Clock className="w-3 h-3" />~{duration} min</span>
-                          <span className="text-border">|</span>
-                          <span className="flex items-center gap-1">
-                            {uniqueTypes.slice(0, 3).map((type) => {
-                              const TypeIcon = TYPE_ICONS[type] || FileText
-                              const color = TYPE_COLORS[type] || '#6b7280'
-                              return <TypeIcon key={type} style={{ width: 11, height: 11, color }} title={TYPE_LABELS[type] || type} />
-                            })}
-                            {uniqueTypes.length > 3 && <span className="text-[10px]">+{uniqueTypes.length - 3}</span>}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
-                          onClick={() => openPreview(t)}
-                        >
-                          <Eye className="w-3 h-3" /> Preview
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="gap-1.5 text-xs rounded-full"
-                          onClick={() => createFromTemplate(t)}
-                          disabled={creating !== null}
-                        >
-                          {creating === t.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <>Use <ArrowRight className="w-3 h-3" /></>}
-                        </Button>
-                      </div>
-                    </div>
-                  )
-                })}
+                {group.templates.map((t) => (
+                  <BuiltInListCard key={t.id} t={t} creating={creating} createFromTemplate={createFromTemplate} openPreview={openPreview} favorites={favorites} toggleFavorite={toggleFavorite} MoveToCategoryMenu={MoveToCategoryMenu} />
+                ))}
               </div>
             </div>
           )
         })
       )}
 
-      {/* Preview Modal */}
+      {/* ─── Delete confirmation dialog ─── */}
+      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete template</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete &ldquo;{templateToDelete?.title}&rdquo;? This cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteUserTemplate}>
+              <Trash2 className="w-4 h-4 mr-1.5" />
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Manage Categories dialog ─── */}
+      <Dialog open={manageCatsOpen} onOpenChange={setManageCatsOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Manage Categories</DialogTitle>
+            <DialogDescription>
+              Create custom categories to organise your templates. Default categories cannot be modified.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Default categories (read-only) */}
+          <div className="space-y-2 mb-4">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Default</p>
+            {DEFAULT_CATEGORIES.map((cat) => {
+              const CIcon = CATEGORY_ICONS[cat]
+              return (
+                <div key={cat} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-muted/50">
+                  {CIcon && <CIcon className="w-4 h-4 text-muted-foreground" />}
+                  <span className="text-sm text-foreground">{cat}</span>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Custom categories */}
+          <div className="space-y-2 mb-4">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Custom</p>
+            {customCategories.length === 0 && (
+              <p className="text-xs text-muted-foreground py-2">No custom categories yet.</p>
+            )}
+            {customCategories.map((cat) => {
+              const CIcon = getPresetIcon(cat.icon)
+              return (
+                <div key={cat.id} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-muted/50">
+                  <CIcon className="w-4 h-4 text-muted-foreground" />
+                  {editingCat === cat.id ? (
+                    <div className="flex-1 flex gap-2">
+                      <Input
+                        value={editCatName}
+                        onChange={(e) => setEditCatName(e.target.value)}
+                        className="h-7 text-sm flex-1"
+                        onKeyDown={(e) => e.key === 'Enter' && renameCustomCategory(cat.id)}
+                        autoFocus
+                      />
+                      <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => renameCustomCategory(cat.id)}>Save</Button>
+                      <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setEditingCat(null)}>Cancel</Button>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="text-sm text-foreground flex-1">{cat.name}</span>
+                      <button onClick={() => { setEditingCat(cat.id); setEditCatName(cat.name) }} className="p-1 text-muted-foreground hover:text-foreground">
+                        <Pencil className="w-3 h-3" />
+                      </button>
+                      <button onClick={() => deleteCustomCategory(cat.id)} className="p-1 text-muted-foreground hover:text-destructive">
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Add new category */}
+          <div className="border-t border-border pt-4">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Add category</p>
+            <div className="flex gap-2 items-end">
+              {/* Icon picker */}
+              <div className="shrink-0">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="w-9 h-9 rounded-lg border border-border flex items-center justify-center hover:bg-muted transition-colors">
+                      {(() => { const I = getPresetIcon(newCatIcon); return <I className="w-4 h-4 text-muted-foreground" /> })()}
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="grid grid-cols-4 gap-1 p-2 w-auto">
+                    {PRESET_ICONS.map((p) => (
+                      <button
+                        key={p.value}
+                        onClick={() => setNewCatIcon(p.value)}
+                        className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors ${newCatIcon === p.value ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-muted-foreground'}`}
+                        title={p.label}
+                      >
+                        <p.Icon className="w-4 h-4" />
+                      </button>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              <Input
+                value={newCatName}
+                onChange={(e) => setNewCatName(e.target.value)}
+                placeholder="Category name..."
+                className="flex-1 text-sm"
+                onKeyDown={(e) => e.key === 'Enter' && addCustomCategory()}
+              />
+              <Button size="sm" onClick={addCustomCategory} disabled={!newCatName.trim()}>
+                <Plus className="w-4 h-4 mr-1" /> Add
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Preview Modal ─── */}
       {previewTemplate && (
         <div
           className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4"
@@ -879,6 +1064,7 @@ export function TemplateGallery() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                <HeartButton templateId={previewTemplate.id} favorites={favorites} onToggle={toggleFavorite} />
                 <Button
                   size="sm"
                   className="gap-1.5 rounded-full text-xs bg-primary hover:bg-primary/90 text-primary-foreground"
@@ -987,6 +1173,263 @@ export function TemplateGallery() {
   )
 }
 
+// ─── Built-in template grid card ──────────────────────────────────────────────
+function BuiltInGridCard({ t, creating, createFromTemplate, openPreview, favorites, toggleFavorite, MoveToCategoryMenu }: {
+  t: Template
+  creating: string | null
+  createFromTemplate: (t: Template) => void
+  openPreview: (t: Template) => void
+  favorites: string[]
+  toggleFavorite: (id: string) => void
+  MoveToCategoryMenu: React.ComponentType<{ templateId: string }>
+}) {
+  const duration = estimateDuration(t.slides)
+  const uniqueTypes = [...new Set(t.slides.map(s => s.slide_type))]
+  return (
+    <div
+      className="bg-card border border-border rounded-2xl p-5 hover:shadow-md hover:border-primary/20 transition-all group cursor-pointer"
+      onClick={() => openPreview(t)}
+    >
+      <div className="flex items-start gap-3 mb-3">
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${t.color} group-hover:scale-110 transition-transform duration-200`}>
+          <t.icon className="w-5 h-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors truncate">
+            {t.title}
+          </h4>
+          <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
+            <span>{t.slides.length} slides</span>
+            <span className="text-border">|</span>
+            <span className="flex items-center gap-1"><Clock className="w-3 h-3" />~{duration} min</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-0.5 shrink-0">
+          <HeartButton templateId={t.id} favorites={favorites} onToggle={toggleFavorite} />
+          <MoveToCategoryMenu templateId={t.id} />
+        </div>
+      </div>
+      <p className="text-xs text-muted-foreground leading-relaxed mb-3 line-clamp-2">
+        {t.description}
+      </p>
+
+      {/* Slide type pills */}
+      <div className="flex flex-wrap gap-1 mb-4">
+        {uniqueTypes.slice(0, 4).map((type) => {
+          const TypeIcon = TYPE_ICONS[type] || FileText
+          const color = TYPE_COLORS[type] || '#6b7280'
+          return (
+            <span key={type} className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+              <TypeIcon style={{ width: 9, height: 9, color }} />
+              {TYPE_LABELS[type] || type}
+            </span>
+          )
+        })}
+        {uniqueTypes.length > 4 && (
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+            +{uniqueTypes.length - 4}
+          </span>
+        )}
+      </div>
+
+      <div className="flex gap-2">
+        <Button
+          size="sm"
+          variant="ghost"
+          className="gap-1.5 flex-1 text-xs text-muted-foreground hover:text-foreground"
+          onClick={(e) => { e.stopPropagation(); openPreview(t) }}
+        >
+          <Eye className="w-3 h-3" />
+          Preview
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-1.5 flex-1 rounded-full text-xs group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors"
+          onClick={(e) => { e.stopPropagation(); createFromTemplate(t) }}
+          disabled={creating !== null}
+        >
+          {creating === t.id ? (
+            <><Loader2 className="w-3 h-3 animate-spin" /> Creating...</>
+          ) : (
+            <>Use <ArrowRight className="w-3 h-3" /></>
+          )}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+// ─── Built-in template list card ──────────────────────────────────────────────
+function BuiltInListCard({ t, creating, createFromTemplate, openPreview, favorites, toggleFavorite, MoveToCategoryMenu }: {
+  t: Template
+  creating: string | null
+  createFromTemplate: (t: Template) => void
+  openPreview: (t: Template) => void
+  favorites: string[]
+  toggleFavorite: (id: string) => void
+  MoveToCategoryMenu: React.ComponentType<{ templateId: string }>
+}) {
+  const duration = estimateDuration(t.slides)
+  const uniqueTypes = [...new Set(t.slides.map(s => s.slide_type))]
+  return (
+    <div className="group relative flex items-center gap-4 bg-card border border-border rounded-2xl p-4 overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5">
+      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${t.color}`}>
+        <t.icon className="w-5 h-5" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <h4 className="font-medium text-foreground text-sm group-hover:text-primary transition-colors truncate">{t.title}</h4>
+          {t.featured && (
+            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 shrink-0">Popular</span>
+          )}
+        </div>
+        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+          <span>{t.slides.length} slides</span>
+          <span className="text-border">|</span>
+          <span className="flex items-center gap-1"><Clock className="w-3 h-3" />~{duration} min</span>
+          <span className="text-border">|</span>
+          <span className="flex items-center gap-1">
+            {uniqueTypes.slice(0, 3).map((type) => {
+              const TypeIcon = TYPE_ICONS[type] || FileText
+              const color = TYPE_COLORS[type] || '#6b7280'
+              return <TypeIcon key={type} style={{ width: 11, height: 11, color }} title={TYPE_LABELS[type] || type} />
+            })}
+            {uniqueTypes.length > 3 && <span className="text-[10px]">+{uniqueTypes.length - 3}</span>}
+          </span>
+        </div>
+      </div>
+      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
+        <HeartButton templateId={t.id} favorites={favorites} onToggle={toggleFavorite} />
+        <MoveToCategoryMenu templateId={t.id} />
+        <Button
+          size="sm"
+          variant="ghost"
+          className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+          onClick={() => openPreview(t)}
+        >
+          <Eye className="w-3 h-3" /> Preview
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-1.5 text-xs rounded-full"
+          onClick={() => createFromTemplate(t)}
+          disabled={creating !== null}
+        >
+          {creating === t.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <>Use <ArrowRight className="w-3 h-3" /></>}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+// ─── User template grid card ──────────────────────────────────────────────
+function UserGridCard({ t, creating, deletingTemplate, handleUseUserTemplate, promptDeleteUserTemplate, favorites, toggleFavorite, MoveToCategoryMenu }: {
+  t: UserTemplate
+  creating: string | null
+  deletingTemplate: string | null
+  handleUseUserTemplate: (id: string) => void
+  promptDeleteUserTemplate: (id: string, title: string) => void
+  favorites: string[]
+  toggleFavorite: (id: string) => void
+  MoveToCategoryMenu: React.ComponentType<{ templateId: string }>
+}) {
+  return (
+    <div className="bg-card border border-border rounded-2xl p-5 hover:shadow-md hover:border-primary/20 transition-all group">
+      <div className="flex items-start gap-3 mb-3">
+        <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-primary bg-primary/10 group-hover:scale-110 transition-transform duration-200">
+          <Bookmark className="w-5 h-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors truncate">
+            {t.title}
+          </h4>
+          {t.description && (
+            <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{t.description.replace(/^\[TEMPLATE\]\s*/, '')}</p>
+          )}
+        </div>
+        <div className="flex items-center gap-0.5 shrink-0">
+          <HeartButton templateId={t.id} favorites={favorites} onToggle={toggleFavorite} />
+          <MoveToCategoryMenu templateId={t.id} />
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-1.5 flex-1 rounded-full text-xs group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors"
+          onClick={() => handleUseUserTemplate(t.id)}
+          disabled={creating !== null}
+        >
+          {creating === t.id ? (
+            <><Loader2 className="w-3 h-3 animate-spin" /> Creating...</>
+          ) : (
+            <>Use <ArrowRight className="w-3 h-3" /></>
+          )}
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="gap-1.5 text-xs text-muted-foreground hover:text-destructive"
+          onClick={() => promptDeleteUserTemplate(t.id, t.title)}
+          disabled={deletingTemplate === t.id}
+        >
+          {deletingTemplate === t.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+// ─── User template list card ──────────────────────────────────────────────
+function UserListCard({ t, creating, deletingTemplate, handleUseUserTemplate, promptDeleteUserTemplate, favorites, toggleFavorite, MoveToCategoryMenu }: {
+  t: UserTemplate
+  creating: string | null
+  deletingTemplate: string | null
+  handleUseUserTemplate: (id: string) => void
+  promptDeleteUserTemplate: (id: string, title: string) => void
+  favorites: string[]
+  toggleFavorite: (id: string) => void
+  MoveToCategoryMenu: React.ComponentType<{ templateId: string }>
+}) {
+  return (
+    <div className="group relative flex items-center gap-4 bg-card border border-border rounded-2xl p-4 overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5">
+      <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-primary bg-primary/10">
+        <Bookmark className="w-5 h-5" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <h4 className="font-medium text-foreground text-sm group-hover:text-primary transition-colors truncate">{t.title}</h4>
+        {t.description && (
+          <p className="text-xs text-muted-foreground mt-0.5 truncate">{t.description.replace(/^\[TEMPLATE\]\s*/, '')}</p>
+        )}
+      </div>
+      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
+        <HeartButton templateId={t.id} favorites={favorites} onToggle={toggleFavorite} />
+        <MoveToCategoryMenu templateId={t.id} />
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-1.5 text-xs rounded-full"
+          onClick={() => handleUseUserTemplate(t.id)}
+          disabled={creating !== null}
+        >
+          {creating === t.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <>Use <ArrowRight className="w-3 h-3" /></>}
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="text-xs text-muted-foreground hover:text-destructive"
+          onClick={() => promptDeleteUserTemplate(t.id, t.title)}
+          disabled={deletingTemplate === t.id}
+        >
+          {deletingTemplate === t.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 /* ─── Template Slide Preview (simplified) ─────────────────────────────── */
 
 function TemplateSlidePreview({ slide }: { slide: TemplateSlide }) {
@@ -1014,7 +1457,7 @@ function TemplateSlidePreview({ slide }: { slide: TemplateSlide }) {
         <div className="grid grid-cols-2 gap-2">
           {options.map((o, i) => (
             <div key={i} className={`rounded-lg px-3 py-2 text-xs font-medium text-center ${o.is_correct ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30' : 'bg-muted text-foreground'}`}>
-              {o.text} {o.is_correct && '✓'}
+              {o.text} {o.is_correct && '\u2713'}
             </div>
           ))}
         </div>
