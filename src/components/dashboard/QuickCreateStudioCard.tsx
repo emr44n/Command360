@@ -34,7 +34,16 @@ export function QuickCreateStudioCard() {
           title: '',
         }),
       })
-      if (!slideRes.ok) throw new Error('Failed to create slide')
+      if (!slideRes.ok) {
+        const slideErr = await slideRes.json().catch(() => ({}))
+        if (slideErr.migration_needed) {
+          toast.error('Database migration needed for Command Studio. Run the SQL migration in Supabase.', { duration: 8000 })
+          // Still redirect — the presentation was created, user can add studio slide after migration
+          router.push(`/presentations/${presData.presentation.id}/edit`)
+          return
+        }
+        throw new Error('Failed to create slide')
+      }
 
       toast.success('Command Studio presentation created!')
       router.push(`/presentations/${presData.presentation.id}/edit`)

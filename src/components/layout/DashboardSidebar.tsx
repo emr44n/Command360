@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard, LogOut, LayoutTemplate, Settings,
-  Radio, BarChart2, Users, ChevronLeft, ChevronRight, Plus, Moon, Sun,
+  Radio, BarChart2, Users, ChevronLeft, ChevronRight, Plus, Moon, Sun, Monitor,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { href: '/dashboard', label: 'Presentations', icon: LayoutDashboard, exact: true },
   { href: '/dashboard/sessions', label: 'Sessions', icon: Radio },
   { href: '/dashboard/templates', label: 'Templates', icon: LayoutTemplate },
+  { href: '/command-studio', label: 'Command Studio', icon: Monitor, badge: 'New' },
   { href: '/dashboard/reports', label: 'Reports', icon: BarChart2 },
   { href: '/dashboard/team', label: 'Team', icon: Users },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
@@ -156,6 +157,7 @@ export function DashboardSidebar() {
         {NAV_ITEMS.map((item, index) => {
           const active = isActive(item)
           const hasBadge = item.label === 'Sessions' && activeSessions > 0
+          const hasNewBadge = 'badge' in item && item.badge
 
           /* Insert a separator before "Reports" to visually group nav sections */
           const showSeparator = item.label === 'Reports'
@@ -196,6 +198,11 @@ export function DashboardSidebar() {
                     {hasBadge && (
                       <span className="flex items-center justify-center min-w-[20px] h-5 rounded-full bg-emerald-500 text-white text-[10px] font-bold px-1.5">
                         {activeSessions}
+                      </span>
+                    )}
+                    {hasNewBadge && (
+                      <span className="flex items-center justify-center h-4 rounded-full bg-red-500/15 text-red-500 text-[9px] font-bold px-1.5 uppercase tracking-wider">
+                        New
                       </span>
                     )}
                   </>
