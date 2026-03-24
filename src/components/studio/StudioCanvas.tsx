@@ -480,7 +480,7 @@ export function StudioCanvas({
               y={0}
               width={stageSize.width}
               height={stageSize.height}
-              fill={canvasConfig.backgroundColor}
+              fill={canvasConfig.backgroundColor === '#1a1a2e' ? '#ffffff' : canvasConfig.backgroundColor}
             />
           </Layer>
 

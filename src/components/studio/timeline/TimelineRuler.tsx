@@ -6,9 +6,10 @@ interface TimelineRulerProps {
   totalDuration: number
   zoomLevel: number
   scrollLeft: number
+  height?: number
 }
 
-export function TimelineRuler({ totalDuration, zoomLevel, scrollLeft }: TimelineRulerProps) {
+export function TimelineRuler({ totalDuration, zoomLevel, scrollLeft, height = 24 }: TimelineRulerProps) {
   const totalWidth = (totalDuration * zoomLevel) / 1000
 
   const ticks = useMemo(() => {
@@ -50,7 +51,7 @@ export function TimelineRuler({ totalDuration, zoomLevel, scrollLeft }: Timeline
   }, [totalDuration, zoomLevel])
 
   return (
-    <div className="relative h-6 bg-zinc-900 border-b border-zinc-800 overflow-hidden select-none">
+    <div className="relative bg-zinc-900 border-b border-zinc-800 overflow-hidden select-none" style={{ height }}>
       <div
         className="relative h-full"
         style={{ width: totalWidth, transform: `translateX(-${scrollLeft}px)` }}
@@ -69,7 +70,10 @@ export function TimelineRuler({ totalDuration, zoomLevel, scrollLeft }: Timeline
             />
             {/* Label */}
             {tick.label !== null && (
-              <span className="absolute top-0.5 left-1 text-[9px] text-zinc-500 whitespace-nowrap font-mono tabular-nums">
+              <span
+                className="absolute left-1 text-zinc-500 whitespace-nowrap font-mono tabular-nums"
+                style={{ top: 1, fontSize: height < 22 ? 7 : 9 }}
+              >
                 {tick.label}
               </span>
             )}

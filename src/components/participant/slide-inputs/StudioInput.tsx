@@ -165,12 +165,12 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
     )
   }
 
-  // Default watching state
+  // Default watching state — full canvas scene (no title/label)
   return (
-    <div className="space-y-4 animate-in fade-in duration-300">
-      {/* Scene preview */}
+    <div className="space-y-3 animate-in fade-in duration-300">
+      {/* Full scene canvas */}
       <div
-        className="w-full relative overflow-hidden rounded-xl border border-border"
+        className="w-full relative overflow-hidden rounded-xl"
         style={{
           aspectRatio: '16 / 9',
           backgroundColor: canvas.backgroundColor,
@@ -181,19 +181,15 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
           if (!state || !state.visible) return null
           return <MiniLayer key={layer.id} layer={layer} state={state} />
         })}
-
-        {/* Watching overlay */}
-        <div className="absolute inset-0 flex items-end justify-center pb-4 pointer-events-none">
-          <div className="bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-4 py-2 rounded-full flex items-center gap-2">
-            <Monitor className="w-3.5 h-3.5" />
-            Scenario in progress
-          </div>
-        </div>
       </div>
 
-      <p className="text-center text-muted-foreground text-sm">
-        Watch the scenario unfold. You may be asked to vote.
-      </p>
+      {/* Status indicator */}
+      <div className="flex items-center justify-center gap-2">
+        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+        <p className="text-center text-muted-foreground text-sm">
+          Scenario in progress. You may be asked to vote.
+        </p>
+      </div>
     </div>
   )
 }

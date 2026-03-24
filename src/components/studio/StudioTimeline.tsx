@@ -42,13 +42,29 @@ export function StudioTimeline({
   onZoomChange,
 }: StudioTimelineProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const timelineContainerRef = useRef<HTMLDivElement>(null)
   const [scrollLeft, setScrollLeft] = useState(0)
   const [labelWidth, setLabelWidth] = useState(140)
+  const [containerHeight, setContainerHeight] = useState(0)
   const labelDragging = useRef(false)
 
   const tracks = content.tracks ?? []
   const timelineEvents = content.timelineEvents ?? []
   const totalDuration = content.totalDuration ?? 10000
+
+  // Measure container height for dynamic row sizing
+  useEffect(() => {
+    const el = timelineContainerRef.current
+    if (!el) return
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerHeight(entry.contentRect.height)
+      }
+    })
+    observer.observe(el)
+    setContainerHeight(el.clientHeight)
+    return () => observer.disconnect()
+  }, [])
 
   // Sync scroll position
   const handleScroll = useCallback(() => {
@@ -91,8 +107,18 @@ export function StudioTimeline({
     }
   }, [])
 
+  // Dynamic sizing based on container height
+  const controlsBarHeight = 44 // approximate height of TimelineControls
+  const eventMarkersHeight = timelineEvents.length > 0 ? 20 : 0
+  const baseRulerHeight = 24
+  const fixedOverhead = controlsBarHeight + eventMarkersHeight + baseRulerHeight
+  const availableTrackSpace = Math.max(0, containerHeight - fixedOverhead)
+  const rowHeight = Math.max(24, Math.min(40, availableTrackSpace / Math.max(tracks.length, 3)))
+  const rulerHeight = rowHeight < 30 ? 18 : 24
+  const compact = rowHeight < 32
+
   // Track area height for playhead
-  const trackAreaHeight = Math.max(tracks.length * 40, 120)
+  const trackAreaHeight = Math.max(tracks.length * rowHeight, 120)
 
   // Handle clip move
   const handleMoveClip = useCallback(
@@ -187,7 +213,7 @@ export function StudioTimeline({
     content.layers.find((l) => l.id === layerId)
 
   return (
-    <div className="flex flex-col h-full bg-zinc-900 border-t border-zinc-800 select-none">
+    <div ref={timelineContainerRef} className="flex flex-col h-full bg-zinc-900 border-t border-zinc-800 select-none">
       {/* Controls bar */}
       <TimelineControls
         isPlaying={isPlaying}
@@ -227,6 +253,7 @@ export function StudioTimeline({
             totalDuration={totalDuration}
             zoomLevel={zoomLevel}
             scrollLeft={scrollLeft}
+            height={rulerHeight}
           />
         </div>
       </div>
@@ -253,6 +280,8 @@ export function StudioTimeline({
                 scrollLeft={scrollLeft}
                 selectedClipId={selectedClipId}
                 labelWidth={labelWidth}
+                rowHeight={rowHeight}
+                compact={compact}
                 onSelectClip={(clipId) => {
                   onSelectClip(clipId)
                   onSelectLayer(track.layerId)

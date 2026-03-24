@@ -4,12 +4,14 @@ import { useRouter } from 'next/navigation'
 import type {
   Slide, PollContent, WordCloudContent, QuizContent, ContentSlideContent,
   SurveyContent, RatingScaleContent, OpenTextContent,
+  StudioContent, StudioLayer, StudioLayerState, StudioEvent,
 } from '@/types/slide'
 import {
   ArrowLeft, ArrowRight, X, BarChart2, Cloud, HelpCircle,
   MessageCircle, ClipboardList, FileText, Star, AlignLeft, Monitor,
   Smartphone, Grid3X3, StickyNote, Timer, Maximize, Minimize,
   ChevronLeft, ChevronRight, Keyboard, Pause, Play, QrCode, Wifi,
+  Zap, Vote, Eye, EyeOff,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -22,16 +24,19 @@ interface Props {
 const TYPE_ICONS: Record<string, React.ElementType> = {
   poll: BarChart2, word_cloud: Cloud, quiz: HelpCircle, qna: MessageCircle,
   survey: ClipboardList, content: FileText, rating_scale: Star, open_text: AlignLeft,
+  studio: Monitor,
 }
 
 const TYPE_COLORS: Record<string, string> = {
   poll: '#dc2626', word_cloud: '#3b82f6', quiz: '#10b981', qna: '#f59e0b',
   survey: '#ec4899', content: '#6b7280', rating_scale: '#f97316', open_text: '#14b8a6',
+  studio: '#8b5cf6',
 }
 
 const TYPE_LABELS: Record<string, string> = {
   poll: 'Poll', word_cloud: 'Word Cloud', quiz: 'Quiz', qna: 'Q&A',
   survey: 'Survey', content: 'Content', rating_scale: 'Rating Scale', open_text: 'Open Text',
+  studio: 'Studio',
 }
 
 export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
@@ -44,6 +49,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [timerSeconds, setTimerSeconds] = useState(0)
   const [timerRunning, setTimerRunning] = useState(true)
+  const [showAudienceView, setShowAudienceView] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const slide = slides[current] || null
@@ -186,13 +192,19 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
           </div>
           <TBtn icon={Grid3X3} title="Grid overview (G)" onClick={() => setShowGrid(true)} />
           <TBtn icon={StickyNote} title="Speaker notes (N)" onClick={() => setShowNotes(v => !v)} active={showNotes} />
+          {slide?.slide_type === 'studio' && (
+            <TBtn icon={showAudienceView ? Eye : EyeOff} title="Toggle audience view" onClick={() => setShowAudienceView(v => !v)} active={showAudienceView} />
+          )}
           <TBtn icon={isFullscreen ? Minimize : Maximize} title="Fullscreen (F)" onClick={toggleFullscreen} />
           <TBtn icon={Keyboard} title="Shortcuts (?)" onClick={() => setShowShortcuts(v => !v)} />
         </div>
       </div>
 
-      {/* DUAL VIEW: Presenter + Audience Phone */}
+      {/* DUAL VIEW: Presenter + Audience Phone (or Studio View) */}
       <div className="flex-1 flex overflow-hidden">
+        {slide?.slide_type === 'studio' ? (
+          <StudioPreviewContent slide={slide} showAudienceView={showAudienceView} animClass={animClass} />
+        ) : (<>
         {/* Main content area (presenter + phone centered together) */}
         <div className="flex-1 flex items-center justify-center gap-8 p-5 overflow-hidden min-h-0">
           {/* Left: Presenter Screen with nav arrows */}
@@ -454,6 +466,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
             )}
           </div>
         </div>
+        </>)}
       </div>
 
       {/* Bottom bar */}
@@ -673,6 +686,33 @@ function PresenterSlideContent({ slide }: { slide: Slide }) {
         </div>
       )
     }
+    case 'studio': {
+      const c = slide.content as StudioContent
+      return (
+        <div style={{ width: '100%', position: 'relative', aspectRatio: '16/9', backgroundColor: c.canvas.backgroundColor, borderRadius: 8, overflow: 'hidden' }}>
+          {c.layers.filter(l => l.visible).map((layer) => (
+            <div key={layer.id} style={{
+              position: 'absolute', left: `${layer.x}%`, top: `${layer.y}%`,
+              width: `${layer.width}%`, height: `${layer.height}%`,
+              opacity: layer.opacity, transform: `rotate(${layer.rotation}deg)`,
+              zIndex: layer.zIndex, overflow: 'hidden',
+            }}>
+              {layer.type === 'image' && layer.src && (
+                <img src={layer.src} alt={layer.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              )}
+              {layer.type === 'text' && (
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: layer.fontSize ? `${layer.fontSize * 0.6}px` : '14px', fontWeight: layer.fontWeight || '400',
+                  color: layer.color || '#ffffff', textAlign: 'center' }}>{layer.text}</div>
+              )}
+              {layer.type === 'shape' && (
+                <div style={{ width: '100%', height: '100%', backgroundColor: layer.color || '#ffffff', borderRadius: 4 }} />
+              )}
+            </div>
+          ))}
+        </div>
+      )
+    }
     default:
       return <div style={{ color: '#9ca3af', fontSize: 13 }}>Interactive slide</div>
   }
@@ -836,7 +876,248 @@ function AudienceSlideContent({ slide }: { slide: Slide }) {
         </div>
       )
     }
+    case 'studio': {
+      const c = slide.content as StudioContent
+      return (
+        <div>
+          <div style={{ width: '100%', position: 'relative', aspectRatio: '16/9', backgroundColor: c.canvas.backgroundColor, borderRadius: 6, overflow: 'hidden', marginBottom: 6 }}>
+            {c.layers.filter(l => l.visible).map((layer) => (
+              <div key={layer.id} style={{
+                position: 'absolute', left: `${layer.x}%`, top: `${layer.y}%`,
+                width: `${layer.width}%`, height: `${layer.height}%`,
+                opacity: layer.opacity, zIndex: layer.zIndex, overflow: 'hidden',
+              }}>
+                {layer.type === 'image' && layer.src && (
+                  <img src={layer.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                )}
+                {layer.type === 'text' && (
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: layer.fontSize ? `${layer.fontSize * 0.3}px` : '8px', color: layer.color || '#ffffff', textAlign: 'center' }}>{layer.text}</div>
+                )}
+              </div>
+            ))}
+          </div>
+          <p style={{ fontSize: 8, color: '#9ca3af', textAlign: 'center' }}>Scenario in progress</p>
+        </div>
+      )
+    }
     default:
       return <div style={{ color: '#9ca3af', fontSize: 10, textAlign: 'center' }}>Interactive content</div>
+  }
+}
+
+/* ─── Studio Preview Content ─── */
+
+function StudioPreviewContent({ slide, showAudienceView, animClass }: { slide: Slide; showAudienceView: boolean; animClass: string }) {
+  const content = slide.content as StudioContent
+  const { canvas, layers, events, eventCategories } = content
+
+  const [layerStates, setLayerStates] = useState<Record<string, StudioLayerState>>(() =>
+    buildStudioInitialStates(layers)
+  )
+  const [triggeredEvents, setTriggeredEvents] = useState<Set<string>>(new Set())
+
+  useEffect(() => {
+    setLayerStates(buildStudioInitialStates(layers))
+    setTriggeredEvents(new Set())
+  }, [slide.id])
+
+  function handleTrigger(event: StudioEvent) {
+    const newStates = { ...layerStates }
+    for (const action of event.actions) {
+      const current = newStates[action.layerId]
+      if (!current) continue
+      const prop = action.property
+      if (prop === 'src') {
+        newStates[action.layerId] = { ...current, src: action.toValue as string }
+      } else if (prop === 'visible') {
+        newStates[action.layerId] = { ...current, visible: action.toValue as boolean }
+      } else {
+        newStates[action.layerId] = { ...current, [prop]: action.toValue as number }
+      }
+    }
+    setLayerStates(newStates)
+    setTriggeredEvents((prev) => new Set(prev).add(event.id))
+  }
+
+  // Group events by category
+  const groupedEvents = (() => {
+    const uncategorized: StudioEvent[] = []
+    const byCategory = new Map<string, StudioEvent[]>()
+    for (const evt of events) {
+      if (evt.categoryId) {
+        const list = byCategory.get(evt.categoryId) || []
+        list.push(evt)
+        byCategory.set(evt.categoryId, list)
+      } else {
+        uncategorized.push(evt)
+      }
+    }
+    return { uncategorized, byCategory }
+  })()
+
+  return (
+    <div className="flex-1 flex overflow-hidden min-h-0">
+      {/* Events panel (left) */}
+      <div className="w-56 shrink-0 bg-card border-r border-border flex flex-col overflow-hidden">
+        <div className="px-3 py-2.5 border-b border-border">
+          <h3 className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Events</h3>
+        </div>
+        <div className="flex-1 overflow-y-auto p-2 space-y-2">
+          {groupedEvents.uncategorized.map((evt) => (
+            <button
+              key={evt.id}
+              onClick={() => handleTrigger(evt)}
+              className={cn(
+                'w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-medium transition-all text-left',
+                triggeredEvents.has(evt.id)
+                  ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/30'
+                  : 'bg-muted hover:bg-muted/80 text-foreground border border-border hover:border-primary/30'
+              )}
+            >
+              {evt.trigger === 'vote' ? <Vote className="w-3 h-3 shrink-0" /> : <Zap className="w-3 h-3 shrink-0" />}
+              <span className="truncate">{evt.name}</span>
+              <Play className="w-2.5 h-2.5 ml-auto shrink-0 opacity-40" />
+            </button>
+          ))}
+          {eventCategories.map((cat) => {
+            const catEvents = groupedEvents.byCategory.get(cat.id)
+            if (!catEvents?.length) return null
+            return (
+              <div key={cat.id}>
+                <p className="text-[9px] font-semibold uppercase tracking-wider mb-1 px-1" style={{ color: cat.color || '#9ca3af' }}>
+                  {cat.name}
+                </p>
+                {catEvents.map((evt) => (
+                  <button
+                    key={evt.id}
+                    onClick={() => handleTrigger(evt)}
+                    className={cn(
+                      'w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-medium transition-all text-left mb-1',
+                      triggeredEvents.has(evt.id)
+                        ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/30'
+                        : 'bg-muted hover:bg-muted/80 text-foreground border border-border hover:border-primary/30'
+                    )}
+                  >
+                    {evt.trigger === 'vote' ? <Vote className="w-3 h-3 shrink-0" /> : <Zap className="w-3 h-3 shrink-0" />}
+                    <span className="truncate">{evt.name}</span>
+                    <Play className="w-2.5 h-2.5 ml-auto shrink-0 opacity-40" />
+                  </button>
+                ))}
+              </div>
+            )
+          })}
+          {events.length === 0 && (
+            <p className="text-[11px] text-muted-foreground/50 text-center py-4 italic">No events defined</p>
+          )}
+        </div>
+      </div>
+
+      {/* Main canvas area */}
+      <div className={cn('flex-1 flex items-center justify-center p-6 min-h-0', animClass)}>
+        <div className="w-full" style={{ maxWidth: 'min(56rem, calc((100vh - 10rem) * 16 / 9))' }}>
+          <div
+            className="w-full relative overflow-hidden rounded-xl shadow-2xl"
+            style={{ aspectRatio: '16 / 9', backgroundColor: canvas.backgroundColor }}
+          >
+            {layers.map((layer) => {
+              const state = layerStates[layer.id]
+              if (!state || !state.visible) return null
+              return <StudioPreviewLayer key={layer.id} layer={layer} state={state} />
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Audience view toggle (phone mockup) */}
+      {showAudienceView && (
+        <div className="w-52 shrink-0 bg-card border-l border-border flex flex-col items-center justify-center p-4">
+          <div className="flex items-center gap-1.5 mb-2">
+            <Smartphone className="w-[11px] h-[11px] text-muted-foreground/50" />
+            <span className="text-[9px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/50">Audience</span>
+          </div>
+          <div style={{
+            width: 140, height: 295, background: '#1c1c1c', borderRadius: 28, padding: 4,
+            boxShadow: '0 10px 30px -6px rgba(0,0,0,0.5)',
+            display: 'flex', flexDirection: 'column',
+          }}>
+            <div style={{ flex: 1, background: '#ffffff', borderRadius: 24, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ padding: '4px 10px 0', display: 'flex', justifyContent: 'center', height: 20 }}>
+                <div style={{ width: 40, height: 10, background: '#000', borderRadius: 8 }} />
+              </div>
+              <div style={{ flex: 1, overflow: 'hidden', padding: 6 }}>
+                <div
+                  className="w-full relative overflow-hidden rounded"
+                  style={{ aspectRatio: '16 / 9', backgroundColor: canvas.backgroundColor }}
+                >
+                  {layers.map((layer) => {
+                    const state = layerStates[layer.id]
+                    if (!state || !state.visible) return null
+                    return <StudioPreviewLayer key={layer.id} layer={layer} state={state} small />
+                  })}
+                </div>
+                <p style={{ fontSize: 7, color: '#9ca3af', textAlign: 'center', marginTop: 6 }}>Scenario in progress</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function buildStudioInitialStates(layers: StudioLayer[]): Record<string, StudioLayerState> {
+  const map: Record<string, StudioLayerState> = {}
+  for (const l of layers) {
+    map[l.id] = { visible: l.visible, opacity: l.opacity, x: l.x, y: l.y, width: l.width, height: l.height, rotation: l.rotation, src: l.src }
+  }
+  return map
+}
+
+function StudioPreviewLayer({ layer, state, small }: { layer: StudioLayer; state: StudioLayerState; small?: boolean }) {
+  const baseStyle: React.CSSProperties = {
+    position: 'absolute',
+    left: `${state.x}%`, top: `${state.y}%`,
+    width: `${state.width}%`, height: `${state.height}%`,
+    opacity: state.opacity,
+    transform: `rotate(${state.rotation}deg)`,
+    mixBlendMode: layer.blendMode as React.CSSProperties['mixBlendMode'],
+    transition: 'all 500ms ease-in-out',
+    zIndex: layer.zIndex, overflow: 'hidden',
+  }
+
+  switch (layer.type) {
+    case 'image':
+      return (
+        <div style={baseStyle}>
+          {(state.src || layer.src) && (
+            <img src={state.src || layer.src} alt={layer.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} draggable={false} />
+          )}
+        </div>
+      )
+    case 'video':
+      return (
+        <div style={baseStyle}>
+          {(state.src || layer.src) && (
+            <video src={state.src || layer.src} autoPlay muted loop playsInline
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+          )}
+        </div>
+      )
+    case 'text':
+      return (
+        <div style={{
+          ...baseStyle, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: small ? (layer.fontSize ? `${layer.fontSize * 0.4}px` : '10px') : (layer.fontSize ? `${layer.fontSize}px` : '24px'),
+          fontWeight: layer.fontWeight || '400', color: layer.color || '#ffffff', textAlign: 'center', wordBreak: 'break-word',
+        }}>
+          {layer.text}
+        </div>
+      )
+    case 'shape':
+      return <div style={{ ...baseStyle, backgroundColor: layer.color || '#ffffff', borderRadius: 4 }} />
+    default:
+      return null
   }
 }

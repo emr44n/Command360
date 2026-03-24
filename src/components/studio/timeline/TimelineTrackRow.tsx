@@ -11,6 +11,8 @@ interface TimelineTrackRowProps {
   scrollLeft: number
   selectedClipId: string | null
   labelWidth?: number
+  rowHeight?: number
+  compact?: boolean
   onSelectClip: (clipId: string) => void
   onMoveClip: (clipId: string, newStartTime: number) => void
   onResizeClip: (clipId: string, newDuration: number) => void
@@ -32,18 +34,20 @@ export function TimelineTrackRow({
   onToggleHidden,
   onDeleteTrack,
   labelWidth = 140,
+  rowHeight = 40,
+  compact = false,
 }: TimelineTrackRowProps) {
   return (
-    <div className="flex h-10 border-b border-zinc-800/60 group/row">
+    <div className="flex border-b border-zinc-800/60 group/row" style={{ height: rowHeight }}>
       {/* Left label area */}
-      <div className="flex-shrink-0 flex items-center gap-1.5 px-2 bg-zinc-900 border-r border-zinc-800" style={{ width: labelWidth }}>
+      <div className="flex-shrink-0 flex items-center gap-1 px-2 bg-zinc-900 border-r border-zinc-800" style={{ width: labelWidth }}>
         {/* Color dot */}
         <div
-          className="w-2 h-2 rounded-full flex-shrink-0"
-          style={{ backgroundColor: track.color }}
+          className="rounded-full flex-shrink-0"
+          style={{ backgroundColor: track.color, width: compact ? 6 : 8, height: compact ? 6 : 8 }}
         />
         {/* Track name */}
-        <span className="text-[11px] text-zinc-300 truncate flex-1" title={track.name}>
+        <span className="text-zinc-300 truncate flex-1" style={{ fontSize: compact ? 9 : 11 }} title={track.name}>
           {track.name}
         </span>
         {/* Track action buttons */}

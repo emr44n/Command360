@@ -24,6 +24,11 @@ export function migrateStudioContent(content: StudioContent): StudioContent {
 
   const result: StudioContent = JSON.parse(JSON.stringify(content))
 
+  // Fix legacy blue canvas background
+  if (result.canvas?.backgroundColor === '#1a1a2e') {
+    result.canvas.backgroundColor = '#ffffff'
+  }
+
   // ── Build tracks from layers ──
 
   const tracks: StudioTrack[] = result.layers.map((layer) => {

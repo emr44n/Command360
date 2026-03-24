@@ -14,6 +14,15 @@ import type { RealtimeChannel } from '@supabase/supabase-js'
 interface Props { slide: Slide; session: Session; responseCount: number; channelRef?: React.RefObject<RealtimeChannel | null> }
 
 export function PresenterSlideDisplay({ slide, session, responseCount, channelRef }: Props) {
+  // Studio slides get full-bleed canvas without title/badge wrapper
+  if (slide.slide_type === 'studio') {
+    return (
+      <div className="w-full h-full">
+        <StudioDisplay slide={slide} session={session} channelRef={channelRef} />
+      </div>
+    )
+  }
+
   return (
     <div
       className="bg-white rounded-2xl overflow-hidden shadow-2xl border border-border relative"
