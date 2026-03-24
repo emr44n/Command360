@@ -449,7 +449,8 @@ export function StudioCanvas({
   return (
     <div
       ref={containerRef}
-      className="relative flex h-full w-full items-center justify-center overflow-hidden bg-black/30"
+      className="relative flex h-full w-full items-center justify-center overflow-hidden"
+      style={{ background: 'radial-gradient(ellipse at center, #1a1a2e 0%, #0d0d1a 100%)' }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >

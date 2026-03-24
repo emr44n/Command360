@@ -1,7 +1,12 @@
 'use client'
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
-import { PanelLeftClose, PanelRightClose, PanelBottomClose, PanelLeftOpen, PanelRightOpen, PanelBottomOpen } from 'lucide-react'
+import {
+  PanelLeftClose, PanelRightClose, PanelBottomClose,
+  PanelLeftOpen, PanelRightOpen, PanelBottomOpen,
+  FolderOpen, Type, Shapes, Image, Film, Sparkles, Settings2,
+  Play, Square, SkipBack,
+} from 'lucide-react'
 import type {
   StudioContent,
   StudioLayer,
@@ -319,147 +324,205 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
     document.body.style.userSelect = 'none'
   }
 
+  // Icon sidebar items
+  const SIDEBAR_ICONS = [
+    { icon: FolderOpen, label: 'Assets', panel: 'gallery' as const },
+    { icon: Type, label: 'Text', action: () => handleAddLayer({ type: 'text', name: 'Text', text: 'Text', fontSize: 24 }) },
+    { icon: Shapes, label: 'Shapes', action: () => handleAddLayer({ type: 'shape', name: 'Shape' }) },
+    { icon: Sparkles, label: 'Events', panel: 'events' as const },
+  ]
+
+  const [activePanel, setActivePanel] = useState<'gallery' | 'events'>('gallery')
+
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden bg-zinc-950">
-      {/* Panel toggle bar */}
-      <div className="h-7 bg-zinc-900/60 border-b border-zinc-800/50 flex items-center gap-1 px-2 shrink-0">
+    <div className="flex h-full w-full overflow-hidden bg-[#1a1a2e]">
+      {/* ── Icon Sidebar (OpenCut-style) ── */}
+      <div className="w-11 shrink-0 bg-[#12121f] border-r border-[#2a2a3e] flex flex-col items-center py-2 gap-1">
+        {SIDEBAR_ICONS.map((item) => {
+          const isActive = item.panel && showGallery && activePanel === item.panel
+          return (
+            <button
+              key={item.label}
+              onClick={() => {
+                if (item.panel) {
+                  if (showGallery && activePanel === item.panel) {
+                    setShowGallery(false)
+                  } else {
+                    setActivePanel(item.panel)
+                    setShowGallery(true)
+                  }
+                } else if (item.action) {
+                  item.action()
+                }
+              }}
+              className={`w-9 h-9 rounded-lg flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
+                isActive
+                  ? 'bg-blue-600/20 text-blue-400'
+                  : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/5'
+              }`}
+              title={item.label}
+            >
+              <item.icon className="w-4 h-4" />
+              <span className="text-[8px] leading-none">{item.label}</span>
+            </button>
+          )
+        })}
+
+        <div className="flex-1" />
+
+        {/* Panel toggles at bottom */}
         <button
-          onClick={() => setShowGallery(v => !v)}
-          className={`p-1 rounded hover:bg-zinc-700/50 transition-colors ${showGallery ? 'text-zinc-400' : 'text-zinc-600'}`}
-          title={showGallery ? 'Hide Assets' : 'Show Assets'}
+          onClick={() => setShowProperties(v => !v)}
+          className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all cursor-pointer ${showProperties ? 'text-zinc-400' : 'text-zinc-600'}`}
+          title="Properties"
         >
-          {showGallery ? <PanelLeftClose className="w-3.5 h-3.5" /> : <PanelLeftOpen className="w-3.5 h-3.5" />}
+          <Settings2 className="w-4 h-4" />
         </button>
         <button
           onClick={() => setShowTimeline(v => !v)}
-          className={`p-1 rounded hover:bg-zinc-700/50 transition-colors ${showTimeline ? 'text-zinc-400' : 'text-zinc-600'}`}
-          title={showTimeline ? 'Hide Timeline' : 'Show Timeline'}
+          className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all cursor-pointer ${showTimeline ? 'text-zinc-400' : 'text-zinc-600'}`}
+          title="Timeline"
         >
-          {showTimeline ? <PanelBottomClose className="w-3.5 h-3.5" /> : <PanelBottomOpen className="w-3.5 h-3.5" />}
+          <Film className="w-4 h-4" />
         </button>
-        <button
-          onClick={() => setShowProperties(v => !v)}
-          className={`p-1 rounded hover:bg-zinc-700/50 transition-colors ${showProperties ? 'text-zinc-400' : 'text-zinc-600'}`}
-          title={showProperties ? 'Hide Properties' : 'Show Properties'}
-        >
-          {showProperties ? <PanelRightClose className="w-3.5 h-3.5" /> : <PanelRightOpen className="w-3.5 h-3.5" />}
-        </button>
-        <span className="text-[9px] text-zinc-600 ml-2">Toggle panels for more canvas space</span>
       </div>
 
-      {/* Top row: Gallery | Canvas | Properties */}
-      <div className="flex flex-1 min-h-0">
-        {/* Left: Gallery */}
-        {showGallery && <div
-          className="shrink-0 border-r border-zinc-800 overflow-hidden"
-          style={{ width: galleryWidth }}
-        >
-          <StudioGallery
-            layers={layers}
-            onAddLayer={handleAddLayer}
-            onSelectLayer={(id) => setSelectedLayerId(id)}
-            timelineEvents={timelineEvents}
-            onAddTimelineEvent={handleAddTimelineEvent}
-            onRemoveTimelineEvent={handleRemoveTimelineEvent}
-          />
-        </div>}
+      {/* ── Main area ── */}
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
+        {/* Top: Asset panel | Canvas | Properties */}
+        <div className="flex flex-1 min-h-0">
+          {/* Left: Asset/Events panel */}
+          {showGallery && (
+            <>
+              <div className="shrink-0 bg-[#16162a] overflow-hidden" style={{ width: galleryWidth }}>
+                <StudioGallery
+                  layers={layers}
+                  onAddLayer={handleAddLayer}
+                  onSelectLayer={(id) => setSelectedLayerId(id)}
+                  timelineEvents={timelineEvents}
+                  onAddTimelineEvent={handleAddTimelineEvent}
+                  onRemoveTimelineEvent={handleRemoveTimelineEvent}
+                />
+              </div>
+              <div
+                className="w-px shrink-0 cursor-col-resize bg-[#2a2a3e] hover:bg-blue-500/50 transition-colors"
+                onMouseDown={() => startDrag('gallery')}
+              />
+            </>
+          )}
 
-        {/* Gallery resize splitter */}
-        {showGallery && <div
-          className="w-1 shrink-0 cursor-col-resize bg-zinc-800 hover:bg-primary/40 transition-colors relative group"
-          onMouseDown={() => startDrag('gallery')}
-        >
-          <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-center">
-            <div className="w-0.5 h-8 rounded-full bg-zinc-600 group-hover:bg-primary/60 transition-colors" />
+          {/* Center: Canvas + transport */}
+          <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#0d0d1a]">
+            {/* Canvas area */}
+            <div className="flex-1 min-h-0">
+              <StudioCanvas
+                layers={layers}
+                tracks={tracks}
+                currentTime={currentTime}
+                canvasConfig={content.canvas}
+                interactive
+                selectedLayerId={selectedLayerId}
+                onSelectLayer={setSelectedLayerId}
+                onUpdateLayer={handleUpdateLayer}
+                onDropAsset={handleDropAsset}
+              />
+            </div>
+            {/* Transport bar below canvas */}
+            <div className="h-9 shrink-0 bg-[#12121f] border-t border-[#2a2a3e] flex items-center justify-center gap-4 px-4">
+              <span className="text-[11px] font-mono text-emerald-400 tabular-nums">
+                {formatTime(currentTime)}
+              </span>
+              <div className="flex items-center gap-1">
+                <button onClick={() => { setIsPlaying(false); setCurrentTime(0) }} className="w-7 h-7 rounded flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
+                  <SkipBack className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => {
+                    if (isPlaying) { setIsPlaying(false) } else { if (currentTime >= totalDuration) setCurrentTime(0); setIsPlaying(true) }
+                  }}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white transition-colors cursor-pointer"
+                >
+                  {isPlaying ? <Square className="w-3 h-3 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current ml-0.5" />}
+                </button>
+              </div>
+              <span className="text-[11px] font-mono text-zinc-500 tabular-nums">
+                / {formatTime(totalDuration)}
+              </span>
+            </div>
           </div>
-        </div>}
 
-        {/* Center: Canvas */}
-        <div className="flex-1 min-w-0 min-h-0 overflow-hidden">
-          <StudioCanvas
-            layers={layers}
-            tracks={tracks}
-            currentTime={currentTime}
-            canvasConfig={content.canvas}
-            interactive
-            selectedLayerId={selectedLayerId}
-            onSelectLayer={setSelectedLayerId}
-            onUpdateLayer={handleUpdateLayer}
-            onDropAsset={handleDropAsset}
-          />
+          {/* Right: Properties */}
+          {showProperties && (
+            <>
+              <div
+                className="w-px shrink-0 cursor-col-resize bg-[#2a2a3e] hover:bg-blue-500/50 transition-colors"
+                onMouseDown={() => startDrag('properties')}
+              />
+              <div className="shrink-0 bg-[#16162a] overflow-y-auto overflow-x-hidden" style={{ width: propertiesWidth }}>
+                <StudioProperties
+                  layer={selectedLayer}
+                  onUpdate={(updates) => {
+                    if (selectedLayerId) handleUpdateLayer(selectedLayerId, updates)
+                  }}
+                  onDelete={handleDeleteLayer}
+                  onDuplicate={handleDuplicateLayer}
+                  selectedClip={selectedClip}
+                  onUpdateClip={handleUpdateClip}
+                  onAddKeyframe={handleAddKeyframe}
+                  onDeleteKeyframe={handleDeleteKeyframe}
+                  currentTime={currentTime}
+                />
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Properties resize splitter */}
-        {showProperties && <div
-          className="w-1 shrink-0 cursor-col-resize bg-zinc-800 hover:bg-primary/40 transition-colors relative group"
-          onMouseDown={() => startDrag('properties')}
-        >
-          <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-center">
-            <div className="w-0.5 h-8 rounded-full bg-zinc-600 group-hover:bg-primary/60 transition-colors" />
-          </div>
-        </div>}
-
-        {/* Right: Properties */}
-        {showProperties && <div
-          className="shrink-0 border-l border-zinc-800 overflow-hidden"
-          style={{ width: propertiesWidth }}
-        >
-          <StudioProperties
-            layer={selectedLayer}
-            onUpdate={(updates) => {
-              if (selectedLayerId) handleUpdateLayer(selectedLayerId, updates)
-            }}
-            onDelete={handleDeleteLayer}
-            onDuplicate={handleDuplicateLayer}
-            selectedClip={selectedClip}
-            onUpdateClip={handleUpdateClip}
-            onAddKeyframe={handleAddKeyframe}
-            onDeleteKeyframe={handleDeleteKeyframe}
-            currentTime={currentTime}
+        {/* Timeline resize splitter */}
+        {showTimeline && (
+          <div
+            className="h-px shrink-0 cursor-row-resize bg-[#2a2a3e] hover:bg-blue-500/50 transition-colors"
+            onMouseDown={() => startDrag('timeline')}
           />
-        </div>}
+        )}
+
+        {/* Bottom: Timeline */}
+        {showTimeline && (
+          <div className="shrink-0 bg-[#12121f] overflow-hidden" style={{ height: timelineHeight }}>
+            <StudioTimeline
+              content={content}
+              onContentChange={(updates) => {
+                onContentChange({ ...content, ...updates })
+              }}
+              selectedClipId={selectedClipId}
+              selectedLayerId={selectedLayerId}
+              onSelectClip={setSelectedClipId}
+              onSelectLayer={setSelectedLayerId}
+              playheadPosition={currentTime}
+              isPlaying={isPlaying}
+              onPlayheadChange={setCurrentTime}
+              onPlay={() => {
+                if (currentTime >= totalDuration) setCurrentTime(0)
+                setIsPlaying(true)
+              }}
+              onPause={() => setIsPlaying(false)}
+              onStop={() => {
+                setIsPlaying(false)
+                setCurrentTime(0)
+              }}
+              zoomLevel={zoomLevel}
+              onZoomChange={setZoomLevel}
+            />
+          </div>
+        )}
       </div>
-
-      {/* Timeline resize splitter */}
-      {showTimeline && <div
-        className="h-1 shrink-0 cursor-row-resize bg-zinc-800 hover:bg-primary/40 transition-colors relative group"
-        onMouseDown={() => startDrag('timeline')}
-      >
-        <div className="absolute inset-x-0 top-0 bottom-0 flex items-center justify-center">
-          <div className="h-0.5 w-8 rounded-full bg-zinc-600 group-hover:bg-primary/60 transition-colors" />
-        </div>
-      </div>}
-
-      {/* Bottom: Timeline */}
-      {showTimeline && <div
-        className="shrink-0 border-t border-zinc-800 overflow-hidden"
-        style={{ height: timelineHeight }}
-      >
-        <StudioTimeline
-          content={content}
-          onContentChange={(updates) => {
-            onContentChange({ ...content, ...updates })
-          }}
-          selectedClipId={selectedClipId}
-          selectedLayerId={selectedLayerId}
-          onSelectClip={setSelectedClipId}
-          onSelectLayer={setSelectedLayerId}
-          playheadPosition={currentTime}
-          isPlaying={isPlaying}
-          onPlayheadChange={setCurrentTime}
-          onPlay={() => {
-            if (currentTime >= totalDuration) setCurrentTime(0)
-            setIsPlaying(true)
-          }}
-          onPause={() => setIsPlaying(false)}
-          onStop={() => {
-            setIsPlaying(false)
-            setCurrentTime(0)
-          }}
-          zoomLevel={zoomLevel}
-          onZoomChange={setZoomLevel}
-        />
-      </div>}
     </div>
   )
+}
+
+function formatTime(ms: number): string {
+  const totalSec = Math.floor(ms / 1000)
+  const mins = Math.floor(totalSec / 60)
+  const secs = totalSec % 60
+  const frames = Math.floor((ms % 1000) / (1000 / 30))
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}:${String(frames).padStart(2, '0')}`
 }
