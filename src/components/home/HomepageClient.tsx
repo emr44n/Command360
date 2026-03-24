@@ -9,8 +9,8 @@ const NAV_LINKS = [
   { href: '#how-it-works', label: 'How It Works' },
   { href: '#services', label: 'Services' },
   { href: '#pricing', label: 'Pricing' },
-  { href: '#about', label: 'About' },
-  { href: '#contact', label: 'Contact' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
 ]
 
 export function HomepageClient() {
@@ -67,7 +67,7 @@ export function HomepageClient() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-1 text-[13px]">
-          {NAV_LINKS.map((item) => (
+          {NAV_LINKS.map((item) => item.href.startsWith('#') ? (
             <a key={item.href} href={item.href}
               onClick={(e) => handleNavClick(e, item.href)}
               className={`px-3 py-1.5 rounded-md transition-colors cursor-pointer ${
@@ -77,6 +77,15 @@ export function HomepageClient() {
               }`}>
               {item.label}
             </a>
+          ) : (
+            <Link key={item.href} href={item.href}
+              className={`px-3 py-1.5 rounded-md transition-colors cursor-pointer ${
+                onHero
+                  ? 'text-white/60 hover:text-white'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}>
+              {item.label}
+            </Link>
           ))}
         </div>
 
@@ -148,12 +157,17 @@ export function HomepageClient() {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-xl p-4 space-y-1 slide-down">
-          {NAV_LINKS.map((item) => (
+          {NAV_LINKS.map((item) => item.href.startsWith('#') ? (
             <a key={item.href} href={item.href}
               onClick={(e) => handleNavClick(e, item.href)}
               className="block px-3 py-2.5 rounded-lg text-base text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer">
               {item.label}
             </a>
+          ) : (
+            <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
+              className="block px-3 py-2.5 rounded-lg text-base text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer">
+              {item.label}
+            </Link>
           ))}
           <div className="pt-3 border-t border-border mt-3">
             <p className="text-xs text-muted-foreground mb-2 px-3">Join a session</p>
