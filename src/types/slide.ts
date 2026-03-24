@@ -1,4 +1,4 @@
-export type SlideType = 'poll' | 'word_cloud' | 'quiz' | 'qna' | 'survey' | 'content' | 'rating_scale' | 'open_text'
+export type SlideType = 'poll' | 'word_cloud' | 'quiz' | 'qna' | 'survey' | 'content' | 'rating_scale' | 'open_text' | 'studio'
 
 export interface PollOption {
   id: string
@@ -94,6 +94,96 @@ export interface OpenTextContent {
   image_url?: string
 }
 
+/* ── Studio (Command Studio) ── */
+
+export interface StudioLayer {
+  id: string
+  name: string
+  type: 'image' | 'video' | 'text' | 'shape'
+  src?: string
+  x: number        // percentage 0-100
+  y: number
+  width: number
+  height: number
+  rotation: number  // degrees
+  zIndex: number
+  opacity: number   // 0-1
+  blendMode: 'normal' | 'multiply' | 'screen' | 'overlay' | 'darken' | 'lighten'
+  visible: boolean
+  locked: boolean
+  // Text-specific
+  text?: string
+  fontSize?: number
+  fontWeight?: string
+  color?: string
+  // Video-specific
+  loop?: boolean
+  autoplay?: boolean
+  muted?: boolean
+}
+
+export interface StudioAction {
+  id: string
+  layerId: string
+  property: 'opacity' | 'visible' | 'x' | 'y' | 'width' | 'height' | 'rotation' | 'src'
+  fromValue?: number | boolean | string
+  toValue: number | boolean | string
+  delay: number       // ms before starting
+  duration: number    // ms for transition
+  easing: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out'
+  endBehaviour: 'stay' | 'fadeOut' | 'reset'
+  endDelay?: number   // ms after duration before end behaviour fires
+}
+
+export interface StudioVoteOption {
+  id: string
+  label: string
+  triggersEventId?: string
+}
+
+export interface StudioEvent {
+  id: string
+  name: string
+  categoryId?: string
+  icon?: string
+  color?: string
+  trigger: 'manual' | 'vote'
+  voteQuestion?: string
+  voteOptions?: StudioVoteOption[]
+  actions: StudioAction[]
+}
+
+export interface StudioEventCategory {
+  id: string
+  name: string
+  color?: string
+}
+
+export interface StudioLayerState {
+  visible: boolean
+  opacity: number
+  x: number
+  y: number
+  width: number
+  height: number
+  rotation: number
+  src?: string
+}
+
+export interface StudioContent {
+  canvas: {
+    width: number
+    height: number
+    backgroundColor: string
+  }
+  layers: StudioLayer[]
+  eventCategories: StudioEventCategory[]
+  events: StudioEvent[]
+  votingEnabled: boolean
+  description?: string
+  image_url?: string
+}
+
 export type SlideContent =
   | PollContent
   | WordCloudContent
@@ -103,6 +193,7 @@ export type SlideContent =
   | ContentSlideContent
   | RatingScaleContent
   | OpenTextContent
+  | StudioContent
 
 export interface CanvasElement {
   id: string

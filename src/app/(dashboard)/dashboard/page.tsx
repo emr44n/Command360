@@ -4,10 +4,11 @@ import { PresentationGrid } from '@/components/presentations/PresentationGrid'
 import { CreatePresentationButton } from '@/components/presentations/CreatePresentationButton'
 import { DashboardStats } from '@/components/dashboard/DashboardStats'
 import { QuickCreate } from '@/components/dashboard/QuickCreate'
+import { QuickCreateStudioCard } from '@/components/dashboard/QuickCreateStudioCard'
 import { RecentlyOpened } from '@/components/dashboard/RecentlyOpened'
 import { TrialBanner } from '@/components/dashboard/TrialBanner'
 import Link from 'next/link'
-import { Plus, LayoutTemplate, ArrowRight, Radio } from 'lucide-react'
+import { Plus, LayoutTemplate, ArrowRight, Radio, Monitor } from 'lucide-react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Dashboard — Command 360' }
@@ -214,7 +215,7 @@ export default async function DashboardPage() {
       {/* Quick Actions — section header + 3 prominent cards */}
       <div>
         <h2 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-3">Quick Create</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <Link href="/dashboard" className="group">
             <div className="relative bg-primary/5 border border-primary/20 rounded-2xl p-5 hover:bg-primary/10 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer overflow-hidden dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
               {/* Top accent line */}
@@ -226,6 +227,7 @@ export default async function DashboardPage() {
               <p className="text-xs text-muted-foreground mt-0.5">Start from scratch</p>
             </div>
           </Link>
+          <QuickCreateStudioCard />
           <Link href="/dashboard/templates" className="group">
             <div className="relative bg-violet-500/5 border border-violet-500/20 rounded-2xl p-5 hover:bg-violet-500/10 hover:border-violet-500/30 hover:shadow-lg hover:shadow-violet-500/5 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer overflow-hidden dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
               {/* Top accent line */}

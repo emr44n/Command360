@@ -1,0 +1,296 @@
+'use client'
+import { useState, useEffect, useRef } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import type { Slide, StudioContent, StudioLayer, StudioLayerState } from '@/types/slide'
+import { Monitor, CheckCircle2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+
+interface Props {
+  slide: Slide
+  sessionId: string
+  onSubmit: (answer: Record<string, unknown>) => Promise<void>
+}
+
+const OPTION_COLORS = [
+  'border-primary hover:bg-primary/10 data-[selected=true]:bg-primary/20',
+  'border-blue-500 hover:bg-blue-500/10 data-[selected=true]:bg-blue-500/20',
+  'border-emerald-500 hover:bg-emerald-500/10 data-[selected=true]:bg-emerald-500/20',
+  'border-amber-500 hover:bg-amber-500/10 data-[selected=true]:bg-amber-500/20',
+]
+
+export function StudioInput({ slide, sessionId, onSubmit }: Props) {
+  const content = slide.content as StudioContent
+  const { canvas, layers } = content
+
+  const [layerStates, setLayerStates] = useState<Record<string, StudioLayerState>>(() =>
+    buildInitialStates(layers)
+  )
+  const [activeVote, setActiveVote] = useState<{
+    eventId: string
+    question: string
+    options: { id: string; label: string }[]
+  } | null>(null)
+  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null)
+  const [submittingVote, setSubmittingVote] = useState(false)
+  const [voteSubmitted, setVoteSubmitted] = useState(false)
+  const channelRef = useRef<ReturnType<ReturnType<typeof createClient>['channel']> | null>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    const channel = supabase.channel(`session:${sessionId}:studio:${slide.id}`)
+
+    channel
+      .on('broadcast', { event: 'STUDIO_EVENT_TRIGGERED' }, ({ payload }) => {
+        if (payload.slide_id === slide.id && payload.layerStates) {
+          setLayerStates(payload.layerStates as Record<string, StudioLayerState>)
+        }
+      })
+      .on('broadcast', { event: 'STUDIO_VOTE_STARTED' }, ({ payload }) => {
+        if (payload.slide_id === slide.id) {
+          setActiveVote({
+            eventId: payload.event_id,
+            question: payload.question,
+            options: payload.options,
+          })
+          setSelectedOptionId(null)
+          setVoteSubmitted(false)
+        }
+      })
+      .on('broadcast', { event: 'STUDIO_VOTE_RESULT' }, ({ payload }) => {
+        if (payload.slide_id === slide.id) {
+          setActiveVote(null)
+          setVoteSubmitted(false)
+          setSelectedOptionId(null)
+        }
+      })
+      .subscribe()
+
+    channelRef.current = channel
+    return () => { supabase.removeChannel(channel) }
+  }, [sessionId, slide.id])
+
+  // Also listen on main session channel for STUDIO events
+  useEffect(() => {
+    const supabase = createClient()
+    const mainChannel = supabase.channel(`session:${sessionId}`)
+
+    mainChannel
+      .on('broadcast', { event: 'STUDIO_EVENT_TRIGGERED' }, ({ payload }) => {
+        if (payload.slide_id === slide.id && payload.layerStates) {
+          setLayerStates(payload.layerStates as Record<string, StudioLayerState>)
+        }
+      })
+      .on('broadcast', { event: 'STUDIO_VOTE_STARTED' }, ({ payload }) => {
+        if (payload.slide_id === slide.id) {
+          setActiveVote({
+            eventId: payload.event_id,
+            question: payload.question,
+            options: payload.options,
+          })
+          setSelectedOptionId(null)
+          setVoteSubmitted(false)
+        }
+      })
+      .on('broadcast', { event: 'STUDIO_VOTE_RESULT' }, ({ payload }) => {
+        if (payload.slide_id === slide.id) {
+          setActiveVote(null)
+          setVoteSubmitted(false)
+          setSelectedOptionId(null)
+        }
+      })
+      .subscribe()
+
+    return () => { supabase.removeChannel(mainChannel) }
+  }, [sessionId, slide.id])
+
+  async function handleVoteSubmit() {
+    if (!selectedOptionId || !activeVote || submittingVote) return
+    setSubmittingVote(true)
+    await onSubmit({ studio_vote_option_id: selectedOptionId, studio_event_id: activeVote.eventId })
+    setVoteSubmitted(true)
+    setSubmittingVote(false)
+  }
+
+  // If there's an active vote, show the vote UI
+  if (activeVote) {
+    if (voteSubmitted) {
+      return (
+        <div className="text-center py-8 space-y-3 animate-in fade-in zoom-in-95 duration-300">
+          <div className="flex justify-center">
+            <div className="w-14 h-14 rounded-full bg-emerald-500/10 flex items-center justify-center">
+              <CheckCircle2 className="w-7 h-7 text-emerald-500" />
+            </div>
+          </div>
+          <h3 className="text-base font-semibold">Vote submitted!</h3>
+          <p className="text-muted-foreground text-sm">Waiting for results...</p>
+        </div>
+      )
+    }
+
+    return (
+      <div className="space-y-4 animate-in fade-in slide-in-from-bottom-3 duration-300">
+        <div className="text-center">
+          <p className="text-base font-semibold">{activeVote.question}</p>
+        </div>
+        <div className="space-y-3">
+          {activeVote.options.map((opt, i) => (
+            <button
+              key={opt.id}
+              data-selected={selectedOptionId === opt.id}
+              onClick={() => setSelectedOptionId(opt.id)}
+              className={cn(
+                'w-full text-left px-5 py-4 rounded-2xl border-2 transition-all duration-200 font-medium',
+                selectedOptionId === opt.id
+                  ? 'border-primary bg-primary/15 scale-[1.02] shadow-md shadow-primary/10'
+                  : 'bg-card border-border hover:border-primary/50',
+                OPTION_COLORS[i % OPTION_COLORS.length]
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <span>{opt.label}</span>
+                {selectedOptionId === opt.id && <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />}
+              </div>
+            </button>
+          ))}
+        </div>
+        <Button
+          onClick={handleVoteSubmit}
+          disabled={!selectedOptionId || submittingVote}
+          className="w-full bg-red-600 hover:bg-red-500 text-white font-semibold py-6 rounded-xl text-lg transition-all hover:shadow-lg hover:shadow-red-500/25"
+        >
+          {submittingVote ? 'Submitting...' : 'Submit vote'}
+        </Button>
+      </div>
+    )
+  }
+
+  // Default watching state
+  return (
+    <div className="space-y-4 animate-in fade-in duration-300">
+      {/* Scene preview */}
+      <div
+        className="w-full relative overflow-hidden rounded-xl border border-border"
+        style={{
+          aspectRatio: '16 / 9',
+          backgroundColor: canvas.backgroundColor,
+        }}
+      >
+        {layers.map((layer) => {
+          const state = layerStates[layer.id]
+          if (!state || !state.visible) return null
+          return <MiniLayer key={layer.id} layer={layer} state={state} />
+        })}
+
+        {/* Watching overlay */}
+        <div className="absolute inset-0 flex items-end justify-center pb-4 pointer-events-none">
+          <div className="bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-4 py-2 rounded-full flex items-center gap-2">
+            <Monitor className="w-3.5 h-3.5" />
+            Scenario in progress
+          </div>
+        </div>
+      </div>
+
+      <p className="text-center text-muted-foreground text-sm">
+        Watch the scenario unfold. You may be asked to vote.
+      </p>
+    </div>
+  )
+}
+
+/* ─── Helpers ─── */
+
+function buildInitialStates(layers: StudioLayer[]): Record<string, StudioLayerState> {
+  const map: Record<string, StudioLayerState> = {}
+  for (const l of layers) {
+    map[l.id] = {
+      visible: l.visible,
+      opacity: l.opacity,
+      x: l.x,
+      y: l.y,
+      width: l.width,
+      height: l.height,
+      rotation: l.rotation,
+      src: l.src,
+    }
+  }
+  return map
+}
+
+/* ─── Mini layer renderer (participant view) ─── */
+
+function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerState }) {
+  const baseStyle: React.CSSProperties = {
+    position: 'absolute',
+    left: `${state.x}%`,
+    top: `${state.y}%`,
+    width: `${state.width}%`,
+    height: `${state.height}%`,
+    opacity: state.opacity,
+    transform: `rotate(${state.rotation}deg)`,
+    mixBlendMode: layer.blendMode as React.CSSProperties['mixBlendMode'],
+    transition: 'all 600ms ease-in-out',
+    zIndex: layer.zIndex,
+    overflow: 'hidden',
+  }
+
+  switch (layer.type) {
+    case 'image':
+      return (
+        <div style={baseStyle}>
+          {(state.src || layer.src) && (
+            <img
+              src={state.src || layer.src}
+              alt={layer.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              draggable={false}
+            />
+          )}
+        </div>
+      )
+    case 'video':
+      return (
+        <div style={baseStyle}>
+          {(state.src || layer.src) && (
+            <video
+              src={state.src || layer.src}
+              autoPlay
+              muted
+              loop
+              playsInline
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+          )}
+        </div>
+      )
+    case 'text':
+      return (
+        <div
+          style={{
+            ...baseStyle,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: layer.fontSize ? `${layer.fontSize * 0.5}px` : '12px',
+            fontWeight: layer.fontWeight || '400',
+            color: layer.color || '#ffffff',
+            textAlign: 'center',
+          }}
+        >
+          {layer.text}
+        </div>
+      )
+    case 'shape':
+      return (
+        <div
+          style={{
+            ...baseStyle,
+            backgroundColor: layer.color || '#ffffff',
+            borderRadius: 4,
+          }}
+        />
+      )
+    default:
+      return null
+  }
+}

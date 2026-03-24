@@ -3,6 +3,7 @@ import Link from 'next/link'
 const FOOTER_LINKS = {
   Platform: [
     { href: '/#features', label: 'Features' },
+    { href: '/command-studio', label: 'Command Studio' },
     { href: '/templates', label: 'Templates' },
     { href: '/pricing', label: 'Pricing' },
     { href: '/#how-it-works', label: 'How It Works' },

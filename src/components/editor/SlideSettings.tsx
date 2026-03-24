@@ -13,6 +13,7 @@ import { SurveySlideForm } from './slide-forms/SurveySlideForm'
 import { ContentSlideForm } from './slide-forms/ContentSlideForm'
 import { RatingScaleSlideForm } from './slide-forms/RatingScaleSlideForm'
 import { OpenTextSlideForm } from './slide-forms/OpenTextSlideForm'
+import { StudioSlideForm } from './slide-forms/StudioSlideForm'
 import { ImagePlus, X, ChevronDown, ChevronRight, Type, Image } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -71,6 +72,7 @@ function SlideForm({ slide, onChange }: { slide: Slide; onChange: (content: Slid
     case 'content': return <ContentSlideForm slide={slide} onChange={onChange} />
     case 'rating_scale': return <RatingScaleSlideForm slide={slide} onChange={onChange} />
     case 'open_text': return <OpenTextSlideForm slide={slide} onChange={onChange} />
+    case 'studio': return <StudioSlideForm slide={slide} onChange={onChange} />
     default: return null
   }
 }

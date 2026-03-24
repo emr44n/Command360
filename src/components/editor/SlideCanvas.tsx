@@ -2,11 +2,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import type {
   Slide, PollContent, WordCloudContent, QuizContent, SurveyContent,
-  ContentSlideContent, RatingScaleContent, OpenTextContent, CanvasElement,
+  ContentSlideContent, RatingScaleContent, OpenTextContent, StudioContent, CanvasElement,
 } from '@/types/slide'
 import {
   BarChart2, Cloud, HelpCircle, MessageCircle, ClipboardList,
-  FileText, Star, AlignLeft,
+  FileText, Star, AlignLeft, Monitor,
 } from 'lucide-react'
 import { CanvasElementsLayer } from './CanvasElementsLayer'
 
@@ -26,17 +26,17 @@ interface SlideCanvasProps {
 
 const TYPE_ICONS: Record<string, React.ElementType> = {
   poll: BarChart2, word_cloud: Cloud, quiz: HelpCircle, qna: MessageCircle,
-  survey: ClipboardList, content: FileText, rating_scale: Star, open_text: AlignLeft,
+  survey: ClipboardList, content: FileText, rating_scale: Star, open_text: AlignLeft, studio: Monitor,
 }
 
 const TYPE_LABELS: Record<string, string> = {
   poll: 'Poll', word_cloud: 'Word Cloud', quiz: 'Quiz', qna: 'Q&A',
-  survey: 'Survey', content: 'Content', rating_scale: 'Rating Scale', open_text: 'Open Text',
+  survey: 'Survey', content: 'Content', rating_scale: 'Rating Scale', open_text: 'Open Text', studio: 'STUDIO',
 }
 
 const TYPE_COLORS: Record<string, string> = {
   poll: '#dc2626', word_cloud: '#3b82f6', quiz: '#10b981', qna: '#f59e0b',
-  survey: '#ec4899', content: '#6b7280', rating_scale: '#f97316', open_text: '#14b8a6',
+  survey: '#ec4899', content: '#6b7280', rating_scale: '#f97316', open_text: '#14b8a6', studio: '#ef4444',
 }
 
 export function SlideCanvas({ slide, slides, selectedIndex, onTitleChange, onCanvasElementsChange, selectedElementId, onSelectElement, onRequestAddImage, onSelectSlide, onPrev, onNext }: SlideCanvasProps) {
@@ -256,6 +256,7 @@ function InlineTitle({ value, onChange, slideType }: {
     content: 'Slide title...',
     rating_scale: 'What should they rate?',
     open_text: 'What should they write about?',
+    studio: 'Scenario title...',
   }
 
   if (editing) {
@@ -427,6 +428,61 @@ function SlidePreview({ slide }: { slide: Slide }) {
           <p style={{ fontSize: 11, marginTop: 4, opacity: 0.6 }}>Upvote and moderate in real time</p>
         </div>
       )
+    case 'studio': {
+      const c = slide.content as StudioContent
+      return (
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+          <div style={{
+            width: '100%', aspectRatio: '16/9', borderRadius: 8, overflow: 'hidden', position: 'relative',
+            backgroundColor: c.canvas?.backgroundColor || '#1a1a2e',
+          }}>
+            {(c.layers || []).filter(l => l.visible).map((layer) => (
+              <div key={layer.id} style={{
+                position: 'absolute',
+                left: `${layer.x}%`, top: `${layer.y}%`,
+                width: `${layer.width}%`, height: `${layer.height}%`,
+                opacity: layer.opacity, zIndex: layer.zIndex,
+                transform: `rotate(${layer.rotation}deg)`,
+                overflow: 'hidden',
+                ...(layer.type === 'shape' ? { backgroundColor: layer.color || '#fff', borderRadius: 4 } : {}),
+                ...(layer.type === 'text' ? {
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: layer.fontSize ? `${layer.fontSize * 0.4}px` : '10px',
+                  fontWeight: layer.fontWeight || '400', color: layer.color || '#fff',
+                  textAlign: 'center' as const,
+                } : {}),
+              }}>
+                {layer.type === 'image' && layer.src && (
+                  <img src={layer.src} alt={layer.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                )}
+                {layer.type === 'text' && layer.text}
+              </div>
+            ))}
+            <div style={{
+              position: 'absolute', bottom: 6, left: '50%', transform: 'translateX(-50%)',
+              background: 'rgba(0,0,0,0.5)', borderRadius: 12, padding: '2px 10px',
+              display: 'flex', alignItems: 'center', gap: 4,
+            }}>
+              <Monitor style={{ width: 10, height: 10, color: '#ef4444' }} />
+              <span style={{ fontSize: 8, color: '#fff', fontWeight: 600 }}>STUDIO</span>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
+            {(c.events || []).slice(0, 4).map((evt) => (
+              <span key={evt.id} style={{
+                fontSize: 9, background: '#f3f4f6', borderRadius: 6, padding: '2px 8px',
+                color: evt.color || '#374151', fontWeight: 500,
+              }}>
+                {evt.icon || ''} {evt.name}
+              </span>
+            ))}
+            {(c.events || []).length > 4 && (
+              <span style={{ fontSize: 9, color: '#9ca3af' }}>+{(c.events || []).length - 4} more</span>
+            )}
+          </div>
+        </div>
+      )
+    }
     default:
       return null
   }

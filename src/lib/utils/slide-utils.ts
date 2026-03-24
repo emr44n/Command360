@@ -41,6 +41,11 @@ export const SLIDE_TYPE_INFO: Record<SlideType, { label: string; description: st
     description: 'Free-text responses',
     color: 'teal',
   },
+  studio: {
+    label: 'Command Studio',
+    description: 'Interactive scenario engine',
+    color: 'red',
+  },
 }
 
 export function getDefaultSlideContent(type: SlideType): SlideContent {
@@ -113,6 +118,14 @@ export function getDefaultSlideContent(type: SlideType): SlideContent {
         max_length: 500,
         allow_multiple_submissions: false,
         show_responses_live: true,
+      }
+    case 'studio':
+      return {
+        canvas: { width: 1920, height: 1080, backgroundColor: '#1a1a2e' },
+        layers: [],
+        eventCategories: [],
+        events: [],
+        votingEnabled: false,
       }
   }
 }

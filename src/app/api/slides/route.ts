@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
         error: `Slide type "${slide_type}" not yet enabled in database.`,
         migration_needed: true,
         dashboard_url: projectRef ? `https://supabase.com/dashboard/project/${projectRef}/sql/new` : null,
-        sql: `ALTER TABLE slides DROP CONSTRAINT IF EXISTS slides_slide_type_check;\nALTER TABLE slides ADD CONSTRAINT slides_slide_type_check\n  CHECK (slide_type IN ('poll', 'word_cloud', 'quiz', 'qna', 'survey', 'content', 'rating_scale', 'open_text'));\nALTER TABLE slides ADD COLUMN IF NOT EXISTS speaker_notes TEXT DEFAULT '';`,
+        sql: `ALTER TABLE slides DROP CONSTRAINT IF EXISTS slides_slide_type_check;\nALTER TABLE slides ADD CONSTRAINT slides_slide_type_check\n  CHECK (slide_type IN ('poll', 'word_cloud', 'quiz', 'qna', 'survey', 'content', 'rating_scale', 'open_text', 'studio'));\nALTER TABLE slides ADD COLUMN IF NOT EXISTS speaker_notes TEXT DEFAULT '';`,
       }, { status: 400 })
     }
     return NextResponse.json({ error: error.message }, { status: 500 })

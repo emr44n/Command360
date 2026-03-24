@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   BarChart2, Cloud, HelpCircle, MessageCircle, ClipboardList, FileText,
-  Loader2, Plus, Star, AlignLeft,
+  Loader2, Plus, Star, AlignLeft, Monitor,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -16,6 +16,7 @@ const SLIDE_TYPES = [
   { type: 'qna', label: 'Q&A', icon: MessageCircle, color: 'text-amber-500', bg: 'bg-amber-500/10 hover:bg-amber-500/20', glowColor: 'hover:shadow-amber-500/20' },
   { type: 'survey', label: 'Survey', icon: ClipboardList, color: 'text-pink-500', bg: 'bg-pink-500/10 hover:bg-pink-500/20', glowColor: 'hover:shadow-pink-500/20' },
   { type: 'content', label: 'Content', icon: FileText, color: 'text-violet-500', bg: 'bg-violet-500/10 hover:bg-violet-500/20', glowColor: 'hover:shadow-violet-500/20' },
+  { type: 'studio', label: 'Command Studio', icon: Monitor, color: 'text-red-500', bg: 'bg-red-500/10 hover:bg-red-500/20', glowColor: 'hover:shadow-red-500/20' },
 ]
 
 export function QuickCreate() {

@@ -8,10 +8,12 @@ import { QnADisplay } from './slide-displays/QnADisplay'
 import { SurveyResultsDisplay } from './slide-displays/SurveyResultsDisplay'
 import { RatingScaleDisplay } from './slide-displays/RatingScaleDisplay'
 import { OpenTextDisplay } from './slide-displays/OpenTextDisplay'
+import { StudioDisplay } from './slide-displays/StudioDisplay'
+import type { RealtimeChannel } from '@supabase/supabase-js'
 
-interface Props { slide: Slide; session: Session; responseCount: number }
+interface Props { slide: Slide; session: Session; responseCount: number; channelRef?: React.RefObject<RealtimeChannel | null> }
 
-export function PresenterSlideDisplay({ slide, session, responseCount }: Props) {
+export function PresenterSlideDisplay({ slide, session, responseCount, channelRef }: Props) {
   return (
     <div
       className="bg-white rounded-2xl overflow-hidden shadow-2xl border border-border relative"
@@ -28,7 +30,7 @@ export function PresenterSlideDisplay({ slide, session, responseCount }: Props) 
         </div>
         <div className="flex-1 flex items-center justify-center overflow-hidden min-h-0">
           <div className="w-full">
-            <SlideContent slide={slide} session={session} responseCount={responseCount} />
+            <SlideContent slide={slide} session={session} responseCount={responseCount} channelRef={channelRef} />
           </div>
         </div>
       </div>
@@ -36,7 +38,7 @@ export function PresenterSlideDisplay({ slide, session, responseCount }: Props) 
   )
 }
 
-function SlideContent({ slide, session, responseCount }: Props) {
+function SlideContent({ slide, session, responseCount, channelRef }: Props) {
   switch (slide.slide_type) {
     case 'poll': return <PollResultsDisplay slide={slide} sessionId={session.id} />
     case 'word_cloud': return <WordCloudDisplay slide={slide} sessionId={session.id} />
@@ -46,6 +48,7 @@ function SlideContent({ slide, session, responseCount }: Props) {
     case 'content': return <ContentDisplay slide={slide} />
     case 'rating_scale': return <RatingScaleDisplay slide={slide} sessionId={session.id} />
     case 'open_text': return <OpenTextDisplay slide={slide} sessionId={session.id} />
+    case 'studio': return <StudioDisplay slide={slide} session={session} channelRef={channelRef} />
     default: return null
   }
 }

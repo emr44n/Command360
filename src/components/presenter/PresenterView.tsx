@@ -264,7 +264,7 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
           <div key={slideKey} className={`w-full ${slideDirection === 'next' ? 'slide-next' : 'slide-prev'}`}
             style={{ maxWidth: 'min(64rem, calc((100vh - 12rem) * 16 / 9))' }}>
             {currentSlide ? (
-              <PresenterSlideDisplay slide={currentSlide} session={session} responseCount={responseCount} />
+              <PresenterSlideDisplay slide={currentSlide} session={session} responseCount={responseCount} channelRef={channelRef} />
             ) : (
               <div className="text-center text-muted-foreground py-20 fade-in">
                 <Monitor className="w-16 h-16 mx-auto mb-4 opacity-30" />

@@ -12,6 +12,7 @@ import { QnAInput } from './slide-inputs/QnAInput'
 import { SurveyInput } from './slide-inputs/SurveyInput'
 import { RatingScaleInput } from './slide-inputs/RatingScaleInput'
 import { OpenTextInput } from './slide-inputs/OpenTextInput'
+import { StudioInput } from './slide-inputs/StudioInput'
 import { CheckCircle2, Trophy, Sparkles, ShieldAlert } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -156,7 +157,7 @@ export function ParticipantView({ session: initialSession, slides, participantId
     return <WaitingScreen message="Waiting for presentation to start..." />
   }
 
-  if (!session.voting_open) {
+  if (!session.voting_open && currentSlide?.slide_type !== 'studio') {
     return (
       <WaitingScreen
         message="Voting is closed"
@@ -277,6 +278,7 @@ function SlideInput({ slide, sessionId, onSubmit }: { slide: Slide; sessionId: s
     case 'content': return <ContentDisplay slide={slide} />
     case 'rating_scale': return <RatingScaleInput slide={slide} onSubmit={onSubmit} />
     case 'open_text': return <OpenTextInput slide={slide} onSubmit={onSubmit} />
+    case 'studio': return <StudioInput slide={slide} sessionId={sessionId} onSubmit={onSubmit} />
     default: return null
   }
 }

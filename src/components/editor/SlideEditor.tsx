@@ -9,7 +9,11 @@ import { SlideSettings } from './SlideSettings'
 import { SlideTypeSelector } from './SlideTypeSelector'
 import { ElementSettings } from './ElementSettings'
 import { AddImageDialog } from './AddImageDialog'
-import type { CanvasElement } from '@/types/slide'
+import type { CanvasElement, StudioContent, StudioLayer, StudioEvent, StudioEventCategory } from '@/types/slide'
+import { StudioGallery } from '@/components/studio/StudioGallery'
+import { StudioCanvas } from '@/components/studio/StudioCanvas'
+import { StudioProperties } from '@/components/studio/StudioProperties'
+import { StudioEvents } from '@/components/studio/StudioEvents'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -64,8 +68,82 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   const [undoStack, setUndoStack] = useState<Slide[][]>([])
   const [redoStack, setRedoStack] = useState<Slide[][]>([])
 
+  const [studioSelectedLayerId, setStudioSelectedLayerId] = useState<string | null>(null)
+
   const selectedSlide = slides.find((s) => s.id === selectedSlideId) || null
   const selectedIndex = slides.findIndex((s) => s.id === selectedSlideId)
+  const isStudioSlide = selectedSlide?.slide_type === 'studio'
+
+  // Studio content helpers
+  const studioContent: StudioContent | null = isStudioSlide
+    ? (selectedSlide.content as unknown as StudioContent) ?? {
+        canvas: { width: 1920, height: 1080, backgroundColor: '#1a1a2e' },
+        layers: [],
+        eventCategories: [],
+        events: [],
+        votingEnabled: false,
+      }
+    : null
+
+  const studioLayers = studioContent?.layers ?? []
+  const studioLayerStates = Object.fromEntries(
+    studioLayers.map((l) => [
+      l.id,
+      { visible: l.visible, opacity: l.opacity, x: l.x, y: l.y, width: l.width, height: l.height, rotation: l.rotation, src: l.src },
+    ])
+  )
+
+  function updateStudioContent(updates: Partial<StudioContent>) {
+    if (!selectedSlide || !studioContent) return
+    handleSlideChange({ content: { ...studioContent, ...updates } as unknown as Slide['content'] })
+  }
+
+  function handleStudioAddLayer(partial: Partial<StudioLayer>) {
+    const layer: StudioLayer = {
+      id: `layer_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      name: partial.name || 'New Layer',
+      type: partial.type || 'image',
+      src: partial.src,
+      x: partial.x ?? 10,
+      y: partial.y ?? 10,
+      width: partial.width ?? 30,
+      height: partial.height ?? 30,
+      rotation: 0,
+      zIndex: studioLayers.length,
+      opacity: 1,
+      blendMode: 'normal',
+      visible: true,
+      locked: false,
+      ...partial,
+    } as StudioLayer
+    updateStudioContent({ layers: [...studioLayers, layer] })
+    setStudioSelectedLayerId(layer.id)
+  }
+
+  function handleStudioUpdateLayer(id: string, updates: Partial<StudioLayer>) {
+    updateStudioContent({
+      layers: studioLayers.map((l) => (l.id === id ? { ...l, ...updates } : l)),
+    })
+  }
+
+  function handleStudioDeleteLayer(id: string) {
+    updateStudioContent({ layers: studioLayers.filter((l) => l.id !== id) })
+    if (studioSelectedLayerId === id) setStudioSelectedLayerId(null)
+  }
+
+  function handleStudioDuplicateLayer(id: string) {
+    const original = studioLayers.find((l) => l.id === id)
+    if (!original) return
+    const dup: StudioLayer = {
+      ...original,
+      id: `layer_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      name: `${original.name} (copy)`,
+      x: original.x + 2,
+      y: original.y + 2,
+    }
+    updateStudioContent({ layers: [...studioLayers, dup] })
+    setStudioSelectedLayerId(dup.id)
+  }
 
   // Helper to get canvas elements from current slide
   function getCanvasElements(): CanvasElement[] {
@@ -656,133 +734,209 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           </button>
         )}
 
-        {/* Center - canvas + QR + notes */}
-        <div className="flex-1 flex flex-col min-w-0 min-h-0">
-          {/* QR Code / Join bar */}
-          {showQR && (
-            <div className="bg-card border-b border-border px-4 py-2.5 flex items-center gap-3 shrink-0">
-              <QrCode className="w-5 h-5 text-primary shrink-0" />
-              <div className="flex-1 flex items-center gap-3 flex-wrap">
-                <div className="bg-muted rounded-lg px-3 py-1.5">
-                  <span className="text-xs text-muted-foreground mr-1.5">Join at:</span>
-                  <span className="text-sm font-bold font-mono text-foreground tracking-wider">command360.co.uk/join</span>
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-1.5">
-                  <span className="text-xs text-muted-foreground mr-1.5">Room code:</span>
-                  <span className="text-sm font-bold font-mono text-primary tracking-widest">------</span>
-                </div>
-                <span className="text-[11px] text-muted-foreground/60 italic">Room code generated when you start presenting</span>
-              </div>
-              <button onClick={() => setShowQR(false)} className="p-1 rounded text-muted-foreground hover:text-foreground">
-                <ChevronUp className="w-4 h-4" />
-              </button>
+        {/* Center + Right: Studio layout vs normal layout */}
+        {isStudioSlide && studioContent ? (
+          <>
+            {/* Studio: Left gallery panel */}
+            <div className="w-[240px] bg-card border-r border-border flex flex-col shrink-0">
+              <StudioGallery
+                layers={studioLayers}
+                onAddLayer={handleStudioAddLayer}
+                onSelectLayer={(id) => setStudioSelectedLayerId(id)}
+              />
             </div>
-          )}
 
-          {/* Canvas */}
-          <div className="flex-1 min-h-0 overflow-hidden">
-            <SlideCanvas
-              slide={selectedSlide}
-              slides={slides}
-              selectedIndex={selectedIndex}
-              onTitleChange={(title) => { if (selectedSlide) handleSlideChange({ title }) }}
-              onCanvasElementsChange={(canvas_elements) => {
-                if (selectedSlide) {
-                  handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: canvas_elements } as unknown as Slide['content'] })
-                }
-              }}
-              selectedElementId={selectedElementId}
-              onSelectElement={setSelectedElementId}
-              onRequestAddImage={() => setShowAddImageDialog(true)}
-              onSelectSlide={(id) => { setSelectedSlideId(id); setSelectedElementId(null) }}
-              onPrev={selectPrev}
-              onNext={selectNext}
-            />
-          </div>
-
-          {/* Speaker notes panel */}
-          {notesOpen && selectedSlide && (
-            <div className="bg-card border-t border-border shrink-0" style={{ height: 220 }}>
-              <div className="flex items-center justify-between px-4 py-2 border-b border-border">
-                <div className="flex items-center gap-2">
-                  <StickyNote className="w-4 h-4 text-amber-500" />
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Speaker Notes</span>
-                  <span className="text-[10px] text-muted-foreground/50 ml-1">(only visible to you)</span>
-                </div>
-                <button onClick={() => setNotesOpen(false)} className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                  <ChevronDown className="w-4 h-4" />
-                </button>
+            {/* Studio: Center canvas + bottom events */}
+            <div className="flex-1 flex flex-col min-w-0 min-h-0">
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <StudioCanvas
+                  layers={studioLayers}
+                  layerStates={studioLayerStates}
+                  canvasConfig={studioContent.canvas}
+                  interactive
+                  selectedLayerId={studioSelectedLayerId}
+                  onSelectLayer={setStudioSelectedLayerId}
+                  onUpdateLayer={handleStudioUpdateLayer}
+                />
               </div>
-              <div className="p-4 h-[calc(100%-40px)]">
-                <textarea
-                  value={selectedSlide.speaker_notes || ''}
-                  onChange={(e) => handleSlideChange({ speaker_notes: e.target.value })}
-                  placeholder="Add speaker notes here... These will be visible to you during presentation mode when you press N."
-                  className="w-full h-full bg-muted/30 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none p-3 border border-border/50 focus:border-border transition-colors"
+
+              {/* Studio: Bottom events panel */}
+              <div className="h-[220px] border-t border-border shrink-0">
+                <StudioEvents
+                  events={studioContent.events}
+                  eventCategories={studioContent.eventCategories}
+                  layers={studioLayers}
+                  onUpdateEvents={(events) => updateStudioContent({ events })}
+                  onUpdateCategories={(eventCategories) => updateStudioContent({ eventCategories })}
                 />
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Right panel - contextual settings (element or slide) */}
-        {selectedSlide && (
-          <div className={cn(
-            'bg-card border-l border-border flex flex-col shrink-0 transition-all duration-200',
-            settingsOpen ? 'w-[300px]' : 'w-0 overflow-hidden'
-          )}>
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {selectedElementId && getCanvasElements().find(e => e.id === selectedElementId) ? 'Element settings' : 'Slide settings'}
-              </h3>
-              <div className="flex items-center gap-1">
-                {selectedElementId && (
-                  <button
-                    onClick={() => setSelectedElementId(null)}
-                    className="text-[10px] text-primary hover:underline mr-2"
-                  >
-                    Back to slide
-                  </button>
-                )}
+            {/* Studio: Right properties panel */}
+            <div className={cn(
+              'bg-card border-l border-border flex flex-col shrink-0 transition-all duration-200',
+              settingsOpen ? 'w-[300px]' : 'w-0 overflow-hidden'
+            )}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Layer Properties
+                </h3>
                 <button onClick={() => setSettingsOpen(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-muted">
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
-            </div>
-            <div className="flex-1 overflow-y-auto p-4 settings-scroll">
-              {selectedElementId && getCanvasElements().find(e => e.id === selectedElementId) ? (
-                <ElementSettings
-                  element={getCanvasElements().find(e => e.id === selectedElementId)!}
+              <div className="flex-1 overflow-y-auto settings-scroll">
+                <StudioProperties
+                  layer={studioLayers.find((l) => l.id === studioSelectedLayerId) ?? null}
                   onUpdate={(updates) => {
-                    const els = getCanvasElements()
-                    const updated = els.map(e => e.id === selectedElementId ? { ...e, ...updates } : e)
-                    handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: updated } as unknown as Slide['content'] })
+                    if (studioSelectedLayerId) handleStudioUpdateLayer(studioSelectedLayerId, updates)
                   }}
-                  onUpdateStyle={(styleUpdates) => {
-                    const els = getCanvasElements()
-                    const updated = els.map(e => e.id === selectedElementId ? { ...e, style: { ...e.style, ...styleUpdates } } : e)
-                    handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: updated } as unknown as Slide['content'] })
-                  }}
-                  onDelete={() => {
-                    const els = getCanvasElements().filter(e => e.id !== selectedElementId)
-                    handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: els } as unknown as Slide['content'] })
-                    setSelectedElementId(null)
-                  }}
+                  onDelete={(id) => handleStudioDeleteLayer(id)}
+                  onDuplicate={(id) => handleStudioDuplicateLayer(id)}
                 />
-              ) : (
-                <SlideSettings slide={selectedSlide} onChange={handleSlideChange} />
+              </div>
+            </div>
+
+            {/* Settings toggle when collapsed (studio) */}
+            {!settingsOpen && (
+              <button onClick={() => setSettingsOpen(true)}
+                className="w-10 bg-card border-l border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
+                title="Open properties">
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+            )}
+          </>
+        ) : (
+          <>
+            {/* Normal: Center canvas + QR + notes */}
+            <div className="flex-1 flex flex-col min-w-0 min-h-0">
+              {/* QR Code / Join bar */}
+              {showQR && (
+                <div className="bg-card border-b border-border px-4 py-2.5 flex items-center gap-3 shrink-0">
+                  <QrCode className="w-5 h-5 text-primary shrink-0" />
+                  <div className="flex-1 flex items-center gap-3 flex-wrap">
+                    <div className="bg-muted rounded-lg px-3 py-1.5">
+                      <span className="text-xs text-muted-foreground mr-1.5">Join at:</span>
+                      <span className="text-sm font-bold font-mono text-foreground tracking-wider">command360.co.uk/join</span>
+                    </div>
+                    <div className="bg-muted rounded-lg px-3 py-1.5">
+                      <span className="text-xs text-muted-foreground mr-1.5">Room code:</span>
+                      <span className="text-sm font-bold font-mono text-primary tracking-widest">------</span>
+                    </div>
+                    <span className="text-[11px] text-muted-foreground/60 italic">Room code generated when you start presenting</span>
+                  </div>
+                  <button onClick={() => setShowQR(false)} className="p-1 rounded text-muted-foreground hover:text-foreground">
+                    <ChevronUp className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
+              {/* Canvas */}
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <SlideCanvas
+                  slide={selectedSlide}
+                  slides={slides}
+                  selectedIndex={selectedIndex}
+                  onTitleChange={(title) => { if (selectedSlide) handleSlideChange({ title }) }}
+                  onCanvasElementsChange={(canvas_elements) => {
+                    if (selectedSlide) {
+                      handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: canvas_elements } as unknown as Slide['content'] })
+                    }
+                  }}
+                  selectedElementId={selectedElementId}
+                  onSelectElement={setSelectedElementId}
+                  onRequestAddImage={() => setShowAddImageDialog(true)}
+                  onSelectSlide={(id) => { setSelectedSlideId(id); setSelectedElementId(null) }}
+                  onPrev={selectPrev}
+                  onNext={selectNext}
+                />
+              </div>
+
+              {/* Speaker notes panel */}
+              {notesOpen && selectedSlide && (
+                <div className="bg-card border-t border-border shrink-0" style={{ height: 220 }}>
+                  <div className="flex items-center justify-between px-4 py-2 border-b border-border">
+                    <div className="flex items-center gap-2">
+                      <StickyNote className="w-4 h-4 text-amber-500" />
+                      <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Speaker Notes</span>
+                      <span className="text-[10px] text-muted-foreground/50 ml-1">(only visible to you)</span>
+                    </div>
+                    <button onClick={() => setNotesOpen(false)} className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                      <ChevronDown className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="p-4 h-[calc(100%-40px)]">
+                    <textarea
+                      value={selectedSlide.speaker_notes || ''}
+                      onChange={(e) => handleSlideChange({ speaker_notes: e.target.value })}
+                      placeholder="Add speaker notes here... These will be visible to you during presentation mode when you press N."
+                      className="w-full h-full bg-muted/30 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none p-3 border border-border/50 focus:border-border transition-colors"
+                    />
+                  </div>
+                </div>
               )}
             </div>
-          </div>
-        )}
 
-        {/* Settings toggle when collapsed */}
-        {selectedSlide && !settingsOpen && (
-          <button onClick={() => setSettingsOpen(true)}
-            className="w-10 bg-card border-l border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
-            title="Open settings">
-            <ChevronLeft className="w-4 h-4" />
-          </button>
+            {/* Right panel - contextual settings (element or slide) */}
+            {selectedSlide && (
+              <div className={cn(
+                'bg-card border-l border-border flex flex-col shrink-0 transition-all duration-200',
+                settingsOpen ? 'w-[300px]' : 'w-0 overflow-hidden'
+              )}>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {selectedElementId && getCanvasElements().find(e => e.id === selectedElementId) ? 'Element settings' : 'Slide settings'}
+                  </h3>
+                  <div className="flex items-center gap-1">
+                    {selectedElementId && (
+                      <button
+                        onClick={() => setSelectedElementId(null)}
+                        className="text-[10px] text-primary hover:underline mr-2"
+                      >
+                        Back to slide
+                      </button>
+                    )}
+                    <button onClick={() => setSettingsOpen(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-muted">
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex-1 overflow-y-auto p-4 settings-scroll">
+                  {selectedElementId && getCanvasElements().find(e => e.id === selectedElementId) ? (
+                    <ElementSettings
+                      element={getCanvasElements().find(e => e.id === selectedElementId)!}
+                      onUpdate={(updates) => {
+                        const els = getCanvasElements()
+                        const updated = els.map(e => e.id === selectedElementId ? { ...e, ...updates } : e)
+                        handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: updated } as unknown as Slide['content'] })
+                      }}
+                      onUpdateStyle={(styleUpdates) => {
+                        const els = getCanvasElements()
+                        const updated = els.map(e => e.id === selectedElementId ? { ...e, style: { ...e.style, ...styleUpdates } } : e)
+                        handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: updated } as unknown as Slide['content'] })
+                      }}
+                      onDelete={() => {
+                        const els = getCanvasElements().filter(e => e.id !== selectedElementId)
+                        handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: els } as unknown as Slide['content'] })
+                        setSelectedElementId(null)
+                      }}
+                    />
+                  ) : (
+                    <SlideSettings slide={selectedSlide} onChange={handleSlideChange} />
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Settings toggle when collapsed */}
+            {selectedSlide && !settingsOpen && (
+              <button onClick={() => setSettingsOpen(true)}
+                className="w-10 bg-card border-l border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
+                title="Open settings">
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+            )}
+          </>
         )}
       </div>
 

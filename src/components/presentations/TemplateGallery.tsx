@@ -9,7 +9,7 @@ import {
   HelpCircle, Users, Heart, BarChart2, Star, FileText,
   Search, ArrowRight, Loader2, Layers, Clock, Eye, X,
   Cloud, MessageCircle, AlignLeft, ChevronLeft, ChevronRight,
-  Sparkles,
+  Sparkles, Monitor,
 } from 'lucide-react'
 
 // ─── Template definitions ──────────────────────────────────────────────
@@ -36,16 +36,19 @@ interface Template {
 const TYPE_ICONS: Record<string, React.ElementType> = {
   poll: BarChart2, word_cloud: Cloud, quiz: HelpCircle, qna: MessageCircle,
   survey: ClipboardList, content: FileText, rating_scale: Star, open_text: AlignLeft,
+  studio: Monitor,
 }
 
 const TYPE_COLORS: Record<string, string> = {
   poll: '#dc2626', word_cloud: '#3b82f6', quiz: '#10b981', qna: '#f59e0b',
   survey: '#ec4899', content: '#6b7280', rating_scale: '#f97316', open_text: '#14b8a6',
+  studio: '#ef4444',
 }
 
 const TYPE_LABELS: Record<string, string> = {
   poll: 'Poll', word_cloud: 'Word Cloud', quiz: 'Quiz', qna: 'Q&A',
   survey: 'Survey', content: 'Content', rating_scale: 'Rating', open_text: 'Open Text',
+  studio: 'Command Studio',
 }
 
 function estimateDuration(slides: TemplateSlide[]): number {
@@ -59,6 +62,7 @@ function estimateDuration(slides: TemplateSlide[]): number {
       case 'survey': return total + 3
       case 'rating_scale': return total + 1
       case 'open_text': return total + 2
+      case 'studio': return total + 5
       default: return total + 1
     }
   }, 0)

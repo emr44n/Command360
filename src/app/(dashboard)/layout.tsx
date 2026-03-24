@@ -10,7 +10,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="h-screen flex overflow-hidden">
       <DashboardSidebar />
-      <main className="flex-1 overflow-auto bg-muted/20 relative">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden bg-muted/20 relative">
         {/* Subtle grid texture */}
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.01]"

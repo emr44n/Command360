@@ -8,6 +8,7 @@ import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
 
 const NAV = [
   { href: '/#services', label: 'Services' },
+  { href: '/command-studio', label: 'Command Studio', highlight: true },
   { href: '/pricing', label: 'Pricing' },
   { href: '/templates', label: 'Templates' },
   { href: '/about', label: 'About' },
@@ -68,9 +69,12 @@ export function PublicHeader() {
                   onHero
                     ? active ? 'text-white font-medium' : 'text-white/60 hover:text-white'
                     : active ? 'text-foreground font-medium' : 'text-muted-foreground hover:text-foreground'
-                }`}
+                } ${'highlight' in item && item.highlight ? 'flex items-center gap-1.5' : ''}`}
               >
                 {item.label}
+                {'highlight' in item && item.highlight && (
+                  <span className="px-1.5 py-0.5 rounded bg-red-500/15 border border-red-500/20 text-[9px] font-semibold text-red-400 uppercase tracking-wider leading-none">New</span>
+                )}
               </Link>
             )
           })}

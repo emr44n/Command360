@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useCallback } from 'react'
-import { X, BarChart2, Cloud, HelpCircle, MessageCircle, ClipboardList, FileText, Star, AlignLeft } from 'lucide-react'
+import { X, BarChart2, Cloud, HelpCircle, MessageCircle, ClipboardList, FileText, Star, AlignLeft, Monitor } from 'lucide-react'
 import type { SlideType } from '@/types/slide'
 
 interface SlideTypeSelectorProps {
@@ -17,12 +17,13 @@ const ALL_TYPES = [
   { type: 'qna' as SlideType, label: 'Q&A', description: 'Open questions from audience', icon: MessageCircle, color: '#f59e0b', bg: '#fffbeb', key: '6' },
   { type: 'survey' as SlideType, label: 'Survey', description: 'Multi-question form', icon: ClipboardList, color: '#ec4899', bg: '#fdf2f8', key: '7' },
   { type: 'content' as SlideType, label: 'Content', description: 'Text or image slide', icon: FileText, color: '#6b7280', bg: '#f9fafb', key: '8' },
+  { type: 'studio' as SlideType, label: 'Command Studio', description: 'Interactive scenario engine', icon: Monitor, color: '#ef4444', bg: '#fef2f2', key: '9' },
 ]
 
 const CATEGORIES = [
   {
     label: 'Interactive',
-    types: ALL_TYPES.filter(t => ['poll', 'quiz', 'word_cloud', 'rating_scale'].includes(t.type)),
+    types: ALL_TYPES.filter(t => ['poll', 'quiz', 'word_cloud', 'rating_scale', 'studio'].includes(t.type)),
   },
   {
     label: 'Collect input',
@@ -85,7 +86,7 @@ export function SlideTypeSelector({ onSelect, onClose }: SlideTypeSelectorProps)
         }}>
           <div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: '#111827' }}>Add a slide</h2>
-            <p style={{ fontSize: 13, color: '#9ca3af', marginTop: 2 }}>Choose a type or press 1-8</p>
+            <p style={{ fontSize: 13, color: '#9ca3af', marginTop: 2 }}>Choose a type or press 1-9</p>
           </div>
           <button
             onClick={onClose}

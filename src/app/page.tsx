@@ -3,7 +3,7 @@ import {
   BarChart2, Cloud, HelpCircle, MessageCircle, ClipboardList, Sparkles,
   ArrowRight, Users, CheckCircle2, Flame, Siren,
   Radio, Shield, Anchor, Search, Building2, Lock, FileText, Check, Zap,
-  Heart, Quote, Target, ShieldCheck, Eye, EyeOff, Brain,
+  Heart, Quote, Target, ShieldCheck, Eye, EyeOff, Brain, Monitor, Layers, MousePointerClick,
 } from 'lucide-react'
 import { ScrollReveal } from '@/components/home/ScrollReveal'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
@@ -315,6 +315,62 @@ export default function LandingPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          COMMAND STUDIO CALLOUT
+          ═══════════════════════════════════════════ */}
+      <section className="relative bg-[#07070a] overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_50%,rgba(220,38,38,0.1),transparent)]" />
+          <div
+            className="absolute inset-0 opacity-[0.04]"
+            style={{
+              backgroundImage: 'linear-gradient(rgba(220,38,38,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(220,38,38,0.4) 1px, transparent 1px)',
+              backgroundSize: '56px 56px',
+              maskImage: 'radial-gradient(ellipse 80% 70% at 50% 50%, black 20%, transparent 80%)',
+              WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 50%, black 20%, transparent 80%)',
+            }}
+          />
+        </div>
+        <div className="relative max-w-5xl mx-auto px-5 py-24 md:py-32">
+          <ScrollReveal>
+            <div className="text-center mb-10">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-[10px] font-semibold text-red-400 uppercase tracking-[0.15em] mb-6">
+                <Monitor className="w-3 h-3" /> New Feature
+              </span>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-4">
+                Command Studio
+              </h2>
+              <p className="text-white/40 text-lg max-w-xl mx-auto">
+                Build interactive training scenarios with layered images, video effects, and real-time event triggers. The most immersive way to train your teams.
+              </p>
+            </div>
+            {/* Feature highlights */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+              {[
+                { icon: Layers, title: 'Layer-based scenes', desc: 'Stack images, videos, and transparent overlays to create realistic training environments.', color: 'text-red-400', bg: 'bg-red-500/10', borderColor: 'hover:border-red-500/20' },
+                { icon: MousePointerClick, title: 'Live event triggers', desc: 'Control the narrative with manual triggers — add fire spread, reveal casualties, change conditions instantly.', color: 'text-amber-400', bg: 'bg-amber-500/10', borderColor: 'hover:border-amber-500/20' },
+                { icon: Eye, title: 'Real-time audience view', desc: 'Everyone sees the scene evolve simultaneously. No refreshing, no delays — fully synchronised experiences.', color: 'text-emerald-400', bg: 'bg-emerald-500/10', borderColor: 'hover:border-emerald-500/20' },
+              ].map((card) => (
+                <div key={card.title} className={`group rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 ${card.borderColor} hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-0.5 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]`}>
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <div className={`w-8 h-8 rounded-lg ${card.bg} border border-white/[0.08] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                      <card.icon className={`w-3.5 h-3.5 ${card.color}`} />
+                    </div>
+                    <h3 className="text-sm font-semibold text-white">{card.title}</h3>
+                  </div>
+                  <p className="text-xs text-white/35 leading-relaxed">{card.desc}</p>
+                </div>
+              ))}
+            </div>
+            <div className="text-center">
+              <Link href="/command-studio" className="group inline-flex items-center gap-2 px-7 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 cursor-pointer">
+                Learn more about Command Studio <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
             </div>
           </ScrollReveal>
         </div>
@@ -680,6 +736,7 @@ export default function LandingPage() {
               <h4 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-4">Platform</h4>
               <ul className="space-y-2.5 text-xs text-muted-foreground">
                 <li><a href="#features" className="hover:text-foreground transition-colors">Features</a></li>
+                <li><Link href="/command-studio" className="hover:text-foreground transition-colors">Command Studio</Link></li>
                 <li><Link href="/templates" className="hover:text-foreground transition-colors">Templates</Link></li>
                 <li><a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a></li>
                 <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
