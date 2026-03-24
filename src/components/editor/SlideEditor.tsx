@@ -435,6 +435,51 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
     if (selectedIndex < slides.length - 1) setSelectedSlideId(slides[selectedIndex + 1].id)
   }
 
+  // ── Full-screen Studio Mode — overlays on top of everything ──
+  if (isStudioSlide && studioContent) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col bg-zinc-950 text-white">
+        {/* Compact top bar */}
+        <div className="h-10 bg-zinc-900/90 border-b border-zinc-800 flex items-center gap-3 px-3 shrink-0 relative z-[60]">
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <div className="w-5 h-5 bg-primary rounded flex items-center justify-center">
+              <svg viewBox="0 0 24 24" className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+            </div>
+          </button>
+          <div className="w-px h-5 bg-zinc-700" />
+          <span className="text-[10px] uppercase tracking-[0.15em] text-zinc-500 font-medium">Command Studio</span>
+          <input
+            type="text"
+            value={presentationTitle}
+            onChange={(e) => handleTitleChange(e.target.value)}
+            className="bg-transparent border-none text-sm text-white font-medium focus:outline-none focus:ring-0 w-auto max-w-[300px] truncate"
+            placeholder="Untitled Studio"
+          />
+          <div className="flex-1" />
+          <span className={`text-[10px] transition-opacity ${saveStatus === 'saved' ? 'text-emerald-400 opacity-100' : saveStatus === 'saving' ? 'text-zinc-500 opacity-100' : 'opacity-0'}`}>
+            {saveStatus === 'saving' ? 'Saving...' : 'Saved'}
+          </span>
+          <Button variant="ghost" size="sm" onClick={() => router.push('/dashboard')} className="text-zinc-400 hover:text-white h-7 text-xs">
+            Exit Studio
+          </Button>
+        </div>
+        {/* Full-screen studio editor */}
+        <div className="flex-1 min-h-0">
+          <StudioEditor
+            content={studioContent}
+            onContentChange={(updated) => {
+              handleSlideChange({ content: updated as unknown as Slide['content'] })
+            }}
+          />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="h-screen flex flex-col bg-background text-foreground">
       {/* ─── Top bar ─────────────────────────────────────────────── */}

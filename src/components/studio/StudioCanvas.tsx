@@ -550,7 +550,7 @@ export function StudioCanvas({
           return (
             <div
               key={layer.id}
-              className={`absolute ${selectedLayerId === layer.id ? 'ring-2 ring-blue-500' : ''}`}
+              className={`absolute cursor-move ${selectedLayerId === layer.id ? 'ring-2 ring-blue-500' : ''}`}
               style={{
                 left,
                 top,
@@ -564,15 +564,63 @@ export function StudioCanvas({
                 mixBlendMode: layer.blendMode === 'normal' ? undefined : layer.blendMode,
               }}
               onClick={() => onSelectLayer?.(layer.id)}
+              onMouseDown={(e) => {
+                if (!interactive || layer.locked) return
+                e.preventDefault()
+                e.stopPropagation()
+                onSelectLayer?.(layer.id)
+                const startMX = e.clientX
+                const startMY = e.clientY
+                const startX = state.x
+                const startY = state.y
+
+                const onMove = (ev: MouseEvent) => {
+                  const dx = ((ev.clientX - startMX) / stageSize.width) * 100
+                  const dy = ((ev.clientY - startMY) / stageSize.height) * 100
+                  onUpdateLayer?.(layer.id, { x: startX + dx, y: startY + dy })
+                }
+                const onUp = () => {
+                  document.removeEventListener('mousemove', onMove)
+                  document.removeEventListener('mouseup', onUp)
+                }
+                document.addEventListener('mousemove', onMove)
+                document.addEventListener('mouseup', onUp)
+              }}
             >
               <video
                 src={src}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover pointer-events-none"
                 autoPlay={layer.autoplay ?? true}
                 loop={layer.loop ?? true}
                 muted={layer.muted ?? true}
                 playsInline
               />
+              {/* Resize handle */}
+              {selectedLayerId === layer.id && interactive && (
+                <div
+                  className="absolute -right-1.5 -bottom-1.5 w-3 h-3 bg-blue-500 border border-white rounded-sm cursor-se-resize"
+                  onMouseDown={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    const startMX = e.clientX
+                    const startMY = e.clientY
+                    const startW = state.width
+                    const startH = state.height
+
+                    const onMove = (ev: MouseEvent) => {
+                      const dw = ((ev.clientX - startMX) / stageSize.width) * 100
+                      const dh = ((ev.clientY - startMY) / stageSize.height) * 100
+                      onUpdateLayer?.(layer.id, { width: Math.max(5, startW + dw), height: Math.max(5, startH + dh) })
+                    }
+                    const onUp = () => {
+                      document.removeEventListener('mousemove', onMove)
+                      document.removeEventListener('mouseup', onUp)
+                    }
+                    document.addEventListener('mousemove', onMove)
+                    document.addEventListener('mouseup', onUp)
+                  }}
+                />
+              )}
             </div>
           )
         })}

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
+import { PanelLeftClose, PanelRightClose, PanelBottomClose, PanelLeftOpen, PanelRightOpen, PanelBottomOpen } from 'lucide-react'
 import type {
   StudioContent,
   StudioLayer,
@@ -269,6 +270,11 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
   const [selectedClipId, setSelectedClipId] = useState<string | null>(null)
   const [zoomLevel, setZoomLevel] = useState(100)
 
+  // ── Panel visibility ──
+  const [showGallery, setShowGallery] = useState(true)
+  const [showProperties, setShowProperties] = useState(true)
+  const [showTimeline, setShowTimeline] = useState(true)
+
   // ── Resizable panel widths ──
   const [galleryWidth, setGalleryWidth] = useState(240)
   const [propertiesWidth, setPropertiesWidth] = useState(280)
@@ -315,10 +321,36 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden bg-zinc-950">
+      {/* Panel toggle bar */}
+      <div className="h-7 bg-zinc-900/60 border-b border-zinc-800/50 flex items-center gap-1 px-2 shrink-0">
+        <button
+          onClick={() => setShowGallery(v => !v)}
+          className={`p-1 rounded hover:bg-zinc-700/50 transition-colors ${showGallery ? 'text-zinc-400' : 'text-zinc-600'}`}
+          title={showGallery ? 'Hide Assets' : 'Show Assets'}
+        >
+          {showGallery ? <PanelLeftClose className="w-3.5 h-3.5" /> : <PanelLeftOpen className="w-3.5 h-3.5" />}
+        </button>
+        <button
+          onClick={() => setShowTimeline(v => !v)}
+          className={`p-1 rounded hover:bg-zinc-700/50 transition-colors ${showTimeline ? 'text-zinc-400' : 'text-zinc-600'}`}
+          title={showTimeline ? 'Hide Timeline' : 'Show Timeline'}
+        >
+          {showTimeline ? <PanelBottomClose className="w-3.5 h-3.5" /> : <PanelBottomOpen className="w-3.5 h-3.5" />}
+        </button>
+        <button
+          onClick={() => setShowProperties(v => !v)}
+          className={`p-1 rounded hover:bg-zinc-700/50 transition-colors ${showProperties ? 'text-zinc-400' : 'text-zinc-600'}`}
+          title={showProperties ? 'Hide Properties' : 'Show Properties'}
+        >
+          {showProperties ? <PanelRightClose className="w-3.5 h-3.5" /> : <PanelRightOpen className="w-3.5 h-3.5" />}
+        </button>
+        <span className="text-[9px] text-zinc-600 ml-2">Toggle panels for more canvas space</span>
+      </div>
+
       {/* Top row: Gallery | Canvas | Properties */}
       <div className="flex flex-1 min-h-0">
         {/* Left: Gallery */}
-        <div
+        {showGallery && <div
           className="shrink-0 border-r border-zinc-800 overflow-hidden"
           style={{ width: galleryWidth }}
         >
@@ -330,17 +362,17 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
             onAddTimelineEvent={handleAddTimelineEvent}
             onRemoveTimelineEvent={handleRemoveTimelineEvent}
           />
-        </div>
+        </div>}
 
         {/* Gallery resize splitter */}
-        <div
+        {showGallery && <div
           className="w-1 shrink-0 cursor-col-resize bg-zinc-800 hover:bg-primary/40 transition-colors relative group"
           onMouseDown={() => startDrag('gallery')}
         >
           <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-center">
             <div className="w-0.5 h-8 rounded-full bg-zinc-600 group-hover:bg-primary/60 transition-colors" />
           </div>
-        </div>
+        </div>}
 
         {/* Center: Canvas */}
         <div className="flex-1 min-w-0 min-h-0 overflow-hidden">
@@ -358,17 +390,17 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
         </div>
 
         {/* Properties resize splitter */}
-        <div
+        {showProperties && <div
           className="w-1 shrink-0 cursor-col-resize bg-zinc-800 hover:bg-primary/40 transition-colors relative group"
           onMouseDown={() => startDrag('properties')}
         >
           <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-center">
             <div className="w-0.5 h-8 rounded-full bg-zinc-600 group-hover:bg-primary/60 transition-colors" />
           </div>
-        </div>
+        </div>}
 
         {/* Right: Properties */}
-        <div
+        {showProperties && <div
           className="shrink-0 border-l border-zinc-800 overflow-hidden"
           style={{ width: propertiesWidth }}
         >
@@ -385,21 +417,21 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
             onDeleteKeyframe={handleDeleteKeyframe}
             currentTime={currentTime}
           />
-        </div>
+        </div>}
       </div>
 
       {/* Timeline resize splitter */}
-      <div
+      {showTimeline && <div
         className="h-1 shrink-0 cursor-row-resize bg-zinc-800 hover:bg-primary/40 transition-colors relative group"
         onMouseDown={() => startDrag('timeline')}
       >
         <div className="absolute inset-x-0 top-0 bottom-0 flex items-center justify-center">
           <div className="h-0.5 w-8 rounded-full bg-zinc-600 group-hover:bg-primary/60 transition-colors" />
         </div>
-      </div>
+      </div>}
 
       {/* Bottom: Timeline */}
-      <div
+      {showTimeline && <div
         className="shrink-0 border-t border-zinc-800 overflow-hidden"
         style={{ height: timelineHeight }}
       >
@@ -427,7 +459,7 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
           zoomLevel={zoomLevel}
           onZoomChange={setZoomLevel}
         />
-      </div>
+      </div>}
     </div>
   )
 }
