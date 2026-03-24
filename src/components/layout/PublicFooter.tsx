@@ -25,6 +25,7 @@ const FOOTER_LINKS = {
     { href: '/about', label: 'About' },
     { href: '/contact', label: 'Contact' },
     { href: '/help', label: 'Help Centre' },
+    { href: '/join', label: 'Join a Session' },
   ],
   Legal: [
     { href: '/terms', label: 'Terms' },
