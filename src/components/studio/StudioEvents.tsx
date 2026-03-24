@@ -658,28 +658,28 @@ export function StudioEvents({
                 <span className="text-[10px] text-zinc-500">
                   {catEvents.length}
                 </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-5 w-5 p-0 text-zinc-500 hover:text-zinc-300"
+                <span
+                  role="button"
+                  tabIndex={0}
+                  className="inline-flex h-5 w-5 items-center justify-center rounded text-zinc-500 hover:text-zinc-300 hover:bg-zinc-700/50 cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation()
                     addEvent(cat.id)
                   }}
                 >
                   <PlusIcon className="size-3" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-5 w-5 p-0 text-zinc-500 hover:text-red-400"
+                </span>
+                <span
+                  role="button"
+                  tabIndex={0}
+                  className="inline-flex h-5 w-5 items-center justify-center rounded text-zinc-500 hover:text-red-400 hover:bg-zinc-700/50 cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation()
                     deleteCategory(cat.id)
                   }}
                 >
                   <Trash2Icon className="size-3" />
-                </Button>
+                </span>
               </CollapsibleTrigger>
               <CollapsibleContent>
                 {catEvents.length === 0 && (
