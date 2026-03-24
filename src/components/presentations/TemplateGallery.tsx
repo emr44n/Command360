@@ -1,5 +1,5 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,7 +9,7 @@ import {
   HelpCircle, Users, Heart, BarChart2, Star, FileText,
   Search, ArrowRight, Loader2, Layers, Clock, Eye, X,
   Cloud, MessageCircle, AlignLeft, ChevronLeft, ChevronRight,
-  Sparkles, Monitor,
+  Sparkles, Monitor, LayoutGrid, List, Trash2, Bookmark,
 } from 'lucide-react'
 
 // ─── Template definitions ──────────────────────────────────────────────
@@ -318,6 +318,13 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
   'Wellbeing & Feedback': Heart,
 }
 
+interface UserTemplate {
+  id: string
+  title: string
+  description: string
+  updated_at: string
+}
+
 export function TemplateGallery() {
   const router = useRouter()
   const [creating, setCreating] = useState<string | null>(null)
@@ -325,6 +332,74 @@ export function TemplateGallery() {
   const [search, setSearch] = useState('')
   const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null)
   const [previewSlide, setPreviewSlide] = useState(0)
+  const [view, setView] = useState<'grid' | 'list'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('c360-view-mode') as 'grid' | 'list') || 'grid'
+    }
+    return 'grid'
+  })
+  const [userTemplates, setUserTemplates] = useState<UserTemplate[]>([])
+  const [loadingUserTemplates, setLoadingUserTemplates] = useState(true)
+  const [deletingTemplate, setDeletingTemplate] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchUserTemplates() {
+      try {
+        const res = await fetch('/api/templates')
+        if (res.ok) {
+          const data = await res.json()
+          setUserTemplates(data.templates || [])
+        }
+      } catch {
+        // silently fail
+      } finally {
+        setLoadingUserTemplates(false)
+      }
+    }
+    fetchUserTemplates()
+  }, [])
+
+  async function handleDeleteUserTemplate(id: string, title: string) {
+    if (!confirm(`Delete template "${title}"? This cannot be undone.`)) return
+    setDeletingTemplate(id)
+    try {
+      const res = await fetch(`/api/templates/${id}`, { method: 'DELETE' })
+      if (res.ok) {
+        setUserTemplates((prev) => prev.filter((t) => t.id !== id))
+        toast.success('Template deleted')
+      } else {
+        toast.error('Failed to delete template')
+      }
+    } catch {
+      toast.error('Failed to delete template')
+    } finally {
+      setDeletingTemplate(null)
+    }
+  }
+
+  async function handleUseUserTemplate(id: string) {
+    setCreating(id)
+    try {
+      const res = await fetch(`/api/templates/${id}/use`, { method: 'POST' })
+      if (!res.ok) {
+        toast.error('Failed to create from template')
+        setCreating(null)
+        return
+      }
+      const data = await res.json()
+      toast.success('Presentation created from template')
+      router.push(`/presentations/${data.presentation.id}/edit`)
+    } catch {
+      toast.error('Something went wrong')
+      setCreating(null)
+    }
+  }
+
+  const filteredUserTemplates = userTemplates.filter((t) => {
+    if (!search) return true
+    const q = search.toLowerCase()
+    return t.title.toLowerCase().includes(q) || (t.description || '').toLowerCase().includes(q)
+  })
 
   const filtered = TEMPLATES.filter((t) => {
     const matchesCategory = activeCategory === 'All' || t.category === activeCategory
@@ -452,7 +527,7 @@ export function TemplateGallery() {
         </div>
       )}
 
-      {/* Search + filters */}
+      {/* Search + filters + view toggle */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -482,10 +557,127 @@ export function TemplateGallery() {
             )
           })}
         </div>
+        {/* View toggle */}
+        <div className="flex items-center rounded-xl border border-border overflow-hidden shrink-0">
+          <button
+            onClick={() => { setView('grid'); localStorage.setItem('c360-view-mode', 'grid') }}
+            className={`p-2 transition-all duration-200 ${
+              view === 'grid' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+            }`}
+          >
+            <LayoutGrid className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => { setView('list'); localStorage.setItem('c360-view-mode', 'list') }}
+            className={`p-2 transition-all duration-200 ${
+              view === 'list' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+            }`}
+          >
+            <List className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
+      {/* User-saved templates */}
+      {(activeCategory === 'All' || activeCategory === 'My Templates') && filteredUserTemplates.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Bookmark className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-semibold text-foreground">My Templates</h3>
+            <span className="text-xs text-muted-foreground">({filteredUserTemplates.length})</span>
+          </div>
+          {view === 'grid' ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              {filteredUserTemplates.map((t) => (
+                <div
+                  key={t.id}
+                  className="bg-card border border-border rounded-2xl p-5 hover:shadow-md hover:border-primary/20 transition-all group"
+                >
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-primary bg-primary/10 group-hover:scale-110 transition-transform duration-200">
+                      <Bookmark className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors truncate">
+                        {t.title}
+                      </h4>
+                      {t.description && (
+                        <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{t.description.replace(/^\[TEMPLATE\]\s*/, '')}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1.5 flex-1 rounded-full text-xs group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors"
+                      onClick={() => handleUseUserTemplate(t.id)}
+                      disabled={creating !== null}
+                    >
+                      {creating === t.id ? (
+                        <><Loader2 className="w-3 h-3 animate-spin" /> Creating...</>
+                      ) : (
+                        <>Use <ArrowRight className="w-3 h-3" /></>
+                      )}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="gap-1.5 text-xs text-muted-foreground hover:text-destructive"
+                      onClick={() => handleDeleteUserTemplate(t.id, t.title)}
+                      disabled={deletingTemplate === t.id}
+                    >
+                      {deletingTemplate === t.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {filteredUserTemplates.map((t) => (
+                <div
+                  key={t.id}
+                  className="group relative flex items-center gap-4 bg-card border border-border rounded-2xl p-4 overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5"
+                >
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-primary bg-primary/10">
+                    <Bookmark className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-medium text-foreground text-sm group-hover:text-primary transition-colors truncate">{t.title}</h4>
+                    {t.description && (
+                      <p className="text-xs text-muted-foreground mt-0.5 truncate">{t.description.replace(/^\[TEMPLATE\]\s*/, '')}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1.5 text-xs rounded-full"
+                      onClick={() => handleUseUserTemplate(t.id)}
+                      disabled={creating !== null}
+                    >
+                      {creating === t.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <>Use <ArrowRight className="w-3 h-3" /></>}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-xs text-muted-foreground hover:text-destructive"
+                      onClick={() => handleDeleteUserTemplate(t.id, t.title)}
+                      disabled={deletingTemplate === t.id}
+                    >
+                      {deletingTemplate === t.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Template groups */}
-      {filtered.length === 0 ? (
+      {filtered.length === 0 && filteredUserTemplates.length === 0 ? (
         <div className="text-center py-12">
           <Layers className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">No templates match your search</p>
@@ -493,7 +685,7 @@ export function TemplateGallery() {
             Clear filters
           </button>
         </div>
-      ) : (
+      ) : view === 'grid' ? (
         grouped.map((group) => {
           const CatIcon = CATEGORY_ICONS[group.category]
           return (
@@ -579,6 +771,79 @@ export function TemplateGallery() {
                               Use <ArrowRight className="w-3 h-3" />
                             </>
                           )}
+                        </Button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })
+      ) : (
+        /* List view for built-in templates */
+        grouped.map((group) => {
+          const CatIcon = CATEGORY_ICONS[group.category]
+          return (
+            <div key={group.category}>
+              {activeCategory === 'All' && (
+                <div className="flex items-center gap-2 mb-3">
+                  {CatIcon && <CatIcon className="w-4 h-4 text-muted-foreground" />}
+                  <h3 className="text-sm font-semibold text-foreground">{group.category}</h3>
+                  <span className="text-xs text-muted-foreground">({group.templates.length})</span>
+                </div>
+              )}
+              <div className="space-y-2 mb-6">
+                {group.templates.map((t) => {
+                  const duration = estimateDuration(t.slides)
+                  const uniqueTypes = [...new Set(t.slides.map(s => s.slide_type))]
+                  return (
+                    <div
+                      key={t.id}
+                      className="group relative flex items-center gap-4 bg-card border border-border rounded-2xl p-4 overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5"
+                    >
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${t.color}`}>
+                        <t.icon className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-medium text-foreground text-sm group-hover:text-primary transition-colors truncate">{t.title}</h4>
+                          {t.featured && (
+                            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 shrink-0">Popular</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+                          <span>{t.slides.length} slides</span>
+                          <span className="text-border">|</span>
+                          <span className="flex items-center gap-1"><Clock className="w-3 h-3" />~{duration} min</span>
+                          <span className="text-border">|</span>
+                          <span className="flex items-center gap-1">
+                            {uniqueTypes.slice(0, 3).map((type) => {
+                              const TypeIcon = TYPE_ICONS[type] || FileText
+                              const color = TYPE_COLORS[type] || '#6b7280'
+                              return <TypeIcon key={type} style={{ width: 11, height: 11, color }} title={TYPE_LABELS[type] || type} />
+                            })}
+                            {uniqueTypes.length > 3 && <span className="text-[10px]">+{uniqueTypes.length - 3}</span>}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+                          onClick={() => openPreview(t)}
+                        >
+                          <Eye className="w-3 h-3" /> Preview
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5 text-xs rounded-full"
+                          onClick={() => createFromTemplate(t)}
+                          disabled={creating !== null}
+                        >
+                          {creating === t.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <>Use <ArrowRight className="w-3 h-3" /></>}
                         </Button>
                       </div>
                     </div>

@@ -49,7 +49,12 @@ type SortKey = 'updated' | 'created' | 'name' | 'sessions' | 'accessed'
 export function PresentationGrid({ presentations }: { presentations: PresentationItem[] }) {
   const router = useRouter()
   const [search, setSearch] = useState('')
-  const [view, setView] = useState<'grid' | 'list'>('grid')
+  const [view, setView] = useState<'grid' | 'list'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('c360-view-mode') as 'grid' | 'list') || 'grid'
+    }
+    return 'grid'
+  })
   const [sortBy, setSortBy] = useState<SortKey>('updated')
   const [mounted, setMounted] = useState(false)
   const [loadingStates, setLoadingStates] = useState<Record<string, string>>({})
@@ -233,7 +238,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
         {/* View toggle */}
         <div className="flex items-center rounded-xl border border-border overflow-hidden">
           <button
-            onClick={() => setView('grid')}
+            onClick={() => { setView('grid'); localStorage.setItem('c360-view-mode', 'grid') }}
             className={`p-2 transition-all duration-200 ${
               view === 'grid'
                 ? 'bg-primary/10 text-primary'
@@ -243,7 +248,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
             <LayoutGrid className="w-4 h-4" />
           </button>
           <button
-            onClick={() => setView('list')}
+            onClick={() => { setView('list'); localStorage.setItem('c360-view-mode', 'list') }}
             className={`p-2 transition-all duration-200 ${
               view === 'list'
                 ? 'bg-primary/10 text-primary'

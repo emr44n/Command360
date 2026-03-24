@@ -31,7 +31,12 @@ type SortKey = 'updated' | 'created' | 'name' | 'slides'
 export function StudioListClient({ presentations }: { presentations: StudioPresentation[] }) {
   const router = useRouter()
   const [search, setSearch] = useState('')
-  const [view, setView] = useState<'grid' | 'list'>('grid')
+  const [view, setView] = useState<'grid' | 'list'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('c360-view-mode') as 'grid' | 'list') || 'grid'
+    }
+    return 'grid'
+  })
   const [sortBy, setSortBy] = useState<SortKey>('updated')
   const [loadingStates, setLoadingStates] = useState<Record<string, string>>({})
 
@@ -139,7 +144,7 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
         {/* View toggle */}
         <div className="flex items-center rounded-xl border border-border overflow-hidden">
           <button
-            onClick={() => setView('grid')}
+            onClick={() => { setView('grid'); localStorage.setItem('c360-view-mode', 'grid') }}
             className={`p-2 transition-all duration-200 ${
               view === 'grid' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted'
             }`}
@@ -147,7 +152,7 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
             <LayoutGrid className="w-4 h-4" />
           </button>
           <button
-            onClick={() => setView('list')}
+            onClick={() => { setView('list'); localStorage.setItem('c360-view-mode', 'list') }}
             className={`p-2 transition-all duration-200 ${
               view === 'list' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted'
             }`}

@@ -36,7 +36,12 @@ export function SessionsList({ sessions }: Props) {
   const router = useRouter()
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<Filter>('all')
-  const [view, setView] = useState<'grid' | 'list'>('list')
+  const [view, setView] = useState<'grid' | 'list'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('c360-view-mode') as 'grid' | 'list') || 'list'
+    }
+    return 'list'
+  })
   const [sortBy, setSortBy] = useState<SortKey>('recent')
 
   const filtered = useMemo(() => {
@@ -163,7 +168,7 @@ export function SessionsList({ sessions }: Props) {
         {/* View toggle */}
         <div className="flex items-center rounded-xl border border-border overflow-hidden">
           <button
-            onClick={() => setView('grid')}
+            onClick={() => { setView('grid'); localStorage.setItem('c360-view-mode', 'grid') }}
             className={`p-2 transition-all duration-200 ${
               view === 'grid' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted'
             }`}
@@ -171,7 +176,7 @@ export function SessionsList({ sessions }: Props) {
             <LayoutGrid className="w-3.5 h-3.5" />
           </button>
           <button
-            onClick={() => setView('list')}
+            onClick={() => { setView('list'); localStorage.setItem('c360-view-mode', 'list') }}
             className={`p-2 transition-all duration-200 ${
               view === 'list' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted'
             }`}
