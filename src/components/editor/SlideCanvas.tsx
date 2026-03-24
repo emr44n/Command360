@@ -458,14 +458,6 @@ function SlidePreview({ slide }: { slide: Slide }) {
                 {layer.type === 'text' && layer.text}
               </div>
             ))}
-            <div style={{
-              position: 'absolute', bottom: 6, left: '50%', transform: 'translateX(-50%)',
-              background: 'rgba(0,0,0,0.5)', borderRadius: 12, padding: '2px 10px',
-              display: 'flex', alignItems: 'center', gap: 4,
-            }}>
-              <Monitor style={{ width: 10, height: 10, color: '#ef4444' }} />
-              <span style={{ fontSize: 8, color: '#fff', fontWeight: 600 }}>STUDIO</span>
-            </div>
           </div>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
             {(c.events || []).slice(0, 4).map((evt) => (

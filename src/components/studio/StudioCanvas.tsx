@@ -460,12 +460,12 @@ export function StudioCanvas({
     <div
       ref={containerRef}
       className="relative flex h-full w-full items-center justify-center overflow-hidden"
-      style={{ background: 'radial-gradient(ellipse at center, #1a1a1a 0%, #080808 100%)' }}
+      style={{ background: '#1a1a1a' }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
       {/* Konva stage for non-video layers */}
-      <div className="relative" style={{ width: stageSize.width, height: stageSize.height }}>
+      <div className="relative" style={{ width: stageSize.width, height: stageSize.height, boxShadow: '0 2px 20px rgba(0,0,0,0.5)' }}>
         <Stage
           width={stageSize.width}
           height={stageSize.height}

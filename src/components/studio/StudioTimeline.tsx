@@ -43,6 +43,8 @@ export function StudioTimeline({
 }: StudioTimelineProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [scrollLeft, setScrollLeft] = useState(0)
+  const [labelWidth, setLabelWidth] = useState(140)
+  const labelDragging = useRef(false)
 
   const tracks = content.tracks ?? []
   const timelineEvents = content.timelineEvents ?? []
@@ -61,11 +63,33 @@ export function StudioTimeline({
     const container = scrollContainerRef.current
     const playheadPx = (playheadPosition * zoomLevel) / 1000
     const viewLeft = container.scrollLeft
-    const viewRight = viewLeft + container.clientWidth - 120 // subtract label width
+    const viewRight = viewLeft + container.clientWidth - labelWidth // subtract label width
     if (playheadPx > viewRight - 50) {
       container.scrollLeft = playheadPx - container.clientWidth / 2
     }
   }, [playheadPosition, isPlaying, zoomLevel])
+
+  // Label column resize
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (labelDragging.current) {
+        setLabelWidth(Math.max(100, Math.min(300, e.clientX - (scrollContainerRef.current?.getBoundingClientRect().left ?? 0))))
+      }
+    }
+    const handleMouseUp = () => {
+      if (labelDragging.current) {
+        labelDragging.current = false
+        document.body.style.cursor = ''
+        document.body.style.userSelect = ''
+      }
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mouseup', handleMouseUp)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [])
 
   // Track area height for playhead
   const trackAreaHeight = Math.max(tracks.length * 40, 120)
@@ -150,7 +174,7 @@ export function StudioTimeline({
       const container = scrollContainerRef.current
       if (!container) return
       const rect = container.getBoundingClientRect()
-      const x = e.clientX - rect.left + container.scrollLeft - 120 // subtract label width
+      const x = e.clientX - rect.left + container.scrollLeft - labelWidth // subtract label width
       if (x < 0) return
       const ms = Math.max(0, (x * 1000) / zoomLevel)
       onPlayheadChange(Math.round(ms))
@@ -163,7 +187,7 @@ export function StudioTimeline({
     content.layers.find((l) => l.id === layerId)
 
   return (
-    <div className="flex flex-col bg-zinc-900 border-t border-zinc-800 select-none">
+    <div className="flex flex-col h-full bg-zinc-900 border-t border-zinc-800 select-none">
       {/* Controls bar */}
       <TimelineControls
         isPlaying={isPlaying}
@@ -179,7 +203,16 @@ export function StudioTimeline({
       {/* Event markers + Ruler row */}
       <div className="flex">
         {/* Spacer for the label column */}
-        <div className="flex-shrink-0 w-[120px] bg-zinc-900 border-r border-zinc-800" />
+        <div className="flex-shrink-0 bg-zinc-900 border-r border-zinc-800 relative" style={{ width: labelWidth }}>
+          <div
+            className="absolute right-0 top-0 bottom-0 w-[4px] cursor-col-resize hover:bg-red-500/50 transition-colors z-10"
+            onMouseDown={() => {
+              labelDragging.current = true
+              document.body.style.cursor = 'col-resize'
+              document.body.style.userSelect = 'none'
+            }}
+          />
+        </div>
         {/* Markers and ruler */}
         <div className="flex-1 overflow-hidden">
           {timelineEvents.length > 0 && (
@@ -202,7 +235,7 @@ export function StudioTimeline({
       <div
         ref={scrollContainerRef}
         className="flex-1 overflow-auto relative"
-        style={{ maxHeight: 300 }}
+        style={{ maxHeight: 'none' }}
         onScroll={handleScroll}
         onClick={handleTrackAreaClick}
       >
@@ -219,6 +252,7 @@ export function StudioTimeline({
                 zoomLevel={zoomLevel}
                 scrollLeft={scrollLeft}
                 selectedClipId={selectedClipId}
+                labelWidth={labelWidth}
                 onSelectClip={(clipId) => {
                   onSelectClip(clipId)
                   onSelectLayer(track.layerId)
@@ -240,7 +274,7 @@ export function StudioTimeline({
           )}
 
           {/* Playhead overlay */}
-          <div className="absolute top-0 left-[120px] right-0 bottom-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-0 right-0 bottom-0 pointer-events-none overflow-hidden" style={{ left: labelWidth }}>
             <div
               className="relative h-full"
               style={{ transform: `translateX(-${scrollLeft}px)` }}

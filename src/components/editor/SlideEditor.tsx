@@ -74,7 +74,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   // Studio content — passed directly to StudioEditor
   const studioContent: StudioContent | null = isStudioSlide
     ? (selectedSlide.content as unknown as StudioContent) ?? {
-        canvas: { width: 1920, height: 1080, backgroundColor: '#1a1a2e' },
+        canvas: { width: 1920, height: 1080, backgroundColor: '#ffffff' },
         layers: [],
         eventCategories: [],
         events: [],
@@ -574,6 +574,9 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             onAddSlide={() => setShowTypeSelector(true)}
           />
         </div>
+        {showTypeSelector && (
+          <SlideTypeSelector onSelect={handleAddSlide} onClose={() => setShowTypeSelector(false)} />
+        )}
       </div>
     )
   }

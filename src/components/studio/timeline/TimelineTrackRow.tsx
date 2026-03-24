@@ -10,6 +10,7 @@ interface TimelineTrackRowProps {
   zoomLevel: number
   scrollLeft: number
   selectedClipId: string | null
+  labelWidth?: number
   onSelectClip: (clipId: string) => void
   onMoveClip: (clipId: string, newStartTime: number) => void
   onResizeClip: (clipId: string, newDuration: number) => void
@@ -30,11 +31,12 @@ export function TimelineTrackRow({
   onToggleMute,
   onToggleHidden,
   onDeleteTrack,
+  labelWidth = 140,
 }: TimelineTrackRowProps) {
   return (
     <div className="flex h-10 border-b border-zinc-800/60 group/row">
       {/* Left label area */}
-      <div className="flex-shrink-0 w-[120px] flex items-center gap-1.5 px-2 bg-zinc-900 border-r border-zinc-800">
+      <div className="flex-shrink-0 flex items-center gap-1.5 px-2 bg-zinc-900 border-r border-zinc-800" style={{ width: labelWidth }}>
         {/* Color dot */}
         <div
           className="w-2 h-2 rounded-full flex-shrink-0"
