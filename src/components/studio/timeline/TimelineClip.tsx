@@ -93,7 +93,7 @@ export function TimelineClip({
   return (
     <div
       className={`absolute top-1 bottom-1 rounded group cursor-grab active:cursor-grabbing select-none ${
-        isSelected ? 'ring-1 ring-blue-400 ring-offset-0' : ''
+        isSelected ? 'ring-1 ring-red-400 ring-offset-0' : ''
       }`}
       style={{
         left,
@@ -106,7 +106,7 @@ export function TimelineClip({
     >
       {/* Selected highlight */}
       {isSelected && (
-        <div className="absolute inset-0 bg-blue-500/10 rounded pointer-events-none" />
+        <div className="absolute inset-0 bg-red-500/10 rounded pointer-events-none" />
       )}
 
       {/* Clip label */}

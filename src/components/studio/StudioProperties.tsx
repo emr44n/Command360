@@ -11,6 +11,8 @@ import {
   PlusIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  Link2Icon,
+  Unlink2Icon,
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -72,6 +74,7 @@ export function StudioProperties({
   const [newKfProperty, setNewKfProperty] = useState<string>('opacity')
   const [fadeInDuration, setFadeInDuration] = useState(500)
   const [fadeOutDuration, setFadeOutDuration] = useState(500)
+  const [aspectLocked, setAspectLocked] = useState(false)
 
   if (!layer) {
     return (
@@ -174,34 +177,72 @@ export function StudioProperties({
         </div>
 
         {/* Size */}
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <Label className="mb-1 text-[10px] uppercase tracking-wider text-zinc-400">
-              Width %
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <Label className="text-[10px] uppercase tracking-wider text-zinc-400">
+              Size
             </Label>
-            <Input
-              type="number"
-              value={layer.width}
-              min={0}
-              max={200}
-              step={0.1}
-              onChange={(e) => onUpdate({ width: parseFloat(e.target.value) || 0 })}
-              className="h-7 border-zinc-700 bg-zinc-800 text-xs text-zinc-100"
-            />
+            <button
+              onClick={() => setAspectLocked((v) => !v)}
+              className={`p-1 rounded transition-colors ${
+                aspectLocked
+                  ? 'text-red-400 bg-red-400/10 hover:bg-red-400/20'
+                  : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800'
+              }`}
+              title={aspectLocked ? 'Unlock aspect ratio' : 'Lock aspect ratio'}
+            >
+              {aspectLocked ? (
+                <Link2Icon className="size-3.5" />
+              ) : (
+                <Unlink2Icon className="size-3.5" />
+              )}
+            </button>
           </div>
-          <div>
-            <Label className="mb-1 text-[10px] uppercase tracking-wider text-zinc-400">
-              Height %
-            </Label>
-            <Input
-              type="number"
-              value={layer.height}
-              min={0}
-              max={200}
-              step={0.1}
-              onChange={(e) => onUpdate({ height: parseFloat(e.target.value) || 0 })}
-              className="h-7 border-zinc-700 bg-zinc-800 text-xs text-zinc-100"
-            />
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="mb-1 text-[10px] text-zinc-400">
+                Width %
+              </Label>
+              <Input
+                type="number"
+                value={layer.width}
+                min={0}
+                max={200}
+                step={0.1}
+                onChange={(e) => {
+                  const newW = parseFloat(e.target.value) || 0
+                  if (aspectLocked && layer.width > 0) {
+                    const ratio = layer.height / layer.width
+                    onUpdate({ width: newW, height: parseFloat((newW * ratio).toFixed(2)) })
+                  } else {
+                    onUpdate({ width: newW })
+                  }
+                }}
+                className="h-7 border-zinc-700 bg-zinc-800 text-xs text-zinc-100"
+              />
+            </div>
+            <div>
+              <Label className="mb-1 text-[10px] text-zinc-400">
+                Height %
+              </Label>
+              <Input
+                type="number"
+                value={layer.height}
+                min={0}
+                max={200}
+                step={0.1}
+                onChange={(e) => {
+                  const newH = parseFloat(e.target.value) || 0
+                  if (aspectLocked && layer.height > 0) {
+                    const ratio = layer.width / layer.height
+                    onUpdate({ height: newH, width: parseFloat((newH * ratio).toFixed(2)) })
+                  } else {
+                    onUpdate({ height: newH })
+                  }
+                }}
+                className="h-7 border-zinc-700 bg-zinc-800 text-xs text-zinc-100"
+              />
+            </div>
           </div>
         </div>
 

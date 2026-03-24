@@ -5,9 +5,10 @@ import {
   PanelLeftClose, PanelRightClose, PanelBottomClose,
   PanelLeftOpen, PanelRightOpen, PanelBottomOpen,
   FolderOpen, Type, Shapes, Image, Film, Sparkles, Settings2,
-  Play, Square, SkipBack,
+  Play, Square, SkipBack, Layers, Plus,
 } from 'lucide-react'
 import type {
+  Slide,
   StudioContent,
   StudioLayer,
   StudioClip,
@@ -26,10 +27,21 @@ import { generateLayerId } from '@/lib/utils/studio-utils'
 interface StudioEditorProps {
   content: StudioContent
   onContentChange: (content: StudioContent) => void
+  slides?: Slide[]
+  selectedSlideId?: string | null
+  onSelectSlide?: (id: string) => void
+  onAddSlide?: () => void
 }
 
-export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
-  // ── Migration on first load ──
+export function StudioEditor({
+  content,
+  onContentChange,
+  slides,
+  selectedSlideId: activeSlideId,
+  onSelectSlide,
+  onAddSlide,
+}: StudioEditorProps) {
+  // Migration on first load
   const migratedRef = useRef(false)
   useEffect(() => {
     if (!migratedRef.current) {
@@ -41,10 +53,10 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Zustand store ──
+  // Zustand store
   const { selectedLayerId, setSelectedLayerId } = useStudioStore()
 
-  // ── Playback state ──
+  // Playback state
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const rafRef = useRef<number | null>(null)
@@ -80,7 +92,7 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
     }
   }, [isPlaying, totalDuration])
 
-  // ── Derived data ──
+  // Derived data
   const layers = content.layers
   const tracks = content.tracks ?? []
   const timelineEvents = content.timelineEvents ?? []
@@ -102,7 +114,7 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
     )
   }, [selectedLayerId, tracks, currentTime])
 
-  // ── Content mutation helpers ──
+  // Content mutation helpers
   const updateContent = useCallback(
     (updates: Partial<StudioContent>) => {
       onContentChange({ ...content, ...updates })
@@ -131,7 +143,6 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
         ...partial,
       } as StudioLayer
 
-      // Add layer and create a track for it
       const withLayer: StudioContent = { ...content, layers: [...layers, layer] }
       const withTrack = addTrackForLayer(withLayer, layer)
       onContentChange(withTrack)
@@ -271,28 +282,28 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
     [content, onContentChange]
   )
 
-  // ── Timeline-specific state ──
+  // Timeline-specific state
   const [selectedClipId, setSelectedClipId] = useState<string | null>(null)
   const [zoomLevel, setZoomLevel] = useState(100)
 
-  // ── Panel visibility ──
-  const [showGallery, setShowGallery] = useState(true)
+  // Panel visibility
+  const [showLeftPanel, setShowLeftPanel] = useState(true)
   const [showProperties, setShowProperties] = useState(true)
   const [showTimeline, setShowTimeline] = useState(true)
 
-  // ── Resizable panel widths ──
-  const [galleryWidth, setGalleryWidth] = useState(240)
+  // Resizable panel widths
+  const [leftPanelWidth, setLeftPanelWidth] = useState(240)
   const [propertiesWidth, setPropertiesWidth] = useState(280)
   const [timelineHeight, setTimelineHeight] = useState(280)
 
-  const galleryDragging = useRef(false)
+  const leftPanelDragging = useRef(false)
   const propertiesDragging = useRef(false)
   const timelineDragging = useRef(false)
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (galleryDragging.current) {
-        setGalleryWidth(Math.max(180, Math.min(400, e.clientX)))
+      if (leftPanelDragging.current) {
+        setLeftPanelWidth(Math.max(180, Math.min(400, e.clientX)))
       }
       if (propertiesDragging.current) {
         setPropertiesWidth(Math.max(200, Math.min(450, window.innerWidth - e.clientX)))
@@ -302,7 +313,7 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
       }
     }
     const handleMouseUp = () => {
-      galleryDragging.current = false
+      leftPanelDragging.current = false
       propertiesDragging.current = false
       timelineDragging.current = false
       document.body.style.cursor = ''
@@ -316,40 +327,44 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
     }
   }, [])
 
-  const startDrag = (which: 'gallery' | 'properties' | 'timeline') => {
-    if (which === 'gallery') galleryDragging.current = true
+  const startDrag = (which: 'left' | 'properties' | 'timeline') => {
+    if (which === 'left') leftPanelDragging.current = true
     if (which === 'properties') propertiesDragging.current = true
     if (which === 'timeline') timelineDragging.current = true
     document.body.style.cursor = which === 'timeline' ? 'row-resize' : 'col-resize'
     document.body.style.userSelect = 'none'
   }
 
+  // Determine if slides panel is available
+  const hasSlides = !!(slides && slides.length > 0 && onSelectSlide)
+
   // Icon sidebar items
   const SIDEBAR_ICONS = [
+    ...(hasSlides ? [{ icon: Layers, label: 'Slides', panel: 'slides' as const }] : []),
     { icon: FolderOpen, label: 'Assets', panel: 'gallery' as const },
     { icon: Type, label: 'Text', action: () => handleAddLayer({ type: 'text', name: 'Text', text: 'Text', fontSize: 24 }) },
     { icon: Shapes, label: 'Shapes', action: () => handleAddLayer({ type: 'shape', name: 'Shape' }) },
     { icon: Sparkles, label: 'Events', panel: 'events' as const },
   ]
 
-  const [activePanel, setActivePanel] = useState<'gallery' | 'events'>('gallery')
+  const [activePanel, setActivePanel] = useState<'slides' | 'gallery' | 'events'>(hasSlides ? 'slides' : 'gallery')
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-[#1a1a2e]">
-      {/* ── Icon Sidebar (OpenCut-style) ── */}
-      <div className="w-11 shrink-0 bg-[#12121f] border-r border-[#2a2a3e] flex flex-col items-center py-2 gap-1">
+    <div className="flex h-full w-full overflow-hidden bg-[#0a0a0a]">
+      {/* Icon Sidebar (OpenCut-style) */}
+      <div className="w-11 shrink-0 bg-[#0c0c0c] border-r border-[#1a1a1a] flex flex-col items-center py-2 gap-1">
         {SIDEBAR_ICONS.map((item) => {
-          const isActive = item.panel && showGallery && activePanel === item.panel
+          const isActive = item.panel && showLeftPanel && activePanel === item.panel
           return (
             <button
               key={item.label}
               onClick={() => {
                 if (item.panel) {
-                  if (showGallery && activePanel === item.panel) {
-                    setShowGallery(false)
+                  if (showLeftPanel && activePanel === item.panel) {
+                    setShowLeftPanel(false)
                   } else {
                     setActivePanel(item.panel)
-                    setShowGallery(true)
+                    setShowLeftPanel(true)
                   }
                 } else if (item.action) {
                   item.action()
@@ -357,7 +372,7 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
               }}
               className={`w-9 h-9 rounded-lg flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-blue-600/20 text-blue-400'
+                  ? 'bg-red-600/20 text-red-400'
                   : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/5'
               }`}
               title={item.label}
@@ -387,32 +402,41 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
         </button>
       </div>
 
-      {/* ── Main area ── */}
+      {/* Main area */}
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
-        {/* Top: Asset panel | Canvas | Properties */}
+        {/* Top: Left panel | Canvas | Properties */}
         <div className="flex flex-1 min-h-0">
-          {/* Left: Asset/Events panel */}
-          {showGallery && (
+          {/* Left: Slides / Asset / Events panel */}
+          {showLeftPanel && (
             <>
-              <div className="shrink-0 bg-[#16162a] overflow-hidden" style={{ width: galleryWidth }}>
-                <StudioGallery
-                  layers={layers}
-                  onAddLayer={handleAddLayer}
-                  onSelectLayer={(id) => setSelectedLayerId(id)}
-                  timelineEvents={timelineEvents}
-                  onAddTimelineEvent={handleAddTimelineEvent}
-                  onRemoveTimelineEvent={handleRemoveTimelineEvent}
-                />
+              <div className="shrink-0 bg-[#0e0e0e] overflow-hidden flex flex-col" style={{ width: leftPanelWidth }}>
+                {activePanel === 'slides' && hasSlides ? (
+                  <SlidesPanel
+                    slides={slides!}
+                    activeSlideId={activeSlideId ?? null}
+                    onSelectSlide={onSelectSlide!}
+                    onAddSlide={onAddSlide}
+                  />
+                ) : (
+                  <StudioGallery
+                    layers={layers}
+                    onAddLayer={handleAddLayer}
+                    onSelectLayer={(id) => setSelectedLayerId(id)}
+                    timelineEvents={timelineEvents}
+                    onAddTimelineEvent={handleAddTimelineEvent}
+                    onRemoveTimelineEvent={handleRemoveTimelineEvent}
+                  />
+                )}
               </div>
               <div
-                className="w-px shrink-0 cursor-col-resize bg-[#2a2a3e] hover:bg-blue-500/50 transition-colors"
-                onMouseDown={() => startDrag('gallery')}
+                className="w-px shrink-0 cursor-col-resize bg-[#1a1a1a] hover:bg-red-500/50 transition-colors"
+                onMouseDown={() => startDrag('left')}
               />
             </>
           )}
 
           {/* Center: Canvas + transport */}
-          <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#0d0d1a]">
+          <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#080808]">
             {/* Canvas area */}
             <div className="flex-1 min-h-0">
               <StudioCanvas
@@ -428,7 +452,7 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
               />
             </div>
             {/* Transport bar below canvas */}
-            <div className="h-9 shrink-0 bg-[#12121f] border-t border-[#2a2a3e] flex items-center justify-center gap-4 px-4">
+            <div className="h-9 shrink-0 bg-[#0c0c0c] border-t border-[#1a1a1a] flex items-center justify-center gap-4 px-4">
               <span className="text-[11px] font-mono text-emerald-400 tabular-nums">
                 {formatTime(currentTime)}
               </span>
@@ -440,7 +464,7 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
                   onClick={() => {
                     if (isPlaying) { setIsPlaying(false) } else { if (currentTime >= totalDuration) setCurrentTime(0); setIsPlaying(true) }
                   }}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white transition-colors cursor-pointer"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center bg-red-600 hover:bg-red-500 text-white transition-colors cursor-pointer"
                 >
                   {isPlaying ? <Square className="w-3 h-3 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current ml-0.5" />}
                 </button>
@@ -455,10 +479,10 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
           {showProperties && (
             <>
               <div
-                className="w-px shrink-0 cursor-col-resize bg-[#2a2a3e] hover:bg-blue-500/50 transition-colors"
+                className="w-px shrink-0 cursor-col-resize bg-[#1a1a1a] hover:bg-red-500/50 transition-colors"
                 onMouseDown={() => startDrag('properties')}
               />
-              <div className="shrink-0 bg-[#16162a] overflow-y-auto overflow-x-hidden" style={{ width: propertiesWidth }}>
+              <div className="shrink-0 bg-[#0e0e0e] overflow-y-auto overflow-x-hidden" style={{ width: propertiesWidth }}>
                 <StudioProperties
                   layer={selectedLayer}
                   onUpdate={(updates) => {
@@ -480,14 +504,14 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
         {/* Timeline resize splitter */}
         {showTimeline && (
           <div
-            className="h-px shrink-0 cursor-row-resize bg-[#2a2a3e] hover:bg-blue-500/50 transition-colors"
+            className="h-px shrink-0 cursor-row-resize bg-[#1a1a1a] hover:bg-red-500/50 transition-colors"
             onMouseDown={() => startDrag('timeline')}
           />
         )}
 
         {/* Bottom: Timeline */}
         {showTimeline && (
-          <div className="shrink-0 bg-[#12121f] overflow-hidden" style={{ height: timelineHeight }}>
+          <div className="shrink-0 bg-[#0c0c0c] overflow-hidden" style={{ height: timelineHeight }}>
             <StudioTimeline
               content={content}
               onContentChange={(updates) => {
@@ -515,6 +539,69 @@ export function StudioEditor({ content, onContentChange }: StudioEditorProps) {
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+/* Slides Panel */
+
+function SlidesPanel({
+  slides,
+  activeSlideId,
+  onSelectSlide,
+  onAddSlide,
+}: {
+  slides: Slide[]
+  activeSlideId: string | null
+  onSelectSlide: (id: string) => void
+  onAddSlide?: () => void
+}) {
+  return (
+    <div className="flex flex-col h-full">
+      <div className="px-3 py-2 border-b border-[#1a1a1a]">
+        <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Slides</span>
+      </div>
+      <div className="flex-1 overflow-y-auto px-2 py-2 space-y-1.5">
+        {slides.map((slide, index) => {
+          const isActive = slide.id === activeSlideId
+          return (
+            <button
+              key={slide.id}
+              onClick={() => onSelectSlide(slide.id)}
+              className={`w-full rounded-lg overflow-hidden transition-all cursor-pointer group ${
+                isActive
+                  ? 'ring-2 ring-red-500 ring-offset-1 ring-offset-[#0e0e0e]'
+                  : 'ring-1 ring-[#2a2a2a] hover:ring-zinc-500'
+              }`}
+            >
+              <div className="relative aspect-video bg-[#0a0a0a] flex items-center justify-center">
+                <span className="text-[10px] text-zinc-500 font-medium">
+                  {slide.title || `Slide ${index + 1}`}
+                </span>
+                <span className={`absolute top-1 left-1 text-[9px] font-bold px-1 py-0.5 rounded ${
+                  isActive ? 'bg-red-600 text-white' : 'bg-zinc-800 text-zinc-400'
+                }`}>
+                  {index + 1}
+                </span>
+                <span className="absolute bottom-1 right-1 text-[8px] text-zinc-600 uppercase">
+                  {slide.slide_type}
+                </span>
+              </div>
+            </button>
+          )
+        })}
+      </div>
+      {onAddSlide && (
+        <div className="px-2 py-2 border-t border-[#1a1a1a]">
+          <button
+            onClick={onAddSlide}
+            className="w-full h-8 rounded-lg border border-dashed border-[#2a2a2a] hover:border-red-500/50 text-zinc-500 hover:text-red-400 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Add Slide
+          </button>
+        </div>
+      )}
     </div>
   )
 }

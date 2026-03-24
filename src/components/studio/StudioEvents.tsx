@@ -507,7 +507,7 @@ export function StudioEvents({
                     onChange={() =>
                       updateEvent(event.id, { trigger: 'manual' })
                     }
-                    className="accent-indigo-500"
+                    className="accent-red-500"
                   />
                   Manual
                 </label>
@@ -517,7 +517,7 @@ export function StudioEvents({
                     name={`trigger-${event.id}`}
                     checked={event.trigger === 'vote'}
                     onChange={() => updateEvent(event.id, { trigger: 'vote' })}
-                    className="accent-indigo-500"
+                    className="accent-red-500"
                   />
                   Vote
                 </label>

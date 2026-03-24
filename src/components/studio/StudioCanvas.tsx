@@ -20,6 +20,28 @@ interface StudioCanvasProps {
 
 const ASPECT_RATIO = 16 / 9
 
+/** Shared Transformer props for Photoshop-style handles */
+const TRANSFORMER_PROPS = {
+  flipEnabled: false,
+  rotateAnchorOffset: 20,
+  rotationSnaps: [0, 45, 90, 135, 180, 225, 270, 315],
+  anchorCornerRadius: 2,
+  anchorStroke: '#ef4444',
+  anchorFill: '#ffffff',
+  anchorSize: 8,
+  borderStroke: '#ef4444',
+  borderDash: [4, 4],
+  keepRatio: false,
+  enabledAnchors: [
+    'top-left', 'top-right', 'bottom-left', 'bottom-right',
+    'middle-right', 'middle-bottom',
+  ] as string[],
+  boundBoxFunc: (oldBox: { x: number; y: number; width: number; height: number; rotation: number }, newBox: { x: number; y: number; width: number; height: number; rotation: number }) => {
+    if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) return oldBox
+    return newBox
+  },
+}
+
 /** Convert percentage (0-100) to pixel value */
 function pct2px(pct: number, total: number): number {
   return (pct / 100) * total
@@ -120,11 +142,7 @@ function ImageLayerNode({
       {isSelected && interactive && (
         <Transformer
           ref={trRef}
-          flipEnabled={false}
-          boundBoxFunc={(oldBox, newBox) => {
-            if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) return oldBox
-            return newBox
-          }}
+          {...TRANSFORMER_PROPS}
         />
       )}
     </>
@@ -214,11 +232,7 @@ function TextLayerNode({
       {isSelected && interactive && (
         <Transformer
           ref={trRef}
-          flipEnabled={false}
-          boundBoxFunc={(oldBox, newBox) => {
-            if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) return oldBox
-            return newBox
-          }}
+          {...TRANSFORMER_PROPS}
         />
       )}
     </>
@@ -305,11 +319,7 @@ function ShapeLayerNode({
       {isSelected && interactive && (
         <Transformer
           ref={trRef}
-          flipEnabled={false}
-          boundBoxFunc={(oldBox, newBox) => {
-            if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) return oldBox
-            return newBox
-          }}
+          {...TRANSFORMER_PROPS}
         />
       )}
     </>
@@ -415,7 +425,7 @@ export function StudioCanvas({
     )
   }
 
-  // ── Drop zone handlers ──
+  // Drop zone handlers
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     e.dataTransfer.dropEffect = 'copy'
@@ -450,7 +460,7 @@ export function StudioCanvas({
     <div
       ref={containerRef}
       className="relative flex h-full w-full items-center justify-center overflow-hidden"
-      style={{ background: 'radial-gradient(ellipse at center, #1a1a2e 0%, #0d0d1a 100%)' }}
+      style={{ background: 'radial-gradient(ellipse at center, #1a1a1a 0%, #080808 100%)' }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
@@ -547,11 +557,12 @@ export function StudioCanvas({
           const top = pct2px(state.y, stageSize.height)
           const width = pct2px(state.width, stageSize.width)
           const height = pct2px(state.height, stageSize.height)
+          const isVideoSelected = selectedLayerId === layer.id
 
           return (
             <div
               key={layer.id}
-              className={`absolute cursor-move ${selectedLayerId === layer.id ? 'ring-2 ring-blue-500' : ''}`}
+              className="absolute"
               style={{
                 left,
                 top,
@@ -564,63 +575,305 @@ export function StudioCanvas({
                 zIndex: layer.zIndex + 100,
                 mixBlendMode: layer.blendMode === 'normal' ? undefined : layer.blendMode,
               }}
-              onClick={() => onSelectLayer?.(layer.id)}
-              onMouseDown={(e) => {
-                if (!interactive || layer.locked) return
-                e.preventDefault()
-                e.stopPropagation()
-                onSelectLayer?.(layer.id)
-                const startMX = e.clientX
-                const startMY = e.clientY
-                const startX = state.x
-                const startY = state.y
-
-                const onMove = (ev: MouseEvent) => {
-                  const dx = ((ev.clientX - startMX) / stageSize.width) * 100
-                  const dy = ((ev.clientY - startMY) / stageSize.height) * 100
-                  onUpdateLayer?.(layer.id, { x: startX + dx, y: startY + dy })
-                }
-                const onUp = () => {
-                  document.removeEventListener('mousemove', onMove)
-                  document.removeEventListener('mouseup', onUp)
-                }
-                document.addEventListener('mousemove', onMove)
-                document.addEventListener('mouseup', onUp)
-              }}
             >
-              <video
-                src={src}
-                className="h-full w-full object-cover pointer-events-none"
-                autoPlay={layer.autoplay ?? true}
-                loop={layer.loop ?? true}
-                muted={layer.muted ?? true}
-                playsInline
-              />
-              {/* Resize handle */}
-              {selectedLayerId === layer.id && interactive && (
+              {/* Selection border (dashed red to match Konva transformer) */}
+              {isVideoSelected && interactive && (
                 <div
-                  className="absolute -right-1.5 -bottom-1.5 w-3 h-3 bg-blue-500 border border-white rounded-sm cursor-se-resize"
-                  onMouseDown={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    const startMX = e.clientX
-                    const startMY = e.clientY
-                    const startW = state.width
-                    const startH = state.height
-
-                    const onMove = (ev: MouseEvent) => {
-                      const dw = ((ev.clientX - startMX) / stageSize.width) * 100
-                      const dh = ((ev.clientY - startMY) / stageSize.height) * 100
-                      onUpdateLayer?.(layer.id, { width: Math.max(5, startW + dw), height: Math.max(5, startH + dh) })
-                    }
-                    const onUp = () => {
-                      document.removeEventListener('mousemove', onMove)
-                      document.removeEventListener('mouseup', onUp)
-                    }
-                    document.addEventListener('mousemove', onMove)
-                    document.addEventListener('mouseup', onUp)
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    border: '2px dashed #ef4444',
                   }}
                 />
+              )}
+
+              {/* Video element with drag handler */}
+              <div
+                className="h-full w-full cursor-move"
+                onClick={() => onSelectLayer?.(layer.id)}
+                onMouseDown={(e) => {
+                  if (!interactive || layer.locked) return
+                  // Ignore if clicking on a handle
+                  if ((e.target as HTMLElement).dataset.handle) return
+                  e.preventDefault()
+                  e.stopPropagation()
+                  onSelectLayer?.(layer.id)
+                  const startMX = e.clientX
+                  const startMY = e.clientY
+                  const startX = state.x
+                  const startY = state.y
+
+                  const onMove = (ev: MouseEvent) => {
+                    const dx = ((ev.clientX - startMX) / stageSize.width) * 100
+                    const dy = ((ev.clientY - startMY) / stageSize.height) * 100
+                    onUpdateLayer?.(layer.id, { x: startX + dx, y: startY + dy })
+                  }
+                  const onUp = () => {
+                    document.removeEventListener('mousemove', onMove)
+                    document.removeEventListener('mouseup', onUp)
+                  }
+                  document.addEventListener('mousemove', onMove)
+                  document.addEventListener('mouseup', onUp)
+                }}
+              >
+                <video
+                  src={src}
+                  className="h-full w-full object-cover pointer-events-none"
+                  autoPlay={layer.autoplay ?? true}
+                  loop={layer.loop ?? true}
+                  muted={layer.muted ?? true}
+                  playsInline
+                />
+              </div>
+
+              {/* Handles when selected */}
+              {isVideoSelected && interactive && (
+                <>
+                  {/* Resize handle - bottom right */}
+                  <div
+                    data-handle="resize"
+                    className="absolute w-[8px] h-[8px] rounded-[2px] cursor-se-resize"
+                    style={{
+                      right: -4,
+                      bottom: -4,
+                      backgroundColor: '#ffffff',
+                      border: '1.5px solid #ef4444',
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      const startMX = e.clientX
+                      const startMY = e.clientY
+                      const startW = state.width
+                      const startH = state.height
+
+                      const onMove = (ev: MouseEvent) => {
+                        const dw = ((ev.clientX - startMX) / stageSize.width) * 100
+                        const dh = ((ev.clientY - startMY) / stageSize.height) * 100
+                        onUpdateLayer?.(layer.id, {
+                          width: Math.max(5, startW + dw),
+                          height: Math.max(5, startH + dh),
+                        })
+                      }
+                      const onUp = () => {
+                        document.removeEventListener('mousemove', onMove)
+                        document.removeEventListener('mouseup', onUp)
+                      }
+                      document.addEventListener('mousemove', onMove)
+                      document.addEventListener('mouseup', onUp)
+                    }}
+                  />
+
+                  {/* Resize handle - bottom left */}
+                  <div
+                    data-handle="resize-bl"
+                    className="absolute w-[8px] h-[8px] rounded-[2px] cursor-sw-resize"
+                    style={{
+                      left: -4,
+                      bottom: -4,
+                      backgroundColor: '#ffffff',
+                      border: '1.5px solid #ef4444',
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      const startMX = e.clientX
+                      const startW = state.width
+                      const startH = state.height
+                      const startX = state.x
+                      const startMY = e.clientY
+
+                      const onMove = (ev: MouseEvent) => {
+                        const dw = ((startMX - ev.clientX) / stageSize.width) * 100
+                        const dh = ((ev.clientY - startMY) / stageSize.height) * 100
+                        const newW = Math.max(5, startW + dw)
+                        const newX = startX - (newW - startW)
+                        onUpdateLayer?.(layer.id, {
+                          x: newX,
+                          width: newW,
+                          height: Math.max(5, startH + dh),
+                        })
+                      }
+                      const onUp = () => {
+                        document.removeEventListener('mousemove', onMove)
+                        document.removeEventListener('mouseup', onUp)
+                      }
+                      document.addEventListener('mousemove', onMove)
+                      document.addEventListener('mouseup', onUp)
+                    }}
+                  />
+
+                  {/* Resize handle - top right */}
+                  <div
+                    data-handle="resize-tr"
+                    className="absolute w-[8px] h-[8px] rounded-[2px] cursor-ne-resize"
+                    style={{
+                      right: -4,
+                      top: -4,
+                      backgroundColor: '#ffffff',
+                      border: '1.5px solid #ef4444',
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      const startMX = e.clientX
+                      const startMY = e.clientY
+                      const startW = state.width
+                      const startH = state.height
+                      const startY = state.y
+
+                      const onMove = (ev: MouseEvent) => {
+                        const dw = ((ev.clientX - startMX) / stageSize.width) * 100
+                        const dh = ((startMY - ev.clientY) / stageSize.height) * 100
+                        const newH = Math.max(5, startH + dh)
+                        const newY = startY - (newH - startH)
+                        onUpdateLayer?.(layer.id, {
+                          y: newY,
+                          width: Math.max(5, startW + dw),
+                          height: newH,
+                        })
+                      }
+                      const onUp = () => {
+                        document.removeEventListener('mousemove', onMove)
+                        document.removeEventListener('mouseup', onUp)
+                      }
+                      document.addEventListener('mousemove', onMove)
+                      document.addEventListener('mouseup', onUp)
+                    }}
+                  />
+
+                  {/* Middle-right resize handle */}
+                  <div
+                    data-handle="resize-mr"
+                    className="absolute w-[8px] h-[8px] rounded-[2px] cursor-e-resize"
+                    style={{
+                      right: -4,
+                      top: '50%',
+                      marginTop: -4,
+                      backgroundColor: '#ffffff',
+                      border: '1.5px solid #ef4444',
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      const startMX = e.clientX
+                      const startW = state.width
+
+                      const onMove = (ev: MouseEvent) => {
+                        const dw = ((ev.clientX - startMX) / stageSize.width) * 100
+                        onUpdateLayer?.(layer.id, { width: Math.max(5, startW + dw) })
+                      }
+                      const onUp = () => {
+                        document.removeEventListener('mousemove', onMove)
+                        document.removeEventListener('mouseup', onUp)
+                      }
+                      document.addEventListener('mousemove', onMove)
+                      document.addEventListener('mouseup', onUp)
+                    }}
+                  />
+
+                  {/* Middle-bottom resize handle */}
+                  <div
+                    data-handle="resize-mb"
+                    className="absolute w-[8px] h-[8px] rounded-[2px] cursor-s-resize"
+                    style={{
+                      bottom: -4,
+                      left: '50%',
+                      marginLeft: -4,
+                      backgroundColor: '#ffffff',
+                      border: '1.5px solid #ef4444',
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      const startMY = e.clientY
+                      const startH = state.height
+
+                      const onMove = (ev: MouseEvent) => {
+                        const dh = ((ev.clientY - startMY) / stageSize.height) * 100
+                        onUpdateLayer?.(layer.id, { height: Math.max(5, startH + dh) })
+                      }
+                      const onUp = () => {
+                        document.removeEventListener('mousemove', onMove)
+                        document.removeEventListener('mouseup', onUp)
+                      }
+                      document.addEventListener('mousemove', onMove)
+                      document.addEventListener('mouseup', onUp)
+                    }}
+                  />
+
+                  {/* Rotation handle - offset above top center */}
+                  <div
+                    data-handle="rotate"
+                    className="absolute flex flex-col items-center"
+                    style={{
+                      left: '50%',
+                      top: -28,
+                      marginLeft: -4,
+                    }}
+                  >
+                    {/* Connecting line */}
+                    <div
+                      className="w-px h-[16px]"
+                      style={{ backgroundColor: '#ef4444' }}
+                    />
+                    {/* Rotation circle */}
+                    <div
+                      className="w-[10px] h-[10px] rounded-full cursor-grab"
+                      style={{
+                        backgroundColor: '#ffffff',
+                        border: '1.5px solid #ef4444',
+                        marginTop: -1,
+                      }}
+                      onMouseDown={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+
+                        // Get center of the video element for rotation calculation
+                        const elRect = (e.target as HTMLElement).closest('[data-handle]')!
+                          .parentElement!.parentElement!.getBoundingClientRect()
+                        const centerX = elRect.left + elRect.width / 2
+                        const centerY = elRect.top + elRect.height / 2
+                        const startRotation = state.rotation
+
+                        // Calculate initial angle
+                        const startAngle = Math.atan2(
+                          e.clientY - centerY,
+                          e.clientX - centerX
+                        ) * (180 / Math.PI)
+
+                        const rotationSnaps = [0, 45, 90, 135, 180, 225, 270, 315]
+                        const SNAP_THRESHOLD = 5
+
+                        const onMove = (ev: MouseEvent) => {
+                          const currentAngle = Math.atan2(
+                            ev.clientY - centerY,
+                            ev.clientX - centerX
+                          ) * (180 / Math.PI)
+                          let newRotation = startRotation + (currentAngle - startAngle)
+
+                          // Normalize to 0-360
+                          newRotation = ((newRotation % 360) + 360) % 360
+
+                          // Snap to common angles
+                          for (const snap of rotationSnaps) {
+                            if (Math.abs(newRotation - snap) < SNAP_THRESHOLD) {
+                              newRotation = snap
+                              break
+                            }
+                          }
+
+                          onUpdateLayer?.(layer.id, { rotation: newRotation })
+                        }
+                        const onUp = () => {
+                          document.removeEventListener('mousemove', onMove)
+                          document.removeEventListener('mouseup', onUp)
+                        }
+                        document.addEventListener('mousemove', onMove)
+                        document.addEventListener('mouseup', onUp)
+                      }}
+                    />
+                  </div>
+                </>
               )}
             </div>
           )

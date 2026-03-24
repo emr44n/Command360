@@ -29,7 +29,7 @@ interface StudioLayersProps {
 function layerTypeIcon(type: StudioLayer['type']) {
   switch (type) {
     case 'image':
-      return <ImageIcon className="size-3.5 text-blue-400" />
+      return <ImageIcon className="size-3.5 text-red-400" />
     case 'video':
       return <VideoIcon className="size-3.5 text-purple-400" />
     case 'text':

@@ -145,7 +145,7 @@ export function StudioGallery({
   const typeIcon = (type: StudioLayer['type']) => {
     switch (type) {
       case 'image':
-        return <ImageIcon className="size-3.5 text-blue-400" />
+        return <ImageIcon className="size-3.5 text-red-400" />
       case 'video':
         return <VideoIcon className="size-3.5 text-purple-400" />
       case 'text':
@@ -160,18 +160,18 @@ export function StudioGallery({
   return (
     <div className="flex h-full flex-col bg-zinc-900 text-zinc-100">
       <Tabs defaultValue="images" className="flex h-full flex-col">
-        <TabsList className="mx-2 mt-2 w-auto bg-zinc-800">
-          <TabsTrigger value="images" className="gap-1 text-xs">
-            <ImageIcon className="size-3.5" /> Images
+        <TabsList className="mx-2 mt-2 w-auto bg-zinc-800 grid grid-cols-4 gap-0 p-0.5">
+          <TabsTrigger value="images" className="px-0 py-1.5 text-xs" title="Images">
+            <ImageIcon className="size-3.5" />
           </TabsTrigger>
-          <TabsTrigger value="videos" className="gap-1 text-xs">
-            <VideoIcon className="size-3.5" /> Videos
+          <TabsTrigger value="videos" className="px-0 py-1.5 text-xs" title="Videos">
+            <VideoIcon className="size-3.5" />
           </TabsTrigger>
-          <TabsTrigger value="placed" className="gap-1 text-xs">
-            <LayersIcon className="size-3.5" /> Placed
+          <TabsTrigger value="placed" className="px-0 py-1.5 text-xs" title="Placed Layers">
+            <LayersIcon className="size-3.5" />
           </TabsTrigger>
-          <TabsTrigger value="events" className="gap-1 text-xs">
-            <ZapIcon className="size-3.5" /> Events
+          <TabsTrigger value="events" className="px-0 py-1.5 text-xs" title="Events">
+            <ZapIcon className="size-3.5" />
           </TabsTrigger>
         </TabsList>
 

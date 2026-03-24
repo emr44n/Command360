@@ -53,7 +53,7 @@ export function TimelineControls({
         ) : (
           <button
             onClick={onPlay}
-            className="flex items-center justify-center w-7 h-7 rounded bg-blue-600 hover:bg-blue-500 text-white transition-colors"
+            className="flex items-center justify-center w-7 h-7 rounded bg-red-600 hover:bg-red-500 text-white transition-colors"
             title="Play"
           >
             <Play className="w-3.5 h-3.5 ml-0.5" />
@@ -93,7 +93,7 @@ export function TimelineControls({
           max={MAX_ZOOM}
           value={zoomLevel}
           onChange={handleZoomSlider}
-          className="w-24 h-1 accent-blue-500 bg-zinc-700 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-500"
+          className="w-24 h-1 accent-red-500 bg-zinc-700 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-red-500"
         />
         <button
           onClick={() => onZoomChange(Math.min(MAX_ZOOM, zoomLevel + 25))}

@@ -50,8 +50,10 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null)
   const [showAddImageDialog, setShowAddImageDialog] = useState(false)
   const [showFileMenu, setShowFileMenu] = useState(false)
+  const [studioFileMenu, setStudioFileMenu] = useState(false)
   const [slideListWidth, setSlideListWidth] = useState(220)
   const fileMenuRef = useRef<HTMLDivElement>(null)
+  const studioFileMenuRef = useRef<HTMLDivElement>(null)
   const importInputRef = useRef<HTMLInputElement>(null)
   const splitterDragging = useRef(false)
   const router = useRouter()
@@ -118,6 +120,18 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
     document.addEventListener('mousedown', onClick)
     return () => document.removeEventListener('mousedown', onClick)
   }, [showFileMenu])
+
+  // Close studio file menu on outside click
+  useEffect(() => {
+    if (!studioFileMenu) return
+    function onClick(e: MouseEvent) {
+      if (studioFileMenuRef.current && !studioFileMenuRef.current.contains(e.target as Node)) {
+        setStudioFileMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', onClick)
+    return () => document.removeEventListener('mousedown', onClick)
+  }, [studioFileMenu])
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -451,6 +465,46 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             </div>
           </button>
           <div className="w-px h-5 bg-zinc-700" />
+
+          {/* File menu */}
+          <div className="relative" ref={studioFileMenuRef}>
+            <button
+              onClick={() => setStudioFileMenu(v => !v)}
+              className={cn(
+                'h-7 px-2 rounded-md text-xs font-medium flex items-center gap-1 transition-all',
+                studioFileMenu
+                  ? 'bg-zinc-800 text-white'
+                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+              )}
+            >
+              File
+              <ChevronDown className="w-3 h-3" />
+            </button>
+            {studioFileMenu && (
+              <div className="absolute top-full left-0 mt-1 w-56 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl z-50 py-1 animate-in fade-in slide-in-from-top-1 duration-150">
+                <StudioFileMenuItem icon={Save} label="Save" shortcut="Ctrl+S" onClick={() => { flushSaves(); toast.success('Saved'); setStudioFileMenu(false) }} />
+                <StudioFileMenuItem icon={FilePlus} label="New presentation" onClick={() => { setStudioFileMenu(false); router.push('/dashboard') }} />
+                <div className="h-px bg-zinc-700 mx-2 my-1" />
+                <StudioFileMenuItem icon={FolderOpen} label="Open recent" onClick={() => { setStudioFileMenu(false); router.push('/dashboard') }} />
+                <div className="h-px bg-zinc-700 mx-2 my-1" />
+                <StudioFileMenuItem icon={Copy} label="Duplicate presentation" onClick={async () => {
+                  setStudioFileMenu(false)
+                  const res = await fetch(`/api/presentations/${presentation.id}/duplicate`, { method: 'POST' })
+                  if (res.ok) {
+                    const data = await res.json()
+                    toast.success('Presentation duplicated')
+                    router.push(`/presentations/${data.presentation.id}/edit`)
+                  } else {
+                    toast.error('Failed to duplicate')
+                  }
+                }} />
+                <div className="h-px bg-zinc-700 mx-2 my-1" />
+                <StudioFileMenuItem icon={FileDown} label="Export as .c360" onClick={() => { setStudioFileMenu(false); window.open(`/api/presentations/${presentation.id}/export-c360`, '_blank') }} />
+                <StudioFileMenuItem icon={Upload} label="Import .c360" onClick={() => { setStudioFileMenu(false); importInputRef.current?.click() }} />
+              </div>
+            )}
+          </div>
+
           <span className="text-[10px] uppercase tracking-[0.15em] text-zinc-500 font-medium">Command Studio</span>
           <input
             type="text"
@@ -463,6 +517,46 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           <span className={`text-[10px] transition-opacity ${saveStatus === 'saved' ? 'text-emerald-400 opacity-100' : saveStatus === 'saving' ? 'text-zinc-500 opacity-100' : 'opacity-0'}`}>
             {saveStatus === 'saving' ? 'Saving...' : 'Saved'}
           </span>
+
+          {/* Fullscreen toggle */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-zinc-400 hover:text-white h-7 w-7 p-0"
+            title="Toggle fullscreen"
+            onClick={() => {
+              if (document.fullscreenElement) {
+                document.exitFullscreen()
+              } else {
+                document.documentElement.requestFullscreen()
+              }
+            }}
+          >
+            <Maximize2 className="w-3.5 h-3.5" />
+          </Button>
+
+          {/* Preview */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-zinc-400 hover:text-white h-7 text-xs gap-1"
+            onClick={() => window.open(`/presentations/${presentation.id}/preview`, '_blank')}
+          >
+            <Eye className="w-3.5 h-3.5" />
+            Preview
+          </Button>
+
+          {/* Present */}
+          <Button
+            onClick={handleStart}
+            disabled={starting}
+            size="sm"
+            className="bg-red-600 hover:bg-red-500 text-white gap-1 rounded-full px-4 h-7 text-xs font-semibold"
+          >
+            <Play className="w-3 h-3" />
+            {starting ? 'Starting...' : 'Present'}
+          </Button>
+
           <Button variant="ghost" size="sm" onClick={() => router.push('/dashboard')} className="text-zinc-400 hover:text-white h-7 text-xs">
             Exit Studio
           </Button>
@@ -474,6 +568,10 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             onContentChange={(updated) => {
               handleSlideChange({ content: updated as unknown as Slide['content'] })
             }}
+            slides={slides}
+            selectedSlideId={selectedSlideId}
+            onSelectSlide={(id) => { setSelectedSlideId(id); setSelectedElementId(null) }}
+            onAddSlide={() => setShowTypeSelector(true)}
           />
         </div>
       </div>
@@ -724,6 +822,10 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             onContentChange={(updated) => {
               handleSlideChange({ content: updated as unknown as Slide['content'] })
             }}
+            slides={slides}
+            selectedSlideId={selectedSlideId}
+            onSelectSlide={(id) => { setSelectedSlideId(id); setSelectedElementId(null) }}
+            onAddSlide={() => setShowTypeSelector(true)}
           />
         ) : (
           <>
@@ -913,6 +1015,22 @@ function FileMenuItem({ icon: Icon, label, shortcut, onClick }: {
       <Icon className="w-4 h-4 text-muted-foreground shrink-0" />
       <span className="flex-1 text-left">{label}</span>
       {shortcut && <span className="text-[10px] text-muted-foreground/60 font-mono">{shortcut}</span>}
+    </button>
+  )
+}
+
+/* ─── Studio File Menu Item (dark theme) ─── */
+function StudioFileMenuItem({ icon: Icon, label, shortcut, onClick }: {
+  icon: React.ElementType; label: string; shortcut?: string; onClick: () => void
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full flex items-center gap-3 px-3 py-1.5 text-xs text-zinc-200 hover:bg-zinc-800 transition-colors"
+    >
+      <Icon className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+      <span className="flex-1 text-left">{label}</span>
+      {shortcut && <span className="text-[10px] text-zinc-500 font-mono">{shortcut}</span>}
     </button>
   )
 }
