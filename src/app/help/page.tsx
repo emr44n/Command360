@@ -15,8 +15,8 @@ const CATEGORIES = [
   {
     icon: BookOpen,
     title: 'Getting Started',
-    description: 'Create your account, build your first deck, and run a session.',
-    articles: ['Creating your first deck', 'Adding interactive slides', 'Understanding slide types', 'Sharing your session link'],
+    description: 'Create your account, build your first presentation, and run a session.',
+    articles: ['Creating your first presentation', 'Adding interactive slides', 'Understanding slide types', 'Sharing your session link'],
   },
   {
     icon: Play,
@@ -33,8 +33,8 @@ const CATEGORIES = [
   {
     icon: Users,
     title: 'Team & Collaboration',
-    description: 'Inviting team members, managing roles, and sharing decks.',
-    articles: ['Inviting team members', 'Understanding roles', 'Sharing decks', 'Organisation settings'],
+    description: 'Inviting team members, managing roles, and sharing presentations.',
+    articles: ['Inviting team members', 'Understanding roles', 'Sharing presentations', 'Organisation settings'],
   },
   {
     icon: Settings,

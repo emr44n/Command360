@@ -7,10 +7,10 @@ export const metadata: Metadata = { title: 'Team — Command 360' }
 
 const ROLES = [
   { role: 'owner', label: 'Owner', description: 'Full access to all features and settings', icon: Crown, color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/20', accent: 'bg-amber-500' },
-  { role: 'admin', label: 'Admin', description: 'Manage team members, decks, and sessions', icon: Shield, color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/20', accent: 'bg-primary' },
-  { role: 'editor', label: 'Editor', description: 'Create and edit decks and templates', icon: Pencil, color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20', accent: 'bg-blue-500' },
+  { role: 'admin', label: 'Admin', description: 'Manage team members, presentations, and sessions', icon: Shield, color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/20', accent: 'bg-primary' },
+  { role: 'editor', label: 'Editor', description: 'Create and edit presentations and templates', icon: Pencil, color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20', accent: 'bg-blue-500' },
   { role: 'presenter', label: 'Presenter', description: 'Run sessions and view results', icon: Radio, color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', accent: 'bg-emerald-500' },
-  { role: 'viewer', label: 'Viewer', description: 'View decks, sessions, and reports', icon: Eye, color: 'text-muted-foreground', bg: 'bg-muted', border: 'border-border', accent: 'bg-muted-foreground' },
+  { role: 'viewer', label: 'Viewer', description: 'View presentations, sessions, and reports', icon: Eye, color: 'text-muted-foreground', bg: 'bg-muted', border: 'border-border', accent: 'bg-muted-foreground' },
 ]
 
 export default async function TeamPage() {

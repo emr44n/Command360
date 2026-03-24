@@ -117,7 +117,7 @@ export default function ProductPage() {
           <h2 className="text-2xl md:text-4xl font-bold tracking-tight text-white mb-4">
             Ready to transform your training?
           </h2>
-          <p className="text-white/40 text-lg mb-8">Create your first interactive deck in minutes.</p>
+          <p className="text-white/40 text-lg mb-8">Create your first interactive presentation in minutes.</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
             <Link href="/register" className="group inline-flex items-center gap-2 px-8 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-500/25 cursor-pointer">
               Start free today <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />

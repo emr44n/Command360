@@ -102,7 +102,7 @@ export default async function PresentationResultsPage({ params }: { params: Prom
         )}
         <Link href={`/presentations/${id}/edit`}>
           <Button variant="outline" size="sm" className="gap-1.5 text-xs rounded-xl">
-            <Eye className="w-3.5 h-3.5" /> Edit deck
+            <Eye className="w-3.5 h-3.5" /> Edit presentation
           </Button>
         </Link>
       </div>

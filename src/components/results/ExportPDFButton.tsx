@@ -48,7 +48,7 @@ export function ExportPDFButton({
       // Title
       doc.setFontSize(22)
       doc.setTextColor(30)
-      doc.text(presentationTitle || 'Untitled Deck', margin, y)
+      doc.text(presentationTitle || 'Untitled Presentation', margin, y)
 
       y += 10
       doc.setFontSize(10)

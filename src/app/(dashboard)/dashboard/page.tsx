@@ -135,10 +135,10 @@ export default async function DashboardPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">
-            {getGreeting()}, <span className="bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text" style={{ WebkitTextFillColor: 'transparent' }}>{displayName}</span>
+            {getGreeting()}, <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text" style={{ WebkitTextFillColor: 'transparent' }}>{displayName}</span>
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Manage your interactive training decks and sessions
+            Manage your interactive training presentations and sessions
           </p>
         </div>
         <CreatePresentationButton />
@@ -208,7 +208,7 @@ export default async function DashboardPage() {
               <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
                 <Plus className="w-5 h-5 text-primary" />
               </div>
-              <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">New Deck</h3>
+              <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">New Presentation</h3>
               <p className="text-xs text-muted-foreground mt-0.5">Start from scratch</p>
             </div>
           </Link>
@@ -255,13 +255,13 @@ export default async function DashboardPage() {
       {/* Divider */}
       <div className="border-t border-border/50" />
 
-      {/* My Decks */}
+      {/* My Presentations */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground">All Decks</h2>
+            <h2 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground">All Presentations</h2>
             <p className="text-xs text-muted-foreground/70 mt-1">
-              {enrichedPresentations.length} deck{enrichedPresentations.length !== 1 ? 's' : ''} total
+              {enrichedPresentations.length} presentation{enrichedPresentations.length !== 1 ? 's' : ''} total
             </p>
           </div>
           <Link

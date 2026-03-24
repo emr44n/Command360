@@ -366,10 +366,10 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       })
       if (res.ok) {
         const { presentation: newPres } = await res.json()
-        toast.success('Deck imported successfully!')
+        toast.success('Presentation imported successfully!')
         router.push(`/presentations/${newPres.id}/edit`)
       } else {
-        toast.error('Failed to import deck')
+        toast.error('Failed to import presentation')
       }
     } catch {
       toast.error('Invalid .c360 file')

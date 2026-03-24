@@ -50,7 +50,7 @@ function RecentCard({ item }: { item: RecentItem }) {
     try {
       const res = await fetch(`/api/presentations/${item.id}/duplicate`, { method: 'POST' })
       if (res.ok) {
-        toast.success('Deck duplicated')
+        toast.success('Presentation duplicated')
         router.refresh()
       } else {
         toast.error('Failed to duplicate')

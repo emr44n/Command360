@@ -58,7 +58,7 @@ export function SlideCanvas({ slide, slides, selectedIndex, onTitleChange, onCan
 
   if (slides.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center" style={{ background: '#111111' }}>
+      <div className="flex-1 flex items-center justify-center" style={{ background: '#0c0c10' }}>
         <div className="text-center text-muted-foreground">
           <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
             <FileText className="w-7 h-7 opacity-40" />
@@ -75,8 +75,8 @@ export function SlideCanvas({ slide, slides, selectedIndex, onTitleChange, onCan
       ref={containerRef}
       className="h-full overflow-y-auto overflow-x-hidden canvas-scroll"
       style={{
-        backgroundColor: '#111111',
-        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)',
+        backgroundColor: '#0c0c10',
+        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)',
         backgroundSize: '24px 24px',
       }}
       onClick={(e) => {

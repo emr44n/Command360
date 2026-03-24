@@ -11,7 +11,7 @@ const PLANS = [
     annual: 0,
     features: [
       'Up to 50 participants per session',
-      '3 decks',
+      '3 presentations',
       'All 6 slide types',
       'Real-time results',
       'CSV export',
@@ -27,7 +27,7 @@ const PLANS = [
     annual: 24,
     features: [
       'Unlimited participants',
-      'Unlimited decks',
+      'Unlimited presentations',
       'All slide types + AI insights',
       'Team collaboration (5 members)',
       'Priority support',

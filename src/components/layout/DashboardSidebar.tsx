@@ -8,9 +8,10 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
+import { Loader2 } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: 'Decks', icon: LayoutDashboard, exact: true },
+  { href: '/dashboard', label: 'Presentations', icon: LayoutDashboard, exact: true },
   { href: '/dashboard/sessions', label: 'Sessions', icon: Radio },
   { href: '/dashboard/templates', label: 'Templates', icon: LayoutTemplate },
   { href: '/dashboard/reports', label: 'Reports', icon: BarChart2 },
@@ -27,6 +28,7 @@ export function DashboardSidebar() {
   const [collapsed, setCollapsed] = useState(false)
   const [activeSessions, setActiveSessions] = useState(0)
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const [creatingPresentation, setCreatingPresentation] = useState(false)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -90,26 +92,56 @@ export function DashboardSidebar() {
         </Link>
       </div>
 
-      {/* New Deck button */}
+      {/* New Presentation button */}
       <div className={cn('pt-4', collapsed ? 'px-2.5' : 'px-3')}>
         {collapsed ? (
           <button
-            onClick={() => router.push('/dashboard')}
-            className="w-full flex items-center justify-center p-2.5 rounded-xl bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 active:scale-95 group relative"
-            title="New Deck"
+            onClick={async () => {
+              if (creatingPresentation) return
+              setCreatingPresentation(true)
+              try {
+                const res = await fetch('/api/presentations', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ title: 'Untitled Presentation', description: '' }),
+                })
+                const data = await res.json()
+                if (res.ok) router.push(`/presentations/${data.presentation.id}/edit`)
+              } catch {} finally {
+                setCreatingPresentation(false)
+              }
+            }}
+            disabled={creatingPresentation}
+            className="w-full flex items-center justify-center p-2.5 rounded-xl bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 active:scale-95 group relative disabled:opacity-70"
+            title="New Presentation"
           >
-            <Plus className="w-4 h-4" />
+            {creatingPresentation ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
             <div className="absolute left-full ml-2.5 px-2.5 py-1.5 rounded-lg bg-popover text-popover-foreground text-xs font-medium border border-border shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50">
-              New Deck
+              New Presentation
             </div>
           </button>
         ) : (
           <button
-            onClick={() => router.push('/dashboard')}
-            className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-red-600 text-white text-[13px] font-semibold hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 active:scale-[0.98]"
+            onClick={async () => {
+              if (creatingPresentation) return
+              setCreatingPresentation(true)
+              try {
+                const res = await fetch('/api/presentations', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ title: 'Untitled Presentation', description: '' }),
+                })
+                const data = await res.json()
+                if (res.ok) router.push(`/presentations/${data.presentation.id}/edit`)
+              } catch {} finally {
+                setCreatingPresentation(false)
+              }
+            }}
+            disabled={creatingPresentation}
+            className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-red-600 text-white text-[13px] font-semibold hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 active:scale-[0.98] disabled:opacity-70"
           >
-            <Plus className="w-4 h-4" />
-            New Deck
+            {creatingPresentation ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+            New Presentation
           </button>
         )}
       </div>

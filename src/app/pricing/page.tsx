@@ -46,7 +46,7 @@ export default function PricingPage() {
             </div>
             <div className="space-y-4">
               {[
-                { q: 'Can I try Command 360 for free?', a: 'Yes. The Starter plan is completely free with up to 50 participants per session and 3 decks.' },
+                { q: 'Can I try Command 360 for free?', a: 'Yes. The Starter plan is completely free with up to 50 participants per session and 3 presentations.' },
                 { q: 'Do I need a credit card to sign up?', a: 'No. You can create an account and start using Command 360 immediately with no payment information required.' },
                 { q: 'Can I switch plans at any time?', a: 'Yes. You can upgrade or downgrade your plan at any time. Changes take effect at the start of your next billing period.' },
                 { q: 'Is there a discount for emergency services?', a: 'Command 360 is purpose-built for emergency services. Contact us for special pricing for large organisations.' },

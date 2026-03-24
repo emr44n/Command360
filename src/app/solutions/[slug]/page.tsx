@@ -227,7 +227,7 @@ const SERVICES: ServiceData[] = [
       { title: 'Promotion preparation sessions', description: 'Test NIE/OSPRE knowledge with timed quizzes, leaderboards, and detailed scoring for officers preparing for promotion.', icon: Award },
     ],
     benefits: [
-      { title: 'Standardise training delivery', description: 'Ensure consistent training across divisions and BCUs with reusable deck templates, standardised quizzes, and centralised content management.', icon: Globe },
+      { title: 'Standardise training delivery', description: 'Ensure consistent training across divisions and BCUs with reusable presentation templates, standardised quizzes, and centralised content management.', icon: Globe },
       { title: 'Anonymous feedback on sensitive topics', description: 'Enable honest responses on welfare, wellbeing, policy understanding, and conduct matters without identifying individual officers.', icon: Eye },
       { title: 'Audit-ready reporting', description: 'Export session data as CSV for training records, compliance audits, HMICFRS inspections, and performance tracking across the force.', icon: FileText },
     ],
@@ -236,7 +236,7 @@ const SERVICES: ServiceData[] = [
       { question: 'Can officers join during parade briefings?', answer: 'Yes. Officers simply enter a 6-digit code on their phone or MDT. No app needed — it runs in any browser in seconds.' },
       { question: 'Is it suitable for sensitive welfare surveys?', answer: 'Absolutely. Anonymous mode ensures responses cannot be traced to individuals, making it ideal for sensitive topics like welfare, conduct, and whistleblowing.' },
       { question: 'Can we track which officers have completed mandatory training?', answer: 'Yes. Named sessions track individual participation and quiz scores. Export data as CSV for your training management system.' },
-      { question: 'Can it be used across multiple divisions?', answer: 'Yes. Create template decks centrally and share them across divisions. Each team can run their own sessions with local results.' },
+      { question: 'Can it be used across multiple divisions?', answer: 'Yes. Create template presentations centrally and share them across divisions. Each team can run their own sessions with local results.' },
     ],
     ctaHeadline: 'Make your next briefing count with live officer input.',
   },
@@ -594,7 +594,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 const HOW_IT_WORKS_STEPS = [
   {
     number: '1',
-    title: 'Create your briefing deck',
+    title: 'Create your briefing presentation',
     description: 'Build interactive slides with polls, quizzes, word clouds, and Q&A in minutes using templates or from scratch.',
   },
   {
@@ -879,7 +879,7 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
         <div className="absolute -bottom-40 right-0 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-[0.04]" style={{ background: service.heroGlow }} />
         <div className="relative max-w-4xl mx-auto text-center">
           <ScrollReveal direction="up">
-            <span className="feature-badge bg-primary/10 text-primary">Ready-Made Decks</span>
+            <span className="feature-badge bg-primary/10 text-primary">Ready-Made Presentations</span>
             <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-4 mb-4">
               Templates designed for {service.name}
             </h2>

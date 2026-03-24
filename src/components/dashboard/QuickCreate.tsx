@@ -47,10 +47,10 @@ export function QuickCreate() {
       })
       if (!slideRes.ok) throw new Error('Failed to create slide')
 
-      toast.success(`${label} deck created!`)
+      toast.success(`${label} presentation created!`)
       router.push(`/presentations/${presData.presentation.id}/edit`)
     } catch {
-      toast.error('Failed to create deck')
+      toast.error('Failed to create presentation')
       setCreating(null)
     }
   }
