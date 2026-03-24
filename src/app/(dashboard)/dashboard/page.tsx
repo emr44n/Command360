@@ -96,15 +96,29 @@ export default async function DashboardPage() {
     }
   }
 
-  // Fetch recently accessed presentations (ones with last_accessed_at set)
-  const { data: recentPresentations } = await supabase
-    .from('presentations')
-    .select('id, title, last_accessed_at, updated_at')
-    .eq('user_id', user.id)
-    .eq('is_archived', false)
-    .not('last_accessed_at', 'is', null)
-    .order('last_accessed_at', { ascending: false })
-    .limit(6)
+  // Fetch recently accessed presentations (fall back to updated_at if last_accessed_at doesn't exist)
+  let recentPresentations: { id: string; title: string; last_accessed_at: string; updated_at: string }[] | null = null
+  try {
+    const { data } = await supabase
+      .from('presentations')
+      .select('id, title, last_accessed_at, updated_at')
+      .eq('user_id', user.id)
+      .eq('is_archived', false)
+      .not('last_accessed_at', 'is', null)
+      .order('last_accessed_at', { ascending: false })
+      .limit(6)
+    recentPresentations = data
+  } catch {
+    // last_accessed_at column may not exist yet — fall back to most recently updated
+    const { data } = await supabase
+      .from('presentations')
+      .select('id, title, updated_at')
+      .eq('user_id', user.id)
+      .eq('is_archived', false)
+      .order('updated_at', { ascending: false })
+      .limit(6)
+    recentPresentations = (data || []).map(p => ({ ...p, last_accessed_at: p.updated_at }))
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const enrichedPresentations = (presentations || []).map((p: any) => ({

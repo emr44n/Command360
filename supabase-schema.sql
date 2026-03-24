@@ -14,11 +14,13 @@ CREATE TABLE IF NOT EXISTS presentations (
   description TEXT DEFAULT '',
   thumbnail_url TEXT,
   is_archived BOOLEAN DEFAULT FALSE,
+  last_accessed_at TIMESTAMP WITH TIME ZONE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE INDEX idx_presentations_user_id ON presentations(user_id);
+CREATE INDEX IF NOT EXISTS idx_presentations_last_accessed ON presentations(last_accessed_at DESC);
 CREATE INDEX idx_presentations_updated_at ON presentations(updated_at DESC);
 
 ALTER TABLE presentations ENABLE ROW LEVEL SECURITY;
