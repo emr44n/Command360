@@ -4,14 +4,15 @@ import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard, LogOut, LayoutTemplate, Settings,
-  Radio, BarChart2, Users, ChevronLeft, ChevronRight, Plus, Moon, Sun, Monitor,
+  Radio, BarChart2, Users, ChevronLeft, ChevronRight, Plus, Moon, Sun, Monitor, FileText,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: 'Presentations', icon: LayoutDashboard, exact: true },
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+  { href: '/dashboard/presentations', label: 'Presentations', icon: FileText },
   { href: '/dashboard/sessions', label: 'Sessions', icon: Radio },
   { href: '/dashboard/templates', label: 'Templates', icon: LayoutTemplate },
   { href: '/dashboard/studio', label: 'Command Studio', icon: Monitor, badge: 'New' },

@@ -5,10 +5,11 @@ import { CreatePresentationButton } from '@/components/presentations/CreatePrese
 import { DashboardStats } from '@/components/dashboard/DashboardStats'
 import { QuickCreate } from '@/components/dashboard/QuickCreate'
 import { QuickCreateStudioCard } from '@/components/dashboard/QuickCreateStudioCard'
+import { QuickCreatePresentationCard } from '@/components/dashboard/QuickCreatePresentationCard'
 import { RecentlyOpened } from '@/components/dashboard/RecentlyOpened'
 import { TrialBanner } from '@/components/dashboard/TrialBanner'
 import Link from 'next/link'
-import { Plus, LayoutTemplate, ArrowRight, Radio, Monitor } from 'lucide-react'
+import { LayoutTemplate, ArrowRight, Radio, Monitor } from 'lucide-react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Dashboard — Command 360' }
@@ -216,17 +217,7 @@ export default async function DashboardPage() {
       <div>
         <h2 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-3">Quick Create</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <Link href="/dashboard" className="group">
-            <div className="relative bg-primary/5 border border-primary/20 rounded-2xl p-5 hover:bg-primary/10 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer overflow-hidden dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
-              {/* Top accent line */}
-              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
-              <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
-                <Plus className="w-5 h-5 text-primary" />
-              </div>
-              <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">New Presentation</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">Start from scratch</p>
-            </div>
-          </Link>
+          <QuickCreatePresentationCard />
           <QuickCreateStudioCard />
           <Link href="/dashboard/templates" className="group">
             <div className="relative bg-violet-500/5 border border-violet-500/20 rounded-2xl p-5 hover:bg-violet-500/10 hover:border-violet-500/30 hover:shadow-lg hover:shadow-violet-500/5 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer overflow-hidden dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
