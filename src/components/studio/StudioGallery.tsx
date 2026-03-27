@@ -7,7 +7,6 @@ import {
   LayersIcon,
   PlusIcon,
   UploadIcon,
-  CalendarIcon,
   Trash2Icon,
   ZapIcon,
   Loader2Icon,

@@ -3,6 +3,7 @@ import { Inter, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { AuthSlideOverProvider } from '@/components/auth/AuthSlideOverProvider'
 
 const inter = Inter({
   variable: '--font-inter',
@@ -67,8 +68,10 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
         <TooltipProvider>
-          {children}
-          <Toaster richColors position="top-right" />
+          <AuthSlideOverProvider>
+            {children}
+            <Toaster richColors position="top-right" />
+          </AuthSlideOverProvider>
         </TooltipProvider>
       </body>
     </html>

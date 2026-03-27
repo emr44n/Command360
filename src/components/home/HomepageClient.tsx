@@ -3,11 +3,13 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Menu, X, LogIn, Moon, Sun } from 'lucide-react'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
+import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
 
 const NAV_LINKS = [
   { href: '#features', label: 'Features' },
   { href: '#how-it-works', label: 'How It Works' },
   { href: '#services', label: 'Services' },
+  { href: '/command-studio', label: 'Studio', highlight: true },
   { href: '#pricing', label: 'Pricing' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
@@ -18,6 +20,7 @@ export function HomepageClient() {
   const [joinOpen, setJoinOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [theme, setTheme] = useState<'light' | 'dark'>('dark')
+  const { openAuth } = useAuthSlideOver()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -67,26 +70,25 @@ export function HomepageClient() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-1 text-[13px]">
-          {NAV_LINKS.map((item) => item.href.startsWith('#') ? (
-            <a key={item.href} href={item.href}
-              onClick={(e) => handleNavClick(e, item.href)}
-              className={`px-3 py-1.5 rounded-md transition-colors cursor-pointer ${
-                onHero
-                  ? 'text-white/60 hover:text-white'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}>
-              {item.label}
-            </a>
-          ) : (
-            <Link key={item.href} href={item.href}
-              className={`px-3 py-1.5 rounded-md transition-colors cursor-pointer ${
-                onHero
-                  ? 'text-white/60 hover:text-white'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}>
-              {item.label}
-            </Link>
-          ))}
+          {NAV_LINKS.map((item) => {
+            const cls = `px-3 py-1.5 rounded-md transition-colors cursor-pointer ${
+              onHero
+                ? 'text-white/60 hover:text-white'
+                : 'text-muted-foreground hover:text-foreground'
+            } ${'highlight' in item && item.highlight ? 'flex items-center gap-1.5' : ''}`
+            const badge = 'highlight' in item && item.highlight ? (
+              <span className="px-1.5 py-0.5 rounded bg-red-500/15 border border-red-500/20 text-[9px] font-semibold text-red-400 uppercase tracking-wider leading-none">New</span>
+            ) : null
+            return item.href.startsWith('#') ? (
+              <a key={item.href} href={item.href} onClick={(e) => handleNavClick(e, item.href)} className={cls}>
+                {item.label}{badge}
+              </a>
+            ) : (
+              <Link key={item.href} href={item.href} className={cls}>
+                {item.label}{badge}
+              </Link>
+            )
+          })}
         </div>
 
         {/* Desktop right */}
@@ -103,36 +105,38 @@ export function HomepageClient() {
 
           <div className="relative">
             <button onClick={() => setJoinOpen(!joinOpen)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[13px] rounded-md transition-colors cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] rounded-lg transition-colors cursor-pointer ${
                 onHero
-                  ? 'text-white/60 hover:text-white hover:bg-white/[0.06]'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  ? 'text-white/70 hover:text-white border border-white/[0.1] hover:border-white/[0.2] hover:bg-white/[0.06]'
+                  : 'text-muted-foreground hover:text-foreground border border-border hover:bg-muted'
               }`}>
               <LogIn className="w-3.5 h-3.5" />
               Join
             </button>
             {joinOpen && (
               <>
-                <div className="fixed inset-0 z-40" onClick={() => setJoinOpen(false)} />
-                <div className="absolute right-0 top-full mt-2 z-50 bg-card border border-border rounded-xl shadow-lg p-4 slide-down min-w-[260px]">
-                  <p className="text-xs text-muted-foreground mb-2">Enter room code to join</p>
+                <div className="fixed inset-0 z-[80]" onClick={() => setJoinOpen(false)} />
+                <div className="absolute right-0 top-full mt-2 z-[90] bg-[#0c0c10]/98 backdrop-blur-xl border border-white/[0.08] rounded-xl shadow-2xl shadow-black/40 p-3 animate-in fade-in slide-in-from-top-2 duration-200">
                   <JoinCodeInput variant="compact" />
                 </div>
               </>
             )}
           </div>
 
-          <Link href="/login"
-            className={`px-3 py-1.5 text-[13px] transition-colors ${
+          <button
+            onClick={() => openAuth('login')}
+            className={`px-3 py-1.5 text-[13px] transition-colors cursor-pointer ${
               onHero
                 ? 'text-white/60 hover:text-white'
                 : 'text-muted-foreground hover:text-foreground'
             }`}>
             Sign in
-          </Link>
-          <Link href="/register" className="px-4 py-1.5 text-[13px] font-semibold bg-red-600 text-white rounded-lg hover:bg-red-500 transition-colors cursor-pointer">
+          </button>
+          <button
+            onClick={() => openAuth('register')}
+            className="px-4 py-1.5 text-[13px] font-semibold bg-red-600 text-white rounded-lg hover:bg-red-500 transition-colors cursor-pointer">
             Start free trial
-          </Link>
+          </button>
         </div>
 
         {/* Mobile */}
@@ -169,11 +173,11 @@ export function HomepageClient() {
               {item.label}
             </Link>
           ))}
-          <div className="pt-3 border-t border-border mt-3">
-            <p className="text-xs text-muted-foreground mb-2 px-3">Join a session</p>
-            <div className="px-3 mb-3"><JoinCodeInput variant="compact" /></div>
-            <Link href="/login" onClick={() => setMobileOpen(false)} className="block text-center px-4 py-2.5 text-base text-muted-foreground hover:text-foreground transition-colors">Sign in</Link>
-            <Link href="/register" onClick={() => setMobileOpen(false)} className="block text-center px-4 py-2.5 text-base font-semibold bg-red-600 text-white rounded-lg mt-2">Start free trial</Link>
+          <div className="pt-3 border-t border-border mt-3 space-y-2">
+            <p className="text-xs text-muted-foreground px-3">Join a session</p>
+            <div className="px-3"><JoinCodeInput variant="compact" /></div>
+            <button onClick={() => { setMobileOpen(false); openAuth('login') }} className="block w-full text-center px-4 py-2.5 text-base text-muted-foreground hover:text-foreground transition-colors cursor-pointer">Sign in</button>
+            <button onClick={() => { setMobileOpen(false); openAuth('register') }} className="block w-full text-center px-4 py-2.5 text-base font-semibold bg-red-600 text-white rounded-lg cursor-pointer">Start free trial</button>
           </div>
         </div>
       )}

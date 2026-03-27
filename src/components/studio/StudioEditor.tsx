@@ -2,9 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import {
-  PanelLeftClose, PanelRightClose, PanelBottomClose,
-  PanelLeftOpen, PanelRightOpen, PanelBottomOpen,
-  FolderOpen, Type, Shapes, Image, Film, Sparkles, Settings2,
+  FolderOpen, Type, Shapes, Film, Sparkles, Settings2,
   Play, Square, SkipBack, Layers, Plus, Trash2 as Trash2Icon,
 } from 'lucide-react'
 import type {

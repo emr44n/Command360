@@ -71,16 +71,17 @@ export function PublicFooter() {
           ))}
         </div>
 
-        <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-muted-foreground">&copy; 2026 Command 360. All rights reserved.</p>
-          <div className="flex items-center gap-4">
-            <Link href="/join" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-              Join session
-            </Link>
-            <Link href="/sign-in" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-              Sign in
-            </Link>
-            <span className="text-xs text-muted-foreground">command360.co.uk</span>
+        <div className="mt-12 pt-8 border-t border-white/[0.06]">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-5 h-5 bg-red-600/80 rounded-md flex items-center justify-center">
+                <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+              </div>
+              <span className="text-[11px] text-muted-foreground/60">&copy; 2026 Command 360. All rights reserved.</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] text-muted-foreground/30 font-mono tracking-wide">command360.co.uk</span>
+            </div>
           </div>
         </div>
       </div>

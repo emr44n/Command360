@@ -8,6 +8,7 @@ import {
 import { ScrollReveal } from '@/components/home/ScrollReveal'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 import { HomepageClient } from '@/components/home/HomepageClient'
+import { AuthCTAButton } from '@/components/home/AuthCTAButton'
 import { FloatingJoinDock } from '@/components/join/FloatingJoinDock'
 import { PricingToggle } from '@/components/pricing/PricingToggle'
 import { HeroMockup } from '@/components/home/HeroMockup'
@@ -220,9 +221,7 @@ export default function LandingPage() {
 
           {/* CTAs */}
           <div className="hero-fade-up hero-fade-up-4 flex flex-col sm:flex-row items-center gap-3">
-            <Link href="/register" className="group inline-flex items-center gap-2 px-7 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 cursor-pointer">
-              Start free trial <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
+            <AuthCTAButton tab="register" label="Start free trial" />
             <a href="#how-it-works" className="inline-flex items-center gap-2 px-7 h-12 rounded-xl text-sm font-medium border border-white/[0.1] text-white/60 hover:text-white hover:border-white/[0.2] hover:bg-white/[0.03] transition-all duration-200 cursor-pointer">
               See how it works
             </a>
@@ -765,11 +764,15 @@ export default function LandingPage() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-border/50 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
-            <p>&copy; 2026 Command 360. All rights reserved.</p>
-            <div className="flex gap-4">
-              <Link href="/join" className="hover:text-foreground transition-colors">Join session</Link>
-              <Link href="/login" className="hover:text-foreground transition-colors">Sign in</Link>
+          <div className="border-t border-white/[0.06] pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-5 h-5 bg-red-600/80 rounded-md flex items-center justify-center">
+                <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+              </div>
+              <span className="text-[11px] text-muted-foreground/60">&copy; 2026 Command 360. All rights reserved.</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] text-muted-foreground/30 font-mono tracking-wide">command360.co.uk</span>
             </div>
           </div>
         </div>

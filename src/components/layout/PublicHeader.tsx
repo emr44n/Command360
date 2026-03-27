@@ -8,7 +8,7 @@ import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
 
 const NAV = [
   { href: '/#services', label: 'Services' },
-  { href: '/command-studio', label: 'Command Studio', highlight: true },
+  { href: '/command-studio', label: 'Studio', highlight: true },
   { href: '/pricing', label: 'Pricing' },
   { href: '/templates', label: 'Templates' },
   { href: '/about', label: 'About' },
@@ -106,8 +106,7 @@ export function PublicHeader() {
             {joinOpen && (
               <>
                 <div className="fixed inset-0 z-[80]" onClick={() => setJoinOpen(false)} />
-                <div className="absolute right-0 top-full mt-2.5 z-[90] bg-card/95 backdrop-blur-xl border border-border/60 rounded-xl shadow-2xl shadow-black/20 dark:shadow-black/40 p-4 slide-down min-w-[260px]">
-                  <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium mb-2.5">Enter room code</p>
+                <div className="absolute right-0 top-full mt-2 z-[90] bg-[#0c0c10]/98 backdrop-blur-xl border border-white/[0.08] rounded-xl shadow-2xl shadow-black/40 p-3 animate-in fade-in slide-in-from-top-2 duration-200">
                   <JoinCodeInput variant="compact" />
                 </div>
               </>
