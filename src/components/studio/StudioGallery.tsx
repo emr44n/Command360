@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   ImageIcon,
   VideoIcon,
@@ -10,6 +10,7 @@ import {
   CalendarIcon,
   Trash2Icon,
   ZapIcon,
+  Loader2Icon,
 } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
@@ -33,6 +34,39 @@ interface AssetItem {
   type: 'image' | 'video'
 }
 
+async function uploadAssetFile(file: File): Promise<{ url: string; name: string }> {
+  const formData = new FormData()
+  formData.append('file', file)
+  const res = await fetch('/api/studio/assets', { method: 'POST', body: formData })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Upload failed' }))
+    throw new Error(err.error || 'Upload failed')
+  }
+  return res.json()
+}
+
+function extractAssetsFromLayers(layers: StudioLayer[]): { images: AssetItem[]; videos: AssetItem[] } {
+  const images: AssetItem[] = []
+  const videos: AssetItem[] = []
+  const seen = new Set<string>()
+
+  for (const layer of layers) {
+    if ((layer.type === 'image' || layer.type === 'video') && layer.src && !seen.has(layer.src)) {
+      seen.add(layer.src)
+      const asset: AssetItem = {
+        id: layer.id,
+        name: layer.name,
+        url: layer.src,
+        type: layer.type,
+      }
+      if (layer.type === 'image') images.push(asset)
+      else videos.push(asset)
+    }
+  }
+
+  return { images, videos }
+}
+
 export function StudioGallery({
   layers,
   onAddLayer,
@@ -43,40 +77,89 @@ export function StudioGallery({
 }: StudioGalleryProps) {
   const [images, setImages] = useState<AssetItem[]>([])
   const [videos, setVideos] = useState<AssetItem[]>([])
+  const [uploading, setUploading] = useState(false)
   const [newEventName, setNewEventName] = useState('')
   const imageInputRef = useRef<HTMLInputElement>(null)
   const videoInputRef = useRef<HTMLInputElement>(null)
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Extract existing assets from layers on mount and when layers change
+  useEffect(() => {
+    const existing = extractAssetsFromLayers(layers)
+    setImages((prev) => {
+      const urls = new Set(prev.map((a) => a.url))
+      const newOnes = existing.images.filter((a) => !urls.has(a.url))
+      return newOnes.length > 0 ? [...prev, ...newOnes] : prev
+    })
+    setVideos((prev) => {
+      const urls = new Set(prev.map((a) => a.url))
+      const newOnes = existing.videos.filter((a) => !urls.has(a.url))
+      return newOnes.length > 0 ? [...prev, ...newOnes] : prev
+    })
+  }, [layers])
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files) return
-    Array.from(files).forEach((file) => {
-      const url = URL.createObjectURL(file)
-      const asset: AssetItem = {
-        id: generateLayerId(),
-        name: file.name,
-        url,
-        type: 'image',
+    setUploading(true)
+    try {
+      for (const file of Array.from(files)) {
+        try {
+          const { url, name } = await uploadAssetFile(file)
+          const asset: AssetItem = {
+            id: generateLayerId(),
+            name,
+            url,
+            type: 'image',
+          }
+          setImages((prev) => [...prev, asset])
+        } catch {
+          // Fallback to blob URL if upload fails
+          const url = URL.createObjectURL(file)
+          const asset: AssetItem = {
+            id: generateLayerId(),
+            name: file.name,
+            url,
+            type: 'image',
+          }
+          setImages((prev) => [...prev, asset])
+        }
       }
-      setImages((prev) => [...prev, asset])
-    })
-    // Reset so the same file can be re-uploaded
+    } finally {
+      setUploading(false)
+    }
     e.target.value = ''
   }
 
-  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files) return
-    Array.from(files).forEach((file) => {
-      const url = URL.createObjectURL(file)
-      const asset: AssetItem = {
-        id: generateLayerId(),
-        name: file.name,
-        url,
-        type: 'video',
+    setUploading(true)
+    try {
+      for (const file of Array.from(files)) {
+        try {
+          const { url, name } = await uploadAssetFile(file)
+          const asset: AssetItem = {
+            id: generateLayerId(),
+            name,
+            url,
+            type: 'video',
+          }
+          setVideos((prev) => [...prev, asset])
+        } catch {
+          // Fallback to blob URL if upload fails
+          const url = URL.createObjectURL(file)
+          const asset: AssetItem = {
+            id: generateLayerId(),
+            name: file.name,
+            url,
+            type: 'video',
+          }
+          setVideos((prev) => [...prev, asset])
+        }
       }
-      setVideos((prev) => [...prev, asset])
-    })
+    } finally {
+      setUploading(false)
+    }
     e.target.value = ''
   }
 
@@ -190,8 +273,14 @@ export function StudioGallery({
             size="sm"
             className="mt-2 w-full border-dashed border-zinc-600 bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
             onClick={() => imageInputRef.current?.click()}
+            disabled={uploading}
           >
-            <UploadIcon className="mr-1.5 size-3.5" /> Upload Image
+            {uploading ? (
+              <Loader2Icon className="mr-1.5 size-3.5 animate-spin" />
+            ) : (
+              <UploadIcon className="mr-1.5 size-3.5" />
+            )}
+            {uploading ? 'Uploading...' : 'Upload Image'}
           </Button>
 
           {images.length === 0 && (
@@ -241,8 +330,14 @@ export function StudioGallery({
             size="sm"
             className="mt-2 w-full border-dashed border-zinc-600 bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
             onClick={() => videoInputRef.current?.click()}
+            disabled={uploading}
           >
-            <UploadIcon className="mr-1.5 size-3.5" /> Upload Video
+            {uploading ? (
+              <Loader2Icon className="mr-1.5 size-3.5 animate-spin" />
+            ) : (
+              <UploadIcon className="mr-1.5 size-3.5" />
+            )}
+            {uploading ? 'Uploading...' : 'Upload Video'}
           </Button>
 
           {videos.length === 0 && (

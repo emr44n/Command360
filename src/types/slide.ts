@@ -214,6 +214,18 @@ export interface StudioTimelineEvent {
   voteOptions?: StudioVoteOption[]
 }
 
+/* ── Branching scenarios ── */
+
+export interface StudioBranch {
+  id: string
+  name: string
+  condition: 'vote_result' | 'manual' | 'time_elapsed'
+  sourceEventId: string      // which event triggers this branch
+  targetEventId: string      // which event to fire
+  conditionValue?: string    // e.g., winning option ID for vote_result
+  delay?: number             // ms delay before firing target
+}
+
 export interface StudioContent {
   canvas: {
     width: number
@@ -226,6 +238,7 @@ export interface StudioContent {
   tracks?: StudioTrack[]          // timeline tracks (v2)
   timelineEvents?: StudioTimelineEvent[]  // timeline event markers (v2)
   totalDuration?: number          // ms (v2)
+  branches?: StudioBranch[]       // branching scenarios
   votingEnabled: boolean
   description?: string
   image_url?: string

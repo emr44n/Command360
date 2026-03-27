@@ -64,6 +64,21 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
           setSelectedOptionId(null)
         }
       })
+      .on('broadcast', { event: 'STUDIO_LAYER_STATES_UPDATE' }, ({ payload }) => {
+        if (payload.slide_id === slide.id && payload.layerStates) {
+          setLayerStates(payload.layerStates as Record<string, StudioLayerState>)
+        }
+      })
+      .on('broadcast', { event: 'STUDIO_PLAYBACK_START' }, ({ payload }) => {
+        if (payload.slide_id === slide.id) {
+          /* Playback started — layers will be updated via STUDIO_LAYER_STATES_UPDATE */
+        }
+      })
+      .on('broadcast', { event: 'STUDIO_PLAYBACK_PAUSE' }, ({ payload }) => {
+        if (payload.slide_id === slide.id) {
+          /* Playback paused — scene holds current state */
+        }
+      })
       .subscribe()
 
     channelRef.current = channel
@@ -99,6 +114,21 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
           setSelectedOptionId(null)
         }
       })
+      .on('broadcast', { event: 'STUDIO_LAYER_STATES_UPDATE' }, ({ payload }) => {
+        if (payload.slide_id === slide.id && payload.layerStates) {
+          setLayerStates(payload.layerStates as Record<string, StudioLayerState>)
+        }
+      })
+      .on('broadcast', { event: 'STUDIO_PLAYBACK_START' }, ({ payload }) => {
+        if (payload.slide_id === slide.id) {
+          /* Playback started — layers will be updated via STUDIO_LAYER_STATES_UPDATE */
+        }
+      })
+      .on('broadcast', { event: 'STUDIO_PLAYBACK_PAUSE' }, ({ payload }) => {
+        if (payload.slide_id === slide.id) {
+          /* Playback paused — scene holds current state */
+        }
+      })
       .subscribe()
 
     return () => { supabase.removeChannel(mainChannel) }
@@ -107,6 +137,14 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
   async function handleVoteSubmit() {
     if (!selectedOptionId || !activeVote || submittingVote) return
     setSubmittingVote(true)
+
+    // Broadcast vote to presenter so they see live tallies
+    channelRef.current?.send({
+      type: 'broadcast',
+      event: 'STUDIO_VOTE_CAST',
+      payload: { slide_id: slide.id, event_id: activeVote.eventId, option_id: selectedOptionId },
+    })
+
     await onSubmit({ studio_vote_option_id: selectedOptionId, studio_event_id: activeVote.eventId })
     setVoteSubmitted(true)
     setSubmittingVote(false)

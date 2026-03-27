@@ -211,3 +211,12 @@ ALTER PUBLICATION supabase_realtime ADD TABLE sessions;
 ALTER PUBLICATION supabase_realtime ADD TABLE qna_questions;
 ALTER PUBLICATION supabase_realtime ADD TABLE responses;
 ALTER PUBLICATION supabase_realtime ADD TABLE participants;
+
+
+-- ==============================================================================
+-- MIGRATIONS — safe to re-run (IF NOT EXISTS guards)
+-- ==============================================================================
+
+-- Add last_accessed_at to presentations (if not exists)
+ALTER TABLE presentations ADD COLUMN IF NOT EXISTS last_accessed_at TIMESTAMPTZ DEFAULT NOW();
+CREATE INDEX IF NOT EXISTS idx_presentations_last_accessed_at ON presentations(last_accessed_at DESC);

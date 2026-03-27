@@ -15,6 +15,14 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     .single()
 
   if (error || !data) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  // Update last_accessed_at timestamp (fire-and-forget)
+  supabase
+    .from('presentations')
+    .update({ last_accessed_at: new Date().toISOString() })
+    .eq('id', id)
+    .then(() => {})
+
   return NextResponse.json({ presentation: data })
 }
 

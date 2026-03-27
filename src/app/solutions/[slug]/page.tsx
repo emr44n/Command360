@@ -649,11 +649,11 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
               </ScrollReveal>
 
               <ScrollReveal direction="up">
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-5 text-white">{service.heroTitle}</h1>
+                <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-5 text-white">{service.heroTitle}</h1>
               </ScrollReveal>
 
               <ScrollReveal direction="up">
-                <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto lg:mx-0 mb-8 leading-relaxed">
+                <p className="text-base md:text-xl text-white/50 max-w-2xl mx-auto lg:mx-0 mb-8 leading-relaxed">
                   {service.heroDescription}
                 </p>
               </ScrollReveal>

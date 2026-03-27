@@ -48,7 +48,7 @@ export function FloatingJoinDock() {
           : 'translate-y-full opacity-0 pointer-events-none'
       }`}
     >
-      <div className="mx-auto w-fit px-4">
+      <div className="mx-auto w-fit px-4 max-w-[calc(100vw-2rem)]">
         <div className="relative">
           <div className="absolute -inset-2 rounded-2xl bg-primary/20 blur-xl dock-glow-pulse" />
 

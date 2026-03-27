@@ -13,7 +13,7 @@ interface Props {
 
 export function StudioDisplay({ slide, session, channelRef }: Props) {
   const content = slide.content as StudioContent
-  const { canvas, layers, events, eventCategories } = content
+  const { canvas, layers, events, eventCategories, timelineEvents } = content
 
   // Initialize layer states from layer defaults
   const [layerStates, setLayerStates] = useState<Record<string, StudioLayerState>>(() =>
@@ -30,6 +30,24 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
     setVoteResults({})
     setTriggeredEvents(new Set())
   }, [slide.id])
+
+  // Listen for incoming STUDIO_VOTE_CAST messages from participants
+  useEffect(() => {
+    const channel = channelRef?.current
+    if (!channel) return
+
+    const handler = ({ payload }: { payload: { slide_id: string; event_id: string; option_id: string } }) => {
+      if (payload.slide_id !== slide.id) return
+      setVoteResults((prev) => ({
+        ...prev,
+        [payload.option_id]: (prev[payload.option_id] || 0) + 1,
+      }))
+    }
+
+    channel.on('broadcast', { event: 'STUDIO_VOTE_CAST' }, handler)
+
+    // Supabase doesn't provide a per-event unsubscribe, so cleanup happens on slide change via the reset above
+  }, [channelRef?.current, slide.id])
 
   const applyActions = useCallback((event: StudioEvent) => {
     const newStates = { ...layerStates }
@@ -58,6 +76,32 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
       payload: { slide_id: slide.id, event_id: event.id, layerStates: newStates },
     })
   }, [layerStates, channelRef, slide.id])
+
+  // Merge v1 events and v2 timelineEvents into a single list
+  const allEvents: StudioEvent[] = useMemo(() => {
+    const merged: StudioEvent[] = [...events]
+
+    // Add v2 timelineEvents (they lack actions, so provide an empty array)
+    if (timelineEvents?.length) {
+      for (const te of timelineEvents) {
+        // Skip if an event with the same id already exists in v1
+        if (events.some((e) => e.id === te.id)) continue
+        merged.push({
+          id: te.id,
+          name: te.name,
+          categoryId: te.categoryId,
+          icon: te.icon,
+          color: te.color,
+          trigger: te.trigger,
+          voteQuestion: te.voteQuestion,
+          voteOptions: te.voteOptions,
+          actions: [],
+        })
+      }
+    }
+
+    return merged
+  }, [events, timelineEvents])
 
   function handleTriggerManual(event: StudioEvent) {
     applyActions(event)
@@ -97,11 +141,11 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
     })
 
     // If winning option triggers an event, fire it
-    const evt = events.find((e) => e.id === activeVote.eventId)
+    const evt = allEvents.find((e) => e.id === activeVote.eventId)
     if (evt) {
       const winningOpt = evt.voteOptions?.find((o) => o.id === winningId)
       if (winningOpt?.triggersEventId) {
-        const targetEvent = events.find((e) => e.id === winningOpt.triggersEventId)
+        const targetEvent = allEvents.find((e) => e.id === winningOpt.triggersEventId)
         if (targetEvent) applyActions(targetEvent)
       } else {
         applyActions(evt)
@@ -116,7 +160,7 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
     const uncategorized: StudioEvent[] = []
     const byCategory = new Map<string, StudioEvent[]>()
 
-    for (const evt of events) {
+    for (const evt of allEvents) {
       if (evt.categoryId) {
         const list = byCategory.get(evt.categoryId) || []
         list.push(evt)
@@ -127,7 +171,7 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
     }
 
     return { uncategorized, byCategory }
-  }, [events])
+  }, [allEvents])
 
   const joinUrl = 'command360.co.uk/join'
 
@@ -150,7 +194,7 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
                 key={layer.id}
                 layer={layer}
                 state={state}
-                maxDuration={getMaxDuration(events)}
+                maxDuration={getMaxDuration(allEvents)}
               />
             )
           })}
@@ -235,7 +279,7 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
             )
           })}
 
-          {events.length === 0 && (
+          {allEvents.length === 0 && (
             <p className="text-[11px] text-muted-foreground/50 text-center py-4 italic">No events</p>
           )}
         </div>

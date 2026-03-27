@@ -11,7 +11,7 @@ import {
   MessageCircle, ClipboardList, FileText, Star, AlignLeft, Monitor,
   Smartphone, Grid3X3, StickyNote, Timer, Maximize, Minimize,
   ChevronLeft, ChevronRight, Keyboard, Pause, Play, QrCode, Wifi,
-  Zap, Vote, Eye, EyeOff,
+  Zap, Vote,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -49,7 +49,6 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [timerSeconds, setTimerSeconds] = useState(0)
   const [timerRunning, setTimerRunning] = useState(true)
-  const [showAudienceView, setShowAudienceView] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const slide = slides[current] || null
@@ -192,9 +191,6 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
           </div>
           <TBtn icon={Grid3X3} title="Grid overview (G)" onClick={() => setShowGrid(true)} />
           <TBtn icon={StickyNote} title="Speaker notes (N)" onClick={() => setShowNotes(v => !v)} active={showNotes} />
-          {slide?.slide_type === 'studio' && (
-            <TBtn icon={showAudienceView ? Eye : EyeOff} title="Toggle audience view" onClick={() => setShowAudienceView(v => !v)} active={showAudienceView} />
-          )}
           <TBtn icon={isFullscreen ? Minimize : Maximize} title="Fullscreen (F)" onClick={toggleFullscreen} />
           <TBtn icon={Keyboard} title="Shortcuts (?)" onClick={() => setShowShortcuts(v => !v)} />
         </div>
@@ -203,7 +199,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
       {/* DUAL VIEW: Presenter + Audience Phone (or Studio View) */}
       <div className="flex-1 flex overflow-hidden">
         {slide?.slide_type === 'studio' ? (
-          <StudioPreviewContent slide={slide} showAudienceView={showAudienceView} animClass={animClass} />
+          <StudioPreviewContent slide={slide} animClass={animClass} />
         ) : (<>
         {/* Main content area (presenter + phone centered together) */}
         <div className="flex-1 flex items-center justify-center gap-8 p-5 overflow-hidden min-h-0">
@@ -908,7 +904,7 @@ function AudienceSlideContent({ slide }: { slide: Slide }) {
 
 /* ─── Studio Preview Content ─── */
 
-function StudioPreviewContent({ slide, showAudienceView, animClass }: { slide: Slide; showAudienceView: boolean; animClass: string }) {
+function StudioPreviewContent({ slide, animClass }: { slide: Slide; animClass: string }) {
   const content = slide.content as StudioContent
   const { canvas, layers, events, eventCategories } = content
 
@@ -958,8 +954,24 @@ function StudioPreviewContent({ slide, showAudienceView, animClass }: { slide: S
 
   return (
     <div className="flex-1 flex overflow-hidden min-h-0">
-      {/* Events panel (left) */}
-      <div className="w-56 shrink-0 bg-card border-r border-border flex flex-col overflow-hidden">
+      {/* Main canvas area */}
+      <div className={cn('flex-1 flex items-center justify-center p-6 min-h-0', animClass)}>
+        <div className="w-full" style={{ maxWidth: 'min(56rem, calc((100vh - 10rem) * 16 / 9))' }}>
+          <div
+            className="w-full relative overflow-hidden rounded-xl shadow-2xl"
+            style={{ aspectRatio: '16 / 9', backgroundColor: canvas.backgroundColor }}
+          >
+            {layers.map((layer) => {
+              const state = layerStates[layer.id]
+              if (!state || !state.visible) return null
+              return <StudioPreviewLayer key={layer.id} layer={layer} state={state} />
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Events panel (right side) */}
+      <div className="w-56 shrink-0 bg-card border-l border-border flex flex-col overflow-hidden">
         <div className="px-3 py-2.5 border-b border-border">
           <h3 className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Events</h3>
         </div>
@@ -1012,56 +1024,6 @@ function StudioPreviewContent({ slide, showAudienceView, animClass }: { slide: S
           )}
         </div>
       </div>
-
-      {/* Main canvas area */}
-      <div className={cn('flex-1 flex items-center justify-center p-6 min-h-0', animClass)}>
-        <div className="w-full" style={{ maxWidth: 'min(56rem, calc((100vh - 10rem) * 16 / 9))' }}>
-          <div
-            className="w-full relative overflow-hidden rounded-xl shadow-2xl"
-            style={{ aspectRatio: '16 / 9', backgroundColor: canvas.backgroundColor }}
-          >
-            {layers.map((layer) => {
-              const state = layerStates[layer.id]
-              if (!state || !state.visible) return null
-              return <StudioPreviewLayer key={layer.id} layer={layer} state={state} />
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Audience view toggle (phone mockup) */}
-      {showAudienceView && (
-        <div className="w-52 shrink-0 bg-card border-l border-border flex flex-col items-center justify-center p-4">
-          <div className="flex items-center gap-1.5 mb-2">
-            <Smartphone className="w-[11px] h-[11px] text-muted-foreground/50" />
-            <span className="text-[9px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/50">Audience</span>
-          </div>
-          <div style={{
-            width: 140, height: 295, background: '#1c1c1c', borderRadius: 28, padding: 4,
-            boxShadow: '0 10px 30px -6px rgba(0,0,0,0.5)',
-            display: 'flex', flexDirection: 'column',
-          }}>
-            <div style={{ flex: 1, background: '#ffffff', borderRadius: 24, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ padding: '4px 10px 0', display: 'flex', justifyContent: 'center', height: 20 }}>
-                <div style={{ width: 40, height: 10, background: '#000', borderRadius: 8 }} />
-              </div>
-              <div style={{ flex: 1, overflow: 'hidden', padding: 6 }}>
-                <div
-                  className="w-full relative overflow-hidden rounded"
-                  style={{ aspectRatio: '16 / 9', backgroundColor: canvas.backgroundColor }}
-                >
-                  {layers.map((layer) => {
-                    const state = layerStates[layer.id]
-                    if (!state || !state.visible) return null
-                    return <StudioPreviewLayer key={layer.id} layer={layer} state={state} small />
-                  })}
-                </div>
-                <p style={{ fontSize: 7, color: '#9ca3af', textAlign: 'center', marginTop: 6 }}>Scenario in progress</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

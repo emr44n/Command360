@@ -23,7 +23,9 @@ const ASPECT_RATIO = 16 / 9
 /** Shared Transformer props for Photoshop-style handles */
 const TRANSFORMER_PROPS = {
   flipEnabled: false,
-  rotateAnchorOffset: 20,
+  rotateEnabled: true,
+  rotateAnchorOffset: 24,
+  centeredScaling: false,
   rotationSnaps: [0, 45, 90, 135, 180, 225, 270, 315],
   anchorCornerRadius: 2,
   anchorStroke: '#ef4444',
@@ -480,7 +482,7 @@ export function StudioCanvas({
               y={0}
               width={stageSize.width}
               height={stageSize.height}
-              fill={canvasConfig.backgroundColor === '#1a1a2e' ? '#ffffff' : canvasConfig.backgroundColor}
+              fill="#ffffff"
             />
           </Layer>
 
@@ -617,7 +619,7 @@ export function StudioCanvas({
               >
                 <video
                   src={src}
-                  className="h-full w-full object-cover pointer-events-none"
+                  className="h-full w-full object-contain pointer-events-none"
                   autoPlay={layer.autoplay ?? true}
                   loop={layer.loop ?? true}
                   muted={layer.muted ?? true}

@@ -1115,7 +1115,7 @@ export function TemplateGallery() {
 
               {/* Slide content preview */}
               <div className="flex-1 p-6 flex flex-col items-center justify-center bg-muted/10">
-                <div className="w-full max-w-lg bg-white rounded-2xl border border-border shadow-sm overflow-hidden relative" style={{ aspectRatio: '16/9' }}>
+                <div className="w-full max-w-lg bg-white rounded-2xl border border-border shadow-sm overflow-hidden relative aspect-video" style={{ aspectRatio: '16/9' }}>
                   <div className="absolute inset-0 flex flex-col p-6">
                     {/* Type badge */}
                     <div className="flex items-center gap-1.5 mb-3 shrink-0">

@@ -9,6 +9,7 @@ export type BroadcastEvent =
   /* Command Studio events */
   | { event: 'STUDIO_EVENT_TRIGGERED'; payload: { slide_id: string; event_id: string; layerStates: Record<string, StudioLayerState> } }
   | { event: 'STUDIO_VOTE_STARTED'; payload: { slide_id: string; event_id: string; question: string; options: { id: string; label: string }[] } }
+  | { event: 'STUDIO_VOTE_CAST'; payload: { slide_id: string; event_id: string; option_id: string } }
   | { event: 'STUDIO_VOTE_RESULT'; payload: { slide_id: string; event_id: string; winning_option_id: string; results: Record<string, number> } }
   | { event: 'STUDIO_LAYER_ADDED'; payload: { slide_id: string; layer: StudioLayer } }
   /* Command Studio v2 playback events */
