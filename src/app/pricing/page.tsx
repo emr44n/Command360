@@ -1,8 +1,6 @@
 import { PublicLayout } from '@/components/layout/PublicLayout'
 import { PricingToggle } from '@/components/pricing/PricingToggle'
-import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
-import { JoinCodeInput } from '@/components/join/JoinCodeInput'
+import { AuthCTAButton } from '@/components/home/AuthCTAButton'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -15,20 +13,42 @@ export default function PricingPage() {
     <PublicLayout>
       {/* Hero — Dark */}
       <section className="relative bg-[#07070a] overflow-hidden">
+        {/* Gradient layers */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(220,38,38,0.12),transparent)]" />
-          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(220,38,38,0.15),transparent)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_20%,rgba(251,146,60,0.06),transparent)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_20%_60%,rgba(220,38,38,0.05),transparent)]" />
         </div>
-        <div className="relative max-w-3xl mx-auto px-5 pt-32 pb-24 text-center">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-[13px] text-white/60 mb-8">
+        {/* Grid texture with mask fade */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: 'linear-gradient(rgba(220,38,38,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(220,38,38,0.12) 1px, transparent 1px)',
+            backgroundSize: '64px 64px',
+            maskImage: 'radial-gradient(ellipse 70% 50% at 50% 0%, black, transparent)',
+            WebkitMaskImage: 'radial-gradient(ellipse 70% 50% at 50% 0%, black, transparent)',
+          }}
+        />
+        {/* Bottom fade */}
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#07070a] to-transparent pointer-events-none" />
+
+        <div className="relative max-w-3xl mx-auto px-5 pt-36 pb-28 text-center">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-[10px] uppercase tracking-[0.15em] text-white/50 mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 pulse-dot" />
             Pricing
           </span>
           <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-6">
-            Simple, transparent pricing
+            Simple, <span className="bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">transparent</span> pricing
           </h1>
-          <p className="text-lg text-white/45 max-w-lg mx-auto">
+          <p className="text-lg text-white/45 max-w-lg mx-auto mb-6">
             Start free. Upgrade when your team grows. No hidden fees.
+          </p>
+          <p className="text-[13px] text-white/30 flex items-center justify-center gap-2">
+            <span>No credit card required</span>
+            <span className="text-white/15">&bull;</span>
+            <span>Cancel anytime</span>
+            <span className="text-white/15">&bull;</span>
+            <span>Free plan available</span>
           </p>
         </div>
       </section>
@@ -74,14 +94,8 @@ export default function PricingPage() {
           <p className="text-white/40 text-lg mb-8 max-w-lg mx-auto">
             We offer bespoke plans for large emergency services organisations with dedicated support and custom integrations.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
-            <Link href="/contact" className="group inline-flex items-center gap-2 px-8 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-500/25 cursor-pointer">
-              Contact us <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-          </div>
-          <div className="flex items-center justify-center gap-3">
-            <span className="text-xs text-white/30">Got a room code?</span>
-            <JoinCodeInput variant="hero" />
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <AuthCTAButton label="Contact us" tab="register" />
           </div>
         </div>
       </section>

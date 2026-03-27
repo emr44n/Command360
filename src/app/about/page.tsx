@@ -1,5 +1,5 @@
 import { PublicLayout } from '@/components/layout/PublicLayout'
-import { Target, Heart, Zap, ArrowRight, Flame, Shield, Siren, Anchor, Search, Lock, Building2, Radio, Users } from 'lucide-react'
+import { Target, Heart, Zap, ArrowRight, Flame, Shield, Siren, Anchor, Search, Lock, Building2, Radio, Users, MapPin } from 'lucide-react'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 import { ScrollReveal } from '@/components/home/ScrollReveal'
 import Link from 'next/link'
@@ -198,8 +198,20 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              {/* Right — before/after mockup */}
+              {/* Right — before/after mockup + holding image */}
               <div className="space-y-4">
+                {/* Holding image — team training */}
+                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border/60 dark:border-white/[0.06]">
+                  <div className="absolute inset-0 bg-gradient-to-br from-red-950/40 via-[#0c0c10] to-[#0c0c10]" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <Users className="w-12 h-12 text-white/20 mx-auto mb-3" />
+                      <p className="text-sm text-white/30 font-medium">Team Training Session</p>
+                      <p className="text-[10px] text-white/15 mt-1">Image coming soon</p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Before card */}
                 <div className="rounded-2xl border border-border/60 bg-card/50 p-5 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 transition-all duration-300">
                   <div className="flex items-center gap-2 mb-3">
@@ -408,9 +420,22 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              {/* Right — CSS mockup: quiz / word cloud interaction */}
-              <div className="relative">
-                <div className="absolute -inset-4 bg-red-500/[0.04] blur-[40px] rounded-full pointer-events-none" />
+              {/* Right — CSS mockup + holding image */}
+              <div className="relative space-y-4">
+                {/* Holding image — HQ / building */}
+                <div className="relative aspect-[16/9] rounded-2xl overflow-hidden border border-white/[0.06]">
+                  <div className="absolute inset-0 bg-gradient-to-br from-red-950/40 via-[#0c0c10] to-[#0c0c10]" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <Building2 className="w-12 h-12 text-white/20 mx-auto mb-3" />
+                      <p className="text-sm text-white/30 font-medium">Command 360 HQ</p>
+                      <p className="text-[10px] text-white/15 mt-1">Image coming soon</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <div className="absolute -inset-4 bg-red-500/[0.04] blur-[40px] rounded-full pointer-events-none" />
                 <div className="relative rounded-2xl border border-white/[0.08] bg-[#0c0c10] p-5 shadow-2xl shadow-black/40 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
                   {/* Quiz header */}
                   <div className="flex items-center justify-between mb-4">
@@ -465,6 +490,7 @@ export default function AboutPage() {
                       <span key={w.word} className={`${w.size} ${w.color} px-1`}>{w.word}</span>
                     ))}
                   </div>
+                </div>
                 </div>
               </div>
             </div>

@@ -1,10 +1,8 @@
 import { PublicLayout } from '@/components/layout/PublicLayout'
 import { ContactForm } from '@/components/contact/ContactForm'
 import { ScrollReveal } from '@/components/home/ScrollReveal'
-import { FloatingJoinDock } from '@/components/join/FloatingJoinDock'
-import { JoinCodeInput } from '@/components/join/JoinCodeInput'
-import { Mail, MapPin, Clock, ArrowRight, Headset } from 'lucide-react'
-import Link from 'next/link'
+import { AuthCTAButton } from '@/components/home/AuthCTAButton'
+import { Mail, MapPin, Clock, Headset, Phone, MessageCircle } from 'lucide-react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -66,7 +64,7 @@ export default function ContactPage() {
               <h2 className="text-2xl md:text-4xl font-bold tracking-tight text-white">
                 How to{' '}
                 <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
-                  find us
+                  reach us
                 </span>
               </h2>
             </div>
@@ -82,9 +80,15 @@ export default function ContactPage() {
                   color: 'red',
                 },
                 {
+                  icon: Phone,
+                  title: 'Phone',
+                  desc: '+44 121 000 0000',
+                  color: 'emerald',
+                },
+                {
                   icon: MapPin,
                   title: 'Location',
-                  desc: 'United Kingdom',
+                  desc: 'Birmingham, West Midlands, UK',
                   color: 'blue',
                 },
                 {
@@ -92,6 +96,12 @@ export default function ContactPage() {
                   title: 'Response time',
                   desc: 'Within 24 hours on business days',
                   color: 'amber',
+                },
+                {
+                  icon: MessageCircle,
+                  title: 'Live Chat',
+                  desc: 'Available Mon–Fri, 9am–5pm GMT',
+                  color: 'purple',
                 },
               ].map((item) => (
                 <div
@@ -104,7 +114,11 @@ export default function ContactPage() {
                         ? 'bg-red-500/10 text-red-400'
                         : item.color === 'blue'
                           ? 'bg-blue-500/10 text-blue-400'
-                          : 'bg-amber-500/10 text-amber-400'
+                          : item.color === 'amber'
+                            ? 'bg-amber-500/10 text-amber-400'
+                            : item.color === 'emerald'
+                              ? 'bg-emerald-500/10 text-emerald-400'
+                              : 'bg-purple-500/10 text-purple-400'
                     }`}
                   >
                     <item.icon className="w-5 h-5" />
@@ -113,6 +127,59 @@ export default function ContactPage() {
                   <p className="text-sm text-white/45 leading-relaxed">{item.desc}</p>
                 </div>
               ))}
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ── Map Section ── */}
+      <section className="relative bg-[#07070a] overflow-hidden border-t border-border/50">
+        {/* Blur orb */}
+        <div className="absolute bottom-0 left-1/3 w-[500px] h-[350px] rounded-full bg-red-500/[0.04] blur-[120px] pointer-events-none" />
+        <div className="relative max-w-5xl mx-auto px-5 py-24">
+          <ScrollReveal>
+            <div className="text-center mb-14">
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-[10px] uppercase tracking-[0.15em] text-white/60 mb-6">
+                <MapPin className="w-3.5 h-3.5" />
+                Our Location
+              </span>
+              <h2 className="text-2xl md:text-4xl font-bold tracking-tight text-white">
+                How to{' '}
+                <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
+                  find us
+                </span>
+              </h2>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={100}>
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
+              <iframe
+                title="Command 360 — Birmingham, UK"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=-1.9204%2C52.4662%2C-1.8604%2C52.5062&layer=mapnik&marker=52.4862%2C-1.8904"
+                className="w-full h-[350px] md:h-[420px] border-0 grayscale-[0.3] contrast-[1.1]"
+                loading="lazy"
+                referrerPolicy="no-referrer"
+              />
+              <div className="px-6 py-4 flex items-center justify-between border-t border-white/[0.06]">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-red-500/10 flex items-center justify-center">
+                    <MapPin className="w-4 h-4 text-red-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">Birmingham City Centre</p>
+                    <p className="text-xs text-white/40">West Midlands, United Kingdom</p>
+                  </div>
+                </div>
+                <a
+                  href="https://www.openstreetmap.org/?mlat=52.4862&mlon=-1.8904#map=14/52.4862/-1.8904"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-white/40 hover:text-white/60 transition-colors"
+                >
+                  View larger map &rarr;
+                </a>
+              </div>
             </div>
           </ScrollReveal>
         </div>
@@ -141,30 +208,6 @@ export default function ContactPage() {
           <ScrollReveal delay={100}>
             <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 md:p-10 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
               <ContactForm />
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* ── Quick Join ── */}
-      <section className="relative bg-[#07070a] overflow-hidden border-t border-border/50">
-        {/* Blur orb */}
-        <div className="absolute bottom-0 left-1/4 w-[400px] h-[300px] rounded-full bg-blue-500/[0.04] blur-[120px] pointer-events-none" />
-        <div className="relative max-w-xl mx-auto px-5 py-24 text-center">
-          <ScrollReveal>
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-[10px] uppercase tracking-[0.15em] text-white/60 mb-6">
-              Quick Join
-            </span>
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white mb-3">
-              Join a live session
-            </h2>
-            <p className="text-white/40 text-sm mb-8 max-w-sm mx-auto">
-              Enter your room code to join a live presentation instantly.
-            </p>
-          </ScrollReveal>
-          <ScrollReveal delay={100}>
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
-              <JoinCodeInput variant="compact" />
             </div>
           </ScrollReveal>
         </div>
@@ -206,18 +249,10 @@ export default function ContactPage() {
             </p>
           </ScrollReveal>
           <ScrollReveal delay={200}>
-            <Link
-              href="/register"
-              className="group inline-flex items-center gap-2 px-8 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all duration-300 hover:shadow-lg hover:shadow-red-500/25 cursor-pointer"
-            >
-              Get started free
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
+            <AuthCTAButton label="Get started free" />
           </ScrollReveal>
         </div>
       </section>
-
-      <FloatingJoinDock />
     </PublicLayout>
   )
 }

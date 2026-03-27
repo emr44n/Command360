@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { AuthSlideOver } from './AuthSlideOver'
 
 type Tab = 'login' | 'register'
@@ -21,6 +21,21 @@ export function useAuthSlideOver() {
 export function AuthSlideOverProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false)
   const [defaultTab, setDefaultTab] = useState<Tab>('login')
+
+  // Auto-open when ?auth=login or ?auth=register is in URL (e.g. middleware redirect)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const authParam = params.get('auth')
+    if (authParam === 'login' || authParam === 'register') {
+      setDefaultTab(authParam)
+      setIsOpen(true)
+      // Clean the URL without triggering navigation
+      const url = new URL(window.location.href)
+      url.searchParams.delete('auth')
+      url.searchParams.delete('next')
+      window.history.replaceState({}, '', url.toString())
+    }
+  }, [])
 
   const openAuth = useCallback((tab: Tab = 'login') => {
     setDefaultTab(tab)

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { X } from 'lucide-react'
 import { LoginForm } from './LoginForm'
 import { RegisterForm } from './RegisterForm'
-import Link from 'next/link'
+import { ForgotPasswordForm } from './ForgotPasswordForm'
 
 type Tab = 'login' | 'register'
 
@@ -16,10 +16,14 @@ interface AuthSlideOverProps {
 
 export function AuthSlideOver({ isOpen, onClose, defaultTab = 'login' }: AuthSlideOverProps) {
   const [tab, setTab] = useState<Tab>(defaultTab)
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
 
   // Sync tab when defaultTab changes (e.g. opening with a specific tab)
   useEffect(() => {
-    if (isOpen) setTab(defaultTab)
+    if (isOpen) {
+      setTab(defaultTab)
+      setShowForgotPassword(false)
+    }
   }, [isOpen, defaultTab])
 
   // Lock body scroll when open
@@ -110,7 +114,20 @@ export function AuthSlideOver({ isOpen, onClose, defaultTab = 'login' }: AuthSli
           </div>
 
           {/* Form content */}
-          {tab === 'login' ? (
+          {showForgotPassword ? (
+            <div>
+              <div className="space-y-1 mb-6">
+                <h2 className="text-xl font-semibold tracking-tight text-white">Reset password</h2>
+                <p className="text-white/40 text-sm">Enter your email and we&apos;ll send a reset link</p>
+              </div>
+              <ForgotPasswordForm />
+              <div className="mt-6 text-center text-sm">
+                <button onClick={() => setShowForgotPassword(false)} className="text-white/25 hover:text-white/50 transition-colors text-xs cursor-pointer">
+                  &larr; Back to sign in
+                </button>
+              </div>
+            </div>
+          ) : tab === 'login' ? (
             <div>
               <div className="space-y-1 mb-6">
                 <h2 className="text-xl font-semibold tracking-tight text-white">Welcome back</h2>
@@ -125,9 +142,9 @@ export function AuthSlideOver({ isOpen, onClose, defaultTab = 'login' }: AuthSli
                   </button>
                 </p>
                 <p>
-                  <Link href="/forgot-password" onClick={onClose} className="text-white/25 hover:text-white/50 transition-colors text-xs">
+                  <button onClick={() => setShowForgotPassword(true)} className="text-white/25 hover:text-white/50 transition-colors text-xs cursor-pointer">
                     Forgot your password?
-                  </Link>
+                  </button>
                 </p>
               </div>
             </div>
