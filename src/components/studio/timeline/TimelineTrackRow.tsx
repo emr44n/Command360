@@ -57,9 +57,9 @@ export function TimelineTrackRow({
   }
 
   return (
-    <div className="flex border-b border-zinc-800/60 group/row" style={{ height: rowHeight }}>
+    <div className="flex border-b border-[#1e1f22]/60 group/row" style={{ height: rowHeight }}>
       {/* Left label area */}
-      <div className="flex-shrink-0 flex items-center gap-1 px-2 bg-zinc-900 border-r border-zinc-800" style={{ width: labelWidth }}>
+      <div className="flex-shrink-0 flex items-center gap-1 px-2 bg-[#2b2d31] border-r border-[#1e1f22]" style={{ width: labelWidth }}>
         {/* Color dot */}
         <div
           className="rounded-full flex-shrink-0"

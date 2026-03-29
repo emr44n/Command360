@@ -347,7 +347,7 @@ export function StudioEditor({
   const [showTimeline, setShowTimeline] = useState(true)
 
   // Resizable panel widths
-  const [leftPanelWidth, setLeftPanelWidth] = useState(240)
+  const [leftPanelWidth, setLeftPanelWidth] = useState(280)
   const [propertiesWidth, setPropertiesWidth] = useState(280)
   const [timelineHeight, setTimelineHeight] = useState(250)
 
@@ -405,9 +405,9 @@ export function StudioEditor({
   const [activePanel, setActivePanel] = useState<'slides' | 'gallery' | 'events' | 'text' | 'shapes'>(hasSlides ? 'slides' : 'gallery')
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-[#0a0a0a]" style={{ minHeight: 0 }}>
-      {/* Icon Sidebar (OpenCut-style) */}
-      <div className="w-11 shrink-0 bg-[#0c0c0c] border-r border-[#1a1a1a] flex flex-col items-center py-2 gap-1">
+    <div className="flex h-full w-full overflow-hidden bg-[#1e1f22]" style={{ minHeight: 0 }}>
+      {/* Icon Sidebar — Discord-style dark rail */}
+      <div className="w-[52px] shrink-0 bg-[#1e1f22] flex flex-col items-center py-3 gap-1.5">
         {SIDEBAR_ICONS.map((item) => {
           const isActive = item.panel && showLeftPanel && activePanel === item.panel
           return (
@@ -421,35 +421,44 @@ export function StudioEditor({
                   setShowLeftPanel(true)
                 }
               }}
-              className={`w-9 h-9 rounded-lg flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
+              className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
                 isActive
-                  ? item.activeClass
-                  : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/5'
+                  ? `${item.activeClass} shadow-lg`
+                  : 'text-zinc-500 hover:text-zinc-200 hover:bg-[#35363c]'
               }`}
               title={item.label}
             >
               <item.icon className="w-4 h-4" />
-              <span className="text-[8px] leading-none">{item.label}</span>
+              <span className="text-[7px] leading-none font-medium">{item.label}</span>
             </button>
           )
         })}
 
         <div className="flex-1" />
 
+        {/* Divider */}
+        <div className="w-6 h-px bg-zinc-700/50 mb-1" />
+
         {/* Panel toggles at bottom */}
         <button
           onClick={() => setShowProperties(v => !v)}
-          className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all cursor-pointer ${showProperties ? 'text-zinc-400' : 'text-zinc-600'}`}
+          className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
+            showProperties ? 'bg-[#35363c] text-zinc-300' : 'text-zinc-600 hover:text-zinc-400 hover:bg-[#35363c]'
+          }`}
           title="Properties"
         >
           <Settings2 className="w-4 h-4" />
+          <span className="text-[7px] leading-none font-medium">Props</span>
         </button>
         <button
           onClick={() => setShowTimeline(v => !v)}
-          className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all cursor-pointer ${showTimeline ? 'text-zinc-400' : 'text-zinc-600'}`}
+          className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
+            showTimeline ? 'bg-[#35363c] text-zinc-300' : 'text-zinc-600 hover:text-zinc-400 hover:bg-[#35363c]'
+          }`}
           title="Timeline"
         >
           <Film className="w-4 h-4" />
+          <span className="text-[7px] leading-none font-medium">Time</span>
         </button>
       </div>
 
@@ -457,10 +466,10 @@ export function StudioEditor({
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {/* Top: Left panel | Canvas | Properties */}
         <div className="flex flex-1 min-h-0">
-          {/* Left: Slides / Asset / Events panel */}
+          {/* Left: Slides / Asset / Events panel — Discord channel list color */}
           {showLeftPanel && (
             <>
-              <div className="shrink-0 bg-[#0e0e0e] overflow-hidden flex flex-col" style={{ width: leftPanelWidth }}>
+              <div className="shrink-0 bg-[#2b2d31] overflow-hidden flex flex-col border-r border-[#1e1f22]" style={{ width: leftPanelWidth }}>
                 {activePanel === 'slides' && hasSlides ? (
                   <SlidesPanel
                     slides={slides!}
@@ -514,14 +523,14 @@ export function StudioEditor({
                 )}
               </div>
               <div
-                className="w-px shrink-0 cursor-col-resize bg-[#1a1a1a] hover:bg-red-500/50 transition-colors"
+                className="w-[3px] shrink-0 cursor-col-resize bg-[#1e1f22] hover:bg-indigo-500/60 transition-colors"
                 onMouseDown={() => startDrag('left')}
               />
             </>
           )}
 
           {/* Center: Canvas + transport */}
-          <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#080808]">
+          <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#313338]">
             {/* Canvas area */}
             <div className="flex-1 min-h-0">
               <StudioCanvas
@@ -538,7 +547,7 @@ export function StudioEditor({
               />
             </div>
             {/* Transport bar below canvas */}
-            <div className="h-9 shrink-0 bg-[#0c0c0c] border-t border-[#1a1a1a] flex items-center justify-center gap-4 px-4">
+            <div className="h-10 shrink-0 bg-[#2b2d31] border-t border-[#1e1f22] flex items-center justify-center gap-4 px-4">
               <span className="text-[11px] font-mono text-emerald-400 tabular-nums">
                 {formatTime(currentTime)}
               </span>
@@ -565,10 +574,10 @@ export function StudioEditor({
           {showProperties && (
             <>
               <div
-                className="w-px shrink-0 cursor-col-resize bg-[#1a1a1a] hover:bg-red-500/50 transition-colors"
+                className="w-[3px] shrink-0 cursor-col-resize bg-[#1e1f22] hover:bg-indigo-500/60 transition-colors"
                 onMouseDown={() => startDrag('properties')}
               />
-              <div className="shrink-0 bg-[#0e0e0e] overflow-y-auto overflow-x-hidden" style={{ width: propertiesWidth }}>
+              <div className="shrink-0 bg-[#2b2d31] border-l border-[#1e1f22] overflow-y-auto overflow-x-hidden" style={{ width: propertiesWidth }}>
                 {selectedEvent ? (
                   <StudioEventSettings
                     event={selectedEvent}
@@ -601,16 +610,16 @@ export function StudioEditor({
         {/* Timeline resize splitter */}
         {showTimeline && (
           <div
-            className="h-[6px] shrink-0 cursor-row-resize bg-[#1a1a1a] hover:bg-red-500/50 transition-colors flex items-center justify-center group"
+            className="h-[5px] shrink-0 cursor-row-resize bg-[#1e1f22] hover:bg-indigo-500/60 transition-colors flex items-center justify-center group"
             onMouseDown={() => startDrag('timeline')}
           >
-            <div className="w-8 h-[2px] rounded-full bg-zinc-600 group-hover:bg-red-400 transition-colors" />
+            <div className="w-10 h-[2px] rounded-full bg-zinc-600 group-hover:bg-indigo-400 transition-colors" />
           </div>
         )}
 
         {/* Bottom: Timeline */}
         {showTimeline && (
-          <div className="shrink-0 bg-[#0c0c0c] overflow-hidden" style={{ height: timelineHeight }}>
+          <div className="shrink-0 bg-[#232428] overflow-hidden border-t border-[#1e1f22]" style={{ height: timelineHeight }}>
             <StudioTimeline
               content={content}
               onContentChange={(updates) => {

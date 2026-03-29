@@ -326,7 +326,7 @@ export function StudioEventSettings({
                   <select
                     value={newProperty}
                     onChange={(e) => setNewProperty(e.target.value)}
-                    className="w-full h-6 text-[10px] rounded border border-zinc-700 bg-zinc-900 text-zinc-200 px-1"
+                    className="w-full h-6 text-[10px] rounded border border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1"
                   >
                     {PROPERTY_OPTIONS.map((p) => (
                       <option key={p.value} value={p.value}>{p.label}</option>
@@ -338,7 +338,7 @@ export function StudioEventSettings({
                   <select
                     value={newEasing}
                     onChange={(e) => setNewEasing(e.target.value)}
-                    className="w-full h-6 text-[10px] rounded border border-zinc-700 bg-zinc-900 text-zinc-200 px-1"
+                    className="w-full h-6 text-[10px] rounded border border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1"
                   >
                     {EASING_OPTIONS.map((e) => (
                       <option key={e.value} value={e.value}>{e.label}</option>
@@ -353,7 +353,7 @@ export function StudioEventSettings({
                     value={newFromValue}
                     onChange={(e) => setNewFromValue(e.target.value)}
                     placeholder="auto"
-                    className="h-6 text-[10px] border-zinc-700 bg-zinc-900 text-zinc-200 px-1.5"
+                    className="h-6 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
                   />
                 </div>
                 <div className="space-y-0.5">
@@ -361,7 +361,7 @@ export function StudioEventSettings({
                   <Input
                     value={newToValue}
                     onChange={(e) => setNewToValue(e.target.value)}
-                    className="h-6 text-[10px] border-zinc-700 bg-zinc-900 text-zinc-200 px-1.5"
+                    className="h-6 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
                   />
                 </div>
               </div>
@@ -372,7 +372,7 @@ export function StudioEventSettings({
                     type="number"
                     value={newDuration}
                     onChange={(e) => setNewDuration(parseInt(e.target.value) || 0)}
-                    className="h-6 text-[10px] border-zinc-700 bg-zinc-900 text-zinc-200 px-1.5"
+                    className="h-6 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
                   />
                 </div>
                 <div className="space-y-0.5">
@@ -381,7 +381,7 @@ export function StudioEventSettings({
                     type="number"
                     value={newDelay}
                     onChange={(e) => setNewDelay(parseInt(e.target.value) || 0)}
-                    className="h-6 text-[10px] border-zinc-700 bg-zinc-900 text-zinc-200 px-1.5"
+                    className="h-6 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
                   />
                 </div>
                 <div className="space-y-0.5">
@@ -389,7 +389,7 @@ export function StudioEventSettings({
                   <select
                     value={newEndBehaviour}
                     onChange={(e) => setNewEndBehaviour(e.target.value)}
-                    className="w-full h-6 text-[10px] rounded border border-zinc-700 bg-zinc-900 text-zinc-200 px-1"
+                    className="w-full h-6 text-[10px] rounded border border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1"
                   >
                     {END_BEHAVIOUR_OPTIONS.map((e) => (
                       <option key={e.value} value={e.value}>{e.label}</option>

@@ -355,9 +355,9 @@ export function StudioGallery({
   }
 
   return (
-    <div className="flex h-full flex-col bg-zinc-900 text-zinc-100">
+    <div className="flex h-full flex-col bg-[#2b2d31] text-zinc-200">
       <Tabs defaultValue={initialTab} key={initialTab} className="flex h-full flex-col">
-        <div className="flex border-b border-zinc-700/50">
+        <div className="flex border-b border-[#1e1f22]">
           <TabsList className="w-full bg-transparent p-0 h-auto rounded-none gap-0">
             <TabsTrigger value="images" className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2.5 text-[10px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-red-400 data-[state=active]:bg-red-500/10 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-500 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-zinc-800/50">
               <ImageIcon className="size-3.5" />
@@ -383,7 +383,7 @@ export function StudioGallery({
           <input ref={imageInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />
           <Button
             variant="outline" size="sm"
-            className="mt-2 w-full border-dashed border-zinc-600 bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+            className="mt-2 w-full border-dashed border-zinc-600 bg-[#383a40] text-zinc-300 hover:bg-zinc-700"
             onClick={() => imageInputRef.current?.click()} disabled={uploading}
           >
             {uploading ? <Loader2Icon className="mr-1.5 size-3.5 animate-spin" /> : <UploadIcon className="mr-1.5 size-3.5" />}
@@ -399,7 +399,7 @@ export function StudioGallery({
             {images.map((asset) => (
               <button
                 key={asset.id}
-                className="group relative aspect-video overflow-hidden rounded border border-zinc-700 bg-zinc-800 hover:border-zinc-500 cursor-grab active:cursor-grabbing"
+                className="group relative aspect-video overflow-hidden rounded border border-[#3f4147] bg-[#383a40] hover:border-zinc-500 cursor-grab active:cursor-grabbing"
                 draggable onDragStart={(e) => handleAssetDragStart(e, asset)}
                 onClick={() => addImageToCanvas(asset)} title={`${asset.name} — drag to canvas or click to add`}
               >
@@ -425,7 +425,7 @@ export function StudioGallery({
           <input ref={videoInputRef} type="file" accept="video/mp4,video/webm" multiple className="hidden" onChange={handleVideoUpload} />
           <Button
             variant="outline" size="sm"
-            className="mt-2 w-full border-dashed border-zinc-600 bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+            className="mt-2 w-full border-dashed border-zinc-600 bg-[#383a40] text-zinc-300 hover:bg-zinc-700"
             onClick={() => videoInputRef.current?.click()} disabled={uploading}
           >
             {uploading ? <Loader2Icon className="mr-1.5 size-3.5 animate-spin" /> : <UploadIcon className="mr-1.5 size-3.5" />}
@@ -441,7 +441,7 @@ export function StudioGallery({
             {videos.map((asset) => (
               <button
                 key={asset.id}
-                className="group relative aspect-video overflow-hidden rounded border border-zinc-700 bg-zinc-800 hover:border-zinc-500 cursor-grab active:cursor-grabbing"
+                className="group relative aspect-video overflow-hidden rounded border border-[#3f4147] bg-[#383a40] hover:border-zinc-500 cursor-grab active:cursor-grabbing"
                 draggable onDragStart={(e) => handleAssetDragStart(e, asset)}
                 onClick={() => addVideoToCanvas(asset)} title={`${asset.name} — drag to canvas or click to add`}
               >
@@ -490,7 +490,7 @@ export function StudioGallery({
                 onChange={(e) => setNewCategoryName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleAddCategory() }}
                 placeholder="New category..."
-                className="h-7 flex-1 border-zinc-700 bg-zinc-800 text-xs text-zinc-100 placeholder:text-zinc-500"
+                className="h-7 flex-1 border-[#3f4147] bg-[#383a40] text-xs text-zinc-100 placeholder:text-zinc-500"
               />
               <Button
                 variant="outline" size="sm"

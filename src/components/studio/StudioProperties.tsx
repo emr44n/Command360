@@ -79,7 +79,7 @@ export function StudioProperties({
 
   if (!layer) {
     return (
-      <div className="flex h-full items-center justify-center bg-zinc-900 p-4 text-zinc-500">
+      <div className="flex h-full items-center justify-center bg-[#2b2d31] p-4 text-zinc-500">
         <p className="text-center text-xs">Select a layer to edit its properties</p>
       </div>
     )
@@ -108,7 +108,7 @@ export function StudioProperties({
   }
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto bg-zinc-900 text-zinc-100">
+    <div className="flex h-full flex-col overflow-y-auto bg-[#2b2d31] text-zinc-100">
       {/* Header */}
       <div className="flex items-center gap-2 border-b border-zinc-800 px-3 py-2">
         <span className="flex-1 truncate text-xs font-medium">{layer.name}</span>

@@ -213,7 +213,7 @@ export function StudioTimeline({
     content.layers.find((l) => l.id === layerId)
 
   return (
-    <div ref={timelineContainerRef} className="flex flex-col h-full bg-zinc-900 border-t border-zinc-800 select-none">
+    <div ref={timelineContainerRef} className="flex flex-col h-full bg-[#232428] border-t border-[#1e1f22] select-none">
       {/* Controls bar */}
       <TimelineControls
         isPlaying={isPlaying}
@@ -229,7 +229,7 @@ export function StudioTimeline({
       {/* Event markers + Ruler row */}
       <div className="flex">
         {/* Spacer for the label column */}
-        <div className="flex-shrink-0 bg-zinc-900 border-r border-zinc-800 relative" style={{ width: labelWidth }}>
+        <div className="flex-shrink-0 bg-[#2b2d31] border-r border-[#1e1f22] relative" style={{ width: labelWidth }}>
           <div
             className="absolute right-0 top-0 bottom-0 w-[4px] cursor-col-resize hover:bg-red-500/50 transition-colors z-10"
             onMouseDown={() => {
