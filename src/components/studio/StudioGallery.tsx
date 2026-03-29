@@ -187,7 +187,7 @@ export function StudioGallery({
     e.target.value = ''
   }
 
-  const handleAssetDragStart = (e: React.DragEvent<HTMLButtonElement>, asset: AssetItem) => {
+  const handleAssetDragStart = (e: React.DragEvent<HTMLElement>, asset: AssetItem) => {
     e.dataTransfer.setData('studio/asset-type', asset.type)
     e.dataTransfer.setData('studio/asset-src', asset.url)
     e.dataTransfer.effectAllowed = 'copy'
@@ -397,8 +397,10 @@ export function StudioGallery({
           {images.length === 0 && <p className="mt-4 text-center text-xs text-zinc-500">No images uploaded yet</p>}
           <div className="mt-2 grid grid-cols-2 gap-1.5">
             {images.map((asset) => (
-              <button
+              <div
                 key={asset.id}
+                role="button"
+                tabIndex={0}
                 className="group relative aspect-video overflow-hidden rounded border border-[#3f4147] bg-[#383a40] hover:border-zinc-500 cursor-grab active:cursor-grabbing"
                 draggable onDragStart={(e) => handleAssetDragStart(e, asset)}
                 onClick={() => addImageToCanvas(asset)} title={`${asset.name} — drag to canvas or click to add`}
@@ -415,7 +417,7 @@ export function StudioGallery({
                   <Trash2Icon className="size-2.5" />
                 </button>
                 <span className="absolute bottom-0 left-0 right-0 truncate bg-black/60 px-1 py-0.5 text-[10px] text-zinc-300">{asset.name}</span>
-              </button>
+              </div>
             ))}
           </div>
         </TabsContent>
@@ -439,8 +441,10 @@ export function StudioGallery({
           {videos.length === 0 && <p className="mt-4 text-center text-xs text-zinc-500">No videos uploaded yet</p>}
           <div className="mt-2 grid grid-cols-2 gap-1.5">
             {videos.map((asset) => (
-              <button
+              <div
                 key={asset.id}
+                role="button"
+                tabIndex={0}
                 className="group relative aspect-video overflow-hidden rounded border border-[#3f4147] bg-[#383a40] hover:border-zinc-500 cursor-grab active:cursor-grabbing"
                 draggable onDragStart={(e) => handleAssetDragStart(e, asset)}
                 onClick={() => addVideoToCanvas(asset)} title={`${asset.name} — drag to canvas or click to add`}
@@ -457,7 +461,7 @@ export function StudioGallery({
                   <Trash2Icon className="size-2.5" />
                 </button>
                 <span className="absolute bottom-0 left-0 right-0 truncate bg-black/60 px-1 py-0.5 text-[10px] text-zinc-300">{asset.name}</span>
-              </button>
+              </div>
             ))}
           </div>
         </TabsContent>
