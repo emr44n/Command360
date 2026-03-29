@@ -2,11 +2,10 @@ import Link from 'next/link'
 
 const FOOTER_LINKS = {
   Platform: [
-    { href: '/#features', label: 'Features' },
+    { href: '/#features', label: 'Platform Features' },
     { href: '/command-studio', label: 'Command Studio' },
-    { href: '/templates', label: 'Templates' },
-    { href: '/pricing', label: 'Pricing' },
     { href: '/#how-it-works', label: 'How It Works' },
+    { href: '/contact', label: 'Book a Demo' },
   ],
   Services: [
     { href: '/solutions/fire-rescue', label: 'Fire & Rescue' },

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useStudioStore } from '@/stores/studioStore'
 import {
   Trash2Icon,
   CopyIcon,
@@ -74,7 +75,7 @@ export function StudioProperties({
   const [newKfProperty, setNewKfProperty] = useState<string>('opacity')
   const [fadeInDuration, setFadeInDuration] = useState(500)
   const [fadeOutDuration, setFadeOutDuration] = useState(500)
-  const [aspectLocked, setAspectLocked] = useState(false)
+  const { aspectLocked, setAspectLocked } = useStudioStore()
 
   if (!layer) {
     return (
@@ -183,7 +184,7 @@ export function StudioProperties({
               Size
             </Label>
             <button
-              onClick={() => setAspectLocked((v) => !v)}
+              onClick={() => setAspectLocked(!aspectLocked)}
               className={`p-1 rounded transition-colors ${
                 aspectLocked
                   ? 'text-red-400 bg-red-400/10 hover:bg-red-400/20'

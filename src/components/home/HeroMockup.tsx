@@ -1,9 +1,43 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { BarChart2, Cloud, HelpCircle, MessageCircle, Sparkles, Star } from 'lucide-react'
+import { BarChart2, Cloud, HelpCircle, MessageCircle, Sparkles, Star, Layers, Zap } from 'lucide-react'
 
 const TOOLS = [
+  {
+    label: 'Studio',
+    icon: Layers,
+    color: '#8b5cf6',
+    bg: 'rgba(139,92,246,0.12)',
+    content: (
+      <div className="space-y-3 px-5 pb-5">
+        <p className="text-white/80 text-xs font-medium">Interactive training scenario builder</p>
+        {/* Event triggers */}
+        <div className="space-y-1.5">
+          {[
+            { name: 'Fire Spread', color: '#ef4444', triggered: true },
+            { name: 'Smoke Layer', color: '#f59e0b', triggered: false },
+            { name: 'Casualties Revealed', color: '#6366f1', triggered: false },
+          ].map((evt) => (
+            <div key={evt.name} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/[0.06] bg-white/[0.02]">
+              <Zap className="w-3 h-3" style={{ color: evt.color }} />
+              <span className="text-[11px] text-white/50 flex-1">{evt.name}</span>
+              <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${evt.triggered ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/[0.04] text-white/20'}`}>
+                {evt.triggered ? 'Triggered' : 'Ready'}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="flex items-center gap-3 pt-1">
+          <div className="flex items-center gap-1.5 text-[9px] text-white/25">
+            <Layers className="w-3 h-3 text-purple-400/60" />
+            3 layers · 1 scene
+          </div>
+          <span className="text-[9px] text-white/15 font-mono">Timeline: 10s</span>
+        </div>
+      </div>
+    ),
+  },
   {
     label: 'Live Poll',
     icon: BarChart2,

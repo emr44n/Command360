@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -15,6 +16,7 @@ export function LoginForm() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+  const { closeAuth } = useAuthSlideOver()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -22,6 +24,8 @@ export function LoginForm() {
     setLoading(true)
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) { toast.error(error.message); setLoading(false); return }
+    // Force-close slide-over (even if it was required), then navigate to dashboard
+    closeAuth(true)
     router.push('/dashboard')
     router.refresh()
   }

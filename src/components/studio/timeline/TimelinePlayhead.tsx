@@ -5,11 +5,11 @@ import { useCallback, useRef } from 'react'
 interface TimelinePlayheadProps {
   position: number
   zoomLevel: number
-  height: number
+  height?: number
   onSeek: (ms: number) => void
 }
 
-export function TimelinePlayhead({ position, zoomLevel, height, onSeek }: TimelinePlayheadProps) {
+export function TimelinePlayhead({ position, zoomLevel, onSeek }: TimelinePlayheadProps) {
   const isDragging = useRef(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -47,8 +47,8 @@ export function TimelinePlayhead({ position, zoomLevel, height, onSeek }: Timeli
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 z-30 pointer-events-none"
-      style={{ left: pixelPosition, height }}
+      className="absolute top-0 bottom-0 z-30 pointer-events-none"
+      style={{ left: pixelPosition }}
     >
       {/* Triangle handle at top */}
       <div
@@ -60,7 +60,7 @@ export function TimelinePlayhead({ position, zoomLevel, height, onSeek }: Timeli
         </svg>
       </div>
       {/* Vertical line */}
-      <div className="absolute left-0 top-0 w-px bg-red-500 pointer-events-none" style={{ height }} />
+      <div className="absolute left-0 top-0 bottom-0 w-px bg-red-500 pointer-events-none" />
     </div>
   )
 }

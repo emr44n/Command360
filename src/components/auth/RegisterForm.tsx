@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -17,6 +18,7 @@ export function RegisterForm() {
   const [emailSent, setEmailSent] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+  const { closeAuth } = useAuthSlideOver()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -27,6 +29,7 @@ export function RegisterForm() {
     if (error) { toast.error(error.message); setLoading(false); return }
     if (data.session) {
       toast.success('Account created! Redirecting...')
+      closeAuth(true)
       router.push('/dashboard')
       router.refresh()
     } else {

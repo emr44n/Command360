@@ -291,6 +291,12 @@ export function StudioTimeline({
                 onToggleMute={() => handleToggleMute(track.id)}
                 onToggleHidden={() => handleToggleHidden(track.id)}
                 onDeleteTrack={() => handleDeleteTrack(track.id)}
+                onRenameTrack={(newName) => {
+                  const updatedTracks = tracks.map((t) =>
+                    t.id === track.id ? { ...t, name: newName } : t
+                  )
+                  onContentChange({ tracks: updatedTracks })
+                }}
               />
             )
           })}
@@ -301,20 +307,19 @@ export function StudioTimeline({
               No tracks. Add layers to create timeline tracks.
             </div>
           )}
+        </div>
 
-          {/* Playhead overlay */}
-          <div className="absolute top-0 right-0 bottom-0 pointer-events-none overflow-hidden" style={{ left: labelWidth }}>
-            <div
-              className="relative h-full"
-              style={{ transform: `translateX(-${scrollLeft}px)` }}
-            >
-              <TimelinePlayhead
-                position={playheadPosition}
-                zoomLevel={zoomLevel}
-                height={trackAreaHeight}
-                onSeek={onPlayheadChange}
-              />
-            </div>
+        {/* Playhead overlay — positioned relative to the scroll container so it spans the full visible height */}
+        <div className="absolute top-0 right-0 bottom-0 pointer-events-none overflow-hidden" style={{ left: labelWidth, minHeight: '100%' }}>
+          <div
+            className="relative h-full"
+            style={{ transform: `translateX(-${scrollLeft}px)` }}
+          >
+            <TimelinePlayhead
+              position={playheadPosition}
+              zoomLevel={zoomLevel}
+              onSeek={onPlayheadChange}
+            />
           </div>
         </div>
       </div>

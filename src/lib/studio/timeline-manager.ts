@@ -40,15 +40,27 @@ export function addTrackForLayer(
     return result
   }
 
+  const clipId = crypto.randomUUID()
+  const trackId = crypto.randomUUID()
+  const defaultDuration = result.totalDuration || 10000
+
   const track: StudioTrack = {
-    id: crypto.randomUUID(),
+    id: trackId,
     layerId: layer.id,
     name: layer.name,
     muted: false,
     hidden: false,
     locked: layer.locked,
     color: '#6366f1',
-    clips: [],
+    clips: [{
+      id: clipId,
+      trackId,
+      startTime: 0,
+      duration: defaultDuration,
+      trimStart: 0,
+      trimEnd: 0,
+      keyframes: [],
+    }],
   }
 
   result.tracks.push(track)

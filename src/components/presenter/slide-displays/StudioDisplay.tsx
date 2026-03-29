@@ -3,7 +3,8 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import type { Slide, StudioContent, StudioLayer, StudioLayerState, StudioEvent } from '@/types/slide'
 import type { Session } from '@/types/session'
 import type { RealtimeChannel } from '@supabase/supabase-js'
-import { Zap, Vote, Loader2, QrCode, Play } from 'lucide-react'
+import { Zap, Vote, QrCode, Play, ChevronRight, RotateCcw } from 'lucide-react'
+import { playEvent, type EventPlaybackController } from '@/lib/studio/event-playback'
 
 interface Props {
   slide: Slide
@@ -22,13 +23,22 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
   const [activeVote, setActiveVote] = useState<{ eventId: string; question: string; options: { id: string; label: string }[] } | null>(null)
   const [voteResults, setVoteResults] = useState<Record<string, number>>({})
   const [triggeredEvents, setTriggeredEvents] = useState<Set<string>>(new Set())
+  const [animatingEventId, setAnimatingEventId] = useState<string | null>(null)
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set())
+  const eventControllerRef = useRef<EventPlaybackController | null>(null)
+  const initialStatesRef = useRef<Record<string, StudioLayerState>>(buildInitialStates(layers))
 
   // Reset states when slide changes
   useEffect(() => {
-    setLayerStates(buildInitialStates(layers))
+    const initial = buildInitialStates(layers)
+    initialStatesRef.current = initial
+    setLayerStates(initial)
     setActiveVote(null)
     setVoteResults({})
     setTriggeredEvents(new Set())
+    setAnimatingEventId(null)
+    eventControllerRef.current?.cancel()
+    eventControllerRef.current = null
   }, [slide.id])
 
   // Listen for incoming STUDIO_VOTE_CAST messages from participants
@@ -49,33 +59,66 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
     // Supabase doesn't provide a per-event unsubscribe, so cleanup happens on slide change via the reset above
   }, [channelRef?.current, slide.id])
 
-  const applyActions = useCallback((event: StudioEvent) => {
-    const newStates = { ...layerStates }
+  const triggerEvent = useCallback((event: StudioEvent) => {
+    // Cancel any running animation
+    eventControllerRef.current?.cancel()
 
-    for (const action of event.actions) {
-      const current = newStates[action.layerId]
-      if (!current) continue
-
-      const prop = action.property
-      if (prop === 'src') {
-        newStates[action.layerId] = { ...current, src: action.toValue as string }
-      } else if (prop === 'visible') {
-        newStates[action.layerId] = { ...current, visible: action.toValue as boolean }
-      } else {
-        newStates[action.layerId] = { ...current, [prop]: action.toValue as number }
-      }
+    if (event.actions.length === 0) {
+      setTriggeredEvents((prev) => new Set(prev).add(event.id))
+      return
     }
 
-    setLayerStates(newStates)
-    setTriggeredEvents((prev) => new Set(prev).add(event.id))
+    setAnimatingEventId(event.id)
 
-    // Broadcast to participants
-    channelRef?.current?.send({
-      type: 'broadcast',
-      event: 'STUDIO_EVENT_TRIGGERED',
-      payload: { slide_id: slide.id, event_id: event.id, layerStates: newStates },
-    })
-  }, [layerStates, channelRef, slide.id])
+    const controller = playEvent(
+      event,
+      layers,
+      (overrides) => {
+        // Merge overrides with current base layer states
+        setLayerStates((prev) => {
+          const next = { ...prev }
+          for (const [layerId, props] of Object.entries(overrides)) {
+            if (next[layerId]) {
+              next[layerId] = { ...next[layerId], ...props }
+            }
+          }
+          return next
+        })
+      },
+      () => {
+        // Animation complete
+        setAnimatingEventId(null)
+        setTriggeredEvents((prev) => new Set(prev).add(event.id))
+        eventControllerRef.current = null
+
+        // Broadcast final state to participants
+        setLayerStates((current) => {
+          channelRef?.current?.send({
+            type: 'broadcast',
+            event: 'STUDIO_EVENT_TRIGGERED',
+            payload: { slide_id: slide.id, event_id: event.id, layerStates: current },
+          })
+          return current
+        })
+      }
+    )
+
+    eventControllerRef.current = controller
+  }, [layers, channelRef, slide.id])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => { eventControllerRef.current?.cancel() }
+  }, [])
+
+  const handleResetAll = useCallback(() => {
+    eventControllerRef.current?.cancel()
+    eventControllerRef.current = null
+    setAnimatingEventId(null)
+    setLayerStates(buildInitialStates(layers))
+    setTriggeredEvents(new Set())
+    initialStatesRef.current = buildInitialStates(layers)
+  }, [layers])
 
   // Merge v1 events and v2 timelineEvents into a single list
   const allEvents: StudioEvent[] = useMemo(() => {
@@ -104,7 +147,7 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
   }, [events, timelineEvents])
 
   function handleTriggerManual(event: StudioEvent) {
-    applyActions(event)
+    triggerEvent(event)
   }
 
   function handleTriggerVote(event: StudioEvent) {
@@ -146,9 +189,9 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
       const winningOpt = evt.voteOptions?.find((o) => o.id === winningId)
       if (winningOpt?.triggersEventId) {
         const targetEvent = allEvents.find((e) => e.id === winningOpt.triggersEventId)
-        if (targetEvent) applyActions(targetEvent)
+        if (targetEvent) triggerEvent(targetEvent)
       } else {
-        applyActions(evt)
+        triggerEvent(evt)
       }
     }
 
@@ -194,7 +237,6 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
                 key={layer.id}
                 layer={layer}
                 state={state}
-                maxDuration={getMaxDuration(allEvents)}
               />
             )
           })}
@@ -211,8 +253,18 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
 
       {/* Events panel (right side) */}
       <div className="w-56 shrink-0 flex flex-col overflow-hidden">
-        <div className="mb-2">
+        <div className="mb-2 flex items-center justify-between">
           <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Events</h3>
+          {triggeredEvents.size > 0 && (
+            <button
+              onClick={handleResetAll}
+              className="flex items-center gap-1 text-[9px] font-medium text-muted-foreground hover:text-foreground transition-colors px-1.5 py-0.5 rounded hover:bg-muted"
+              title="Reset all events"
+            >
+              <RotateCcw className="w-2.5 h-2.5" />
+              Reset
+            </button>
+          )}
         </div>
 
         {/* Active vote banner */}
@@ -248,7 +300,8 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
               key={evt.id}
               event={evt}
               triggered={triggeredEvents.has(evt.id)}
-              disabled={!!activeVote}
+              animating={animatingEventId === evt.id}
+              disabled={!!activeVote || animatingEventId === evt.id}
               onTrigger={() =>
                 evt.trigger === 'vote' ? handleTriggerVote(evt) : handleTriggerManual(evt)
               }
@@ -259,17 +312,33 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
           {eventCategories.map((cat) => {
             const catEvents = groupedEvents.byCategory.get(cat.id)
             if (!catEvents?.length) return null
+            const isCollapsed = collapsedCategories.has(cat.id)
             return (
               <div key={cat.id}>
-                <p className="text-[9px] font-semibold uppercase tracking-wider mb-1" style={{ color: cat.color || '#9ca3af' }}>
-                  {cat.name}
-                </p>
-                {catEvents.map((evt) => (
+                <button
+                  onClick={() => setCollapsedCategories((prev) => {
+                    const next = new Set(prev)
+                    if (next.has(cat.id)) next.delete(cat.id)
+                    else next.add(cat.id)
+                    return next
+                  })}
+                  className="w-full flex items-center gap-1 mb-1 group/cat"
+                >
+                  <ChevronRight
+                    className={`w-3 h-3 text-muted-foreground transition-transform ${isCollapsed ? '' : 'rotate-90'}`}
+                  />
+                  <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: cat.color || '#9ca3af' }}>
+                    {cat.name}
+                  </span>
+                  <span className="text-[8px] text-muted-foreground/60 ml-auto">{catEvents.length}</span>
+                </button>
+                {!isCollapsed && catEvents.map((evt) => (
                   <EventButton
                     key={evt.id}
                     event={evt}
                     triggered={triggeredEvents.has(evt.id)}
-                    disabled={!!activeVote}
+                    animating={animatingEventId === evt.id}
+                    disabled={!!activeVote || animatingEventId === evt.id}
                     onTrigger={() =>
                       evt.trigger === 'vote' ? handleTriggerVote(evt) : handleTriggerManual(evt)
                     }
@@ -307,19 +376,9 @@ function buildInitialStates(layers: StudioLayer[]): Record<string, StudioLayerSt
   return map
 }
 
-function getMaxDuration(events: StudioEvent[]): number {
-  let max = 500
-  for (const e of events) {
-    for (const a of e.actions) {
-      if (a.delay + a.duration > max) max = a.delay + a.duration
-    }
-  }
-  return max
-}
-
 /* ─── DOM Layer Renderer ─── */
 
-function DomLayer({ layer, state, maxDuration }: { layer: StudioLayer; state: StudioLayerState; maxDuration: number }) {
+function DomLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerState }) {
   const baseStyle: React.CSSProperties = {
     position: 'absolute',
     left: `${state.x}%`,
@@ -329,7 +388,6 @@ function DomLayer({ layer, state, maxDuration }: { layer: StudioLayer; state: St
     opacity: state.opacity,
     transform: `rotate(${state.rotation}deg)`,
     mixBlendMode: layer.blendMode as React.CSSProperties['mixBlendMode'],
-    transition: `all ${maxDuration}ms ease-in-out`,
     zIndex: layer.zIndex,
     overflow: 'hidden',
   }
@@ -405,30 +463,42 @@ function DomLayer({ layer, state, maxDuration }: { layer: StudioLayer; state: St
 function EventButton({
   event,
   triggered,
+  animating,
   disabled,
   onTrigger,
 }: {
   event: StudioEvent
   triggered: boolean
+  animating: boolean
   disabled: boolean
   onTrigger: () => void
 }) {
   const isVote = event.trigger === 'vote'
+  const actionCount = event.actions.length
   return (
     <button
       onClick={onTrigger}
       disabled={disabled}
       className={`w-full flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all text-left mb-1 ${
-        triggered
-          ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/30'
-          : 'bg-muted hover:bg-muted/80 text-foreground border border-border hover:border-primary/30'
+        animating
+          ? 'bg-amber-500/15 text-amber-600 border border-amber-500/40 animate-pulse'
+          : triggered
+            ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/30'
+            : 'bg-muted hover:bg-muted/80 text-foreground border border-border hover:border-primary/30'
       } disabled:opacity-40 disabled:cursor-not-allowed`}
-      style={event.color && !triggered ? { borderColor: `${event.color}40`, color: event.color } : undefined}
+      style={event.color && !triggered && !animating ? { borderColor: `${event.color}40`, color: event.color } : undefined}
     >
       {event.icon && <span>{event.icon}</span>}
       {isVote ? <Vote className="w-3 h-3 shrink-0" /> : <Zap className="w-3 h-3 shrink-0" />}
       <span className="truncate">{event.name}</span>
-      <Play className="w-2.5 h-2.5 ml-auto shrink-0 opacity-40" />
+      {actionCount > 0 && (
+        <span className="text-[9px] bg-foreground/10 px-1 py-0.5 rounded-full leading-none">{actionCount}</span>
+      )}
+      {animating ? (
+        <span className="w-2.5 h-2.5 ml-auto shrink-0 rounded-full bg-amber-500 animate-ping" />
+      ) : (
+        <Play className="w-2.5 h-2.5 ml-auto shrink-0 opacity-40" />
+      )}
     </button>
   )
 }

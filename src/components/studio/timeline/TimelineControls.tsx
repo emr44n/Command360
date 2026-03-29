@@ -53,7 +53,7 @@ export function TimelineControls({
         ) : (
           <button
             onClick={onPlay}
-            className="flex items-center justify-center w-7 h-7 rounded bg-red-600 hover:bg-red-500 text-white transition-colors"
+            className="flex items-center justify-center w-7 h-7 rounded bg-zinc-700 hover:bg-zinc-600 text-white transition-colors"
             title="Play"
           >
             <Play className="w-3.5 h-3.5 ml-0.5" />

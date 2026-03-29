@@ -5,6 +5,7 @@ import { Stage, Layer, Rect, Text, Image as KonvaImage, Transformer } from 'reac
 import type Konva from 'konva'
 import type { StudioLayer, StudioTrack, StudioLayerState } from '@/types/slide'
 import { computeLayerStatesAtTime } from '@/lib/studio/playback-engine'
+import { useStudioStore } from '@/stores/studioStore'
 
 interface StudioCanvasProps {
   layers: StudioLayer[]
@@ -16,27 +17,142 @@ interface StudioCanvasProps {
   onSelectLayer?: (id: string | null) => void
   onUpdateLayer?: (id: string, updates: Partial<StudioLayer>) => void
   onDropAsset?: (type: 'image' | 'video', src: string, x: number, y: number) => void
+  eventOverrides?: Record<string, Partial<StudioLayerState>>
 }
 
 const ASPECT_RATIO = 16 / 9
 
-/** Shared Transformer props for Photoshop-style handles */
+/**
+ * Photoshop/Illustrator-style cursor detection for Konva Transformer.
+ *
+ * Konva's built-in anchors are separate nodes. We override their cursors so:
+ * - Corner anchors (inside approach) → resize cursor
+ * - Rotation anchor (outside approach) → rotate cursor
+ * - Edge anchors → directional resize
+ *
+ * Additionally, we add a mousemove listener on the Stage so that when the
+ * cursor is near a corner of the selected object from the OUTSIDE, the cursor
+ * changes to 'grab' (rotate). From the INSIDE, it stays as resize.
+ */
+const ANCHOR_CURSORS: Record<string, string> = {
+  'top-left': 'nwse-resize',
+  'top-right': 'nesw-resize',
+  'bottom-left': 'nesw-resize',
+  'bottom-right': 'nwse-resize',
+  'middle-left': 'ew-resize',
+  'middle-right': 'ew-resize',
+  'middle-top': 'ns-resize',
+  'middle-bottom': 'ns-resize',
+  'rotater': 'grab',
+}
+
+const CORNER_ROTATE_CURSORS: Record<string, string> = {
+  'top-left': 'nwse-resize',
+  'top-right': 'nesw-resize',
+  'bottom-left': 'nesw-resize',
+  'bottom-right': 'nwse-resize',
+}
+
+/** Attach Photoshop-style cursor handlers to Transformer anchor nodes */
+function setupTransformerCursors(tr: { getStage: () => { container: () => HTMLDivElement } | null; find: (selector: string) => Array<{ name: () => string; on: (event: string, fn: () => void) => void }> } | null) {
+  if (!tr) return
+  const stage = tr.getStage()
+  if (!stage) return
+  const container = stage.container()
+
+  // Konva anchors are Rect children with names like 'top-left', 'rotater', etc.
+  const anchors = tr.find('Rect')
+  for (const anchor of anchors) {
+    const name = anchor.name()
+    const cursor = ANCHOR_CURSORS[name]
+    if (cursor) {
+      anchor.on('mouseenter', () => { container.style.cursor = cursor })
+      anchor.on('mouseleave', () => { container.style.cursor = 'default' })
+    }
+  }
+
+  // Rotation anchor (circle) — always shows grab/rotate cursor
+  const circles = tr.find('Circle')
+  for (const circle of circles) {
+    circle.on('mouseenter', () => { container.style.cursor = 'grab' })
+    circle.on('mouseleave', () => { container.style.cursor = 'default' })
+  }
+}
+
+/**
+ * Returns a cursor string based on mouse proximity to corners of the selected shape.
+ * - Inside the bounding box near corners → resize cursor
+ * - Outside the bounding box near corners → rotate (grab) cursor
+ * - Otherwise → null (use default)
+ */
+function getPhotoshopCursor(
+  mouseX: number,
+  mouseY: number,
+  node: { x: () => number; y: () => number; width: () => number; height: () => number; rotation: () => number; scaleX: () => number; scaleY: () => number } | null,
+  threshold: number = 20
+): string | null {
+  if (!node) return null
+
+  const cx = node.x()
+  const cy = node.y()
+  const w = node.width() * node.scaleX()
+  const h = node.height() * node.scaleY()
+  const rot = (node.rotation() * Math.PI) / 180
+
+  // The four corners in world space (accounting for rotation around top-left)
+  const corners = [
+    { name: 'top-left', lx: 0, ly: 0 },
+    { name: 'top-right', lx: w, ly: 0 },
+    { name: 'bottom-left', lx: 0, ly: h },
+    { name: 'bottom-right', lx: w, ly: h },
+  ]
+
+  // Check if mouse is inside the bounding box (unrotated space)
+  const cosR = Math.cos(-rot)
+  const sinR = Math.sin(-rot)
+  const dx = mouseX - cx
+  const dy = mouseY - cy
+  const localX = dx * cosR - dy * sinR
+  const localY = dx * sinR + dy * cosR
+  const isInside = localX >= -threshold && localX <= w + threshold && localY >= -threshold && localY <= h + threshold
+  const isStrictlyInside = localX >= 0 && localX <= w && localY >= 0 && localY <= h
+
+  for (const corner of corners) {
+    // Transform corner to world space
+    const wx = cx + corner.lx * Math.cos(rot) - corner.ly * Math.sin(rot)
+    const wy = cy + corner.lx * Math.sin(rot) + corner.ly * Math.cos(rot)
+
+    const dist = Math.sqrt((mouseX - wx) ** 2 + (mouseY - wy) ** 2)
+    if (dist < threshold) {
+      if (isStrictlyInside) {
+        // Inside → resize
+        return CORNER_ROTATE_CURSORS[corner.name] || 'nwse-resize'
+      } else {
+        // Outside → rotate
+        return 'grab'
+      }
+    }
+  }
+
+  return null
+}
+
 const TRANSFORMER_PROPS = {
   flipEnabled: false,
   rotateEnabled: true,
   rotateAnchorOffset: 24,
   centeredScaling: false,
   rotationSnaps: [0, 45, 90, 135, 180, 225, 270, 315],
-  anchorCornerRadius: 2,
-  anchorStroke: '#ef4444',
+  anchorCornerRadius: 50,
+  anchorStroke: '#3b82f6',
   anchorFill: '#ffffff',
-  anchorSize: 8,
-  borderStroke: '#ef4444',
+  anchorSize: 10,
+  borderStroke: '#3b82f6',
   borderDash: [4, 4],
   keepRatio: false,
   enabledAnchors: [
     'top-left', 'top-right', 'bottom-left', 'bottom-right',
-    'middle-right', 'middle-bottom',
+    'middle-left', 'middle-right', 'middle-top', 'middle-bottom',
   ] as string[],
   boundBoxFunc: (oldBox: { x: number; y: number; width: number; height: number; rotation: number }, newBox: { x: number; y: number; width: number; height: number; rotation: number }) => {
     if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) return oldBox
@@ -66,6 +182,7 @@ function ImageLayerNode({
   onSelect,
   onTransformEnd,
   onDragEnd,
+  shapeRef,
 }: {
   layer: StudioLayer
   state: StudioLayerState
@@ -76,10 +193,9 @@ function ImageLayerNode({
   onSelect: () => void
   onTransformEnd: (attrs: Partial<StudioLayer>) => void
   onDragEnd: (x: number, y: number) => void
+  shapeRef: React.RefObject<Konva.Image | null>
 }) {
   const [image, setImage] = useState<HTMLImageElement | null>(null)
-  const shapeRef = useRef<Konva.Image>(null)
-  const trRef = useRef<Konva.Transformer>(null)
 
   const src = state.src ?? layer.src
   useEffect(() => {
@@ -90,14 +206,7 @@ function ImageLayerNode({
     img.onload = () => setImage(img)
   }, [src])
 
-  useEffect(() => {
-    if (isSelected && interactive && trRef.current && shapeRef.current) {
-      trRef.current.nodes([shapeRef.current])
-      trRef.current.getLayer()?.batchDraw()
-    }
-  }, [isSelected, interactive])
-
-  if (!image || !state.visible) return null
+  if (!state.visible) return null
 
   const x = pct2px(state.x, stageWidth)
   const y = pct2px(state.y, stageHeight)
@@ -106,45 +215,67 @@ function ImageLayerNode({
 
   return (
     <>
-      <KonvaImage
-        ref={shapeRef}
-        image={image}
-        x={x}
-        y={y}
-        width={w}
-        height={h}
-        rotation={state.rotation}
-        opacity={state.opacity}
-        draggable={interactive && !layer.locked}
-        onClick={onSelect}
-        onTap={onSelect}
-        globalCompositeOperation={layer.blendMode === 'normal' ? 'source-over' : layer.blendMode}
-        onDragEnd={(e) => {
-          onDragEnd(
-            px2pct(e.target.x(), stageWidth),
-            px2pct(e.target.y(), stageHeight)
-          )
-        }}
-        onTransformEnd={() => {
-          const node = shapeRef.current
-          if (!node) return
-          const scaleX = node.scaleX()
-          const scaleY = node.scaleY()
-          node.scaleX(1)
-          node.scaleY(1)
-          onTransformEnd({
-            x: px2pct(node.x(), stageWidth),
-            y: px2pct(node.y(), stageHeight),
-            width: px2pct(node.width() * scaleX, stageWidth),
-            height: px2pct(node.height() * scaleY, stageHeight),
-            rotation: node.rotation(),
-          })
-        }}
-      />
-      {isSelected && interactive && (
-        <Transformer
-          ref={trRef}
-          {...TRANSFORMER_PROPS}
+      {/* Transparent hit rect — always clickable, even while image is loading */}
+      {!image && interactive && (
+        <Rect
+          x={x}
+          y={y}
+          width={w}
+          height={h}
+          rotation={state.rotation}
+          fill="transparent"
+          stroke="#3b82f6"
+          strokeWidth={1}
+          dash={[4, 4]}
+          opacity={0.4}
+          listening={true}
+          onClick={onSelect}
+          onTap={onSelect}
+          draggable={!layer.locked}
+          onDragEnd={(e) => {
+            onDragEnd(
+              px2pct(e.target.x(), stageWidth),
+              px2pct(e.target.y(), stageHeight)
+            )
+          }}
+        />
+      )}
+      {image && (
+        <KonvaImage
+          ref={shapeRef}
+          image={image}
+          x={x}
+          y={y}
+          width={w}
+          height={h}
+          rotation={state.rotation}
+          opacity={state.opacity}
+          draggable={interactive && !layer.locked}
+          listening={true}
+          onClick={onSelect}
+          onTap={onSelect}
+          globalCompositeOperation={layer.blendMode === 'normal' ? 'source-over' : layer.blendMode}
+          onDragEnd={(e) => {
+            onDragEnd(
+              px2pct(e.target.x(), stageWidth),
+              px2pct(e.target.y(), stageHeight)
+            )
+          }}
+          onTransformEnd={() => {
+            const node = shapeRef.current
+            if (!node) return
+            const scaleX = node.scaleX()
+            const scaleY = node.scaleY()
+            node.scaleX(1)
+            node.scaleY(1)
+            onTransformEnd({
+              x: px2pct(node.x(), stageWidth),
+              y: px2pct(node.y(), stageHeight),
+              width: px2pct(node.width() * scaleX, stageWidth),
+              height: px2pct(node.height() * scaleY, stageHeight),
+              rotation: node.rotation(),
+            })
+          }}
         />
       )}
     </>
@@ -163,6 +294,7 @@ function TextLayerNode({
   onSelect,
   onTransformEnd,
   onDragEnd,
+  shapeRef,
 }: {
   layer: StudioLayer
   state: StudioLayerState
@@ -173,17 +305,8 @@ function TextLayerNode({
   onSelect: () => void
   onTransformEnd: (attrs: Partial<StudioLayer>) => void
   onDragEnd: (x: number, y: number) => void
+  shapeRef: React.RefObject<Konva.Text | null>
 }) {
-  const shapeRef = useRef<Konva.Text>(null)
-  const trRef = useRef<Konva.Transformer>(null)
-
-  useEffect(() => {
-    if (isSelected && interactive && trRef.current && shapeRef.current) {
-      trRef.current.nodes([shapeRef.current])
-      trRef.current.getLayer()?.batchDraw()
-    }
-  }, [isSelected, interactive])
-
   if (!state.visible) return null
 
   const x = pct2px(state.x, stageWidth)
@@ -192,52 +315,44 @@ function TextLayerNode({
   const h = pct2px(state.height, stageHeight)
 
   return (
-    <>
-      <Text
-        ref={shapeRef}
-        x={x}
-        y={y}
-        width={w}
-        height={h}
-        text={layer.text ?? ''}
-        fontSize={layer.fontSize ?? 24}
-        fontStyle={layer.fontWeight ?? 'normal'}
-        fill={layer.color ?? '#ffffff'}
-        rotation={state.rotation}
-        opacity={state.opacity}
-        draggable={interactive && !layer.locked}
-        onClick={onSelect}
-        onTap={onSelect}
-        globalCompositeOperation={layer.blendMode === 'normal' ? 'source-over' : layer.blendMode}
-        onDragEnd={(e) => {
-          onDragEnd(
-            px2pct(e.target.x(), stageWidth),
-            px2pct(e.target.y(), stageHeight)
-          )
-        }}
-        onTransformEnd={() => {
-          const node = shapeRef.current
-          if (!node) return
-          const scaleX = node.scaleX()
-          const scaleY = node.scaleY()
-          node.scaleX(1)
-          node.scaleY(1)
-          onTransformEnd({
-            x: px2pct(node.x(), stageWidth),
-            y: px2pct(node.y(), stageHeight),
-            width: px2pct(node.width() * scaleX, stageWidth),
-            height: px2pct(node.height() * scaleY, stageHeight),
-            rotation: node.rotation(),
-          })
-        }}
-      />
-      {isSelected && interactive && (
-        <Transformer
-          ref={trRef}
-          {...TRANSFORMER_PROPS}
-        />
-      )}
-    </>
+    <Text
+      ref={shapeRef}
+      x={x}
+      y={y}
+      width={w}
+      height={h}
+      text={layer.text ?? ''}
+      fontSize={layer.fontSize ?? 24}
+      fontStyle={layer.fontWeight ?? 'normal'}
+      fill={layer.color ?? '#ffffff'}
+      rotation={state.rotation}
+      opacity={state.opacity}
+      draggable={interactive && !layer.locked}
+      onClick={onSelect}
+      onTap={onSelect}
+      globalCompositeOperation={layer.blendMode === 'normal' ? 'source-over' : layer.blendMode}
+      onDragEnd={(e) => {
+        onDragEnd(
+          px2pct(e.target.x(), stageWidth),
+          px2pct(e.target.y(), stageHeight)
+        )
+      }}
+      onTransformEnd={() => {
+        const node = shapeRef.current
+        if (!node) return
+        const scaleX = node.scaleX()
+        const scaleY = node.scaleY()
+        node.scaleX(1)
+        node.scaleY(1)
+        onTransformEnd({
+          x: px2pct(node.x(), stageWidth),
+          y: px2pct(node.y(), stageHeight),
+          width: px2pct(node.width() * scaleX, stageWidth),
+          height: px2pct(node.height() * scaleY, stageHeight),
+          rotation: node.rotation(),
+        })
+      }}
+    />
   )
 }
 
@@ -253,6 +368,7 @@ function ShapeLayerNode({
   onSelect,
   onTransformEnd,
   onDragEnd,
+  shapeRef,
 }: {
   layer: StudioLayer
   state: StudioLayerState
@@ -263,17 +379,8 @@ function ShapeLayerNode({
   onSelect: () => void
   onTransformEnd: (attrs: Partial<StudioLayer>) => void
   onDragEnd: (x: number, y: number) => void
+  shapeRef: React.RefObject<Konva.Rect | null>
 }) {
-  const shapeRef = useRef<Konva.Rect>(null)
-  const trRef = useRef<Konva.Transformer>(null)
-
-  useEffect(() => {
-    if (isSelected && interactive && trRef.current && shapeRef.current) {
-      trRef.current.nodes([shapeRef.current])
-      trRef.current.getLayer()?.batchDraw()
-    }
-  }, [isSelected, interactive])
-
   if (!state.visible) return null
 
   const x = pct2px(state.x, stageWidth)
@@ -282,49 +389,73 @@ function ShapeLayerNode({
   const h = pct2px(state.height, stageHeight)
 
   return (
-    <>
-      <Rect
-        ref={shapeRef}
-        x={x}
-        y={y}
-        width={w}
-        height={h}
-        fill={layer.color ?? '#666666'}
-        rotation={state.rotation}
-        opacity={state.opacity}
-        draggable={interactive && !layer.locked}
-        onClick={onSelect}
-        onTap={onSelect}
-        globalCompositeOperation={layer.blendMode === 'normal' ? 'source-over' : layer.blendMode}
-        onDragEnd={(e) => {
-          onDragEnd(
-            px2pct(e.target.x(), stageWidth),
-            px2pct(e.target.y(), stageHeight)
-          )
-        }}
-        onTransformEnd={() => {
-          const node = shapeRef.current
-          if (!node) return
-          const scaleX = node.scaleX()
-          const scaleY = node.scaleY()
-          node.scaleX(1)
-          node.scaleY(1)
-          onTransformEnd({
-            x: px2pct(node.x(), stageWidth),
-            y: px2pct(node.y(), stageHeight),
-            width: px2pct(node.width() * scaleX, stageWidth),
-            height: px2pct(node.height() * scaleY, stageHeight),
-            rotation: node.rotation(),
-          })
-        }}
-      />
-      {isSelected && interactive && (
-        <Transformer
-          ref={trRef}
-          {...TRANSFORMER_PROPS}
-        />
-      )}
-    </>
+    <Rect
+      ref={shapeRef}
+      x={x}
+      y={y}
+      width={w}
+      height={h}
+      fill={layer.color ?? '#666666'}
+      rotation={state.rotation}
+      opacity={state.opacity}
+      draggable={interactive && !layer.locked}
+      onClick={onSelect}
+      onTap={onSelect}
+      globalCompositeOperation={layer.blendMode === 'normal' ? 'source-over' : layer.blendMode}
+      onDragEnd={(e) => {
+        onDragEnd(
+          px2pct(e.target.x(), stageWidth),
+          px2pct(e.target.y(), stageHeight)
+        )
+      }}
+      onTransformEnd={() => {
+        const node = shapeRef.current
+        if (!node) return
+        const scaleX = node.scaleX()
+        const scaleY = node.scaleY()
+        node.scaleX(1)
+        node.scaleY(1)
+        onTransformEnd({
+          x: px2pct(node.x(), stageWidth),
+          y: px2pct(node.y(), stageHeight),
+          width: px2pct(node.width() * scaleX, stageWidth),
+          height: px2pct(node.height() * scaleY, stageHeight),
+          rotation: node.rotation(),
+        })
+      }}
+    />
+  )
+}
+
+/* ---------- Transformer rendered last in the Layer so it's always on top ---------- */
+
+function SelectedTransformer({
+  shapeRef,
+  isSelected,
+  interactive,
+}: {
+  shapeRef: React.RefObject<Konva.Image | Konva.Text | Konva.Rect | null>
+  isSelected: boolean
+  interactive: boolean
+}) {
+  const trRef = useRef<Konva.Transformer>(null)
+
+  useEffect(() => {
+    if (isSelected && interactive && trRef.current && shapeRef.current) {
+      trRef.current.nodes([shapeRef.current])
+      trRef.current.getLayer()?.batchDraw()
+      setupTransformerCursors(trRef.current as unknown as Parameters<typeof setupTransformerCursors>[0])
+    }
+  }, [isSelected, interactive, shapeRef])
+
+  if (!isSelected || !interactive) return null
+
+  return (
+    <Transformer
+      ref={trRef}
+      {...TRANSFORMER_PROPS}
+      keepRatio={useStudioStore.getState().aspectLocked}
+    />
   )
 }
 
@@ -340,15 +471,37 @@ export function StudioCanvas({
   onSelectLayer,
   onUpdateLayer,
   onDropAsset,
+  eventOverrides,
 }: StudioCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [stageSize, setStageSize] = useState({ width: 960, height: 540 })
+  const { objectSelectionMode, objectSelectionTargetLayerId, lockObjectSelection, aspectLocked } = useStudioStore()
 
-  // Compute layer states from timeline
-  const layerStates = useMemo(
+  // Stable ref map for shape nodes — keyed by layer id
+  const shapeRefsMap = useRef<Map<string, React.RefObject<any>>>(new Map())
+  const getShapeRef = useCallback((layerId: string) => {
+    if (!shapeRefsMap.current.has(layerId)) {
+      shapeRefsMap.current.set(layerId, React.createRef())
+    }
+    return shapeRefsMap.current.get(layerId)!
+  }, [])
+
+  // Compute layer states from timeline, then merge event overrides
+  const baseLayerStates = useMemo(
     () => computeLayerStatesAtTime(layers, tracks, currentTime),
     [layers, tracks, currentTime]
   )
+
+  const layerStates = useMemo(() => {
+    if (!eventOverrides || Object.keys(eventOverrides).length === 0) return baseLayerStates
+    const merged = { ...baseLayerStates }
+    for (const [layerId, overrides] of Object.entries(eventOverrides)) {
+      if (merged[layerId]) {
+        merged[layerId] = { ...merged[layerId], ...overrides }
+      }
+    }
+    return merged
+  }, [baseLayerStates, eventOverrides])
 
   // Maintain 16:9 aspect ratio based on container width
   const updateSize = useCallback(() => {
@@ -390,12 +543,30 @@ export function StudioCanvas({
 
   const handleStageClick = useCallback(
     (e: Konva.KonvaEventObject<MouseEvent>) => {
-      // Clicked on empty area
+      // Object selection mode: intercept clicks to lock target
+      if (objectSelectionMode === 'waiting') {
+        // Find the clicked layer by checking the target's name
+        const target = e.target
+        const layerId = target.name?.() || target.id?.()
+        if (layerId && layers.some((l) => l.id === layerId)) {
+          lockObjectSelection(layerId)
+          return
+        }
+        // Check parent group
+        const parent = target.parent
+        const parentName = parent?.name?.()
+        if (parentName && layers.some((l) => l.id === parentName)) {
+          lockObjectSelection(parentName)
+          return
+        }
+        return
+      }
+      // Normal: clicked on empty area
       if (e.target === e.target.getStage()) {
         onSelectLayer?.(null)
       }
     },
-    [onSelectLayer]
+    [onSelectLayer, objectSelectionMode, lockObjectSelection, layers]
   )
 
   const handleDragEnd = useCallback(
@@ -462,7 +633,7 @@ export function StudioCanvas({
     <div
       ref={containerRef}
       className="relative flex h-full w-full items-center justify-center overflow-hidden"
-      style={{ background: '#1a1a1a' }}
+      style={{ background: '#1a1a1a', cursor: objectSelectionMode === 'waiting' ? 'crosshair' : undefined }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
@@ -473,6 +644,17 @@ export function StudioCanvas({
           height={stageSize.height}
           onClick={handleStageClick}
           onTap={handleStageClick as unknown as (evt: Konva.KonvaEventObject<TouchEvent>) => void}
+          onMouseMove={(e: Konva.KonvaEventObject<MouseEvent>) => {
+            if (!selectedLayerId || !interactive) return
+            const stage = e.target.getStage()
+            if (!stage) return
+            const pointer = stage.getPointerPosition()
+            if (!pointer) return
+            const ref = shapeRefsMap.current.get(selectedLayerId)
+            const node = ref?.current
+            const cursor = getPhotoshopCursor(pointer.x, pointer.y, node as Parameters<typeof getPhotoshopCursor>[2])
+            stage.container().style.cursor = cursor || 'default'
+          }}
           style={{ position: 'absolute', top: 0, left: 0 }}
         >
           {/* Background */}
@@ -491,6 +673,7 @@ export function StudioCanvas({
             {nonVideoLayers.map((layer) => {
               const state = getState(layer)
               const isSelected = layer.id === selectedLayerId
+              const shapeRef = getShapeRef(layer.id)
 
               if (layer.type === 'image') {
                 return (
@@ -502,7 +685,11 @@ export function StudioCanvas({
                     stageHeight={stageSize.height}
                     isSelected={isSelected}
                     interactive={interactive}
-                    onSelect={() => onSelectLayer?.(layer.id)}
+                    shapeRef={shapeRef}
+                    onSelect={() => {
+                      if (objectSelectionMode === 'waiting') { lockObjectSelection(layer.id); return }
+                      onSelectLayer?.(layer.id)
+                    }}
                     onTransformEnd={(attrs) => handleTransformEnd(layer.id, attrs)}
                     onDragEnd={(x, y) => handleDragEnd(layer.id, x, y)}
                   />
@@ -519,7 +706,11 @@ export function StudioCanvas({
                     stageHeight={stageSize.height}
                     isSelected={isSelected}
                     interactive={interactive}
-                    onSelect={() => onSelectLayer?.(layer.id)}
+                    shapeRef={shapeRef}
+                    onSelect={() => {
+                      if (objectSelectionMode === 'waiting') { lockObjectSelection(layer.id); return }
+                      onSelectLayer?.(layer.id)
+                    }}
                     onTransformEnd={(attrs) => handleTransformEnd(layer.id, attrs)}
                     onDragEnd={(x, y) => handleDragEnd(layer.id, x, y)}
                   />
@@ -536,7 +727,11 @@ export function StudioCanvas({
                     stageHeight={stageSize.height}
                     isSelected={isSelected}
                     interactive={interactive}
-                    onSelect={() => onSelectLayer?.(layer.id)}
+                    shapeRef={shapeRef}
+                    onSelect={() => {
+                      if (objectSelectionMode === 'waiting') { lockObjectSelection(layer.id); return }
+                      onSelectLayer?.(layer.id)
+                    }}
                     onTransformEnd={(attrs) => handleTransformEnd(layer.id, attrs)}
                     onDragEnd={(x, y) => handleDragEnd(layer.id, x, y)}
                   />
@@ -545,6 +740,21 @@ export function StudioCanvas({
 
               return null
             })}
+
+            {/* Transformer rendered LAST so it's always on top of all shapes */}
+            {selectedLayerId && interactive && (() => {
+              const selectedNonVideo = nonVideoLayers.find((l) => l.id === selectedLayerId)
+              if (!selectedNonVideo) return null
+              const shapeRef = getShapeRef(selectedLayerId)
+              return (
+                <SelectedTransformer
+                  key={`transformer-${selectedLayerId}`}
+                  shapeRef={shapeRef}
+                  isSelected={true}
+                  interactive={interactive}
+                />
+              )
+            })()}
           </Layer>
         </Stage>
 
@@ -583,7 +793,7 @@ export function StudioCanvas({
                 <div
                   className="absolute inset-0 pointer-events-none"
                   style={{
-                    border: '2px dashed #ef4444',
+                    border: '2px dashed #3b82f6',
                   }}
                 />
               )}
@@ -591,7 +801,10 @@ export function StudioCanvas({
               {/* Video element with drag handler */}
               <div
                 className="h-full w-full cursor-move"
-                onClick={() => onSelectLayer?.(layer.id)}
+                onClick={() => {
+                  if (objectSelectionMode === 'waiting') { lockObjectSelection(layer.id); return }
+                  onSelectLayer?.(layer.id)
+                }}
                 onMouseDown={(e) => {
                   if (!interactive || layer.locked) return
                   // Ignore if clicking on a handle
@@ -638,7 +851,7 @@ export function StudioCanvas({
                       right: -4,
                       bottom: -4,
                       backgroundColor: '#ffffff',
-                      border: '1.5px solid #ef4444',
+                      border: '1.5px solid #3b82f6',
                     }}
                     onMouseDown={(e) => {
                       e.preventDefault()
@@ -673,7 +886,7 @@ export function StudioCanvas({
                       left: -4,
                       bottom: -4,
                       backgroundColor: '#ffffff',
-                      border: '1.5px solid #ef4444',
+                      border: '1.5px solid #3b82f6',
                     }}
                     onMouseDown={(e) => {
                       e.preventDefault()
@@ -712,7 +925,7 @@ export function StudioCanvas({
                       right: -4,
                       top: -4,
                       backgroundColor: '#ffffff',
-                      border: '1.5px solid #ef4444',
+                      border: '1.5px solid #3b82f6',
                     }}
                     onMouseDown={(e) => {
                       e.preventDefault()
@@ -752,7 +965,7 @@ export function StudioCanvas({
                       top: '50%',
                       marginTop: -4,
                       backgroundColor: '#ffffff',
-                      border: '1.5px solid #ef4444',
+                      border: '1.5px solid #3b82f6',
                     }}
                     onMouseDown={(e) => {
                       e.preventDefault()
@@ -782,7 +995,7 @@ export function StudioCanvas({
                       left: '50%',
                       marginLeft: -4,
                       backgroundColor: '#ffffff',
-                      border: '1.5px solid #ef4444',
+                      border: '1.5px solid #3b82f6',
                     }}
                     onMouseDown={(e) => {
                       e.preventDefault()
@@ -816,14 +1029,14 @@ export function StudioCanvas({
                     {/* Connecting line */}
                     <div
                       className="w-px h-[16px]"
-                      style={{ backgroundColor: '#ef4444' }}
+                      style={{ backgroundColor: '#3b82f6' }}
                     />
                     {/* Rotation circle */}
                     <div
                       className="w-[10px] h-[10px] rounded-full cursor-grab"
                       style={{
                         backgroundColor: '#ffffff',
-                        border: '1.5px solid #ef4444',
+                        border: '1.5px solid #3b82f6',
                         marginTop: -1,
                       }}
                       onMouseDown={(e) => {

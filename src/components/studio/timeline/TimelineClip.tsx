@@ -8,6 +8,7 @@ interface TimelineClipProps {
   trackColor: string
   zoomLevel: number
   isSelected: boolean
+  layerName?: string
   onSelect: () => void
   onMove: (newStartTime: number) => void
   onResize: (newDuration: number) => void
@@ -21,6 +22,7 @@ export function TimelineClip({
   trackColor,
   zoomLevel,
   isSelected,
+  layerName,
   onSelect,
   onMove,
   onResize,
@@ -112,7 +114,7 @@ export function TimelineClip({
       {/* Clip label */}
       <div className="absolute inset-0 flex items-center px-1.5 overflow-hidden">
         <span className="text-[10px] text-zinc-200 truncate font-medium">
-          {clip.id.slice(0, 8)}
+          {layerName || clip.id.slice(0, 8)}
         </span>
       </div>
 
@@ -132,13 +134,13 @@ export function TimelineClip({
 
       {/* Left resize handle */}
       <div
-        className="absolute left-0 top-0 bottom-0 w-1.5 cursor-col-resize opacity-0 group-hover:opacity-100 hover:bg-white/20 transition-opacity z-20"
+        className="absolute left-0 top-0 bottom-0 w-[6px] cursor-ew-resize opacity-0 group-hover:opacity-100 hover:bg-white/20 transition-opacity z-20"
         onMouseDown={(e) => handleMouseDown(e, 'resize-left')}
       />
 
       {/* Right resize handle */}
       <div
-        className="absolute right-0 top-0 bottom-0 w-1.5 cursor-col-resize opacity-0 group-hover:opacity-100 hover:bg-white/20 transition-opacity z-20"
+        className="absolute right-0 top-0 bottom-0 w-[6px] cursor-ew-resize opacity-0 group-hover:opacity-100 hover:bg-white/20 transition-opacity z-20"
         onMouseDown={(e) => handleMouseDown(e, 'resize-right')}
       />
     </div>

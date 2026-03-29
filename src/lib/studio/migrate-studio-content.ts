@@ -14,14 +14,10 @@ const DEFAULT_CLIP_DURATION = 5000 // 5 seconds
  * Migrate a StudioContent object from v1 (action-based events) to v2
  * (timeline tracks + clips + keyframes).
  *
- * If the content already has populated tracks, it is returned as-is.
+ * Preserves v1 events (with actions) as the canonical event list.
+ * If timelineEvents exist but events are empty, reverse-migrates them.
  */
 export function migrateStudioContent(content: StudioContent): StudioContent {
-  // Already migrated — tracks exist and have entries
-  if (content.tracks && content.tracks.length > 0) {
-    return content
-  }
-
   const result: StudioContent = JSON.parse(JSON.stringify(content))
 
   // Fix legacy blue canvas background
@@ -29,53 +25,83 @@ export function migrateStudioContent(content: StudioContent): StudioContent {
     result.canvas.backgroundColor = '#ffffff'
   }
 
-  // ── Build tracks from layers ──
+  // ── Reverse-migrate: if we have timelineEvents but no events, create events from them ──
+  if (
+    (!result.events || result.events.length === 0) &&
+    result.timelineEvents &&
+    result.timelineEvents.length > 0
+  ) {
+    result.events = result.timelineEvents.map((te) => ({
+      id: te.id,
+      name: te.name,
+      categoryId: te.categoryId,
+      icon: te.icon,
+      color: te.color,
+      trigger: te.trigger,
+      voteQuestion: te.voteQuestion,
+      voteOptions: te.voteOptions
+        ? JSON.parse(JSON.stringify(te.voteOptions))
+        : undefined,
+      actions: [], // actions were lost during original v1->v2 migration
+    }))
+  }
 
-  const tracks: StudioTrack[] = result.layers.map((layer) => {
-    const trackId = crypto.randomUUID()
-    const clipId = crypto.randomUUID()
+  // ── Build tracks from layers if not already present ──
+  if (!result.tracks || result.tracks.length === 0) {
+    const tracks: StudioTrack[] = result.layers.map((layer) => {
+      const trackId = crypto.randomUUID()
+      const clipId = crypto.randomUUID()
 
-    // Collect keyframes from legacy actions that target this layer
-    const keyframes: StudioKeyframe[] = []
-
-    for (const event of result.events ?? []) {
-      for (const action of event.actions) {
-        if (action.layerId !== layer.id) continue
-        keyframes.push(...convertActionToKeyframes(action))
+      // Collect keyframes from events that target this layer
+      const keyframes: StudioKeyframe[] = []
+      for (const event of result.events ?? []) {
+        for (const action of event.actions) {
+          if (action.layerId !== layer.id) continue
+          keyframes.push(...convertActionToKeyframes(action))
+        }
       }
+
+      const clip: StudioClip = {
+        id: clipId,
+        trackId,
+        startTime: 0,
+        duration: DEFAULT_CLIP_DURATION,
+        trimStart: 0,
+        trimEnd: 0,
+        keyframes,
+      }
+
+      return {
+        id: trackId,
+        layerId: layer.id,
+        name: layer.name,
+        muted: false,
+        hidden: false,
+        locked: layer.locked,
+        color: '#6366f1',
+        clips: [clip],
+      }
+    })
+
+    result.tracks = tracks
+
+    // Also create timeline event markers (for visual display)
+    if (!result.timelineEvents || result.timelineEvents.length === 0) {
+      result.timelineEvents = (result.events ?? []).map((event, index) =>
+        convertEventToTimelineEvent(event, index)
+      )
     }
 
-    const clip: StudioClip = {
-      id: clipId,
-      trackId,
-      startTime: 0,
-      duration: DEFAULT_CLIP_DURATION,
-      trimStart: 0,
-      trimEnd: 0,
-      keyframes,
-    }
+    result.totalDuration = computeMigratedDuration(
+      result.tracks,
+      result.timelineEvents ?? []
+    )
+  }
 
-    return {
-      id: trackId,
-      layerId: layer.id,
-      name: layer.name,
-      muted: false,
-      hidden: false,
-      locked: layer.locked,
-      color: '#6366f1',
-      clips: [clip],
-    }
-  })
-
-  // ── Convert legacy events to timeline events ──
-
-  const timelineEvents: StudioTimelineEvent[] = (result.events ?? []).map(
-    (event, index) => convertEventToTimelineEvent(event, index)
-  )
-
-  result.tracks = tracks
-  result.timelineEvents = timelineEvents
-  result.totalDuration = computeMigratedDuration(tracks, timelineEvents)
+  // Ensure events array always exists
+  if (!result.events) {
+    result.events = []
+  }
 
   return result
 }
@@ -86,7 +112,6 @@ function convertActionToKeyframes(action: StudioAction): StudioKeyframe[] {
   const keyframes: StudioKeyframe[] = []
   const property = action.property as StudioKeyframe['property']
 
-  // If there is a fromValue, create a keyframe at the action's delay time
   if (action.fromValue !== undefined) {
     keyframes.push({
       id: crypto.randomUUID(),
@@ -97,7 +122,6 @@ function convertActionToKeyframes(action: StudioAction): StudioKeyframe[] {
     })
   }
 
-  // Create a keyframe at delay + duration with the target value
   keyframes.push({
     id: crypto.randomUUID(),
     time: action.delay + action.duration,
@@ -113,7 +137,6 @@ function convertEventToTimelineEvent(
   event: StudioEvent,
   index: number
 ): StudioTimelineEvent {
-  // Compute how long the event's actions span
   let maxEnd = 0
   for (const action of event.actions) {
     const actionEnd = action.delay + action.duration + (action.endDelay ?? 0)
@@ -126,8 +149,8 @@ function convertEventToTimelineEvent(
     categoryId: event.categoryId,
     color: event.color,
     icon: event.icon,
-    timelinePosition: index * 1000, // space events 1s apart by default
-    duration: Math.max(maxEnd, 500), // minimum 500ms
+    timelinePosition: index * 1000,
+    duration: Math.max(maxEnd, 500),
     trigger: event.trigger,
     voteQuestion: event.voteQuestion,
     voteOptions: event.voteOptions

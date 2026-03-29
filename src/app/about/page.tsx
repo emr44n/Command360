@@ -1,29 +1,48 @@
+'use client'
+
 import { PublicLayout } from '@/components/layout/PublicLayout'
 import { Target, Heart, Zap, ArrowRight, Flame, Shield, Siren, Anchor, Search, Lock, Building2, Radio, Users, MapPin } from 'lucide-react'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 import { ScrollReveal } from '@/components/home/ScrollReveal'
+import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
 import Link from 'next/link'
-import type { Metadata } from 'next'
-
-export const metadata: Metadata = {
-  title: 'About — Command 360',
-  description: 'Learn about Command 360 and our mission to improve emergency services training.',
-}
+import { useState, useEffect, useCallback } from 'react'
 
 /* ── DATA ── */
 
 const STATS = [
   { number: '11+', label: 'Services Supported', gradient: 'from-red-400 to-orange-500', glow: 'rgba(220,38,38,0.15)' },
   { number: '8', label: 'Slide Types', gradient: 'from-blue-400 to-cyan-400', glow: 'rgba(59,130,246,0.15)' },
-  { number: '∞', label: 'Real-time Results', gradient: 'from-emerald-400 to-teal-400', glow: 'rgba(16,185,129,0.15)' },
+  { number: '\u221E', label: 'Real-time Results', gradient: 'from-emerald-400 to-teal-400', glow: 'rgba(16,185,129,0.15)' },
   { number: 'UK', label: 'Wide Coverage', gradient: 'from-violet-400 to-purple-400', glow: 'rgba(139,92,246,0.15)' },
+]
+
+const FOUNDING_BOXES = [
+  {
+    title: 'The Problem',
+    text: 'Emergency services training has long relied on static slideshows and one-way lectures. Trainers knew their teams were disengaged, but had no tools purpose-built for their world.',
+    accent: 'from-red-500 to-orange-500',
+    glow: 'rgba(220,38,38,0.12)',
+  },
+  {
+    title: 'The Vision',
+    text: 'Command 360 was created to change that. We set out to build an interactive platform that makes every training session a two-way conversation \u2014 where every crew member has a voice, and facilitators get instant insight into what their teams actually know.',
+    accent: 'from-blue-500 to-cyan-500',
+    glow: 'rgba(59,130,246,0.12)',
+  },
+  {
+    title: 'The Impact',
+    text: 'From fire station watch-room briefings to multi-agency exercises, Command 360 turns passive audiences into active participants.',
+    accent: 'from-emerald-500 to-teal-500',
+    glow: 'rgba(16,185,129,0.12)',
+  },
 ]
 
 const VALUES = [
   {
     icon: Target,
     title: 'Purpose-built',
-    description: 'Every feature is designed specifically for emergency services training needs — from safety briefings to incident debriefs.',
+    description: 'Every feature is designed specifically for emergency services training needs \u2014 from safety briefings to incident debriefs.',
     color: 'text-red-400',
     bg: 'bg-red-500/10',
     borderHover: 'hover:border-red-500/20',
@@ -53,21 +72,78 @@ const VALUES = [
 ]
 
 const SERVICES = [
-  { icon: Flame, label: 'Fire & Rescue Services', color: '#f97316', bg: 'bg-orange-500/10', text: 'text-orange-400' },
-  { icon: Shield, label: 'Police Forces', color: '#3b82f6', bg: 'bg-blue-500/10', text: 'text-blue-400' },
-  { icon: Siren, label: 'Ambulance Trusts', color: '#10b981', bg: 'bg-emerald-500/10', text: 'text-emerald-400' },
-  { icon: Target, label: 'Armed Forces', color: '#64748b', bg: 'bg-slate-500/10', text: 'text-slate-400' },
-  { icon: Anchor, label: 'HM Coastguard', color: '#0ea5e9', bg: 'bg-sky-500/10', text: 'text-sky-400' },
-  { icon: Search, label: 'Search & Rescue', color: '#f59e0b', bg: 'bg-amber-500/10', text: 'text-amber-400' },
-  { icon: Lock, label: 'Prison & Probation', color: '#71717a', bg: 'bg-zinc-500/10', text: 'text-zinc-400' },
-  { icon: Building2, label: 'Local Authority Emergency Planning', color: '#8b5cf6', bg: 'bg-violet-500/10', text: 'text-violet-400' },
-  { icon: Radio, label: 'Civil Contingencies Teams', color: '#ef4444', bg: 'bg-red-500/10', text: 'text-red-400' },
-  { icon: Users, label: 'NHS Emergency Departments', color: '#ec4899', bg: 'bg-pink-500/10', text: 'text-pink-400' },
+  { icon: Flame, label: 'Fire & Rescue Services', color: '#f97316', bg: 'bg-orange-500/10', text: 'text-orange-400', slug: 'fire-rescue' },
+  { icon: Shield, label: 'Police Forces', color: '#3b82f6', bg: 'bg-blue-500/10', text: 'text-blue-400', slug: 'police' },
+  { icon: Siren, label: 'Ambulance Trusts', color: '#10b981', bg: 'bg-emerald-500/10', text: 'text-emerald-400', slug: 'ambulance' },
+  { icon: Target, label: 'Armed Forces', color: '#64748b', bg: 'bg-slate-500/10', text: 'text-slate-400', slug: 'armed-forces' },
+  { icon: Anchor, label: 'HM Coastguard', color: '#0ea5e9', bg: 'bg-sky-500/10', text: 'text-sky-400', slug: 'coastguard' },
+  { icon: Search, label: 'Search & Rescue', color: '#f59e0b', bg: 'bg-amber-500/10', text: 'text-amber-400', slug: 'search-rescue' },
+  { icon: Lock, label: 'Prison & Probation', color: '#71717a', bg: 'bg-zinc-500/10', text: 'text-zinc-400', slug: 'prison-probation' },
+  { icon: Building2, label: 'Local Authority Emergency Planning', color: '#8b5cf6', bg: 'bg-violet-500/10', text: 'text-violet-400', slug: 'local-authority' },
+  { icon: Radio, label: 'Civil Contingencies Teams', color: '#ef4444', bg: 'bg-red-500/10', text: 'text-red-400', slug: 'civil-contingencies' },
+  { icon: Users, label: 'NHS Emergency Departments', color: '#ec4899', bg: 'bg-pink-500/10', text: 'text-pink-400', slug: 'nhs-emergency' },
 ]
+
+const COVERAGE_FEATURES = [
+  { title: 'Every Fire & Rescue Service', description: 'County, metropolitan, and combined FRS teams across England, Scotland, Wales & Northern Ireland.', color: '#f97316', glow: 'rgba(249,115,22,0.08)' },
+  { title: 'All Police Forces', description: 'From the Met to rural constabularies \u2014 training tools that scale to any force size.', color: '#3b82f6', glow: 'rgba(59,130,246,0.08)' },
+  { title: 'NHS & Ambulance Trusts', description: 'Pre-hospital care, paramedic CPD, and clinical governance sessions made interactive.', color: '#10b981', glow: 'rgba(16,185,129,0.08)' },
+  { title: 'Multi-Agency Ready', description: 'JESIP, LRF exercises and cross-service training \u2014 all in one platform.', color: '#8b5cf6', glow: 'rgba(139,92,246,0.08)' },
+]
+
+const MISSION_FEATURES = [
+  {
+    title: 'Live Polls & Quizzes',
+    description: 'Instant feedback loops that keep every participant engaged and accountable.',
+    icon: Radio,
+    color: 'text-red-400',
+    bg: 'bg-red-500/10',
+  },
+  {
+    title: 'Word Clouds',
+    description: 'Capture the collective voice of your team in real time \u2014 surfacing themes and priorities.',
+    icon: Users,
+    color: 'text-sky-400',
+    bg: 'bg-sky-500/10',
+  },
+  {
+    title: 'Scenario-Based Learning',
+    description: 'Present realistic incidents and let teams collaborate on decision-making in a safe environment.',
+    icon: Shield,
+    color: 'text-amber-400',
+    bg: 'bg-amber-500/10',
+  },
+  {
+    title: 'Analytics & Reporting',
+    description: 'Track knowledge gaps, measure improvement, and evidence training outcomes for inspections.',
+    icon: Target,
+    color: 'text-emerald-400',
+    bg: 'bg-emerald-500/10',
+  },
+]
+
+/* ── CAROUSEL HOOK ── */
+
+function useCarousel(count: number, interval = 4000) {
+  const [active, setActive] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActive((prev) => (prev + 1) % count)
+    }, interval)
+    return () => clearInterval(timer)
+  }, [count, interval])
+
+  return active
+}
 
 /* ── PAGE ── */
 
 export default function AboutPage() {
+  const { openAuth } = useAuthSlideOver()
+  const foundingIdx = useCarousel(FOUNDING_BOXES.length, 4000)
+  const missionIdx = useCarousel(MISSION_FEATURES.length, 4000)
+
   return (
     <PublicLayout>
       {/* ═══════════════════════════════════════════
@@ -79,6 +155,8 @@ export default function AboutPage() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_140%_70%_at_50%_-20%,rgba(220,38,38,0.25),transparent_65%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_60%_at_30%_10%,rgba(220,38,38,0.12),transparent_55%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_75%_15%,rgba(249,115,22,0.08),transparent_50%)]" />
+          {/* Floating glow orb */}
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-red-500/[0.06] blur-[100px] rounded-full float-glow pointer-events-none" />
           {/* Grid — red-tinted */}
           <div
             className="absolute inset-0 opacity-[0.10]"
@@ -171,7 +249,7 @@ export default function AboutPage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          OUR STORY
+          OUR STORY — Founding boxes carousel
           ═══════════════════════════════════════════ */}
       <section className="relative overflow-hidden border-t border-border/50 bg-background">
         {/* Dark mode blur orbs */}
@@ -179,6 +257,8 @@ export default function AboutPage() {
           <div className="absolute top-0 left-1/4 w-[500px] h-[400px] bg-red-500/[0.03] blur-[120px] rounded-full" />
           <div className="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-blue-500/[0.03] blur-[100px] rounded-full" />
         </div>
+        {/* Floating glow */}
+        <div className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-red-500/[0.04] blur-[120px] rounded-full float-glow pointer-events-none" />
 
         <div className="relative max-w-5xl mx-auto px-5 py-24">
           <ScrollReveal direction="left">
@@ -187,15 +267,42 @@ export default function AboutPage() {
               <div>
                 <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Our Story</span>
                 <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5 mb-5">Born from a need for better training</h2>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  Emergency services training has long relied on static slideshows and one-way lectures. Trainers knew their teams were disengaged, but had no tools purpose-built for their world.
-                </p>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  Command 360 was created to change that. We set out to build an interactive platform that makes every training session a two-way conversation — where every crew member has a voice, and facilitators get instant insight into what their teams actually know.
-                </p>
-                <p className="text-muted-foreground leading-relaxed">
-                  From fire station watch-room briefings to multi-agency exercises, Command 360 turns passive audiences into active participants.
-                </p>
+
+                {/* Carousel — one box visible at a time */}
+                <div className="relative min-h-[160px]">
+                  {FOUNDING_BOXES.map((box, i) => (
+                    <div
+                      key={box.title}
+                      className="absolute inset-0 transition-all duration-700 ease-in-out"
+                      style={{
+                        opacity: foundingIdx === i ? 1 : 0,
+                        transform: foundingIdx === i ? 'translateY(0)' : 'translateY(12px)',
+                        pointerEvents: foundingIdx === i ? 'auto' : 'none',
+                      }}
+                    >
+                      <div className="rounded-xl border border-border/60 dark:border-white/[0.08] bg-card/50 dark:bg-white/[0.02] p-5 relative overflow-hidden">
+                        {/* Top accent */}
+                        <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${box.accent}`} />
+                        <span className="text-xs font-semibold text-primary/80 uppercase tracking-wider mb-2 block">{box.title}</span>
+                        <p className="text-muted-foreground leading-relaxed text-sm">{box.text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Indicator dots */}
+                <div className="flex items-center justify-center md:justify-start gap-2 mt-4">
+                  {FOUNDING_BOXES.map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-1.5 rounded-full transition-all duration-500"
+                      style={{
+                        width: foundingIdx === i ? 24 : 6,
+                        backgroundColor: foundingIdx === i ? '#dc2626' : 'rgba(255,255,255,0.15)',
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
 
               {/* Right — before/after mockup + holding image */}
@@ -268,14 +375,14 @@ export default function AboutPage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          STATS STRIP — Dark
+          STATS STRIP — Dark (scroll-triggered stagger)
           ═══════════════════════════════════════════ */}
       <section className="relative bg-[#07070a] overflow-hidden border-t border-white/[0.04]">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[250px] bg-red-500/[0.06] blur-[120px] rounded-full" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[250px] bg-red-500/[0.06] blur-[120px] rounded-full float-glow" />
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
         </div>
-        <ScrollReveal direction="up">
+        <ScrollReveal stagger>
           <div className="relative max-w-5xl mx-auto px-5 py-20 grid grid-cols-2 md:grid-cols-4 gap-4">
             {STATS.map((stat) => (
               <div key={stat.label} className="group text-center p-6 md:p-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
@@ -283,7 +390,7 @@ export default function AboutPage() {
                 <div className="absolute top-0 left-0 right-0 h-px opacity-40" style={{ background: `linear-gradient(90deg, transparent 10%, ${stat.glow} 50%, transparent 90%)` }} />
                 {/* Hover glow */}
                 <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-3xl pointer-events-none" style={{ backgroundColor: stat.glow }} />
-                <div className={`text-3xl md:text-5xl font-bold tracking-tight bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent mb-2`}>
+                <div className={`text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent mb-2`}>
                   {stat.number}
                 </div>
                 <div className="text-sm text-white/40 font-medium">{stat.label}</div>
@@ -294,13 +401,58 @@ export default function AboutPage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          VALUES
+          WHY UK-WIDE COVERAGE
           ═══════════════════════════════════════════ */}
       <section className="relative overflow-hidden border-t border-border/50 bg-background">
-        {/* Dark mode blur orbs */}
-        <div className="absolute inset-0 pointer-events-none dark:block hidden">
-          <div className="absolute top-1/3 right-0 w-[500px] h-[500px] bg-red-500/[0.03] blur-[150px] rounded-full" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-amber-500/[0.02] blur-[120px] rounded-full" />
+        {/* Glow orbs */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-[500px] h-[400px] bg-violet-500/[0.04] blur-[140px] rounded-full float-glow" />
+          <div className="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-blue-500/[0.04] blur-[120px] rounded-full float-glow" style={{ animationDelay: '-4s' }} />
+        </div>
+
+        <div className="relative max-w-5xl mx-auto px-5 py-24">
+          <ScrollReveal className="text-center mb-14">
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">
+              <MapPin className="w-3 h-3" />
+              Coverage
+            </span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Why UK-wide coverage matters</h2>
+            <p className="text-muted-foreground mt-4 max-w-lg mx-auto text-sm">
+              One platform that works for every service, everywhere.
+            </p>
+          </ScrollReveal>
+
+          <ScrollReveal stagger>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {COVERAGE_FEATURES.map((feat) => (
+                <div
+                  key={feat.title}
+                  className="group relative overflow-hidden rounded-2xl p-6 border border-border/60 dark:border-white/[0.06] bg-card/50 dark:bg-white/[0.02] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]"
+                >
+                  {/* Background glow */}
+                  <div
+                    className="absolute -top-20 -right-20 w-48 h-48 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-3xl pointer-events-none"
+                    style={{ backgroundColor: feat.glow }}
+                  />
+                  {/* Accent line */}
+                  <div className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-60 transition-opacity duration-300" style={{ background: `linear-gradient(90deg, transparent, ${feat.color}60, transparent)` }} />
+                  <h3 className="font-bold text-foreground text-base mb-2">{feat.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{feat.description}</p>
+                </div>
+              ))}
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          VALUES — "What drives us" (animated)
+          ═══════════════════════════════════════════ */}
+      <section className="relative overflow-hidden border-t border-border/50 bg-muted/30 dark:bg-muted/10">
+        {/* Glow orbs */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/3 right-0 w-[500px] h-[500px] bg-red-500/[0.04] blur-[150px] rounded-full float-glow" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-amber-500/[0.03] blur-[120px] rounded-full float-glow" style={{ animationDelay: '-6s' }} />
         </div>
 
         <div className="relative max-w-5xl mx-auto px-5 py-24">
@@ -347,13 +499,13 @@ export default function AboutPage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          WHO WE SERVE
+          WHO WE SERVE — clickable service cards
           ═══════════════════════════════════════════ */}
-      <section className="relative overflow-hidden border-t border-border/50 bg-muted/30 dark:bg-muted/10">
-        {/* Dark mode blur orbs */}
-        <div className="absolute inset-0 pointer-events-none dark:block hidden">
-          <div className="absolute top-1/3 left-0 w-[500px] h-[500px] bg-orange-500/[0.03] blur-[150px] rounded-full" />
-          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-blue-500/[0.02] blur-[120px] rounded-full" />
+      <section className="relative overflow-hidden border-t border-border/50 bg-background">
+        {/* Glow orbs */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/3 left-0 w-[500px] h-[500px] bg-orange-500/[0.04] blur-[150px] rounded-full float-glow" />
+          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-blue-500/[0.03] blur-[120px] rounded-full float-glow" style={{ animationDelay: '-3s' }} />
         </div>
 
         <div className="relative max-w-5xl mx-auto px-5 py-24">
@@ -366,19 +518,23 @@ export default function AboutPage() {
           <ScrollReveal stagger>
             <div className="flex flex-wrap justify-center gap-3">
               {SERVICES.map((service) => (
-                <div
+                <Link
                   key={service.label}
-                  className="group relative overflow-hidden p-5 rounded-2xl border border-border/60 dark:border-white/[0.06] bg-card/50 dark:bg-white/[0.02] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] w-full sm:w-[calc(50%-6px)] md:w-[calc(33.333%-8px)]"
+                  href={`/solutions/${service.slug}`}
+                  className="group relative overflow-hidden p-5 rounded-2xl border border-border/60 dark:border-white/[0.06] bg-card/50 dark:bg-white/[0.02] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] w-full sm:w-[calc(50%-6px)] md:w-[calc(33.333%-8px)] cursor-pointer"
                 >
                   {/* Top accent line */}
                   <div className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(90deg, transparent, ${service.color}50, transparent)` }} />
+                  {/* Background glow on hover */}
+                  <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-3xl pointer-events-none" style={{ backgroundColor: `${service.color}15` }} />
                   <div className="flex items-center gap-3">
                     <div className={`w-9 h-9 rounded-xl ${service.bg} border border-white/[0.06] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
                       <service.icon className={`w-4 h-4 ${service.text}`} />
                     </div>
-                    <span className="text-sm font-semibold text-foreground">{service.label}</span>
+                    <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors duration-200">{service.label}</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/40 ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-300" />
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </ScrollReveal>
@@ -386,11 +542,12 @@ export default function AboutPage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          MISSION — Dark
+          MISSION — "Make your training engaging" carousel
           ═══════════════════════════════════════════ */}
       <section className="relative bg-[#07070a] overflow-hidden border-t border-white/[0.04]">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_50%,rgba(220,38,38,0.08),transparent)]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-red-500/[0.05] blur-[120px] rounded-full float-glow pointer-events-none" />
           <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
@@ -402,22 +559,59 @@ export default function AboutPage() {
         <div className="relative max-w-5xl mx-auto px-5 py-24">
           <ScrollReveal direction="up">
             <div className="grid md:grid-cols-2 gap-12 items-center">
-              {/* Left — text */}
+              {/* Left — text + feature carousel */}
               <div className="text-center md:text-left">
                 <span className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] text-[10px] uppercase tracking-[0.15em] text-white/50 mb-6 font-medium">
                   <span className="w-1.5 h-1.5 rounded-full bg-red-500 pulse-dot" />
                   Our Mission
                 </span>
                 <h2 className="text-2xl md:text-4xl font-bold tracking-tight text-white mb-5">
-                  Making training{' '}
+                  Make your training{' '}
                   <span className="bg-gradient-to-r from-red-400 via-red-500 to-orange-500 gradient-text">engaging</span>
                 </h2>
-                <p className="text-white/40 leading-relaxed mb-4">
+                <p className="text-white/40 leading-relaxed mb-8">
                   We believe that when training is interactive, people pay attention. When people pay attention, they learn. And when emergency responders learn better, communities are safer.
                 </p>
-                <p className="text-white/40 leading-relaxed">
-                  Our mission is to replace one-way lectures with two-way conversations — giving every crew member a voice and every trainer instant insight into team readiness.
-                </p>
+
+                {/* Feature carousel — one at a time */}
+                <div className="relative min-h-[120px]">
+                  {MISSION_FEATURES.map((feat, i) => (
+                    <div
+                      key={feat.title}
+                      className="absolute inset-0 transition-all duration-700 ease-in-out"
+                      style={{
+                        opacity: missionIdx === i ? 1 : 0,
+                        transform: missionIdx === i ? 'translateX(0)' : 'translateX(20px)',
+                        pointerEvents: missionIdx === i ? 'auto' : 'none',
+                      }}
+                    >
+                      <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5 relative overflow-hidden">
+                        <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full opacity-30 blur-2xl pointer-events-none" style={{ backgroundColor: feat.color === 'text-red-400' ? 'rgba(220,38,38,0.15)' : feat.color === 'text-sky-400' ? 'rgba(14,165,233,0.15)' : feat.color === 'text-amber-400' ? 'rgba(245,158,11,0.15)' : 'rgba(16,185,129,0.15)' }} />
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className={`w-9 h-9 rounded-xl ${feat.bg} border border-white/[0.06] flex items-center justify-center shrink-0`}>
+                            <feat.icon className={`w-4 h-4 ${feat.color}`} />
+                          </div>
+                          <span className="text-sm font-semibold text-white">{feat.title}</span>
+                        </div>
+                        <p className="text-sm text-white/40 leading-relaxed">{feat.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Indicator dots */}
+                <div className="flex items-center justify-center md:justify-start gap-2 mt-4">
+                  {MISSION_FEATURES.map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-1.5 rounded-full transition-all duration-500"
+                      style={{
+                        width: missionIdx === i ? 24 : 6,
+                        backgroundColor: missionIdx === i ? '#dc2626' : 'rgba(255,255,255,0.15)',
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
 
               {/* Right — CSS mockup + holding image */}
@@ -504,6 +698,7 @@ export default function AboutPage() {
       <section className="relative bg-[#07070a] overflow-hidden border-t border-white/[0.04]">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_100%,rgba(220,38,38,0.12),transparent)]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-red-500/[0.06] blur-[100px] rounded-full float-glow pointer-events-none" />
           {/* Grid texture */}
           <div
             className="absolute inset-0 opacity-[0.05]"
@@ -525,11 +720,14 @@ export default function AboutPage() {
               Join the teams already using{' '}
               <span className="bg-gradient-to-r from-red-400 via-red-500 to-orange-500 gradient-text">Command 360</span>
             </h2>
-            <p className="text-white/40 text-lg mb-8">Start creating interactive training sessions today.</p>
+            <p className="text-white/40 text-base sm:text-lg mb-8">Start creating interactive training sessions today.</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
-              <Link href="/register" className="group inline-flex items-center gap-2 px-8 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-500/25 cursor-pointer">
+              <button
+                onClick={() => openAuth('register')}
+                className="group inline-flex items-center gap-2 px-8 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-500/25 cursor-pointer"
+              >
                 Get started free <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
+              </button>
               <Link href="/contact" className="inline-flex items-center px-8 h-12 rounded-xl text-sm font-medium border border-white/[0.12] text-white/70 hover:text-white hover:border-white/[0.25] transition-all cursor-pointer">
                 Contact us
               </Link>

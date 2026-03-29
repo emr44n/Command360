@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { Eye, EyeOff, Volume2, VolumeX, Lock, Trash2 } from 'lucide-react'
 import type { StudioTrack, StudioLayer } from '@/types/slide'
 import { TimelineClip } from './TimelineClip'
@@ -19,6 +20,7 @@ interface TimelineTrackRowProps {
   onToggleMute: () => void
   onToggleHidden: () => void
   onDeleteTrack: () => void
+  onRenameTrack?: (newName: string) => void
 }
 
 export function TimelineTrackRow({
@@ -33,10 +35,27 @@ export function TimelineTrackRow({
   onToggleMute,
   onToggleHidden,
   onDeleteTrack,
+  onRenameTrack,
   labelWidth = 140,
   rowHeight = 40,
   compact = false,
 }: TimelineTrackRowProps) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [editName, setEditName] = useState(track.name)
+
+  const handleDoubleClick = () => {
+    if (!onRenameTrack) return
+    setEditName(track.name)
+    setIsEditing(true)
+  }
+
+  const handleRenameSubmit = () => {
+    if (editName.trim() && onRenameTrack) {
+      onRenameTrack(editName.trim())
+    }
+    setIsEditing(false)
+  }
+
   return (
     <div className="flex border-b border-zinc-800/60 group/row" style={{ height: rowHeight }}>
       {/* Left label area */}
@@ -47,9 +66,26 @@ export function TimelineTrackRow({
           style={{ backgroundColor: track.color, width: compact ? 6 : 8, height: compact ? 6 : 8 }}
         />
         {/* Track name */}
-        <span className="text-zinc-300 truncate flex-1" style={{ fontSize: compact ? 9 : 11 }} title={track.name}>
-          {track.name}
-        </span>
+        {isEditing ? (
+          <input
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+            onBlur={handleRenameSubmit}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleRenameSubmit(); if (e.key === 'Escape') setIsEditing(false) }}
+            className="flex-1 h-5 text-zinc-100 bg-zinc-800 border border-zinc-600 rounded px-1 outline-none"
+            style={{ fontSize: compact ? 9 : 11 }}
+            autoFocus
+          />
+        ) : (
+          <span
+            className="text-zinc-300 truncate flex-1 cursor-default"
+            style={{ fontSize: compact ? 9 : 11 }}
+            title={`${track.name} (double-click to rename)`}
+            onDoubleClick={handleDoubleClick}
+          >
+            {track.name}
+          </span>
+        )}
         {/* Track action buttons */}
         <div className="flex items-center gap-0.5 opacity-0 group-hover/row:opacity-100 transition-opacity">
           <button
@@ -96,6 +132,7 @@ export function TimelineTrackRow({
               trackColor={track.color}
               zoomLevel={zoomLevel}
               isSelected={selectedClipId === clip.id}
+              layerName={layer.name}
               onSelect={() => onSelectClip(clip.id)}
               onMove={(newStartTime) => onMoveClip(clip.id, newStartTime)}
               onResize={(newDuration) => onResizeClip(clip.id, newDuration)}

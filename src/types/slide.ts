@@ -125,7 +125,7 @@ export interface StudioLayer {
 export interface StudioAction {
   id: string
   layerId: string
-  property: 'opacity' | 'visible' | 'x' | 'y' | 'width' | 'height' | 'rotation' | 'src'
+  property: 'opacity' | 'visible' | 'x' | 'y' | 'width' | 'height' | 'rotation' | 'src' | 'scaleX' | 'scaleY'
   fromValue?: number | boolean | string
   toValue: number | boolean | string
   delay: number       // ms before starting
@@ -234,9 +234,9 @@ export interface StudioContent {
   }
   layers: StudioLayer[]
   eventCategories: StudioEventCategory[]
-  events: StudioEvent[]           // legacy action-based events (v1)
+  events: StudioEvent[]           // canonical event list with actions
   tracks?: StudioTrack[]          // timeline tracks (v2)
-  timelineEvents?: StudioTimelineEvent[]  // timeline event markers (v2)
+  timelineEvents?: StudioTimelineEvent[]  // @deprecated — use events[] instead
   totalDuration?: number          // ms (v2)
   branches?: StudioBranch[]       // branching scenarios
   votingEnabled: boolean

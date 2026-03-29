@@ -12,9 +12,10 @@ interface AuthSlideOverProps {
   isOpen: boolean
   onClose: () => void
   defaultTab?: Tab
+  required?: boolean // when true, cannot dismiss (middleware redirect)
 }
 
-export function AuthSlideOver({ isOpen, onClose, defaultTab = 'login' }: AuthSlideOverProps) {
+export function AuthSlideOver({ isOpen, onClose, defaultTab = 'login', required = false }: AuthSlideOverProps) {
   const [tab, setTab] = useState<Tab>(defaultTab)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
 
@@ -38,8 +39,8 @@ export function AuthSlideOver({ isOpen, onClose, defaultTab = 'login' }: AuthSli
 
   // Close on Escape
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape') onClose()
-  }, [onClose])
+    if (e.key === 'Escape' && !required) onClose()
+  }, [onClose, required])
 
   useEffect(() => {
     if (isOpen) {
@@ -55,7 +56,7 @@ export function AuthSlideOver({ isOpen, onClose, defaultTab = 'login' }: AuthSli
         className={`fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
-        onClick={onClose}
+        onClick={required ? undefined : onClose}
         aria-hidden="true"
       />
 
@@ -68,14 +69,16 @@ export function AuthSlideOver({ isOpen, onClose, defaultTab = 'login' }: AuthSli
         aria-modal="true"
         aria-label={tab === 'login' ? 'Sign in' : 'Create account'}
       >
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-lg text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition-colors cursor-pointer z-10"
-          aria-label="Close"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        {/* Close button — hidden when auth is required (middleware redirect) */}
+        {!required && (
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 rounded-lg text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition-colors cursor-pointer z-10"
+            aria-label="Close"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto px-8 py-10">

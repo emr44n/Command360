@@ -6,11 +6,9 @@ import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
 
 const NAV_LINKS = [
-  { href: '#features', label: 'Features' },
   { href: '#how-it-works', label: 'How It Works' },
   { href: '#services', label: 'Services' },
-  { href: '/command-studio', label: 'Studio', highlight: true },
-  { href: '#pricing', label: 'Pricing' },
+  { href: '/command-studio', label: 'Command Studio', highlight: true },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ]

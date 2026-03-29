@@ -10,7 +10,7 @@ import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 import { HomepageClient } from '@/components/home/HomepageClient'
 import { AuthCTAButton } from '@/components/home/AuthCTAButton'
 import { FloatingJoinDock } from '@/components/join/FloatingJoinDock'
-import { PricingToggle } from '@/components/pricing/PricingToggle'
+// PricingToggle removed — pricing is handled face-to-face
 import { HeroMockup } from '@/components/home/HeroMockup'
 import { TestimonialMarquee } from '@/components/home/TestimonialMarquee'
 import { FaqAccordion } from '@/components/home/FaqAccordion'
@@ -141,8 +141,8 @@ const TESTIMONIALS = [
 
 const FAQ_ITEMS = [
   {
-    q: 'How long is the free trial?',
-    a: 'The free trial lasts 30 days with full access to all features. No credit card required to start.',
+    q: 'Is Command 360 free to use?',
+    a: 'Yes. Command 360 is completely free to get started with no credit card required. Simply create an account and start building sessions right away.',
   },
   {
     q: 'Do participants need to create an account?',
@@ -158,7 +158,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'What about data security and GDPR?',
-    a: 'Command 360 is hosted in the UK, fully GDPR compliant, and we offer a Data Processing Agreement (DPA) for all organisations. Enterprise plans include data residency options.',
+    a: 'Command 360 is hosted in the UK, fully GDPR compliant, and we offer a Data Processing Agreement (DPA) for all organisations. Contact us for data residency options.',
   },
 ]
 
@@ -201,7 +201,7 @@ export default function LandingPage() {
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center max-w-4xl mx-auto px-5 pt-32 pb-8">
           {/* Badge */}
           <div className="hero-fade-up hero-fade-up-1 inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] text-[11px] uppercase tracking-[0.15em] text-white/50 mb-8 font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 pulse-dot" />
+            <span className="relative flex h-2.5 w-2.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" /><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 shadow-[0_0_8px_2px_rgba(239,68,68,0.5)]" /></span>
             The interactive learning platform for emergency services
           </div>
 
@@ -229,7 +229,13 @@ export default function LandingPage() {
 
           {/* Join code section */}
           <div id="hero-join" className="hero-fade-up hero-fade-up-5 mt-10 flex flex-col items-center gap-3">
-            <p className="text-white/25 text-[10px] uppercase tracking-[0.2em] font-medium">Have a join code?</p>
+            <p className="text-white/25 text-[10px] uppercase tracking-[0.2em] font-medium flex items-center gap-2">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 shadow-[0_0_8px_2px_rgba(239,68,68,0.5)]" />
+              </span>
+              Got a join code?
+            </p>
             <JoinCodeInput variant="hero" />
           </div>
         </div>
@@ -277,8 +283,12 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           BENTO FEATURES
           ═══════════════════════════════════════════ */}
-      <section id="features" className="bg-[#07070a] pb-24 md:pb-32">
-        <div className="max-w-5xl mx-auto px-5">
+      <section id="features" className="bg-[#07070a] pb-24 md:pb-32 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 left-1/3 w-[500px] h-[400px] bg-red-500/[0.04] blur-[120px] rounded-full section-glow-drift" />
+          <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[300px] bg-orange-500/[0.03] blur-[100px] rounded-full section-glow-drift" style={{ animationDelay: '-7s' }} />
+        </div>
+        <div className="relative max-w-5xl mx-auto px-5">
           <ScrollReveal className="text-center mb-14">
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[10px] uppercase tracking-[0.2em] text-white/40 font-medium">Platform</span>
             <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5 text-white">Everything you need to engage your team</h2>
@@ -341,10 +351,10 @@ export default function LandingPage() {
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-[10px] font-semibold text-red-400 uppercase tracking-[0.15em] mb-6">
                 <Monitor className="w-3 h-3" /> New Feature
               </span>
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight text-white mb-4">
                 Command Studio
               </h2>
-              <p className="text-white/40 text-lg max-w-xl mx-auto">
+              <p className="text-white/40 text-sm sm:text-lg max-w-xl mx-auto">
                 Build interactive training scenarios with layered images, video effects, and real-time event triggers. The most immersive way to train your teams.
               </p>
             </div>
@@ -437,8 +447,8 @@ export default function LandingPage() {
           ═══════════════════════════════════════════ */}
       <section id="slide-types" className="bg-background border-t border-border/50 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none dark:block hidden">
-          <div className="absolute top-0 left-1/4 w-[500px] h-[400px] bg-red-500/[0.03] blur-[120px] rounded-full" />
-          <div className="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-blue-500/[0.03] blur-[100px] rounded-full" />
+          <div className="absolute top-0 left-1/4 w-[500px] h-[400px] bg-red-500/[0.05] blur-[120px] rounded-full section-glow-drift" />
+          <div className="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-blue-500/[0.04] blur-[100px] rounded-full section-glow-drift" style={{ animationDelay: '-8s' }} />
         </div>
         <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-14">
@@ -525,8 +535,10 @@ export default function LandingPage() {
             <div className="flex flex-wrap justify-center gap-3">
               {USE_CASES.map((uc) => (
                 <Link key={uc.slug} href={`/solutions/${uc.slug}`}
-                  className="group p-5 rounded-2xl border border-border/60 bg-card/50 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] relative overflow-hidden w-full sm:w-[calc(50%-6px)] lg:w-[calc(25%-9px)]"
+                  className="group p-5 rounded-2xl border border-border/60 bg-card/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] relative overflow-hidden w-full sm:w-[calc(50%-6px)] lg:w-[calc(25%-9px)]"
                 >
+                  {/* Background glow on hover — uses the service's color */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl" style={{ background: `radial-gradient(ellipse at center, ${uc.color}15, transparent 70%)` }} />
                   {/* Top accent line */}
                   <div className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(90deg, transparent, ${uc.color}50, transparent)` }} />
                   <div className="flex items-center gap-2.5 mb-2.5">
@@ -566,7 +578,7 @@ export default function LandingPage() {
                 { stat: '60%', label: 'Faster feedback vs paper forms', desc: 'Results ready instantly, not after hours of data entry.', color: 'from-emerald-400 to-green-400' },
               ].map((s) => (
                 <div key={s.label} className="text-center rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 transition-all duration-300">
-                  <p className={`text-5xl font-bold bg-gradient-to-r ${s.color} gradient-text mb-3`}>{s.stat}</p>
+                  <p className={`text-3xl sm:text-5xl font-bold bg-gradient-to-r ${s.color} gradient-text mb-3`}>{s.stat}</p>
                   <p className="font-semibold text-sm text-white/80 mb-2">{s.label}</p>
                   <p className="text-white/35 text-xs">{s.desc}</p>
                 </div>
@@ -612,27 +624,34 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          PRICING
+          GET A DEMO (replaced Pricing)
           ═══════════════════════════════════════════ */}
-      <section id="pricing" className="bg-muted/30 dark:bg-muted/10 border-t border-border/50 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none dark:block hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-primary/[0.03] blur-[120px] rounded-full" />
+      <section id="demo" className="relative bg-[#07070a] border-t border-white/[0.04] overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_50%,rgba(220,38,38,0.08),transparent)]" />
+          <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-red-500/[0.05] blur-[120px] rounded-full float-glow" />
         </div>
-        <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
-          <ScrollReveal className="text-center mb-10">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Pricing</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Simple, transparent pricing</h2>
-            <p className="text-muted-foreground mt-4 max-w-lg mx-auto text-sm">Start free for 30 days. No credit card required.</p>
+        <div className="relative max-w-4xl mx-auto px-5 py-20 md:py-28">
+          <ScrollReveal className="text-center">
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] text-white/40 text-[10px] uppercase tracking-[0.15em] font-medium border border-white/[0.08]">Get Started</span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5 text-white">Ready to transform your training?</h2>
+            <p className="text-white/35 mt-4 max-w-lg mx-auto text-sm leading-relaxed">
+              Book a personalised demo and see how Command 360 can engage your teams, improve knowledge retention, and streamline your training workflow.
+            </p>
           </ScrollReveal>
 
           <ScrollReveal>
-            <PricingToggle />
+            <div className="mt-10 text-center flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Link href="/contact" className="group inline-flex items-center gap-2 px-7 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-500/25 cursor-pointer">
+                Book a demo <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
           </ScrollReveal>
 
           {/* FAQ */}
           <div className="mt-20 max-w-2xl mx-auto">
             <ScrollReveal className="text-center mb-10">
-              <h3 className="text-xl md:text-2xl font-bold tracking-tight">Frequently asked questions</h3>
+              <h3 className="text-xl md:text-2xl font-bold tracking-tight text-white">Frequently asked questions</h3>
             </ScrollReveal>
             <ScrollReveal>
               <FaqAccordion items={FAQ_ITEMS} />
@@ -673,10 +692,10 @@ export default function LandingPage() {
         <div className="relative max-w-3xl mx-auto px-5 py-24 md:py-32 text-center">
           <ScrollReveal>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[10px] uppercase tracking-[0.15em] text-white/40 font-medium mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 pulse-dot" />
+              <span className="relative flex h-2.5 w-2.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" /><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 shadow-[0_0_8px_2px_rgba(239,68,68,0.5)]" /></span>
               Get started today
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight text-white mb-6">
               Ready to transform{' '}
               <span className="bg-gradient-to-r from-red-400 to-orange-500 gradient-text">your training?</span>
             </h2>
@@ -684,9 +703,7 @@ export default function LandingPage() {
               Free for 30 days. No credit card required. Built for those who serve.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link href="/register" className="group inline-flex items-center gap-2 px-8 h-13 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 cursor-pointer">
-                Start free trial <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
+              <AuthCTAButton className="px-8 h-13" />
               <Link href="/contact" className="inline-flex items-center gap-2 px-8 h-13 rounded-xl text-sm font-medium border border-white/[0.1] text-white/60 hover:text-white hover:border-white/[0.2] transition-all duration-200 cursor-pointer">
                 Book a demo
               </Link>
@@ -736,8 +753,7 @@ export default function LandingPage() {
               <ul className="space-y-2.5 text-xs text-muted-foreground">
                 <li><a href="#features" className="hover:text-foreground transition-colors">Features</a></li>
                 <li><Link href="/command-studio" className="hover:text-foreground transition-colors">Command Studio</Link></li>
-                <li><Link href="/templates" className="hover:text-foreground transition-colors">Templates</Link></li>
-                <li><a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a></li>
+                <li><Link href="/contact" className="hover:text-foreground transition-colors">Book a Demo</Link></li>
                 <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
               </ul>
             </div>

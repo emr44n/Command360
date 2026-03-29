@@ -571,12 +571,27 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             slides={slides}
             selectedSlideId={selectedSlideId}
             onSelectSlide={(id) => { setSelectedSlideId(id); setSelectedElementId(null) }}
-            onAddSlide={() => setShowTypeSelector(true)}
+            onAddSlide={async () => {
+              const position = slides.length
+              setSaveStatus('saving')
+              const res = await fetch('/api/slides', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ presentation_id: presentation.id, slide_type: 'studio', position, title: '' }),
+              })
+              if (res.ok) {
+                const data = await res.json()
+                setSlides((prev: Slide[]) => [...prev, data.slide])
+                setSelectedSlideId(data.slide.id)
+                setSaveStatus('saved')
+                toast.success('Scene added')
+              } else {
+                setSaveStatus('error')
+                toast.error('Failed to add scene')
+              }
+            }}
           />
         </div>
-        {showTypeSelector && (
-          <SlideTypeSelector onSelect={handleAddSlide} onClose={() => setShowTypeSelector(false)} />
-        )}
       </div>
     )
   }

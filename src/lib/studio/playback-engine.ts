@@ -183,6 +183,9 @@ export function computeLayerStatesAtTime(
         if (resolvedSrc !== undefined) {
           state.src = resolvedSrc as string
         }
+      } else {
+        // No clip at this time — layer is not visible during gaps
+        state.visible = false
       }
     }
 

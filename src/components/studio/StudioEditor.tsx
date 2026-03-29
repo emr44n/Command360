@@ -11,14 +11,18 @@ import type {
   StudioLayer,
   StudioClip,
   StudioKeyframe,
-  StudioTimelineEvent,
+  StudioEvent,
+  StudioEventCategory,
+  StudioLayerState,
 } from '@/types/slide'
 import { StudioGallery } from '@/components/studio/StudioGallery'
 import { StudioCanvas } from '@/components/studio/StudioCanvas'
 import { StudioProperties } from '@/components/studio/StudioProperties'
 import { StudioTimeline } from '@/components/studio/StudioTimeline'
+import { StudioEventSettings } from '@/components/studio/StudioEventSettings'
 import { migrateStudioContent } from '@/lib/studio/migrate-studio-content'
-import { addTrackForLayer, addTimelineEvent, removeTimelineEvent } from '@/lib/studio/timeline-manager'
+import { addTrackForLayer } from '@/lib/studio/timeline-manager'
+import { playEvent } from '@/lib/studio/event-playback'
 import { useStudioStore } from '@/stores/studioStore'
 import { generateLayerId } from '@/lib/utils/studio-utils'
 
@@ -29,6 +33,7 @@ interface StudioEditorProps {
   selectedSlideId?: string | null
   onSelectSlide?: (id: string) => void
   onAddSlide?: () => void
+  onRenameSlide?: (slideId: string, newTitle: string) => void
 }
 
 export function StudioEditor({
@@ -38,6 +43,7 @@ export function StudioEditor({
   selectedSlideId: activeSlideId,
   onSelectSlide,
   onAddSlide,
+  onRenameSlide,
 }: StudioEditorProps) {
   // Migration on first load
   const migratedRef = useRef(false)
@@ -52,13 +58,17 @@ export function StudioEditor({
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Zustand store
-  const { selectedLayerId, setSelectedLayerId } = useStudioStore()
+  const { selectedLayerId, setSelectedLayerId, selectedEventId, setSelectedEventId } = useStudioStore()
 
   // Playback state
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const rafRef = useRef<number | null>(null)
   const lastFrameRef = useRef<number>(0)
+
+  // Event animation state
+  const [eventOverrides, setEventOverrides] = useState<Record<string, Partial<StudioLayerState>>>({})
+  const eventControllerRef = useRef<{ cancel: () => void } | null>(null)
 
   const totalDuration = content.totalDuration ?? 10000
 
@@ -93,11 +103,17 @@ export function StudioEditor({
   // Derived data
   const layers = content.layers
   const tracks = content.tracks ?? []
-  const timelineEvents = content.timelineEvents ?? []
+  const events = content.events ?? []
+  const eventCategories = content.eventCategories ?? []
 
   const selectedLayer = useMemo(
     () => layers.find((l) => l.id === selectedLayerId) ?? null,
     [layers, selectedLayerId]
+  )
+
+  const selectedEvent = useMemo(
+    () => events.find((e) => e.id === selectedEventId) ?? null,
+    [events, selectedEventId]
   )
 
   // Find the active clip for the selected layer at current time
@@ -263,22 +279,63 @@ export function StudioEditor({
     [selectedClip, tracks, updateContent]
   )
 
-  // Timeline event operations
-  const handleAddTimelineEvent = useCallback(
-    (event: Omit<StudioTimelineEvent, 'id'>) => {
-      const updated = addTimelineEvent(content, event)
-      onContentChange(updated)
+  // Event operations
+  const handleUpdateEvents = useCallback(
+    (updatedEvents: StudioEvent[]) => {
+      updateContent({ events: updatedEvents })
     },
-    [content, onContentChange]
+    [updateContent]
   )
 
-  const handleRemoveTimelineEvent = useCallback(
-    (eventId: string) => {
-      const updated = removeTimelineEvent(content, eventId)
-      onContentChange(updated)
+  const handleUpdateCategories = useCallback(
+    (updatedCategories: StudioEventCategory[]) => {
+      updateContent({ eventCategories: updatedCategories })
     },
-    [content, onContentChange]
+    [updateContent]
   )
+
+  const handleUpdateEvent = useCallback(
+    (updatedEvent: StudioEvent) => {
+      updateContent({
+        events: events.map((e) => (e.id === updatedEvent.id ? updatedEvent : e)),
+      })
+    },
+    [events, updateContent]
+  )
+
+  const handleDeleteEvent = useCallback(
+    (eventId: string) => {
+      updateContent({
+        events: events.filter((e) => e.id !== eventId),
+      })
+      if (selectedEventId === eventId) setSelectedEventId(null)
+    },
+    [events, selectedEventId, updateContent, setSelectedEventId]
+  )
+
+  const handleTriggerEvent = useCallback(
+    (eventId: string) => {
+      const event = events.find((e) => e.id === eventId)
+      if (!event || event.actions.length === 0) return
+
+      // Cancel any running event animation
+      eventControllerRef.current?.cancel()
+
+      const controller = playEvent(
+        event,
+        layers,
+        (overrides) => setEventOverrides(overrides),
+        () => setEventOverrides({})
+      )
+      eventControllerRef.current = controller
+    },
+    [events, layers]
+  )
+
+  // Cleanup event controller on unmount
+  useEffect(() => {
+    return () => { eventControllerRef.current?.cancel() }
+  }, [])
 
   // Timeline-specific state
   const [selectedClipId, setSelectedClipId] = useState<string | null>(null)
@@ -336,13 +393,13 @@ export function StudioEditor({
   // Determine if slides panel is available
   const hasSlides = !!(slides && slides.length > 0 && onSelectSlide)
 
-  // Icon sidebar items
+  // Icon sidebar items — each has its own accent color
   const SIDEBAR_ICONS = [
-    ...(hasSlides ? [{ icon: Layers, label: 'Slides', panel: 'slides' as const }] : []),
-    { icon: FolderOpen, label: 'Assets', panel: 'gallery' as const },
-    { icon: Type, label: 'Text', panel: 'text' as const },
-    { icon: Shapes, label: 'Shapes', panel: 'shapes' as const },
-    { icon: Sparkles, label: 'Events', panel: 'events' as const },
+    ...(hasSlides ? [{ icon: Layers, label: 'Scenes', panel: 'slides' as const, activeClass: 'bg-violet-600/20 text-violet-400' }] : []),
+    { icon: FolderOpen, label: 'Assets', panel: 'gallery' as const, activeClass: 'bg-red-600/20 text-red-400' },
+    { icon: Type, label: 'Text', panel: 'text' as const, activeClass: 'bg-sky-600/20 text-sky-400' },
+    { icon: Shapes, label: 'Shapes', panel: 'shapes' as const, activeClass: 'bg-emerald-600/20 text-emerald-400' },
+    { icon: Sparkles, label: 'Events', panel: 'events' as const, activeClass: 'bg-amber-600/20 text-amber-400' },
   ]
 
   const [activePanel, setActivePanel] = useState<'slides' | 'gallery' | 'events' | 'text' | 'shapes'>(hasSlides ? 'slides' : 'gallery')
@@ -364,9 +421,9 @@ export function StudioEditor({
                   setShowLeftPanel(true)
                 }
               }}
-              className={`w-9 h-9 rounded-lg flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
+              className={`w-9 h-9 rounded-lg flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
                 isActive
-                  ? 'bg-red-600/20 text-red-400'
+                  ? item.activeClass
                   : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/5'
               }`}
               title={item.label}
@@ -410,6 +467,7 @@ export function StudioEditor({
                     activeSlideId={activeSlideId ?? null}
                     onSelectSlide={onSelectSlide!}
                     onAddSlide={onAddSlide}
+                    onRenameSlide={onRenameSlide}
                   />
                 ) : activePanel === 'text' ? (
                   <TextPanel
@@ -428,14 +486,30 @@ export function StudioEditor({
                     onUpdateLayer={handleUpdateLayer}
                     selectedLayerId={selectedLayerId}
                   />
+                ) : activePanel === 'events' ? (
+                  <StudioGallery
+                    layers={layers}
+                    onAddLayer={handleAddLayer}
+                    onSelectLayer={(id) => setSelectedLayerId(id)}
+                    onDeleteLayer={handleDeleteLayer}
+                    events={events}
+                    eventCategories={eventCategories}
+                    onUpdateEvents={handleUpdateEvents}
+                    onUpdateCategories={handleUpdateCategories}
+                    onTriggerEvent={handleTriggerEvent}
+                    initialTab="events"
+                  />
                 ) : (
                   <StudioGallery
                     layers={layers}
                     onAddLayer={handleAddLayer}
                     onSelectLayer={(id) => setSelectedLayerId(id)}
-                    timelineEvents={timelineEvents}
-                    onAddTimelineEvent={handleAddTimelineEvent}
-                    onRemoveTimelineEvent={handleRemoveTimelineEvent}
+                    onDeleteLayer={handleDeleteLayer}
+                    events={events}
+                    eventCategories={eventCategories}
+                    onUpdateEvents={handleUpdateEvents}
+                    onUpdateCategories={handleUpdateCategories}
+                    onTriggerEvent={handleTriggerEvent}
                   />
                 )}
               </div>
@@ -460,6 +534,7 @@ export function StudioEditor({
                 onSelectLayer={setSelectedLayerId}
                 onUpdateLayer={handleUpdateLayer}
                 onDropAsset={handleDropAsset}
+                eventOverrides={eventOverrides}
               />
             </div>
             {/* Transport bar below canvas */}
@@ -475,7 +550,7 @@ export function StudioEditor({
                   onClick={() => {
                     if (isPlaying) { setIsPlaying(false) } else { if (currentTime >= totalDuration) setCurrentTime(0); setIsPlaying(true) }
                   }}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center bg-red-600 hover:bg-red-500 text-white transition-colors cursor-pointer"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center bg-zinc-700 hover:bg-zinc-600 text-white transition-colors cursor-pointer"
                 >
                   {isPlaying ? <Square className="w-3 h-3 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current ml-0.5" />}
                 </button>
@@ -486,7 +561,7 @@ export function StudioEditor({
             </div>
           </div>
 
-          {/* Right: Properties */}
+          {/* Right: Properties or Event Settings */}
           {showProperties && (
             <>
               <div
@@ -494,19 +569,30 @@ export function StudioEditor({
                 onMouseDown={() => startDrag('properties')}
               />
               <div className="shrink-0 bg-[#0e0e0e] overflow-y-auto overflow-x-hidden" style={{ width: propertiesWidth }}>
-                <StudioProperties
-                  layer={selectedLayer}
-                  onUpdate={(updates) => {
-                    if (selectedLayerId) handleUpdateLayer(selectedLayerId, updates)
-                  }}
-                  onDelete={handleDeleteLayer}
-                  onDuplicate={handleDuplicateLayer}
-                  selectedClip={selectedClip}
-                  onUpdateClip={handleUpdateClip}
-                  onAddKeyframe={handleAddKeyframe}
-                  onDeleteKeyframe={handleDeleteKeyframe}
-                  currentTime={currentTime}
-                />
+                {selectedEvent ? (
+                  <StudioEventSettings
+                    event={selectedEvent}
+                    layers={layers}
+                    categories={eventCategories}
+                    onUpdateEvent={handleUpdateEvent}
+                    onDeleteEvent={handleDeleteEvent}
+                    onTriggerEvent={handleTriggerEvent}
+                  />
+                ) : (
+                  <StudioProperties
+                    layer={selectedLayer}
+                    onUpdate={(updates) => {
+                      if (selectedLayerId) handleUpdateLayer(selectedLayerId, updates)
+                    }}
+                    onDelete={handleDeleteLayer}
+                    onDuplicate={handleDuplicateLayer}
+                    selectedClip={selectedClip}
+                    onUpdateClip={handleUpdateClip}
+                    onAddKeyframe={handleAddKeyframe}
+                    onDeleteKeyframe={handleDeleteKeyframe}
+                    currentTime={currentTime}
+                  />
+                )}
               </div>
             </>
           )}
@@ -563,20 +649,26 @@ function SlidesPanel({
   activeSlideId,
   onSelectSlide,
   onAddSlide,
+  onRenameSlide,
 }: {
   slides: Slide[]
   activeSlideId: string | null
   onSelectSlide: (id: string) => void
   onAddSlide?: () => void
+  onRenameSlide?: (slideId: string, newTitle: string) => void
 }) {
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editTitle, setEditTitle] = useState('')
+
   return (
     <div className="flex flex-col h-full">
       <div className="px-3 py-2 border-b border-[#1a1a1a]">
-        <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Slides</span>
+        <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Scenes</span>
       </div>
-      <div className="flex-1 overflow-y-auto px-2 py-2 space-y-1.5">
+      <div className="flex-1 overflow-y-auto px-2 py-2 space-y-3">
         {slides.map((slide, index) => {
           const isActive = slide.id === activeSlideId
+          const isEditing = editingId === slide.id
           return (
             <button
               key={slide.id}
@@ -588,9 +680,38 @@ function SlidesPanel({
               }`}
             >
               <div className="relative aspect-video bg-[#0a0a0a] flex items-center justify-center">
-                <span className="text-[10px] text-zinc-500 font-medium">
-                  {slide.title || `Slide ${index + 1}`}
-                </span>
+                {isEditing ? (
+                  <input
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    onBlur={() => {
+                      if (editTitle.trim() && onRenameSlide) onRenameSlide(slide.id, editTitle.trim())
+                      setEditingId(null)
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        if (editTitle.trim() && onRenameSlide) onRenameSlide(slide.id, editTitle.trim())
+                        setEditingId(null)
+                      }
+                      if (e.key === 'Escape') setEditingId(null)
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-[80%] h-5 text-[10px] text-zinc-100 bg-zinc-800 border border-zinc-600 rounded px-1 text-center outline-none"
+                    autoFocus
+                  />
+                ) : (
+                  <span
+                    className="text-[10px] text-zinc-500 font-medium"
+                    onDoubleClick={(e) => {
+                      e.stopPropagation()
+                      setEditTitle(slide.title || `Scene ${index + 1}`)
+                      setEditingId(slide.id)
+                    }}
+                    title="Double-click to rename"
+                  >
+                    {slide.title || `Scene ${index + 1}`}
+                  </span>
+                )}
                 <span className={`absolute top-1 left-1 text-[9px] font-bold px-1 py-0.5 rounded ${
                   isActive ? 'bg-red-600 text-white' : 'bg-zinc-800 text-zinc-400'
                 }`}>
@@ -608,7 +729,7 @@ function SlidesPanel({
             className="w-full h-8 rounded-lg border border-dashed border-[#2a2a2a] hover:border-red-500/50 text-zinc-500 hover:text-red-400 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            Add Slide
+            Add Scene
           </button>
         </div>
       )}
