@@ -357,23 +357,23 @@ export function StudioGallery({
   return (
     <div className="flex h-full flex-col bg-[#2b2d31] text-zinc-200">
       <Tabs defaultValue={initialTab} key={initialTab} className="flex h-full flex-col">
-        <div className="flex border-b border-[#1e1f22]">
+        <div className="flex border-b border-[#1e1f22] shrink-0">
           <TabsList className="w-full bg-transparent p-0 h-auto rounded-none gap-0">
-            <TabsTrigger value="images" className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2.5 text-[10px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-red-400 data-[state=active]:bg-red-500/10 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-500 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-zinc-800/50">
-              <ImageIcon className="size-3.5" />
-              Images
+            <TabsTrigger value="images" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2.5 text-[10px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-red-400 data-[state=active]:bg-red-500/10 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-500 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-zinc-800/50" title="Images">
+              <ImageIcon className="size-3.5 shrink-0" />
+              <span className="truncate hidden min-[220px]:inline">Images</span>
             </TabsTrigger>
-            <TabsTrigger value="videos" className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2.5 text-[10px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-purple-500 data-[state=active]:text-purple-400 data-[state=active]:bg-purple-500/10 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-500 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-zinc-800/50">
-              <VideoIcon className="size-3.5" />
-              Videos
+            <TabsTrigger value="videos" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2.5 text-[10px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-purple-500 data-[state=active]:text-purple-400 data-[state=active]:bg-purple-500/10 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-500 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-zinc-800/50" title="Videos">
+              <VideoIcon className="size-3.5 shrink-0" />
+              <span className="truncate hidden min-[220px]:inline">Videos</span>
             </TabsTrigger>
-            <TabsTrigger value="placed" className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2.5 text-[10px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-blue-500 data-[state=active]:text-blue-400 data-[state=active]:bg-blue-500/10 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-500 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-zinc-800/50">
-              <LayersIcon className="size-3.5" />
-              Layers
+            <TabsTrigger value="placed" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2.5 text-[10px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-blue-500 data-[state=active]:text-blue-400 data-[state=active]:bg-blue-500/10 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-500 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-zinc-800/50" title="Layers">
+              <LayersIcon className="size-3.5 shrink-0" />
+              <span className="truncate hidden min-[220px]:inline">Layers</span>
             </TabsTrigger>
-            <TabsTrigger value="events" className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2.5 text-[10px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-amber-500 data-[state=active]:text-amber-400 data-[state=active]:bg-amber-500/10 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-500 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-zinc-800/50">
-              <ZapIcon className="size-3.5" />
-              Events
+            <TabsTrigger value="events" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2.5 text-[10px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-amber-500 data-[state=active]:text-amber-400 data-[state=active]:bg-amber-500/10 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-500 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-zinc-800/50" title="Events">
+              <ZapIcon className="size-3.5 shrink-0" />
+              <span className="truncate hidden min-[220px]:inline">Events</span>
             </TabsTrigger>
           </TabsList>
         </div>

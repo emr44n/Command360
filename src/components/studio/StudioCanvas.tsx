@@ -139,10 +139,9 @@ function getPhotoshopCursor(
 
 const TRANSFORMER_PROPS = {
   flipEnabled: false,
-  rotateEnabled: true,
-  rotateAnchorOffset: 24,
+  // Rotation is handled by corner approach detection, NOT by Konva's built-in rotater
+  rotateEnabled: false,
   centeredScaling: false,
-  rotationSnaps: [0, 45, 90, 135, 180, 225, 270, 315],
   anchorCornerRadius: 50,
   anchorStroke: '#3b82f6',
   anchorFill: '#ffffff',
@@ -679,6 +678,65 @@ export function StudioCanvas({
             const node = ref?.current
             const cursor = getPhotoshopCursor(pointer.x, pointer.y, node as Parameters<typeof getPhotoshopCursor>[2])
             stage.container().style.cursor = cursor || 'default'
+          }}
+          onMouseDown={(e: Konva.KonvaEventObject<MouseEvent>) => {
+            // Custom rotation: when cursor is 'grab' (outside corner), start rotation drag
+            if (!selectedLayerId || !interactive) return
+            const stage = e.target.getStage()
+            if (!stage) return
+            const pointer = stage.getPointerPosition()
+            if (!pointer) return
+            const ref = shapeRefsMap.current.get(selectedLayerId)
+            const node = ref?.current
+            if (!node) return
+            const cursor = getPhotoshopCursor(pointer.x, pointer.y, node as Parameters<typeof getPhotoshopCursor>[2])
+            if (cursor !== 'grab') return // Only intercept rotation (outside corner)
+
+            e.evt.preventDefault()
+            e.evt.stopPropagation()
+
+            // Calculate center of the object for rotation pivot
+            const nodeX = node.x()
+            const nodeY = node.y()
+            const nodeW = node.width() * node.scaleX()
+            const nodeH = node.height() * node.scaleY()
+            const rot = (node.rotation() * Math.PI) / 180
+            // Center in world coords
+            const cx = nodeX + (nodeW / 2) * Math.cos(rot) - (nodeH / 2) * Math.sin(rot)
+            const cy = nodeY + (nodeW / 2) * Math.sin(rot) + (nodeH / 2) * Math.cos(rot)
+
+            const startAngle = Math.atan2(pointer.y - cy, pointer.x - cx)
+            const startRotation = node.rotation()
+            const container = stage.container()
+            container.style.cursor = 'grabbing'
+
+            const onMove = (ev: MouseEvent) => {
+              const rect = container.getBoundingClientRect()
+              const mx = ev.clientX - rect.left
+              const my = ev.clientY - rect.top
+              const currentAngle = Math.atan2(my - cy, mx - cx)
+              let delta = ((currentAngle - startAngle) * 180) / Math.PI
+              let newRotation = startRotation + delta
+
+              // Snap to 45° increments when holding Shift
+              if (ev.shiftKey) {
+                newRotation = Math.round(newRotation / 45) * 45
+              }
+
+              // Normalize to 0-360
+              newRotation = ((newRotation % 360) + 360) % 360
+
+              onUpdateLayer?.(selectedLayerId, { rotation: newRotation })
+            }
+
+            const onUp = () => {
+              container.style.cursor = 'default'
+              document.removeEventListener('mousemove', onMove)
+              document.removeEventListener('mouseup', onUp)
+            }
+
+            document.addEventListener('mousemove', onMove)
+            document.addEventListener('mouseup', onUp)
           }}
           style={{ position: 'absolute', top: 0, left: 0 }}
         >

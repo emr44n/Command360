@@ -185,17 +185,17 @@ export function StudioProperties({
             </Label>
             <button
               onClick={() => setAspectLocked(!aspectLocked)}
-              className={`p-1 rounded transition-colors ${
+              className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-medium transition-colors ${
                 aspectLocked
                   ? 'text-red-400 bg-red-400/10 hover:bg-red-400/20'
-                  : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800'
+                  : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-700'
               }`}
               title={aspectLocked ? 'Unlock aspect ratio' : 'Lock aspect ratio'}
             >
               {aspectLocked ? (
-                <Link2Icon className="size-3.5" />
+                <><Link2Icon className="size-3" /> Locked</>
               ) : (
-                <Unlink2Icon className="size-3.5" />
+                <><Unlink2Icon className="size-3" /> Unlocked</>
               )}
             </button>
           </div>
