@@ -506,13 +506,16 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           </div>
 
           <span className="text-[10px] uppercase tracking-[0.15em] text-zinc-500 font-medium">Command Studio</span>
-          <input
-            type="text"
-            value={presentationTitle}
-            onChange={(e) => handleTitleChange(e.target.value)}
-            className="bg-transparent border-none text-sm text-white font-medium focus:outline-none focus:ring-0 w-auto max-w-[300px] truncate"
-            placeholder="Untitled Studio"
-          />
+          <div className="relative group/title flex items-center">
+            <input
+              type="text"
+              value={presentationTitle}
+              onChange={(e) => handleTitleChange(e.target.value)}
+              className="bg-transparent border border-transparent hover:border-zinc-700 focus:border-zinc-600 text-sm text-white font-medium focus:outline-none rounded px-2 py-0.5 w-auto max-w-[300px] truncate transition-colors"
+              placeholder="Untitled Studio"
+            />
+            <svg className="w-3 h-3 text-zinc-600 group-hover/title:text-zinc-400 transition-colors -ml-5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+          </div>
           <div className="flex-1" />
           <span className={`text-[10px] transition-opacity ${saveStatus === 'saved' ? 'text-emerald-400 opacity-100' : saveStatus === 'saving' ? 'text-zinc-500 opacity-100' : 'opacity-0'}`}>
             {saveStatus === 'saving' ? 'Saving...' : 'Saved'}

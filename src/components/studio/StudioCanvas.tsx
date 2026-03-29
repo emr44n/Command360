@@ -499,6 +499,7 @@ export function StudioCanvas({
 }: StudioCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [stageSize, setStageSize] = useState({ width: 960, height: 540 })
+  const [canvasZoom, setCanvasZoom] = useState(100) // percentage
   const { objectSelectionMode, objectSelectionTargetLayerId, lockObjectSelection, aspectLocked } = useStudioStore()
 
   // Stable ref map for shape nodes — keyed by layer id
@@ -653,6 +654,8 @@ export function StudioCanvas({
     [onDropAsset, stageSize]
   )
 
+  const zoomScale = canvasZoom / 100
+
   return (
     <div
       ref={containerRef}
@@ -660,9 +663,24 @@ export function StudioCanvas({
       style={{ background: '#1a1a1a', cursor: objectSelectionMode === 'waiting' ? 'crosshair' : undefined }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      onWheel={(e) => {
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault()
+          setCanvasZoom(prev => Math.max(25, Math.min(200, prev + (e.deltaY > 0 ? -10 : 10))))
+        }
+      }}
     >
+      {/* Zoom controls — bottom-right of canvas area */}
+      {interactive && (
+        <div className="absolute bottom-2 right-2 z-20 flex items-center gap-1 bg-[#1e1f22]/90 backdrop-blur-sm rounded-lg px-1.5 py-1 border border-[#3f4147]/50">
+          <button onClick={() => setCanvasZoom(prev => Math.max(25, prev - 10))} className="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-white rounded transition-colors text-sm font-bold">−</button>
+          <span className="text-[10px] text-zinc-400 font-mono w-10 text-center">{canvasZoom}%</span>
+          <button onClick={() => setCanvasZoom(prev => Math.min(200, prev + 10))} className="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-white rounded transition-colors text-sm font-bold">+</button>
+          <button onClick={() => setCanvasZoom(100)} className="ml-0.5 px-1.5 h-6 flex items-center justify-center text-zinc-500 hover:text-white rounded text-[9px] transition-colors">Fit</button>
+        </div>
+      )}
       {/* Konva stage for non-video layers */}
-      <div className="relative" style={{ width: stageSize.width, height: stageSize.height, boxShadow: '0 2px 20px rgba(0,0,0,0.5)' }}>
+      <div className="relative" style={{ width: stageSize.width, height: stageSize.height, boxShadow: '0 2px 20px rgba(0,0,0,0.5)', transform: `scale(${zoomScale})`, transformOrigin: 'center center' }}>
         <Stage
           width={stageSize.width}
           height={stageSize.height}
@@ -696,12 +714,15 @@ export function StudioCanvas({
             e.evt.stopPropagation()
 
             // Calculate center of the object for rotation pivot
-            const nodeX = node.x()
-            const nodeY = node.y()
-            const nodeW = node.width() * node.scaleX()
-            const nodeH = node.height() * node.scaleY()
-            const rot = (node.rotation() * Math.PI) / 180
-            // Center in world coords
+            // Use layer data (percentages) converted to pixels since Groups may not have width/height
+            const selLayer = layers.find(l => l.id === selectedLayerId)
+            if (!selLayer) return
+            const nodeW = pct2px(selLayer.width, stageSize.width)
+            const nodeH = pct2px(selLayer.height, stageSize.height)
+            const nodeX = pct2px(selLayer.x, stageSize.width)
+            const nodeY = pct2px(selLayer.y, stageSize.height)
+            const rot = (selLayer.rotation * Math.PI) / 180
+            // Center in world coords (accounting for rotation around top-left origin)
             const cx = nodeX + (nodeW / 2) * Math.cos(rot) - (nodeH / 2) * Math.sin(rot)
             const cy = nodeY + (nodeW / 2) * Math.sin(rot) + (nodeH / 2) * Math.cos(rot)
 

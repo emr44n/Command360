@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import type { Slide, StudioContent, StudioLayer, StudioLayerState, StudioEvent } from '@/types/slide'
 import type { Session } from '@/types/session'
 import type { RealtimeChannel } from '@supabase/supabase-js'
-import { Zap, Vote, QrCode, Play, ChevronRight, RotateCcw } from 'lucide-react'
+import { Zap, Vote, QrCode, Play, ChevronRight, RotateCcw, Maximize2, Minimize2 } from 'lucide-react'
 import { playEvent, type EventPlaybackController } from '@/lib/studio/event-playback'
 
 interface Props {
@@ -25,6 +25,15 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
   const [triggeredEvents, setTriggeredEvents] = useState<Set<string>>(new Set())
   const [animatingEventId, setAnimatingEventId] = useState<string | null>(null)
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set())
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
+  // Escape key exits fullscreen preview
+  useEffect(() => {
+    if (!isFullscreen) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsFullscreen(false) }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [isFullscreen])
   const eventControllerRef = useRef<EventPlaybackController | null>(null)
   const initialStatesRef = useRef<Record<string, StudioLayerState>>(buildInitialStates(layers))
 
@@ -219,16 +228,24 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
   const joinUrl = 'command360.co.uk/join'
 
   return (
-    <div className="w-full h-full flex gap-4">
+    <div className={`w-full h-full flex gap-4 ${isFullscreen ? 'fixed inset-0 z-[200] bg-black p-0' : ''}`}>
       {/* Main canvas area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className={`flex flex-col min-w-0 ${isFullscreen ? 'flex-1' : 'flex-1'}`}>
         <div
-          className="w-full relative overflow-hidden rounded-lg flex-1"
+          className={`w-full relative overflow-hidden flex-1 ${isFullscreen ? 'rounded-none' : 'rounded-lg'}`}
           style={{
-            aspectRatio: '16 / 9',
+            aspectRatio: isFullscreen ? undefined : '16 / 9',
             backgroundColor: canvas.backgroundColor,
           }}
         >
+          {/* Fullscreen toggle button */}
+          <button
+            onClick={() => setIsFullscreen(v => !v)}
+            className="absolute top-2 right-2 z-10 w-8 h-8 rounded-lg bg-black/50 hover:bg-black/70 text-white/60 hover:text-white flex items-center justify-center transition-all backdrop-blur-sm"
+            title={isFullscreen ? 'Exit fullscreen (Esc)' : 'Fullscreen preview'}
+          >
+            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+          </button>
           {layers.map((layer) => {
             const state = layerStates[layer.id]
             if (!state || !state.visible) return null
@@ -251,8 +268,8 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
         </div>
       </div>
 
-      {/* Events panel (right side) */}
-      <div className="w-56 shrink-0 flex flex-col overflow-hidden">
+      {/* Events panel (right side) — hidden in fullscreen */}
+      <div className={`w-56 shrink-0 flex flex-col overflow-hidden ${isFullscreen ? 'hidden' : ''}`}>
         <div className="mb-2 flex items-center justify-between">
           <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Events</h3>
           {triggeredEvents.size > 0 && (

@@ -194,17 +194,36 @@ export function StudioGallery({
   }
 
   const addImageToCanvas = (asset: AssetItem) => {
-    onAddLayer({
-      id: generateLayerId(), name: asset.name, type: 'image', src: asset.url,
-      x: 10, y: 10, width: 30, height: 30, rotation: 0, opacity: 1,
-      blendMode: 'normal', visible: true, locked: false,
-    })
+    // Load image to get natural dimensions, then add with correct aspect ratio
+    const img = new window.Image()
+    img.crossOrigin = 'anonymous'
+    img.src = asset.url
+    img.onload = () => {
+      const aspectRatio = img.naturalWidth / img.naturalHeight
+      // Fit within 40% width, calculate height from aspect ratio
+      const widthPct = 40
+      const heightPct = widthPct / aspectRatio * (16 / 9) // account for 16:9 canvas
+      onAddLayer({
+        id: generateLayerId(), name: asset.name, type: 'image', src: asset.url,
+        x: 10, y: 10, width: widthPct, height: Math.min(heightPct, 80), rotation: 0, opacity: 1,
+        blendMode: 'normal', visible: true, locked: false,
+      })
+    }
+    img.onerror = () => {
+      // Fallback: use default size
+      onAddLayer({
+        id: generateLayerId(), name: asset.name, type: 'image', src: asset.url,
+        x: 10, y: 10, width: 30, height: 30, rotation: 0, opacity: 1,
+        blendMode: 'normal', visible: true, locked: false,
+      })
+    }
   }
 
   const addVideoToCanvas = (asset: AssetItem) => {
+    // Videos default to 16:9 aspect ratio
     onAddLayer({
       id: generateLayerId(), name: asset.name, type: 'video', src: asset.url,
-      x: 10, y: 10, width: 40, height: 30, rotation: 0, opacity: 1,
+      x: 10, y: 10, width: 40, height: 22.5, rotation: 0, opacity: 1,
       blendMode: 'normal', visible: true, locked: false,
       loop: true, autoplay: true, muted: true,
     })
