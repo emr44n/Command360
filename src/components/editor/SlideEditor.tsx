@@ -571,6 +571,8 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             slides={slides}
             selectedSlideId={selectedSlideId}
             onSelectSlide={(id) => { setSelectedSlideId(id); setSelectedElementId(null) }}
+            onDeleteSlide={handleDeleteSlide}
+            onDuplicateSlide={handleDuplicateSlideById}
             onAddSlide={async () => {
               const position = slides.length
               setSaveStatus('saving')

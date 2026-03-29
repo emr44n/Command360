@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import {
   FolderOpen, Type, Shapes, Film, Sparkles, Settings2,
-  Play, Square, SkipBack, Layers, Plus, Trash2 as Trash2Icon,
+  Play, Square, SkipBack, Layers, Plus, Trash2 as Trash2Icon, Copy,
 } from 'lucide-react'
 import type {
   Slide,
@@ -34,6 +34,8 @@ interface StudioEditorProps {
   onSelectSlide?: (id: string) => void
   onAddSlide?: () => void
   onRenameSlide?: (slideId: string, newTitle: string) => void
+  onDeleteSlide?: (id: string) => void
+  onDuplicateSlide?: (id: string) => void
 }
 
 export function StudioEditor({
@@ -44,6 +46,8 @@ export function StudioEditor({
   onSelectSlide,
   onAddSlide,
   onRenameSlide,
+  onDeleteSlide,
+  onDuplicateSlide,
 }: StudioEditorProps) {
   // Migration on first load
   const migratedRef = useRef(false)
@@ -477,6 +481,8 @@ export function StudioEditor({
                     onSelectSlide={onSelectSlide!}
                     onAddSlide={onAddSlide}
                     onRenameSlide={onRenameSlide}
+                    onDeleteSlide={onDeleteSlide}
+                    onDuplicateSlide={onDuplicateSlide}
                   />
                 ) : activePanel === 'text' ? (
                   <TextPanel
@@ -659,36 +665,40 @@ function SlidesPanel({
   onSelectSlide,
   onAddSlide,
   onRenameSlide,
+  onDeleteSlide,
+  onDuplicateSlide,
 }: {
   slides: Slide[]
   activeSlideId: string | null
   onSelectSlide: (id: string) => void
   onAddSlide?: () => void
   onRenameSlide?: (slideId: string, newTitle: string) => void
+  onDeleteSlide?: (id: string) => void
+  onDuplicateSlide?: (id: string) => void
 }) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editTitle, setEditTitle] = useState('')
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-3 py-2 border-b border-[#1a1a1a]">
+      <div className="px-3 py-2.5 border-b border-[#1e1f22]">
         <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Scenes</span>
       </div>
-      <div className="flex-1 overflow-y-auto px-2 py-2 space-y-3">
+      <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2.5">
         {slides.map((slide, index) => {
           const isActive = slide.id === activeSlideId
           const isEditing = editingId === slide.id
           return (
-            <button
+            <div
               key={slide.id}
               onClick={() => onSelectSlide(slide.id)}
-              className={`w-full rounded-lg overflow-hidden transition-all cursor-pointer group ${
+              className={`w-full rounded-lg overflow-hidden transition-all cursor-pointer group relative ${
                 isActive
-                  ? 'ring-2 ring-red-500 ring-offset-1 ring-offset-[#0e0e0e]'
-                  : 'ring-1 ring-[#2a2a2a] hover:ring-zinc-500'
+                  ? 'ring-2 ring-red-500 ring-offset-1 ring-offset-[#2b2d31]'
+                  : 'ring-1 ring-[#3f4147] hover:ring-zinc-500'
               }`}
             >
-              <div className="relative aspect-video bg-[#0a0a0a] flex items-center justify-center">
+              <div className="relative aspect-video bg-[#1e1f22] flex items-center justify-center">
                 {isEditing ? (
                   <input
                     value={editTitle}
@@ -705,7 +715,7 @@ function SlidesPanel({
                       if (e.key === 'Escape') setEditingId(null)
                     }}
                     onClick={(e) => e.stopPropagation()}
-                    className="w-[80%] h-5 text-[10px] text-zinc-100 bg-zinc-800 border border-zinc-600 rounded px-1 text-center outline-none"
+                    className="w-[80%] h-5 text-[10px] text-zinc-100 bg-[#383a40] border border-zinc-600 rounded px-1 text-center outline-none"
                     autoFocus
                   />
                 ) : (
@@ -721,21 +731,43 @@ function SlidesPanel({
                     {slide.title || `Scene ${index + 1}`}
                   </span>
                 )}
+                {/* Scene number badge */}
                 <span className={`absolute top-1 left-1 text-[9px] font-bold px-1 py-0.5 rounded ${
-                  isActive ? 'bg-red-600 text-white' : 'bg-zinc-800 text-zinc-400'
+                  isActive ? 'bg-red-600 text-white' : 'bg-[#383a40] text-zinc-400'
                 }`}>
                   {index + 1}
                 </span>
+                {/* Duplicate & Delete buttons — visible on hover */}
+                <div className="absolute top-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                  {onDuplicateSlide && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onDuplicateSlide(slide.id) }}
+                      className="w-5 h-5 rounded bg-[#383a40]/90 hover:bg-indigo-500/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors"
+                      title="Duplicate scene"
+                    >
+                      <Copy className="w-2.5 h-2.5" />
+                    </button>
+                  )}
+                  {onDeleteSlide && slides.length > 1 && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onDeleteSlide(slide.id) }}
+                      className="w-5 h-5 rounded bg-[#383a40]/90 hover:bg-red-500/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors"
+                      title="Delete scene"
+                    >
+                      <Trash2Icon className="w-2.5 h-2.5" />
+                    </button>
+                  )}
+                </div>
               </div>
-            </button>
+            </div>
           )
         })}
       </div>
       {onAddSlide && (
-        <div className="px-2 py-2 border-t border-[#1a1a1a]">
+        <div className="px-2 py-2 border-t border-[#1e1f22]">
           <button
             onClick={onAddSlide}
-            className="w-full h-8 rounded-lg border border-dashed border-[#2a2a2a] hover:border-red-500/50 text-zinc-500 hover:text-red-400 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer"
+            className="w-full h-8 rounded-lg border border-dashed border-[#3f4147] hover:border-red-500/50 text-zinc-500 hover:text-red-400 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             Add Scene
