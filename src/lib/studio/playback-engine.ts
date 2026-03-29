@@ -183,10 +183,11 @@ export function computeLayerStatesAtTime(
         if (resolvedSrc !== undefined) {
           state.src = resolvedSrc as string
         }
-      } else {
-        // No clip at this time — layer is not visible during gaps
+      } else if (track.clips.length > 0) {
+        // No clip at this time but track has clips — layer is not visible during gaps
         state.visible = false
       }
+      // If track has no clips at all, keep layer at default state (always visible)
     }
 
     // If track is hidden, force invisible

@@ -433,20 +433,36 @@ function SelectedTransformer({
   shapeRef,
   isSelected,
   interactive,
+  layerId,
 }: {
   shapeRef: React.RefObject<Konva.Image | Konva.Text | Konva.Rect | null>
   isSelected: boolean
   interactive: boolean
+  layerId: string | null
 }) {
   const trRef = useRef<Konva.Transformer>(null)
 
   useEffect(() => {
-    if (isSelected && interactive && trRef.current && shapeRef.current) {
-      trRef.current.nodes([shapeRef.current])
-      trRef.current.getLayer()?.batchDraw()
-      setupTransformerCursors(trRef.current as unknown as Parameters<typeof setupTransformerCursors>[0])
+    if (!isSelected || !interactive) return
+
+    // Attach transformer to shape node — retry until ref is available
+    function attach() {
+      if (trRef.current && shapeRef.current) {
+        trRef.current.nodes([shapeRef.current])
+        trRef.current.getLayer()?.batchDraw()
+        setupTransformerCursors(trRef.current as unknown as Parameters<typeof setupTransformerCursors>[0])
+        return true
+      }
+      return false
     }
-  }, [isSelected, interactive, shapeRef])
+
+    // Try immediately
+    if (attach()) return
+
+    // Retry with increasing delays if ref isn't ready yet
+    const t1 = setTimeout(() => { if (!attach()) { setTimeout(attach, 50) } }, 10)
+    return () => clearTimeout(t1)
+  }, [isSelected, interactive, shapeRef, layerId])
 
   if (!isSelected || !interactive) return null
 
@@ -752,6 +768,7 @@ export function StudioCanvas({
                   shapeRef={shapeRef}
                   isSelected={true}
                   interactive={interactive}
+                  layerId={selectedLayerId}
                 />
               )
             })()}
