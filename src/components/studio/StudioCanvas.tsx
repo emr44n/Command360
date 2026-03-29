@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
-import { Stage, Layer, Rect, Text, Image as KonvaImage, Transformer } from 'react-konva'
+import { Stage, Layer, Rect, Text, Image as KonvaImage, Transformer, Group } from 'react-konva'
 import type Konva from 'konva'
 import type { StudioLayer, StudioTrack, StudioLayerState } from '@/types/slide'
 import { computeLayerStatesAtTime } from '@/lib/studio/playback-engine'
@@ -196,6 +196,9 @@ function ImageLayerNode({
   shapeRef: React.RefObject<Konva.Image | null>
 }) {
   const [image, setImage] = useState<HTMLImageElement | null>(null)
+  // Use a Group with a Rect as the base — this ALWAYS has the ref so the
+  // Transformer can attach even while the image is still loading.
+  const groupRef = useRef<Konva.Group>(null)
 
   const src = state.src ?? layer.src
   useEffect(() => {
@@ -204,7 +207,23 @@ function ImageLayerNode({
     img.crossOrigin = 'anonymous'
     img.src = src
     img.onload = () => setImage(img)
+    img.onerror = () => {
+      // Fallback: try without crossOrigin for blob URLs
+      if (src.startsWith('blob:')) {
+        const img2 = new window.Image()
+        img2.src = src
+        img2.onload = () => setImage(img2)
+      }
+    }
   }, [src])
+
+  // Keep the shapeRef pointing at the group so the Transformer can always attach
+  useEffect(() => {
+    if (groupRef.current) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (shapeRef as React.MutableRefObject<any>).current = groupRef.current
+    }
+  })
 
   if (!state.visible) return null
 
@@ -214,71 +233,61 @@ function ImageLayerNode({
   const h = pct2px(state.height, stageHeight)
 
   return (
-    <>
-      {/* Transparent hit rect — always clickable, even while image is loading */}
-      {!image && interactive && (
-        <Rect
-          x={x}
-          y={y}
-          width={w}
-          height={h}
-          rotation={state.rotation}
-          fill="transparent"
-          stroke="#3b82f6"
-          strokeWidth={1}
-          dash={[4, 4]}
-          opacity={0.4}
-          listening={true}
-          onClick={onSelect}
-          onTap={onSelect}
-          draggable={!layer.locked}
-          onDragEnd={(e) => {
-            onDragEnd(
-              px2pct(e.target.x(), stageWidth),
-              px2pct(e.target.y(), stageHeight)
-            )
-          }}
-        />
-      )}
+    <Group
+      ref={groupRef}
+      x={x}
+      y={y}
+      width={w}
+      height={h}
+      rotation={state.rotation}
+      opacity={state.opacity}
+      draggable={interactive && !layer.locked}
+      listening={true}
+      onClick={onSelect}
+      onTap={onSelect}
+      onDragEnd={(e) => {
+        onDragEnd(
+          px2pct(e.target.x(), stageWidth),
+          px2pct(e.target.y(), stageHeight)
+        )
+      }}
+      onTransformEnd={() => {
+        const node = groupRef.current
+        if (!node) return
+        const scaleX = node.scaleX()
+        const scaleY = node.scaleY()
+        node.scaleX(1)
+        node.scaleY(1)
+        onTransformEnd({
+          x: px2pct(node.x(), stageWidth),
+          y: px2pct(node.y(), stageHeight),
+          width: px2pct(node.width() * scaleX, stageWidth),
+          height: px2pct(node.height() * scaleY, stageHeight),
+          rotation: node.rotation(),
+        })
+      }}
+    >
+      {/* Hit area — always present for clicking/selecting */}
+      <Rect
+        width={w}
+        height={h}
+        fill={image ? 'transparent' : '#1e1f22'}
+        stroke={!image ? '#3b82f6' : undefined}
+        strokeWidth={!image ? 1 : 0}
+        dash={!image ? [4, 4] : undefined}
+        listening={true}
+      />
+      {/* Image rendered on top when loaded */}
       {image && (
         <KonvaImage
-          ref={shapeRef}
           image={image}
-          x={x}
-          y={y}
           width={w}
           height={h}
-          rotation={state.rotation}
-          opacity={state.opacity}
-          draggable={interactive && !layer.locked}
-          listening={true}
-          onClick={onSelect}
-          onTap={onSelect}
+          listening={false}
           globalCompositeOperation={layer.blendMode === 'normal' ? 'source-over' : layer.blendMode}
-          onDragEnd={(e) => {
-            onDragEnd(
-              px2pct(e.target.x(), stageWidth),
-              px2pct(e.target.y(), stageHeight)
-            )
-          }}
-          onTransformEnd={() => {
-            const node = shapeRef.current
-            if (!node) return
-            const scaleX = node.scaleX()
-            const scaleY = node.scaleY()
-            node.scaleX(1)
-            node.scaleY(1)
-            onTransformEnd({
-              x: px2pct(node.x(), stageWidth),
-              y: px2pct(node.y(), stageHeight),
-              width: px2pct(node.width() * scaleX, stageWidth),
-              height: px2pct(node.height() * scaleY, stageHeight),
-              rotation: node.rotation(),
-            })
-          }}
         />
       )}
-    </>
+    </Group>
   )
 }
 
@@ -435,7 +444,7 @@ function SelectedTransformer({
   interactive,
   layerId,
 }: {
-  shapeRef: React.RefObject<Konva.Image | Konva.Text | Konva.Rect | null>
+  shapeRef: React.RefObject<Konva.Image | Konva.Text | Konva.Rect | Konva.Group | null>
   isSelected: boolean
   interactive: boolean
   layerId: string | null
