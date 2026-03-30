@@ -251,6 +251,11 @@ html, body {
   transform: translateY(0) translateX(0) scale(1);
 }
 
+/* Fullscreen exit button overlay */
+:fullscreen::backdrop {
+  background: black;
+}
+
 /* Legacy reveal (keep for existing usage) */
 @keyframes reveal-up {
   0% { opacity: 0; transform: translateY(32px); }

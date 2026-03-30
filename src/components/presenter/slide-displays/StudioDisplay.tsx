@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import type { Slide, StudioContent, StudioLayer, StudioLayerState, StudioEvent } from '@/types/slide'
 import type { Session } from '@/types/session'
 import type { RealtimeChannel } from '@supabase/supabase-js'
-import { Zap, Vote, QrCode, Play, ChevronRight, ChevronDown, RotateCcw, Monitor, Check } from 'lucide-react'
+import { Zap, Vote, QrCode, Play, ChevronRight, ChevronDown, RotateCcw, Monitor, Check, X } from 'lucide-react'
 import { playEvent, type EventPlaybackController } from '@/lib/studio/event-playback'
 
 interface Props {
@@ -20,20 +20,42 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
 
   // CCTV layout — render ONLY the grid, no events panel
   if (content.cctvLayout && allSlides) {
+    const cctvCanvasRef = useRef<HTMLDivElement>(null)
+    const [isCctvFullscreen, setIsCctvFullscreen] = useState(false)
+
+    useEffect(() => {
+      const handler = () => setIsCctvFullscreen(!!document.fullscreenElement)
+      document.addEventListener('fullscreenchange', handler)
+      return () => document.removeEventListener('fullscreenchange', handler)
+    }, [])
+
+    const toggleCctvFullscreen = () => {
+      if (document.fullscreenElement) {
+        document.exitFullscreen()
+      } else {
+        cctvCanvasRef.current?.requestFullscreen()
+      }
+    }
+
     return (
       <div className="w-full h-full relative bg-black">
         {/* Canvas-only fullscreen button */}
         <button
-          onClick={() => {
-            const el = document.querySelector('[data-cctv-canvas]') as HTMLElement
-            el?.requestFullscreen?.()
-          }}
+          onClick={toggleCctvFullscreen}
           className="absolute bottom-3 right-3 z-20 w-8 h-8 rounded-lg bg-black/50 hover:bg-black/70 text-white/50 hover:text-white flex items-center justify-center transition-all backdrop-blur-sm"
           title="Canvas fullscreen (C)"
         >
           <Monitor className="w-4 h-4" />
         </button>
-        <div data-cctv-canvas className="w-full h-full">
+        {/* Red exit button when fullscreen */}
+        {isCctvFullscreen && (
+          <button onClick={toggleCctvFullscreen}
+            className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors"
+            title="Exit fullscreen">
+            <X className="w-4 h-4" />
+          </button>
+        )}
+        <div ref={cctvCanvasRef} className="w-full h-full">
           <CctvDisplayView
             content={content}
             allSlides={allSlides}
@@ -289,6 +311,14 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
           >
             <Monitor className="w-3.5 h-3.5" />
           </button>
+          {/* Red exit button when fullscreen */}
+          {isCanvasFullscreen && (
+            <button onClick={toggleCanvasFullscreen}
+              className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors"
+              title="Exit fullscreen">
+              <X className="w-4 h-4" />
+            </button>
+          )}
           {layers.map((layer) => {
             const state = layerStates[layer.id]
             if (!state || !state.visible) return null

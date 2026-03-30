@@ -883,6 +883,21 @@ function StudioPreviewContent({ slide, animClass, allSlides = [] }: { slide: Sli
   const { canvas, layers, events, eventCategories } = content
   const isCctv = !!content.cctvLayout
   const canvasRef = useRef<HTMLDivElement>(null)
+  const [isCanvasFullscreen, setIsCanvasFullscreen] = useState(false)
+
+  useEffect(() => {
+    const handler = () => setIsCanvasFullscreen(!!document.fullscreenElement)
+    document.addEventListener('fullscreenchange', handler)
+    return () => document.removeEventListener('fullscreenchange', handler)
+  }, [])
+
+  const toggleCanvasFullscreen = useCallback(() => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen()
+    } else {
+      canvasRef.current?.requestFullscreen()
+    }
+  }, [])
 
   const [layerStates, setLayerStates] = useState<Record<string, StudioLayerState>>(() =>
     buildStudioInitialStates(layers)
@@ -949,12 +964,20 @@ function StudioPreviewContent({ slide, animClass, allSlides = [] }: { slide: Sli
       <div className="flex-1 flex items-center justify-center p-6 min-h-0 bg-black relative">
         {/* Canvas fullscreen button */}
         <button
-          onClick={() => canvasRef.current?.requestFullscreen()}
+          onClick={toggleCanvasFullscreen}
           className="absolute top-3 right-3 z-20 w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white/60 hover:text-white flex items-center justify-center transition-all"
           title="Fullscreen canvas"
         >
           <Maximize className="w-4 h-4" />
         </button>
+        {/* Red exit button when fullscreen */}
+        {isCanvasFullscreen && (
+          <button onClick={toggleCanvasFullscreen}
+            className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors"
+            title="Exit fullscreen">
+            <X className="w-4 h-4" />
+          </button>
+        )}
         <div ref={canvasRef} className="w-full max-w-5xl" style={{ maxWidth: 'min(64rem, calc((100vh - 10rem) * 16 / 9))' }}>
           <div className="w-full overflow-hidden rounded-xl shadow-2xl" style={{ aspectRatio: '16 / 9', display: 'grid', gap: '2px', background: '#000', ...gridStyle }}>
             {Array.from({ length: count }, (_, i) => {
@@ -997,12 +1020,20 @@ function StudioPreviewContent({ slide, animClass, allSlides = [] }: { slide: Sli
         <div className="w-full relative" style={{ maxWidth: 'min(56rem, calc((100vh - 10rem) * 16 / 9))' }}>
           {/* Canvas fullscreen button */}
           <button
-            onClick={() => canvasRef.current?.requestFullscreen()}
+            onClick={toggleCanvasFullscreen}
             className="absolute top-2 right-2 z-20 w-7 h-7 rounded-lg bg-black/40 hover:bg-black/60 text-white/50 hover:text-white flex items-center justify-center transition-all"
             title="Fullscreen canvas"
           >
             <Maximize className="w-3.5 h-3.5" />
           </button>
+          {/* Red exit button when fullscreen */}
+          {isCanvasFullscreen && (
+            <button onClick={toggleCanvasFullscreen}
+              className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors"
+              title="Exit fullscreen">
+              <X className="w-4 h-4" />
+            </button>
+          )}
           <div
             ref={canvasRef}
             className="w-full relative overflow-hidden rounded-xl shadow-2xl"

@@ -253,6 +253,12 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
           </div>
           <span className="text-xs font-semibold text-muted-foreground tracking-tight hidden md:inline">Command 360</span>
         </div>
+        {/* Current slide title */}
+        {currentSlide && (
+          <span className="text-sm font-semibold text-foreground truncate max-w-[200px] ml-4" title={currentSlide.title || undefined}>
+            {currentSlide.title || `Slide ${currentSlideIndex + 1}`}
+          </span>
+        )}
         {/* Center join info */}
         <div className="flex-1 flex items-center justify-center gap-4">
         <span className="text-muted-foreground text-sm">

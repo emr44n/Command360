@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useCallback } from 'react'
-import { Monitor, Grid2x2, LayoutGrid, Columns2, Square } from 'lucide-react'
+import React, { useCallback, useState, useRef, useEffect } from 'react'
+import { Monitor, Grid2x2, LayoutGrid, Columns2, Square, ChevronDown } from 'lucide-react'
 import type { Slide, StudioContent } from '@/types/slide'
 
 interface StudioCctvEditorProps {
@@ -165,7 +165,7 @@ export function StudioCctvEditor({ content, onContentChange, slides, currentSlid
           </div>
         </div>
 
-        {/* Scene assignment — compact list */}
+        {/* Scene assignment — visual dropdown list */}
         <div>
           <label className="text-[9px] font-medium text-zinc-500 mb-1.5 block">
             Assign Scenes
@@ -174,32 +174,135 @@ export function StudioCctvEditor({ content, onContentChange, slides, currentSlid
             {Array.from({ length: slotCount }, (_, i) => {
               const assignedId = slots[i] || ''
               const assigned = assignedId ? slides.find(s => s.id === assignedId) : null
+              const assignedContent = assigned ? (assigned.content as StudioContent) : null
+              const assignedLayers = assignedContent?.layers || []
               const assignedIdx = assigned ? slides.findIndex(s => s.id === assigned.id) : -1
               return (
-                <div key={i} className="flex items-center gap-1.5">
-                  <span className="text-[8px] font-bold text-zinc-600 w-3 shrink-0">{i + 1}</span>
-                  {assigned && (
-                    <div className="w-8 h-5 rounded bg-zinc-800 overflow-hidden shrink-0 border border-[#3f4147]">
-                      <div className="w-full h-full" style={{ backgroundColor: (assigned.content as StudioContent)?.canvas?.backgroundColor || '#000' }} />
-                    </div>
-                  )}
-                  <select
-                    value={assignedId}
-                    onChange={(e) => handleSlotChange(i, e.target.value)}
-                    className="flex-1 h-5 text-[9px] bg-[#1e1f22] border border-[#3f4147] rounded text-zinc-300 px-1 cursor-pointer focus:border-red-500/50 outline-none"
-                  >
-                    <option value="">— Empty —</option>
-                    {availableSlides.map((s) => {
-                      const idx = slides.findIndex(sl => sl.id === s.id)
-                      return <option key={s.id} value={s.id}>{s.title || `Scene ${idx + 1}`}</option>
-                    })}
-                  </select>
-                </div>
+                <SceneSlotDropdown
+                  key={i}
+                  index={i}
+                  assignedId={assignedId}
+                  assigned={assigned}
+                  assignedContent={assignedContent}
+                  assignedLayers={assignedLayers}
+                  assignedIdx={assignedIdx}
+                  availableSlides={availableSlides}
+                  allSlides={slides}
+                  onSlotChange={handleSlotChange}
+                />
               )
             })}
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+/** Visual dropdown for scene slot assignment */
+function SceneSlotDropdown({
+  index,
+  assignedId,
+  assigned,
+  assignedContent,
+  assignedLayers,
+  assignedIdx,
+  availableSlides,
+  allSlides,
+  onSlotChange,
+}: {
+  index: number
+  assignedId: string
+  assigned: Slide | null | undefined
+  assignedContent: StudioContent | null
+  assignedLayers: StudioContent['layers']
+  assignedIdx: number
+  availableSlides: Slide[]
+  allSlides: Slide[]
+  onSlotChange: (index: number, slideId: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  const assignedLabel = assigned
+    ? (assigned.title || `Scene ${assignedIdx + 1}`)
+    : '— Empty —'
+
+  return (
+    <div ref={dropdownRef} className="relative flex items-center gap-1.5">
+      <span className="text-[8px] font-bold text-zinc-600 w-3 shrink-0">{index + 1}</span>
+      {/* Thumbnail of assigned scene */}
+      <div className="w-10 h-6 rounded bg-[#1e1f22] overflow-hidden shrink-0 border border-[#3f4147] relative">
+        {assignedContent ? (
+          <div className="w-full h-full relative" style={{ backgroundColor: assignedContent.canvas?.backgroundColor || '#000' }}>
+            {assignedLayers.map(layer => layer.visible && layer.src ? (
+              <img key={layer.id} src={layer.src} className="absolute object-contain" draggable={false}
+                style={{ left: `${layer.x}%`, top: `${layer.y}%`, width: `${layer.width}%`, height: `${layer.height}%` }} />
+            ) : null)}
+          </div>
+        ) : (
+          <div className="w-full h-full bg-[#1e1f22]" />
+        )}
+      </div>
+      {/* Dropdown trigger */}
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="flex-1 h-5 flex items-center justify-between text-[9px] bg-[#1e1f22] border border-[#3f4147] rounded text-zinc-300 px-1.5 cursor-pointer hover:border-zinc-500 transition-colors"
+      >
+        <span className="truncate">{assignedLabel}</span>
+        <ChevronDown className={`w-2.5 h-2.5 shrink-0 text-zinc-500 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {/* Dropdown menu */}
+      {open && (
+        <div className="absolute top-full left-3 right-0 mt-0.5 z-50 bg-[#2b2d31] border border-[#3f4147] rounded-md shadow-xl max-h-48 overflow-y-auto py-0.5">
+          {/* Empty option */}
+          <div
+            onClick={() => { onSlotChange(index, ''); setOpen(false) }}
+            className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#35363c] cursor-pointer rounded mx-0.5"
+          >
+            <div className="w-10 h-6 rounded bg-[#1e1f22] overflow-hidden shrink-0 border border-[#3f4147] flex items-center justify-center">
+              <span className="text-[7px] text-zinc-600">---</span>
+            </div>
+            <span className="text-[9px] text-zinc-500 italic">Empty</span>
+          </div>
+          {/* Available scenes */}
+          {availableSlides.map((s) => {
+            const sc = s.content as StudioContent
+            const sceneLayers = sc?.layers || []
+            const sceneIdx = allSlides.findIndex(sl => sl.id === s.id)
+            const sceneName = s.title || `Scene ${sceneIdx + 1}`
+            return (
+              <div
+                key={s.id}
+                onClick={() => { onSlotChange(index, s.id); setOpen(false) }}
+                className={`flex items-center gap-2 px-2 py-1.5 hover:bg-[#35363c] cursor-pointer rounded mx-0.5 ${assignedId === s.id ? 'bg-red-500/10' : ''}`}
+              >
+                <div className="w-10 h-6 rounded bg-[#1e1f22] overflow-hidden shrink-0 border border-[#3f4147] relative">
+                  <div className="w-full h-full relative" style={{ backgroundColor: sc?.canvas?.backgroundColor || '#000' }}>
+                    {sceneLayers.map(layer => layer.visible && layer.src ? (
+                      <img key={layer.id} src={layer.src} className="absolute object-contain" draggable={false}
+                        style={{ left: `${layer.x}%`, top: `${layer.y}%`, width: `${layer.width}%`, height: `${layer.height}%` }} />
+                    ) : null)}
+                  </div>
+                </div>
+                <span className="text-[9px] text-zinc-300">{sceneName}</span>
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Slide, StudioContent, StudioLayer, StudioLayerState } from '@/types/slide'
-import { Monitor, CheckCircle2, Maximize2 } from 'lucide-react'
+import { Monitor, CheckCircle2, Maximize2, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -266,6 +266,14 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
         >
           <Maximize2 className="w-4 h-4" />
         </button>
+        {/* Red exit button when fullscreen */}
+        {isCanvasFullscreen && (
+          <button onClick={toggleCanvasFullscreen}
+            className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors"
+            title="Exit fullscreen">
+            <X className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Status indicator */}
