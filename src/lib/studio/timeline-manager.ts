@@ -51,7 +51,7 @@ export function addTrackForLayer(
     muted: false,
     hidden: false,
     locked: layer.locked,
-    color: '#6366f1',
+    color: '#dc2626',
     clips: [{
       id: clipId,
       trackId,

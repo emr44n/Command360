@@ -399,20 +399,20 @@ export function StudioGallery({
       <Tabs defaultValue={initialTab} key={initialTab} className="flex h-full flex-col">
         <div ref={tabContainerRef} className="flex border-b border-[#1e1f22] shrink-0">
           <TabsList className="w-full bg-transparent p-0 h-auto rounded-none gap-0">
-            <TabsTrigger value="images" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2 text-[9px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-red-400 data-[state=active]:text-white data-[state=active]:bg-[#3a2020] data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-600 data-[state=inactive]:bg-[#232428] data-[state=inactive]:hover:text-zinc-400 data-[state=inactive]:hover:bg-[#2f3035]" title="Images">
-              <ImageIcon className="size-3.5 shrink-0 data-[state=active]:text-red-400" />
+            <TabsTrigger value="images" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-red-400 data-[state=active]:bg-red-500/15 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-600 data-[state=inactive]:bg-transparent data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-white/[0.04]" title="Images">
+              <ImageIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Images'}
             </TabsTrigger>
-            <TabsTrigger value="videos" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2 text-[9px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-purple-400 data-[state=active]:text-white data-[state=active]:bg-[#2d2038] data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-600 data-[state=inactive]:bg-[#232428] data-[state=inactive]:hover:text-zinc-400 data-[state=inactive]:hover:bg-[#2f3035]" title="Videos">
-              <VideoIcon className="size-3.5 shrink-0" />
+            <TabsTrigger value="videos" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-red-400 data-[state=active]:bg-red-500/15 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-600 data-[state=inactive]:bg-transparent data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-white/[0.04]" title="Videos">
+              <VideoIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Videos'}
             </TabsTrigger>
-            <TabsTrigger value="placed" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2 text-[9px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-blue-400 data-[state=active]:text-white data-[state=active]:bg-[#1e2a3a] data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-600 data-[state=inactive]:bg-[#232428] data-[state=inactive]:hover:text-zinc-400 data-[state=inactive]:hover:bg-[#2f3035]" title="Layers">
-              <LayersIcon className="size-3.5 shrink-0" />
+            <TabsTrigger value="placed" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-red-400 data-[state=active]:bg-red-500/15 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-600 data-[state=inactive]:bg-transparent data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-white/[0.04]" title="Layers">
+              <LayersIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Layers'}
             </TabsTrigger>
-            <TabsTrigger value="events" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2 text-[9px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-amber-400 data-[state=active]:text-white data-[state=active]:bg-[#3a3420] data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-600 data-[state=inactive]:bg-[#232428] data-[state=inactive]:hover:text-zinc-400 data-[state=inactive]:hover:bg-[#2f3035]" title="Events">
-              <ZapIcon className="size-3.5 shrink-0" />
+            <TabsTrigger value="events" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-red-400 data-[state=active]:bg-red-500/15 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-600 data-[state=inactive]:bg-transparent data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-white/[0.04]" title="Events">
+              <ZapIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Events'}
             </TabsTrigger>
           </TabsList>
