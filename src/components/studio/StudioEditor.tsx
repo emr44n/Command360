@@ -474,6 +474,10 @@ export function StudioEditor({
           {showLeftPanel && (
             <>
               <div className="shrink-0 bg-[#2b2d31] overflow-hidden overflow-x-hidden flex flex-col border-r border-[#1e1f22]" style={{ width: leftPanelWidth }}>
+                {/* Active panel accent strip */}
+                <div className="h-[2px] shrink-0" style={{
+                  backgroundColor: activePanel === 'slides' ? '#7c3aed' : activePanel === 'gallery' ? '#ef4444' : activePanel === 'text' ? '#0ea5e9' : activePanel === 'shapes' ? '#10b981' : '#f59e0b'
+                }} />
                 {activePanel === 'slides' && hasSlides ? (
                   <SlidesPanel
                     slides={slides!}

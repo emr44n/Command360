@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import {
   ImageIcon,
   VideoIcon,
@@ -8,6 +8,8 @@ import {
   PlusIcon,
   UploadIcon,
   Trash2Icon,
+  LayoutGrid,
+  List,
   ZapIcon,
   Loader2Icon,
   ChevronDown,
@@ -125,9 +127,24 @@ export function StudioGallery({
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set())
   const [editingEventId, setEditingEventId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [tabsNarrow, setTabsNarrow] = useState(false)
+  const tabContainerRef = useRef<HTMLDivElement>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
   const videoInputRef = useRef<HTMLInputElement>(null)
   const { selectedEventId, setSelectedEventId } = useStudioStore()
+
+  // Measure tab container width to hide labels when narrow
+  useEffect(() => {
+    const el = tabContainerRef.current
+    if (!el) return
+    const ro = new ResizeObserver(([entry]) => {
+      setTabsNarrow(entry.contentRect.width < 220)
+    })
+    ro.observe(el)
+    setTabsNarrow(el.clientWidth < 220)
+    return () => ro.disconnect()
+  }, [])
 
   useEffect(() => {
     const existing = extractAssetsFromLayers(layers)
@@ -376,25 +393,42 @@ export function StudioGallery({
   return (
     <div className="flex h-full flex-col bg-[#2b2d31] text-zinc-200">
       <Tabs defaultValue={initialTab} key={initialTab} className="flex h-full flex-col">
-        <div className="flex border-b border-[#1e1f22] shrink-0">
+        <div ref={tabContainerRef} className="flex border-b border-[#1e1f22] shrink-0">
           <TabsList className="w-full bg-transparent p-0 h-auto rounded-none gap-0">
-            <TabsTrigger value="images" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2.5 text-[10px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-red-400 data-[state=active]:bg-red-500/10 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-500 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-zinc-800/50" title="Images">
+            <TabsTrigger value="images" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2 text-[9px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-red-400 data-[state=active]:text-red-300 data-[state=active]:bg-red-500/20 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-600 data-[state=inactive]:hover:text-zinc-400 data-[state=inactive]:hover:bg-[#35363c]" title="Images">
               <ImageIcon className="size-3.5 shrink-0" />
-              <span className="truncate hidden min-[220px]:inline">Images</span>
+              {!tabsNarrow && 'Images'}
             </TabsTrigger>
-            <TabsTrigger value="videos" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2.5 text-[10px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-purple-500 data-[state=active]:text-purple-400 data-[state=active]:bg-purple-500/10 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-500 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-zinc-800/50" title="Videos">
+            <TabsTrigger value="videos" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2 text-[9px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-purple-400 data-[state=active]:text-purple-300 data-[state=active]:bg-purple-500/20 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-600 data-[state=inactive]:hover:text-zinc-400 data-[state=inactive]:hover:bg-[#35363c]" title="Videos">
               <VideoIcon className="size-3.5 shrink-0" />
-              <span className="truncate hidden min-[220px]:inline">Videos</span>
+              {!tabsNarrow && 'Videos'}
             </TabsTrigger>
-            <TabsTrigger value="placed" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2.5 text-[10px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-blue-500 data-[state=active]:text-blue-400 data-[state=active]:bg-blue-500/10 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-500 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-zinc-800/50" title="Layers">
+            <TabsTrigger value="placed" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2 text-[9px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-blue-400 data-[state=active]:text-blue-300 data-[state=active]:bg-blue-500/20 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-600 data-[state=inactive]:hover:text-zinc-400 data-[state=inactive]:hover:bg-[#35363c]" title="Layers">
               <LayersIcon className="size-3.5 shrink-0" />
-              <span className="truncate hidden min-[220px]:inline">Layers</span>
+              {!tabsNarrow && 'Layers'}
             </TabsTrigger>
-            <TabsTrigger value="events" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2.5 text-[10px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-amber-500 data-[state=active]:text-amber-400 data-[state=active]:bg-amber-500/10 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-500 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-zinc-800/50" title="Events">
+            <TabsTrigger value="events" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-2 text-[9px] font-semibold rounded-none border-b-2 transition-all duration-200 data-[state=active]:border-amber-400 data-[state=active]:text-amber-300 data-[state=active]:bg-amber-500/20 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-600 data-[state=inactive]:hover:text-zinc-400 data-[state=inactive]:hover:bg-[#35363c]" title="Events">
               <ZapIcon className="size-3.5 shrink-0" />
-              <span className="truncate hidden min-[220px]:inline">Events</span>
+              {!tabsNarrow && 'Events'}
             </TabsTrigger>
           </TabsList>
+          {/* Grid/List toggle for assets */}
+          <div className="flex items-center px-1 gap-0.5 border-b-2 border-transparent">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-1 rounded transition-colors ${viewMode === 'grid' ? 'text-zinc-300 bg-[#35363c]' : 'text-zinc-600 hover:text-zinc-400'}`}
+              title="Grid view"
+            >
+              <LayoutGrid className="size-3" />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-1 rounded transition-colors ${viewMode === 'list' ? 'text-zinc-300 bg-[#35363c]' : 'text-zinc-600 hover:text-zinc-400'}`}
+              title="List view"
+            >
+              <List className="size-3" />
+            </button>
+          </div>
         </div>
 
         {/* Images Tab */}
@@ -414,8 +448,26 @@ export function StudioGallery({
             </div>
           )}
           {images.length === 0 && <p className="mt-4 text-center text-xs text-zinc-500">No images uploaded yet</p>}
-          <div className="mt-1.5 grid grid-cols-2 gap-1">
-            {images.map((asset) => (
+          <div className={`mt-1.5 ${viewMode === 'grid' ? 'grid grid-cols-2 gap-1' : 'flex flex-col gap-0.5'}`}>
+            {images.map((asset) => viewMode === 'list' ? (
+              <div
+                key={asset.id}
+                role="button"
+                tabIndex={0}
+                className="group flex items-center gap-2 px-1.5 py-1 rounded hover:bg-[#35363c] cursor-pointer transition-colors"
+                onClick={() => addImageToCanvas(asset)}
+                draggable onDragStart={(e) => handleAssetDragStart(e, asset)}
+              >
+                <img src={asset.url} alt={asset.name} className="w-8 h-6 object-cover rounded shrink-0" />
+                <span className="text-[9px] text-zinc-300 truncate flex-1">{asset.name}</span>
+                <button
+                  className="p-0.5 text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => { e.stopPropagation(); onDeleteLayer?.(asset.id); setImages(prev => prev.filter(a => a.id !== asset.id)) }}
+                >
+                  <Trash2Icon className="size-2.5" />
+                </button>
+              </div>
+            ) : (
               <div
                 key={asset.id}
                 role="button"
