@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import {
   FolderOpen, Type, Shapes, Film, Sparkles, Settings2,
-  Play, Square, SkipBack, Layers, Plus, Trash2 as Trash2Icon, Copy,
+  Play, Square, SkipBack, Layers, Plus, Trash2 as Trash2Icon, Copy, Monitor,
 } from 'lucide-react'
 import type {
   Slide,
@@ -33,9 +33,11 @@ interface StudioEditorProps {
   selectedSlideId?: string | null
   onSelectSlide?: (id: string) => void
   onAddSlide?: () => void
+  onAddCctvSlide?: () => void
   onRenameSlide?: (slideId: string, newTitle: string) => void
   onDeleteSlide?: (id: string) => void
   onDuplicateSlide?: (id: string) => void
+  onReorderSlides?: (fromIndex: number, toIndex: number) => void
 }
 
 export function StudioEditor({
@@ -45,9 +47,11 @@ export function StudioEditor({
   selectedSlideId: activeSlideId,
   onSelectSlide,
   onAddSlide,
+  onAddCctvSlide,
   onRenameSlide,
   onDeleteSlide,
   onDuplicateSlide,
+  onReorderSlides,
 }: StudioEditorProps) {
   // Migration on first load
   const migratedRef = useRef(false)
@@ -484,9 +488,11 @@ export function StudioEditor({
                     activeSlideId={activeSlideId ?? null}
                     onSelectSlide={onSelectSlide!}
                     onAddSlide={onAddSlide}
+                    onAddCctvSlide={onAddCctvSlide}
                     onRenameSlide={onRenameSlide}
                     onDeleteSlide={onDeleteSlide}
                     onDuplicateSlide={onDuplicateSlide}
+                    onReorderSlides={onReorderSlides}
                   />
                 ) : activePanel === 'text' ? (
                   <TextPanel
@@ -680,20 +686,26 @@ function SlidesPanel({
   activeSlideId,
   onSelectSlide,
   onAddSlide,
+  onAddCctvSlide,
   onRenameSlide,
   onDeleteSlide,
   onDuplicateSlide,
+  onReorderSlides,
 }: {
   slides: Slide[]
   activeSlideId: string | null
   onSelectSlide: (id: string) => void
   onAddSlide?: () => void
+  onAddCctvSlide?: () => void
   onRenameSlide?: (slideId: string, newTitle: string) => void
   onDeleteSlide?: (id: string) => void
   onDuplicateSlide?: (id: string) => void
+  onReorderSlides?: (fromIndex: number, toIndex: number) => void
 }) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editTitle, setEditTitle] = useState('')
+  const [dragFromIndex, setDragFromIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
 
   return (
     <div className="flex flex-col h-full">
@@ -704,15 +716,36 @@ function SlidesPanel({
         {slides.map((slide, index) => {
           const isActive = slide.id === activeSlideId
           const isEditing = editingId === slide.id
+          const isCctv = !!(slide.content as StudioContent)?.cctvLayout
           return (
             <div
               key={slide.id}
+              draggable={!isEditing}
+              onDragStart={(e) => {
+                setDragFromIndex(index)
+                e.dataTransfer.effectAllowed = 'move'
+              }}
+              onDragOver={(e) => {
+                e.preventDefault()
+                e.dataTransfer.dropEffect = 'move'
+                setDragOverIndex(index)
+              }}
+              onDragLeave={() => setDragOverIndex(null)}
+              onDrop={(e) => {
+                e.preventDefault()
+                if (dragFromIndex !== null && dragFromIndex !== index && onReorderSlides) {
+                  onReorderSlides(dragFromIndex, index)
+                }
+                setDragFromIndex(null)
+                setDragOverIndex(null)
+              }}
+              onDragEnd={() => { setDragFromIndex(null); setDragOverIndex(null) }}
               onClick={() => onSelectSlide(slide.id)}
               className={`w-full rounded-lg overflow-hidden transition-all cursor-pointer group relative ${
                 isActive
                   ? 'ring-2 ring-red-500 ring-offset-1 ring-offset-[#2b2d31]'
                   : 'ring-1 ring-[#3f4147] hover:ring-zinc-500'
-              }`}
+              } ${dragOverIndex === index && dragFromIndex !== index ? 'ring-2 ring-indigo-400 ring-offset-1 ring-offset-[#2b2d31]' : ''}`}
             >
               <div className="relative aspect-video bg-[#1e1f22] flex items-center justify-center">
                 {isEditing ? (
@@ -736,15 +769,16 @@ function SlidesPanel({
                   />
                 ) : (
                   <span
-                    className="text-[10px] text-zinc-500 font-medium"
+                    className="text-[10px] text-zinc-500 font-medium flex items-center gap-1"
                     onDoubleClick={(e) => {
                       e.stopPropagation()
-                      setEditTitle(slide.title || `Scene ${index + 1}`)
+                      setEditTitle(slide.title || (isCctv ? `CCTV ${index + 1}` : `Scene ${index + 1}`))
                       setEditingId(slide.id)
                     }}
                     title="Double-click to rename"
                   >
-                    {slide.title || `Scene ${index + 1}`}
+                    {isCctv && <Monitor className="w-3 h-3 text-indigo-400 shrink-0" />}
+                    {slide.title || (isCctv ? `CCTV ${index + 1}` : `Scene ${index + 1}`)}
                   </span>
                 )}
                 {/* Scene number badge */}
@@ -779,15 +813,26 @@ function SlidesPanel({
           )
         })}
       </div>
-      {onAddSlide && (
-        <div className="px-2 py-2 border-t border-[#1e1f22]">
-          <button
-            onClick={onAddSlide}
-            className="w-full h-8 rounded-lg border border-dashed border-[#3f4147] hover:border-red-500/50 text-zinc-500 hover:text-red-400 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Add Scene
-          </button>
+      {(onAddSlide || onAddCctvSlide) && (
+        <div className="px-2 py-2 border-t border-[#1e1f22] flex gap-1.5">
+          {onAddSlide && (
+            <button
+              onClick={onAddSlide}
+              className="flex-1 h-7 rounded-lg border border-dashed border-[#3f4147] hover:border-red-500/50 text-zinc-500 hover:text-red-400 flex items-center justify-center gap-1 text-[11px] transition-all cursor-pointer"
+            >
+              <Plus className="w-3 h-3" />
+              Scene
+            </button>
+          )}
+          {onAddCctvSlide && (
+            <button
+              onClick={onAddCctvSlide}
+              className="flex-1 h-7 rounded-lg border border-dashed border-[#3f4147] hover:border-indigo-500/50 text-zinc-500 hover:text-indigo-400 flex items-center justify-center gap-1 text-[11px] transition-all cursor-pointer"
+            >
+              <Monitor className="w-3 h-3" />
+              CCTV
+            </button>
+          )}
         </div>
       )}
     </div>

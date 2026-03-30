@@ -242,6 +242,8 @@ export interface StudioContent {
   votingEnabled: boolean
   description?: string
   image_url?: string
+  cctvLayout?: '1' | '2' | '3' | '4' | '6'  // number of panels
+  cctvSlots?: string[]  // array of slide IDs to show in each slot
 }
 
 export type SlideContent =

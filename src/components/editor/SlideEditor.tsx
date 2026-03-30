@@ -595,6 +595,69 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                 toast.error('Failed to add scene')
               }
             }}
+            onAddCctvSlide={async () => {
+              const position = slides.length
+              setSaveStatus('saving')
+              const cctvContent = {
+                canvas: { width: 1920, height: 1080, backgroundColor: '#000000' },
+                layers: [],
+                eventCategories: [],
+                events: [],
+                votingEnabled: false,
+                cctvLayout: '4' as const,
+                cctvSlots: [],
+              }
+              const res = await fetch('/api/slides', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  presentation_id: presentation.id,
+                  slide_type: 'studio',
+                  position,
+                  title: 'CCTV',
+                  content: cctvContent,
+                }),
+              })
+              if (res.ok) {
+                const data = await res.json()
+                setSlides((prev: Slide[]) => [...prev, data.slide])
+                setSelectedSlideId(data.slide.id)
+                setSaveStatus('saved')
+                toast.success('CCTV scene added')
+              } else {
+                setSaveStatus('error')
+                toast.error('Failed to add CCTV scene')
+              }
+            }}
+            onReorderSlides={async (fromIndex: number, toIndex: number) => {
+              pushUndo()
+              setSlides((prev: Slide[]) => {
+                const next = [...prev]
+                const [moved] = next.splice(fromIndex, 1)
+                next.splice(toIndex, 0, moved)
+                return next
+              })
+              // Persist new positions to the API
+              setSaveStatus('saving')
+              try {
+                const reordered = [...slides]
+                const [moved] = reordered.splice(fromIndex, 1)
+                reordered.splice(toIndex, 0, moved)
+                await Promise.all(
+                  reordered.map((slide, idx) =>
+                    fetch(`/api/slides/${slide.id}`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ position: idx }),
+                    })
+                  )
+                )
+                setSaveStatus('saved')
+              } catch {
+                setSaveStatus('error')
+                toast.error('Failed to save scene order')
+              }
+            }}
           />
         </div>
       </div>

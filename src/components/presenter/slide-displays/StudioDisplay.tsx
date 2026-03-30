@@ -26,6 +26,7 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
   const [animatingEventId, setAnimatingEventId] = useState<string | null>(null)
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set())
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [showEventsPanel, setShowEventsPanel] = useState(true)
 
   // Escape key exits fullscreen preview
   useEffect(() => {
@@ -278,8 +279,19 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
         </div>
       </div>
 
-      {/* Events panel (right side) — hidden in fullscreen */}
-      <div className={`w-56 shrink-0 flex flex-col overflow-hidden ${isFullscreen ? 'hidden' : ''}`}>
+      {/* Events panel toggle button */}
+      {!isFullscreen && (
+        <button
+          onClick={() => setShowEventsPanel(v => !v)}
+          className="shrink-0 w-5 flex items-center justify-center bg-[#1e1f22] hover:bg-[#2b2d31] text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer border-l border-[#1e1f22]"
+          title={showEventsPanel ? 'Hide events' : 'Show events'}
+        >
+          <ChevronRight className={`w-3 h-3 transition-transform ${showEventsPanel ? '' : 'rotate-180'}`} />
+        </button>
+      )}
+
+      {/* Events panel (right side) — hidden in fullscreen or when toggled off */}
+      <div className={`w-56 shrink-0 flex flex-col overflow-hidden transition-all duration-200 ${isFullscreen || !showEventsPanel ? 'w-0 opacity-0 overflow-hidden' : ''}`}>
         <div className="mb-2 flex items-center justify-between">
           <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Events</h3>
           {triggeredEvents.size > 0 && (

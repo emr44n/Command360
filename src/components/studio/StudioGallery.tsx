@@ -214,7 +214,17 @@ export function StudioGallery({
     e.dataTransfer.effectAllowed = 'copy'
   }
 
+  // Clean up file names — truncate long names, add layer count
+  const cleanName = (name: string, type: string) => {
+    const ext = name.split('.').pop() || ''
+    const base = name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')
+    const short = base.length > 24 ? base.slice(0, 24) + '…' : base
+    const count = layers.filter(l => l.type === type).length + 1
+    return `${short}_${count}`
+  }
+
   const addImageToCanvas = (asset: AssetItem) => {
+    const layerName = cleanName(asset.name, 'image')
     // Load image to get natural dimensions, then add with correct aspect ratio
     const img = new window.Image()
     img.crossOrigin = 'anonymous'
@@ -225,7 +235,7 @@ export function StudioGallery({
       const widthPct = 40
       const heightPct = widthPct / aspectRatio * (16 / 9) // account for 16:9 canvas
       onAddLayer({
-        id: generateLayerId(), name: asset.name, type: 'image', src: asset.url,
+        id: generateLayerId(), name: layerName, type: 'image', src: asset.url,
         x: 10, y: 10, width: widthPct, height: Math.min(heightPct, 80), rotation: 0, opacity: 1,
         blendMode: 'normal', visible: true, locked: false,
       })
@@ -233,7 +243,7 @@ export function StudioGallery({
     img.onerror = () => {
       // Fallback: use default size
       onAddLayer({
-        id: generateLayerId(), name: asset.name, type: 'image', src: asset.url,
+        id: generateLayerId(), name: layerName, type: 'image', src: asset.url,
         x: 10, y: 10, width: 30, height: 30, rotation: 0, opacity: 1,
         blendMode: 'normal', visible: true, locked: false,
       })
@@ -243,7 +253,7 @@ export function StudioGallery({
   const addVideoToCanvas = (asset: AssetItem) => {
     // Videos default to 16:9 aspect ratio
     onAddLayer({
-      id: generateLayerId(), name: asset.name, type: 'video', src: asset.url,
+      id: generateLayerId(), name: cleanName(asset.name, 'video'), type: 'video', src: asset.url,
       x: 10, y: 10, width: 40, height: 22.5, rotation: 0, opacity: 1,
       blendMode: 'normal', visible: true, locked: false,
       loop: true, autoplay: true, muted: true,
