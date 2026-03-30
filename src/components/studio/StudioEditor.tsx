@@ -558,16 +558,20 @@ export function StudioEditor({
             </>
           )}
 
-          {/* Center: Canvas + transport OR CCTV editor */}
-          {content.cctvLayout ? (
-            <StudioCctvEditor
-              content={content}
-              onContentChange={onContentChange}
-              slides={slides || []}
-              currentSlideId={activeSlideId || ''}
-            />
-          ) : (
+          {/* Center: Canvas area — for CCTV slides shows live grid preview, for normal shows Konva canvas */}
           <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#313338]">
+          {content.cctvLayout ? (
+            /* CCTV live preview in the canvas area */
+            <div className="flex-1 min-h-0 flex items-center justify-center p-4" style={{ background: '#141416' }}>
+              <CctvCanvasPreview
+                content={content}
+                slides={slides || []}
+              />
+            </div>
+          ) : (
+          <>
+          <div className="flex-1 min-h-0 flex flex-col">
+          <div className="flex-1 min-h-0">
             {/* Canvas area */}
             <div className="flex-1 min-h-0">
               <StudioCanvas
@@ -606,7 +610,10 @@ export function StudioEditor({
               </span>
             </div>
           </div>
+          </div>
+          </>
           )}
+          </div>
 
           {/* Right: Properties or Event Settings */}
           {showProperties && (
@@ -693,6 +700,92 @@ export function StudioEditor({
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+/* ─── CCTV Canvas Preview ─── */
+
+function CctvCanvasPreview({ content, slides }: { content: StudioContent; slides: Slide[] }) {
+  const layout = content.cctvLayout || '4'
+  const slots = content.cctvSlots || []
+  const slotCount = parseInt(layout, 10)
+
+  const gridStyle = (): React.CSSProperties => {
+    switch (layout) {
+      case '1': return { gridTemplateColumns: '1fr', gridTemplateRows: '1fr' }
+      case '2': return { gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr' }
+      case '3': return { gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }
+      case '4': return { gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }
+      case '6': return { gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr 1fr' }
+      case '8': return { gridTemplateColumns: '1fr 1fr 1fr 1fr', gridTemplateRows: '1fr 1fr' }
+      default: return { gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }
+    }
+  }
+
+  return (
+    <div
+      className="w-full max-w-4xl rounded-lg overflow-hidden shadow-2xl shadow-black/60"
+      style={{ aspectRatio: '16/9', display: 'grid', gap: '2px', backgroundColor: '#111', ...gridStyle() }}
+    >
+      {Array.from({ length: slotCount }, (_, i) => {
+        const slideId = slots[i]
+        const assigned = slideId ? slides.find(s => s.id === slideId) : null
+        const assignedContent = assigned ? (assigned.content as StudioContent) : null
+        const slideIdx = assigned ? slides.findIndex(s => s.id === assigned.id) : -1
+        const label = assigned ? (assigned.title || `Scene ${slideIdx + 1}`) : null
+
+        return (
+          <div
+            key={i}
+            className="relative overflow-hidden bg-black"
+            style={{ border: '1px solid #222', ...(layout === '3' && i === 0 ? { gridRow: 'span 2' } : {}) }}
+          >
+            {assignedContent?.layers ? (
+              <>
+                <div className="absolute inset-0" style={{ backgroundColor: assignedContent.canvas?.backgroundColor || '#000' }}>
+                  {assignedContent.layers.filter(l => l.visible).map(layer => (
+                    <div
+                      key={layer.id}
+                      className="absolute"
+                      style={{
+                        left: `${layer.x}%`, top: `${layer.y}%`,
+                        width: `${layer.width}%`, height: `${layer.height}%`,
+                        opacity: layer.opacity,
+                        transform: `rotate(${layer.rotation}deg)`,
+                        transformOrigin: 'center center',
+                      }}
+                    >
+                      {layer.type === 'image' && layer.src && (
+                        <img src={layer.src} alt="" className="w-full h-full object-cover" />
+                      )}
+                      {layer.type === 'video' && layer.src && (
+                        <video src={layer.src} className="w-full h-full object-cover" muted autoPlay loop playsInline />
+                      )}
+                      {layer.type === 'text' && (
+                        <span style={{ color: layer.color || '#fff', fontSize: `${(layer.fontSize || 24) * 0.5}px` }}>{layer.text}</span>
+                      )}
+                      {layer.type === 'shape' && (
+                        <div className="w-full h-full" style={{ backgroundColor: layer.color || '#666' }} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+                {label && (
+                  <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 bg-black/70 rounded text-[9px] font-semibold text-white/80 backdrop-blur-sm">
+                    {label}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/80">
+                <Monitor className="w-5 h-5 text-zinc-700 mb-0.5" />
+                <span className="text-[9px] font-mono text-zinc-600 uppercase">No Signal</span>
+              </div>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }

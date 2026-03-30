@@ -129,57 +129,74 @@ export function StudioCctvEditor({ content, onContentChange, slides, currentSlid
   }
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-[#313338]">
+    <div className="flex flex-col min-w-0 bg-[#2b2d31] text-zinc-200">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[#1e1f22] flex items-center gap-2">
-        <Monitor className="w-4 h-4 text-indigo-400" />
-        <span className="text-sm font-semibold text-zinc-200">CCTV Configuration</span>
+      <div className="px-2 py-1.5 border-b border-[#1e1f22] flex items-center gap-1.5">
+        <Monitor className="w-3.5 h-3.5 text-indigo-400" />
+        <span className="text-[10px] font-semibold text-zinc-300">CCTV Configuration</span>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
-        {/* Layout selector */}
+      <div className="overflow-y-auto p-2 space-y-3">
+        {/* Layout selector — compact */}
         <div>
-          <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-2 block">
+          <label className="text-[9px] font-medium text-zinc-500 mb-1.5 block">
             Layout
           </label>
-          <div className="grid grid-cols-5 gap-2">
+          <div className="flex gap-1 flex-wrap">
             {LAYOUT_OPTIONS.map((opt) => {
               const isActive = layout === opt.value
               return (
                 <button
                   key={opt.value}
                   onClick={() => handleLayoutChange(opt.value)}
-                  className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border transition-all cursor-pointer ${
+                  className={`flex items-center justify-center w-8 h-8 rounded border transition-all cursor-pointer ${
                     isActive
-                      ? 'border-indigo-500 bg-indigo-500/10 text-indigo-300'
-                      : 'border-[#3f4147] bg-[#2b2d31] text-zinc-400 hover:border-zinc-500 hover:text-zinc-200'
+                      ? 'border-red-500 bg-red-500/15 text-red-400'
+                      : 'border-[#3f4147] bg-[#1e1f22] text-zinc-500 hover:border-zinc-500 hover:text-zinc-300'
                   }`}
+                  title={opt.description}
                 >
-                  <div className="w-12">
+                  <div className="w-5">
                     <LayoutPreview layout={opt.value} />
                   </div>
-                  <span className="text-[10px] font-medium">{opt.label}</span>
                 </button>
               )
             })}
           </div>
         </div>
 
-        {/* Grid preview with slot assignment */}
+        {/* Scene assignment — compact list */}
         <div>
-          <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-2 block">
-            Slot Assignment
+          <label className="text-[9px] font-medium text-zinc-500 mb-1.5 block">
+            Assign Scenes
           </label>
-          <div className="bg-[#1e1f22] rounded-lg p-3">
-            <CctvGridPreview
-              layout={layout}
-              slots={slots}
-              slotCount={slotCount}
-              availableSlides={availableSlides}
-              allSlides={slides}
-              onSlotChange={handleSlotChange}
-              getSlideLabel={getSlideLabel}
-            />
+          <div className="space-y-1">
+            {Array.from({ length: slotCount }, (_, i) => {
+              const assignedId = slots[i] || ''
+              const assigned = assignedId ? slides.find(s => s.id === assignedId) : null
+              const assignedIdx = assigned ? slides.findIndex(s => s.id === assigned.id) : -1
+              return (
+                <div key={i} className="flex items-center gap-1.5">
+                  <span className="text-[8px] font-bold text-zinc-600 w-3 shrink-0">{i + 1}</span>
+                  {assigned && (
+                    <div className="w-8 h-5 rounded bg-zinc-800 overflow-hidden shrink-0 border border-[#3f4147]">
+                      <div className="w-full h-full" style={{ backgroundColor: (assigned.content as StudioContent)?.canvas?.backgroundColor || '#000' }} />
+                    </div>
+                  )}
+                  <select
+                    value={assignedId}
+                    onChange={(e) => handleSlotChange(i, e.target.value)}
+                    className="flex-1 h-5 text-[9px] bg-[#1e1f22] border border-[#3f4147] rounded text-zinc-300 px-1 cursor-pointer focus:border-red-500/50 outline-none"
+                  >
+                    <option value="">— Empty —</option>
+                    {availableSlides.map((s) => {
+                      const idx = slides.findIndex(sl => sl.id === s.id)
+                      return <option key={s.id} value={s.id}>{s.title || `Scene ${idx + 1}`}</option>
+                    })}
+                  </select>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
