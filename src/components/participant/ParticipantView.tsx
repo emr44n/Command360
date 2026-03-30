@@ -13,7 +13,7 @@ import { SurveyInput } from './slide-inputs/SurveyInput'
 import { RatingScaleInput } from './slide-inputs/RatingScaleInput'
 import { OpenTextInput } from './slide-inputs/OpenTextInput'
 import { StudioInput } from './slide-inputs/StudioInput'
-import { CheckCircle2, Trophy, Sparkles, ShieldAlert } from 'lucide-react'
+import { CheckCircle2, Trophy, ShieldAlert } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface ParticipantViewProps {
@@ -108,45 +108,41 @@ export function ParticipantView({ session: initialSession, slides, participantId
     }
   }, [currentSlide, session.id, participantId, clientToken])
 
+  // Check if the last slide was a studio type (hide score for studio sessions)
+  const isStudioSession = currentSlide?.slide_type === 'studio'
+
   // Session ended screen
   if (sessionEnded) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center space-y-6 px-6 animate-in fade-in zoom-in-95 duration-500">
-          {/* Celebration */}
-          <div className="relative">
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-              <Sparkles className="w-10 h-10 text-primary animate-pulse" />
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <div className="text-center space-y-8 px-6 animate-in fade-in zoom-in-95 duration-500">
+          {/* Branding */}
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
+              <ShieldAlert className="w-8 h-8 text-primary-foreground" />
             </div>
-            {score > 0 && (
-              <>
-                <div className="absolute -top-2 -left-4 w-3 h-3 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: '0s' }} />
-                <div className="absolute -top-1 -right-6 w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0.2s' }} />
-                <div className="absolute bottom-0 -right-3 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: '0.4s' }} />
-              </>
-            )}
+            <span className="text-sm font-bold text-zinc-400 tracking-widest uppercase">Command 360</span>
           </div>
 
+          {/* Heading */}
           <div>
-            <h1 className="text-2xl font-bold">Session complete</h1>
-            <p className="text-muted-foreground mt-1">Thanks for participating, {displayName}!</p>
+            <h1 className="text-3xl font-bold text-white">This session has ended</h1>
+            <p className="text-zinc-400 mt-2 text-base">Thank you for participating</p>
           </div>
 
-          {score > 0 && (
+          {/* Score — only for non-studio sessions */}
+          {!isStudioSession && score > 0 && (
             <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-2xl px-8 py-6 inline-block animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Trophy className="w-5 h-5 text-primary" />
                 <span className="text-sm font-medium text-primary">Final score</span>
               </div>
-              <p className="text-5xl font-bold text-foreground font-mono">{score}</p>
+              <p className="text-5xl font-bold text-white font-mono">{score}</p>
             </div>
           )}
 
-          <div className="pt-4">
-            <div className="flex items-center justify-center gap-2 text-muted-foreground text-sm">
-              <ShieldAlert className="w-4 h-4 text-primary" />
-              <span>Command 360</span>
-            </div>
+          <div className="pt-2">
+            <div className="w-12 h-px bg-zinc-800 mx-auto" />
           </div>
         </div>
       </div>
@@ -169,44 +165,59 @@ export function ParticipantView({ session: initialSession, slides, participantId
   // Current slide position
   const slideIndex = slides.findIndex((s) => s.id === currentSlide.id)
   const totalSlides = slides.length
+  const isStudio = currentSlide.slide_type === 'studio'
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Header with logo */}
-      <div className="bg-card/80 backdrop-blur-sm border-b border-border px-4 py-3 space-y-2">
-        {/* Top row: Logo */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
-              <ShieldAlert className="w-4 h-4 text-primary-foreground" />
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
+      {/* Header */}
+      {isStudio ? (
+        /* Thin header for studio — scene title centered */
+        <div className="bg-card/80 backdrop-blur-sm border-b border-border px-4 py-1.5 flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <div className="w-5 h-5 bg-primary rounded-md flex items-center justify-center">
+              <ShieldAlert className="w-3 h-3 text-primary-foreground" />
             </div>
-            <span className="text-sm font-bold text-foreground tracking-tight">Command 360</span>
           </div>
-          {score > 0 && (
-            <div className="flex items-center gap-1.5 text-primary font-mono font-bold text-sm bg-primary/10 px-3 py-1 rounded-full">
-              <Trophy className="w-3.5 h-3.5" />
-              {score}
-            </div>
-          )}
+          <span className="text-sm font-semibold text-foreground truncate">{currentSlide.title}</span>
+          <div className="w-5" />
         </div>
-        {/* Bottom row: participant info */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      ) : (
+        /* Standard header for other slide types */
+        <div className="bg-card/80 backdrop-blur-sm border-b border-border px-4 py-3 space-y-2">
+          {/* Top row: Logo */}
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-sm font-medium text-foreground">{displayName}</span>
+              <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
+                <ShieldAlert className="w-4 h-4 text-primary-foreground" />
+              </div>
+              <span className="text-sm font-bold text-foreground tracking-tight">Command 360</span>
             </div>
-            {totalSlides > 0 && (
-              <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                {slideIndex + 1}/{totalSlides}
-              </span>
+            {score > 0 && (
+              <div className="flex items-center gap-1.5 text-primary font-mono font-bold text-sm bg-primary/10 px-3 py-1 rounded-full">
+                <Trophy className="w-3.5 h-3.5" />
+                {score}
+              </div>
             )}
           </div>
+          {/* Bottom row: participant info */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-sm font-medium text-foreground">{displayName}</span>
+              </div>
+              {totalSlides > 0 && (
+                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                  {slideIndex + 1}/{totalSlides}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Progress bar */}
-      {totalSlides > 1 && (
+      {/* Progress bar — hide for studio */}
+      {!isStudio && totalSlides > 1 && (
         <div className="h-0.5 bg-muted">
           <div
             className="h-full bg-primary transition-all duration-500 ease-out"
@@ -217,21 +228,23 @@ export function ParticipantView({ session: initialSession, slides, participantId
 
       {/* Slide content */}
       <div
-        className={`max-w-lg mx-auto px-4 py-6 space-y-6 transition-all duration-300 ease-out ${
+        className={`${isStudio ? 'flex-1 flex items-center justify-center px-2 py-2' : 'max-w-lg mx-auto px-4 py-6 space-y-6'} transition-all duration-300 ease-out ${
           slideTransition ? 'opacity-0 translate-y-3 scale-[0.98]' : 'opacity-100 translate-y-0 scale-100'
         }`}
       >
-        <div className="space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <span className="text-xs font-medium text-primary uppercase tracking-wide">
-            {currentSlide.slide_type.replace('_', ' ')}
-          </span>
-          <h1 className="text-xl font-bold leading-tight">{currentSlide.title}</h1>
-        </div>
+        {!isStudio && (
+          <div className="space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <span className="text-xs font-medium text-primary uppercase tracking-wide">
+              {currentSlide.slide_type.replace('_', ' ')}
+            </span>
+            <h1 className="text-xl font-bold leading-tight">{currentSlide.title}</h1>
+          </div>
+        )}
 
         {hasResponded ? (
           <RespondedScreen slideType={currentSlide.slide_type} />
         ) : (
-          <div className="animate-in fade-in slide-in-from-bottom-3 duration-400 delay-100">
+          <div className={`${isStudio ? 'w-full' : ''} animate-in fade-in slide-in-from-bottom-3 duration-400 delay-100`}>
             <SlideInput
               slide={currentSlide}
               sessionId={session.id}

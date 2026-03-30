@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Slide, StudioContent, StudioLayer, StudioLayerState } from '@/types/slide'
-import { Monitor, CheckCircle2 } from 'lucide-react'
+import { Monitor, CheckCircle2, Maximize2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -35,6 +35,7 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
   const [submittingVote, setSubmittingVote] = useState(false)
   const [voteSubmitted, setVoteSubmitted] = useState(false)
   const channelRef = useRef<ReturnType<ReturnType<typeof createClient>['channel']> | null>(null)
+  const canvasRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const supabase = createClient()
@@ -203,11 +204,12 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
     )
   }
 
-  // Default watching state — full canvas scene (no title/label)
+  // Default watching state — large canvas scene
   return (
-    <div className="space-y-3 animate-in fade-in duration-300">
-      {/* Full scene canvas */}
+    <div className="flex flex-col items-center gap-2 animate-in fade-in duration-300 w-full max-w-5xl mx-auto">
+      {/* Large scene canvas */}
       <div
+        ref={canvasRef}
         className="w-full relative overflow-hidden rounded-xl"
         style={{
           aspectRatio: '16 / 9',
@@ -219,14 +221,20 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
           if (!state || !state.visible) return null
           return <MiniLayer key={layer.id} layer={layer} state={state} />
         })}
+        {/* Fullscreen button */}
+        <button
+          onClick={() => canvasRef.current?.requestFullscreen()}
+          className="absolute bottom-2 right-2 z-10 w-8 h-8 rounded-lg bg-black/50 hover:bg-black/70 text-white/50 hover:text-white flex items-center justify-center transition-all backdrop-blur-sm"
+          title="Fullscreen"
+        >
+          <Maximize2 className="w-4 h-4" />
+        </button>
       </div>
 
       {/* Status indicator */}
       <div className="flex items-center justify-center gap-2">
         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-        <p className="text-center text-muted-foreground text-sm">
-          Scenario in progress. You may be asked to vote.
-        </p>
+        <p className="text-center text-muted-foreground text-xs">Scene in progress</p>
       </div>
     </div>
   )

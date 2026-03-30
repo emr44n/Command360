@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import type { Slide, StudioContent, StudioLayer, StudioLayerState, StudioEvent } from '@/types/slide'
 import type { Session } from '@/types/session'
 import type { RealtimeChannel } from '@supabase/supabase-js'
-import { Zap, Vote, QrCode, Play, ChevronRight, ChevronDown, RotateCcw, Maximize2, Minimize2, Monitor, Check } from 'lucide-react'
+import { Zap, Vote, QrCode, Play, ChevronRight, ChevronDown, RotateCcw, Monitor, Check } from 'lucide-react'
 import { playEvent, type EventPlaybackController } from '@/lib/studio/event-playback'
 
 interface Props {
@@ -56,16 +56,8 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
   const [triggeredEvents, setTriggeredEvents] = useState<Set<string>>(new Set())
   const [animatingEventId, setAnimatingEventId] = useState<string | null>(null)
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set())
-  const [isFullscreen, setIsFullscreen] = useState(false)
   const [showEventsPanel, setShowEventsPanel] = useState(true)
 
-  // Escape key exits fullscreen preview
-  useEffect(() => {
-    if (!isFullscreen) return
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsFullscreen(false) }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [isFullscreen])
   const canvasRef = useRef<HTMLDivElement>(null)
   const eventControllerRef = useRef<EventPlaybackController | null>(null)
   const initialStatesRef = useRef<Record<string, StudioLayerState>>(buildInitialStates(layers))
@@ -261,25 +253,17 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
   const joinUrl = 'command360.co.uk/join'
 
   return (
-    <div className={`w-full h-full flex gap-4 ${isFullscreen ? 'fixed inset-0 z-[200] bg-black p-0' : ''}`}>
+    <div className="w-full h-full flex gap-4">
       {/* Main canvas area */}
-      <div className={`flex flex-col min-w-0 ${isFullscreen ? 'flex-1' : 'flex-1'}`}>
+      <div className="flex flex-col min-w-0 flex-1">
         <div
           ref={canvasRef}
-          className={`w-full relative overflow-hidden flex-1 ${isFullscreen ? 'rounded-none' : 'rounded-lg'}`}
+          className="w-full relative overflow-hidden flex-1 rounded-lg"
           style={{
-            aspectRatio: isFullscreen ? undefined : '16 / 9',
+            aspectRatio: '16 / 9',
             backgroundColor: canvas.backgroundColor,
           }}
         >
-          {/* Fullscreen toggle button (full preview mode) */}
-          <button
-            onClick={() => setIsFullscreen(v => !v)}
-            className="absolute top-2 right-2 z-10 w-8 h-8 rounded-lg bg-black/50 hover:bg-black/70 text-white/60 hover:text-white flex items-center justify-center transition-all backdrop-blur-sm"
-            title={isFullscreen ? 'Exit fullscreen (Esc)' : 'Fullscreen preview'}
-          >
-            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-          </button>
           {/* Canvas-only fullscreen button (native Fullscreen API) */}
           <button
             onClick={() => canvasRef.current?.requestFullscreen()}
@@ -311,7 +295,7 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
       </div>
 
       {/* Events panel toggle button — hidden in presentation mode */}
-      {!isFullscreen && mode !== 'present' && (
+      {mode !== 'present' && (
         <button
           onClick={() => setShowEventsPanel(v => !v)}
           className="shrink-0 w-5 flex items-center justify-center bg-[#1e1f22] hover:bg-[#2b2d31] text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer border-l border-[#1e1f22]"
@@ -322,7 +306,7 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
       )}
 
       {/* Events panel (right side) — hidden in fullscreen, presentation mode, or when toggled off */}
-      <div className={`w-56 shrink-0 flex flex-col overflow-hidden transition-all duration-200 ${isFullscreen || mode === 'present' || !showEventsPanel ? 'w-0 opacity-0 overflow-hidden' : ''}`}>
+      <div className={`w-56 shrink-0 flex flex-col overflow-hidden transition-all duration-200 ${mode === 'present' || !showEventsPanel ? 'w-0 opacity-0 overflow-hidden' : ''}`}>
         <div className="mb-2 flex items-center justify-between">
           <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Events</h3>
           {triggeredEvents.size > 0 && (
