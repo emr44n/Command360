@@ -173,7 +173,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
       {/* DUAL VIEW: Presenter + Audience Phone (or Studio View) */}
       <div className="flex-1 flex overflow-hidden">
         {slide?.slide_type === 'studio' ? (
-          <StudioPreviewContent slide={slide} animClass={animClass} />
+          <StudioPreviewContent slide={slide} animClass={animClass} allSlides={slides} />
         ) : (<>
         {/* Main content area (presenter + phone centered together) */}
         <div className="flex-1 flex items-center justify-center gap-8 p-5 overflow-hidden min-h-0">
@@ -878,9 +878,11 @@ function AudienceSlideContent({ slide }: { slide: Slide }) {
 
 /* ─── Studio Preview Content ─── */
 
-function StudioPreviewContent({ slide, animClass }: { slide: Slide; animClass: string }) {
+function StudioPreviewContent({ slide, animClass, allSlides = [] }: { slide: Slide; animClass: string; allSlides?: Slide[] }) {
   const content = slide.content as StudioContent
   const { canvas, layers, events, eventCategories } = content
+  const isCctv = !!content.cctvLayout
+  const canvasRef = useRef<HTMLDivElement>(null)
 
   const [layerStates, setLayerStates] = useState<Record<string, StudioLayerState>>(() =>
     buildStudioInitialStates(layers)
@@ -926,12 +928,83 @@ function StudioPreviewContent({ slide, animClass }: { slide: Slide; animClass: s
     return { uncategorized, byCategory }
   })()
 
+  // CCTV mode — show grid preview, NO events panel
+  if (isCctv) {
+    const cctvLayout = content.cctvLayout || '4'
+    const cctvSlots = content.cctvSlots || []
+    const count = parseInt(cctvLayout, 10)
+    const gridStyle: React.CSSProperties = (() => {
+      switch (cctvLayout) {
+        case '1': return { gridTemplateColumns: '1fr', gridTemplateRows: '1fr' }
+        case '2': return { gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr' }
+        case '3': return { gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }
+        case '4': return { gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }
+        case '6': return { gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr 1fr' }
+        case '8': return { gridTemplateColumns: '1fr 1fr 1fr 1fr', gridTemplateRows: '1fr 1fr' }
+        default: return { gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }
+      }
+    })()
+
+    return (
+      <div className="flex-1 flex items-center justify-center p-6 min-h-0 bg-black relative">
+        {/* Canvas fullscreen button */}
+        <button
+          onClick={() => canvasRef.current?.requestFullscreen()}
+          className="absolute top-3 right-3 z-20 w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white/60 hover:text-white flex items-center justify-center transition-all"
+          title="Fullscreen canvas"
+        >
+          <Maximize className="w-4 h-4" />
+        </button>
+        <div ref={canvasRef} className="w-full max-w-5xl" style={{ maxWidth: 'min(64rem, calc((100vh - 10rem) * 16 / 9))' }}>
+          <div className="w-full overflow-hidden rounded-xl shadow-2xl" style={{ aspectRatio: '16 / 9', display: 'grid', gap: '2px', background: '#000', ...gridStyle }}>
+            {Array.from({ length: count }, (_, i) => {
+              const slideId = cctvSlots[i]
+              const scene = slideId ? allSlides.find(s => s.id === slideId) : null
+              const sc = scene?.content as StudioContent | undefined
+              const sceneLayers = sc?.layers || []
+              const canvasBg = sc?.canvas?.backgroundColor || '#111'
+              return (
+                <div key={i} className="relative overflow-hidden" style={{ backgroundColor: canvasBg, gridRow: cctvLayout === '3' && i === 0 ? 'span 2' : undefined }}>
+                  <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded bg-black/60 text-[8px] text-white/70 font-medium">
+                    {scene ? (scene.title || `Scene ${allSlides.indexOf(scene) + 1}`) : `View ${i + 1}`}
+                  </div>
+                  {scene && sceneLayers.length > 0 ? sceneLayers.map(layer => {
+                    if (!layer.visible || !layer.src) return null
+                    return layer.type === 'video' ? (
+                      <video key={layer.id} src={layer.src} className="absolute object-contain pointer-events-none" style={{ left: `${layer.x}%`, top: `${layer.y}%`, width: `${layer.width}%`, height: `${layer.height}%`, opacity: layer.opacity, transform: `rotate(${layer.rotation}deg)`, transformOrigin: 'center' }} autoPlay loop muted playsInline />
+                    ) : (
+                      <img key={layer.id} src={layer.src} alt={layer.name} className="absolute object-contain pointer-events-none" style={{ left: `${layer.x}%`, top: `${layer.y}%`, width: `${layer.width}%`, height: `${layer.height}%`, opacity: layer.opacity, transform: `rotate(${layer.rotation}deg)`, transformOrigin: 'center' }} />
+                    )
+                  }) : (
+                    <div className="flex items-center justify-center h-full">
+                      <p className="text-[9px] text-zinc-600 uppercase tracking-wider">No Signal</p>
+                    </div>
+                  )}
+                  {scene && <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex-1 flex overflow-hidden min-h-0">
       {/* Main canvas area */}
       <div className={cn('flex-1 flex items-center justify-center p-6 min-h-0', animClass)}>
-        <div className="w-full" style={{ maxWidth: 'min(56rem, calc((100vh - 10rem) * 16 / 9))' }}>
+        <div className="w-full relative" style={{ maxWidth: 'min(56rem, calc((100vh - 10rem) * 16 / 9))' }}>
+          {/* Canvas fullscreen button */}
+          <button
+            onClick={() => canvasRef.current?.requestFullscreen()}
+            className="absolute top-2 right-2 z-20 w-7 h-7 rounded-lg bg-black/40 hover:bg-black/60 text-white/50 hover:text-white flex items-center justify-center transition-all"
+            title="Fullscreen canvas"
+          >
+            <Maximize className="w-3.5 h-3.5" />
+          </button>
           <div
+            ref={canvasRef}
             className="w-full relative overflow-hidden rounded-xl shadow-2xl"
             style={{ aspectRatio: '16 / 9', backgroundColor: canvas.backgroundColor }}
           >

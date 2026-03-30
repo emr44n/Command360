@@ -33,6 +33,7 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
   const [showHotkeys, setShowHotkeys] = useState(false)
   const [showResults, setShowResults] = useState(true)
   const [showNotes, setShowNotes] = useState(false)
+  const [showEndConfirm, setShowEndConfirm] = useState(false)
   const [slideDirection, setSlideDirection] = useState<'next' | 'prev'>('next')
   const [slideKey, setSlideKey] = useState(0)
   const [votingPulse, setVotingPulse] = useState(false)
@@ -153,7 +154,11 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
   }, [session.id, session.voting_open])
 
   const handleEndSession = useCallback(async () => {
-    if (!confirm('Are you sure you want to end this session?')) return
+    setShowEndConfirm(true)
+  }, [])
+
+  const confirmEndSession = useCallback(async () => {
+    setShowEndConfirm(false)
     await channelRef.current?.send({
       type: 'broadcast',
       event: 'SESSION_ENDED',
@@ -379,8 +384,12 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
           <ToolbarBtn icon={session.voting_open ? Square : Play} label={session.voting_open ? 'Close voting' : 'Open voting'} shortcut="C" onClick={handleToggleVoting} active={session.voting_open} activeColor="text-emerald-500" />
           <ToolbarBtn icon={showResults ? Eye : EyeOff} label="Results" shortcut="H" onClick={() => setShowResults((v) => !v)} active={showResults} />
           <ToolbarBtn icon={QrCode} label="QR code" shortcut="L" onClick={() => { showQR ? handleCloseQR() : setShowQR(true) }} active={showQR} />
-          <ToolbarBtn icon={StickyNote} label="Notes" shortcut="N" onClick={() => setShowNotes((v) => !v)} active={showNotes} />
-          <ToolbarBtn icon={Sparkles} label="AI Summary" onClick={handleGetSummary} />
+          {currentSlide?.slide_type !== 'studio' && (
+            <>
+              <ToolbarBtn icon={StickyNote} label="Notes" shortcut="N" onClick={() => setShowNotes((v) => !v)} active={showNotes} />
+              <ToolbarBtn icon={Sparkles} label="AI Summary" onClick={handleGetSummary} />
+            </>
+          )}
           <ToolbarBtn icon={Keyboard} label="Shortcuts" shortcut="?" onClick={() => setShowHotkeys((v) => !v)} />
         </div>
         <div className="flex items-center gap-3">
@@ -425,6 +434,24 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
               <HotkeySection title="Shortcuts">
                 <HotkeyRow keys="?" action="Shortcuts" />
               </HotkeySection>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* End session confirmation modal */}
+      {showEndConfirm && (
+        <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#1e1f22] border border-[#3f4147] rounded-xl p-5 max-w-xs w-full shadow-2xl">
+            <h3 className="text-sm font-semibold text-white mb-2">End this session?</h3>
+            <p className="text-[11px] text-zinc-400 mb-4">All participants will be disconnected. This cannot be undone.</p>
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => setShowEndConfirm(false)} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">
+                Cancel
+              </button>
+              <button onClick={confirmEndSession} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors">
+                End Session
+              </button>
             </div>
           </div>
         </div>
