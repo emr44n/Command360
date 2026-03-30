@@ -598,6 +598,16 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             onSelectSlide={(id) => { setSelectedSlideId(id); setSelectedElementId(null) }}
             onDeleteSlide={handleDeleteSlide}
             onDuplicateSlide={handleDuplicateSlideById}
+            onRenameSlide={async (slideId: string, newTitle: string) => {
+              setSlides(prev => prev.map(s => s.id === slideId ? { ...s, title: newTitle } : s))
+              setSaveStatus('saving')
+              const res = await fetch(`/api/slides/${slideId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: newTitle }),
+              })
+              setSaveStatus(res.ok ? 'saved' : 'error')
+            }}
             onAddSlide={async () => {
               const position = slides.length
               setSaveStatus('saving')
