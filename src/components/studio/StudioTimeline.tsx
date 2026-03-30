@@ -267,7 +267,7 @@ export function StudioTimeline({
         onClick={handleTrackAreaClick}
       >
         <div className="relative" style={{ minHeight: trackAreaHeight }}>
-          {/* Track rows */}
+          {/* Track rows — drag to reorder */}
           {tracks.map((track, index) => {
             const layer = getLayerForTrack(track.layerId)
             if (!layer) return null
@@ -276,6 +276,7 @@ export function StudioTimeline({
                 key={track.id}
                 track={track}
                 layer={layer}
+                index={index}
                 zoomLevel={zoomLevel}
                 scrollLeft={scrollLeft}
                 selectedClipId={selectedClipId}
@@ -296,6 +297,12 @@ export function StudioTimeline({
                     t.id === track.id ? { ...t, name: newName } : t
                   )
                   onContentChange({ tracks: updatedTracks })
+                }}
+                onReorderTrack={(fromIndex, toIndex) => {
+                  const reordered = [...tracks]
+                  const [moved] = reordered.splice(fromIndex, 1)
+                  reordered.splice(toIndex, 0, moved)
+                  onContentChange({ tracks: reordered })
                 }}
               />
             )

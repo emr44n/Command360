@@ -93,34 +93,34 @@ function getPhotoshopCursor(
 ): string | null {
   if (!node) return null
 
-  const cx = node.x()
-  const cy = node.y()
+  // node.x()/y() is now the CENTER (due to offset)
+  const centerX = node.x()
+  const centerY = node.y()
   const w = node.width() * node.scaleX()
   const h = node.height() * node.scaleY()
   const rot = (node.rotation() * Math.PI) / 180
 
-  // The four corners in world space (accounting for rotation around top-left)
+  // Four corners relative to center
   const corners = [
-    { name: 'top-left', lx: 0, ly: 0 },
-    { name: 'top-right', lx: w, ly: 0 },
-    { name: 'bottom-left', lx: 0, ly: h },
-    { name: 'bottom-right', lx: w, ly: h },
+    { name: 'top-left', lx: -w / 2, ly: -h / 2 },
+    { name: 'top-right', lx: w / 2, ly: -h / 2 },
+    { name: 'bottom-left', lx: -w / 2, ly: h / 2 },
+    { name: 'bottom-right', lx: w / 2, ly: h / 2 },
   ]
 
-  // Check if mouse is inside the bounding box (unrotated space)
+  // Check if mouse is inside the bounding box (unrotated space relative to center)
   const cosR = Math.cos(-rot)
   const sinR = Math.sin(-rot)
-  const dx = mouseX - cx
-  const dy = mouseY - cy
+  const dx = mouseX - centerX
+  const dy = mouseY - centerY
   const localX = dx * cosR - dy * sinR
   const localY = dx * sinR + dy * cosR
-  const isInside = localX >= -threshold && localX <= w + threshold && localY >= -threshold && localY <= h + threshold
-  const isStrictlyInside = localX >= 0 && localX <= w && localY >= 0 && localY <= h
+  const isStrictlyInside = localX >= -w / 2 && localX <= w / 2 && localY >= -h / 2 && localY <= h / 2
 
   for (const corner of corners) {
     // Transform corner to world space
-    const wx = cx + corner.lx * Math.cos(rot) - corner.ly * Math.sin(rot)
-    const wy = cy + corner.lx * Math.sin(rot) + corner.ly * Math.cos(rot)
+    const wx = centerX + corner.lx * Math.cos(rot) - corner.ly * Math.sin(rot)
+    const wy = centerY + corner.lx * Math.sin(rot) + corner.ly * Math.cos(rot)
 
     const dist = Math.sqrt((mouseX - wx) ** 2 + (mouseY - wy) ** 2)
     if (dist < threshold) {
@@ -234,8 +234,10 @@ function ImageLayerNode({
   return (
     <Group
       ref={groupRef}
-      x={x}
-      y={y}
+      x={x + w / 2}
+      y={y + h / 2}
+      offsetX={w / 2}
+      offsetY={h / 2}
       width={w}
       height={h}
       rotation={state.rotation}
@@ -245,9 +247,12 @@ function ImageLayerNode({
       onClick={onSelect}
       onTap={onSelect}
       onDragEnd={(e) => {
+        // x,y is now the center point — convert back to top-left for storage
+        const centerX = e.target.x()
+        const centerY = e.target.y()
         onDragEnd(
-          px2pct(e.target.x(), stageWidth),
-          px2pct(e.target.y(), stageHeight)
+          px2pct(centerX - w / 2, stageWidth),
+          px2pct(centerY - h / 2, stageHeight)
         )
       }}
       onTransformEnd={() => {
@@ -255,13 +260,19 @@ function ImageLayerNode({
         if (!node) return
         const scaleX = node.scaleX()
         const scaleY = node.scaleY()
+        const newW = node.width() * scaleX
+        const newH = node.height() * scaleY
+        // Reset scale and update offset to new center
         node.scaleX(1)
         node.scaleY(1)
+        node.offsetX(newW / 2)
+        node.offsetY(newH / 2)
+        // Convert center position back to top-left for storage
         onTransformEnd({
-          x: px2pct(node.x(), stageWidth),
-          y: px2pct(node.y(), stageHeight),
-          width: px2pct(node.width() * scaleX, stageWidth),
-          height: px2pct(node.height() * scaleY, stageHeight),
+          x: px2pct(node.x() - newW / 2, stageWidth),
+          y: px2pct(node.y() - newH / 2, stageHeight),
+          width: px2pct(newW, stageWidth),
+          height: px2pct(newH, stageHeight),
           rotation: node.rotation(),
         })
       }}
@@ -325,8 +336,10 @@ function TextLayerNode({
   return (
     <Text
       ref={shapeRef}
-      x={x}
-      y={y}
+      x={x + w / 2}
+      y={y + h / 2}
+      offsetX={w / 2}
+      offsetY={h / 2}
       width={w}
       height={h}
       text={layer.text ?? ''}
@@ -341,8 +354,8 @@ function TextLayerNode({
       globalCompositeOperation={layer.blendMode === 'normal' ? 'source-over' : layer.blendMode}
       onDragEnd={(e) => {
         onDragEnd(
-          px2pct(e.target.x(), stageWidth),
-          px2pct(e.target.y(), stageHeight)
+          px2pct(e.target.x() - w / 2, stageWidth),
+          px2pct(e.target.y() - h / 2, stageHeight)
         )
       }}
       onTransformEnd={() => {
@@ -350,13 +363,17 @@ function TextLayerNode({
         if (!node) return
         const scaleX = node.scaleX()
         const scaleY = node.scaleY()
+        const newW = node.width() * scaleX
+        const newH = node.height() * scaleY
         node.scaleX(1)
         node.scaleY(1)
+        node.offsetX(newW / 2)
+        node.offsetY(newH / 2)
         onTransformEnd({
-          x: px2pct(node.x(), stageWidth),
-          y: px2pct(node.y(), stageHeight),
-          width: px2pct(node.width() * scaleX, stageWidth),
-          height: px2pct(node.height() * scaleY, stageHeight),
+          x: px2pct(node.x() - newW / 2, stageWidth),
+          y: px2pct(node.y() - newH / 2, stageHeight),
+          width: px2pct(newW, stageWidth),
+          height: px2pct(newH, stageHeight),
           rotation: node.rotation(),
         })
       }}
@@ -399,8 +416,10 @@ function ShapeLayerNode({
   return (
     <Rect
       ref={shapeRef}
-      x={x}
-      y={y}
+      x={x + w / 2}
+      y={y + h / 2}
+      offsetX={w / 2}
+      offsetY={h / 2}
       width={w}
       height={h}
       fill={layer.color ?? '#666666'}
@@ -412,8 +431,8 @@ function ShapeLayerNode({
       globalCompositeOperation={layer.blendMode === 'normal' ? 'source-over' : layer.blendMode}
       onDragEnd={(e) => {
         onDragEnd(
-          px2pct(e.target.x(), stageWidth),
-          px2pct(e.target.y(), stageHeight)
+          px2pct(e.target.x() - w / 2, stageWidth),
+          px2pct(e.target.y() - h / 2, stageHeight)
         )
       }}
       onTransformEnd={() => {
@@ -421,13 +440,17 @@ function ShapeLayerNode({
         if (!node) return
         const scaleX = node.scaleX()
         const scaleY = node.scaleY()
+        const newW = node.width() * scaleX
+        const newH = node.height() * scaleY
         node.scaleX(1)
         node.scaleY(1)
+        node.offsetX(newW / 2)
+        node.offsetY(newH / 2)
         onTransformEnd({
-          x: px2pct(node.x(), stageWidth),
-          y: px2pct(node.y(), stageHeight),
-          width: px2pct(node.width() * scaleX, stageWidth),
-          height: px2pct(node.height() * scaleY, stageHeight),
+          x: px2pct(node.x() - newW / 2, stageWidth),
+          y: px2pct(node.y() - newH / 2, stageHeight),
+          width: px2pct(newW, stageWidth),
+          height: px2pct(newH, stageHeight),
           rotation: node.rotation(),
         })
       }}
@@ -713,18 +736,11 @@ export function StudioCanvas({
             e.evt.preventDefault()
             e.evt.stopPropagation()
 
-            // Calculate center of the object for rotation pivot
-            // Use layer data (percentages) converted to pixels since Groups may not have width/height
+            // Center of object — with offset, node.x()/y() IS the center
             const selLayer = layers.find(l => l.id === selectedLayerId)
             if (!selLayer) return
-            const nodeW = pct2px(selLayer.width, stageSize.width)
-            const nodeH = pct2px(selLayer.height, stageSize.height)
-            const nodeX = pct2px(selLayer.x, stageSize.width)
-            const nodeY = pct2px(selLayer.y, stageSize.height)
-            const rot = (selLayer.rotation * Math.PI) / 180
-            // Center in world coords (accounting for rotation around top-left origin)
-            const cx = nodeX + (nodeW / 2) * Math.cos(rot) - (nodeH / 2) * Math.sin(rot)
-            const cy = nodeY + (nodeW / 2) * Math.sin(rot) + (nodeH / 2) * Math.cos(rot)
+            const cx = pct2px(selLayer.x, stageSize.width) + pct2px(selLayer.width, stageSize.width) / 2
+            const cy = pct2px(selLayer.y, stageSize.height) + pct2px(selLayer.height, stageSize.height) / 2
 
             const startAngle = Math.atan2(pointer.y - cy, pointer.x - cx)
             const startRotation = node.rotation()
@@ -887,7 +903,7 @@ export function StudioCanvas({
                 height,
                 opacity: state.opacity,
                 transform: `rotate(${state.rotation}deg)`,
-                transformOrigin: 'top left',
+                transformOrigin: 'center center',
                 pointerEvents: interactive && !layer.locked ? 'auto' : 'none',
                 zIndex: layer.zIndex + 100,
                 mixBlendMode: layer.blendMode === 'normal' ? undefined : layer.blendMode,

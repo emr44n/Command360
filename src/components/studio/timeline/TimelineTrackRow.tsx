@@ -1,13 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { Eye, EyeOff, Volume2, VolumeX, Lock, Trash2 } from 'lucide-react'
+import { Eye, EyeOff, Volume2, VolumeX, Lock, Trash2, GripVertical } from 'lucide-react'
 import type { StudioTrack, StudioLayer } from '@/types/slide'
 import { TimelineClip } from './TimelineClip'
 
 interface TimelineTrackRowProps {
   track: StudioTrack
   layer: StudioLayer
+  index?: number
   zoomLevel: number
   scrollLeft: number
   selectedClipId: string | null
@@ -21,11 +22,13 @@ interface TimelineTrackRowProps {
   onToggleHidden: () => void
   onDeleteTrack: () => void
   onRenameTrack?: (newName: string) => void
+  onReorderTrack?: (fromIndex: number, toIndex: number) => void
 }
 
 export function TimelineTrackRow({
   track,
   layer,
+  index = 0,
   zoomLevel,
   scrollLeft,
   selectedClipId,
@@ -36,6 +39,7 @@ export function TimelineTrackRow({
   onToggleHidden,
   onDeleteTrack,
   onRenameTrack,
+  onReorderTrack,
   labelWidth = 140,
   rowHeight = 40,
   compact = false,
@@ -57,9 +61,32 @@ export function TimelineTrackRow({
   }
 
   return (
-    <div className="flex border-b border-[#1e1f22]/60 group/row" style={{ height: rowHeight }}>
+    <div
+      className="flex border-b border-[#1e1f22]/60 group/row"
+      style={{ height: rowHeight }}
+      draggable={!!onReorderTrack}
+      onDragStart={(e) => {
+        e.dataTransfer.setData('text/plain', String(index))
+        e.dataTransfer.effectAllowed = 'move'
+      }}
+      onDragOver={(e) => {
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'move'
+      }}
+      onDrop={(e) => {
+        e.preventDefault()
+        const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10)
+        if (!isNaN(fromIndex) && fromIndex !== index && onReorderTrack) {
+          onReorderTrack(fromIndex, index)
+        }
+      }}
+    >
       {/* Left label area */}
-      <div className="flex-shrink-0 flex items-center gap-1 px-2 bg-[#2b2d31] border-r border-[#1e1f22]" style={{ width: labelWidth }}>
+      <div className="flex-shrink-0 flex items-center gap-1 px-1 bg-[#2b2d31] border-r border-[#1e1f22]" style={{ width: labelWidth }}>
+        {/* Drag handle */}
+        {onReorderTrack && (
+          <GripVertical className="w-3 h-3 text-zinc-600 shrink-0 cursor-grab active:cursor-grabbing" />
+        )}
         {/* Color dot */}
         <div
           className="rounded-full flex-shrink-0"
