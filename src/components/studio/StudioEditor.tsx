@@ -1388,13 +1388,19 @@ function SceneProperties({
         {/* Background Color */}
         <div className="space-y-1.5">
           <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Background Color</label>
+          {/* Preset color swatches */}
+          <div className="flex flex-wrap gap-1 mb-1.5">
+            {['#ffffff', '#000000', '#1a1a2e', '#0f0f0f', '#1e3a5f', '#2d1b69', '#1a3c34', '#3b1c1c', '#3a2a0a', '#dc2626'].map(c => (
+              <button key={c} onClick={() => handleBgChange(c)}
+                className={`w-5 h-5 rounded-md border transition-all cursor-pointer ${bgColor === c ? 'border-red-500 ring-1 ring-red-500/50 scale-110' : 'border-[#3f4147] hover:border-zinc-400'}`}
+                style={{ backgroundColor: c }} title={c} />
+            ))}
+          </div>
           <div className="flex items-center gap-2">
-            <input
-              type="color"
-              value={bgColor}
-              onChange={(e) => handleBgChange(e.target.value)}
-              className="w-7 h-7 rounded-md cursor-pointer border border-zinc-600 bg-transparent p-0"
-            />
+            <div className="w-7 h-7 rounded-md border border-[#3f4147] shrink-0 cursor-pointer relative overflow-hidden" style={{ backgroundColor: bgColor }}>
+              <input type="color" value={bgColor} onChange={(e) => handleBgChange(e.target.value)}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+            </div>
             <input
               value={bgColor}
               onChange={(e) => {

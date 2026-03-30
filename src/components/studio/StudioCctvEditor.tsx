@@ -276,41 +276,45 @@ function SceneSlotDropdown({
         <span className="truncate">{assignedLabel}</span>
         <ChevronDown className={`w-2.5 h-2.5 shrink-0 text-zinc-500 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
-      {/* Dropdown menu — fixed position so it's not clipped by parent overflow */}
+      {/* Dropdown menu — fixed, grid of scene thumbnails */}
       {open && (
-        <div ref={dropdownRef} className="fixed z-[9999] bg-[#2b2d31] border border-[#3f4147] rounded-lg shadow-2xl max-h-64 overflow-y-auto py-1"
-          style={{ top: menuPos.top, left: menuPos.left, width: menuPos.width }}>
+        <div ref={dropdownRef} className="fixed z-[9999] bg-[#1e1f22] border border-[#3f4147] rounded-xl shadow-2xl p-2 max-h-72 overflow-y-auto"
+          style={{ top: menuPos.top, left: Math.max(8, menuPos.left - 40), width: Math.max(menuPos.width + 80, 240) }}>
+          <p className="text-[8px] text-zinc-600 uppercase tracking-wider mb-1.5 px-1">Select a scene</p>
           {/* Empty option */}
           <div
             onClick={() => { onSlotChange(index, ''); setOpen(false) }}
-            className="flex items-center gap-2.5 px-2 py-2 hover:bg-[#35363c] cursor-pointer rounded-md mx-1 transition-colors"
+            className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#35363c] cursor-pointer rounded-lg transition-colors mb-0.5"
           >
-            <div className="w-12 h-7 rounded bg-[#1e1f22] overflow-hidden shrink-0 border border-[#3f4147] flex items-center justify-center">
-              <span className="text-[8px] text-zinc-600">—</span>
+            <div className="w-8 h-5 rounded bg-[#2b2d31] border border-dashed border-zinc-600 flex items-center justify-center shrink-0">
+              <span className="text-[7px] text-zinc-600">—</span>
             </div>
-            <span className="text-[10px] text-zinc-500 italic">Empty</span>
+            <span className="text-[9px] text-zinc-500 italic">Empty</span>
           </div>
-          {/* Available scenes */}
+          <div className="h-px bg-[#3f4147] my-1" />
+          {/* Available scenes as a list */}
           {availableSlides.map((s) => {
             const sc = s.content as StudioContent
             const sceneLayers = sc?.layers || []
             const sceneIdx = allSlides.findIndex(sl => sl.id === s.id)
             const sceneName = s.title || `Scene ${sceneIdx + 1}`
+            const isSelected = assignedId === s.id
             return (
               <div
                 key={s.id}
                 onClick={() => { onSlotChange(index, s.id); setOpen(false) }}
-                className={`flex items-center gap-2.5 px-2 py-2 hover:bg-[#35363c] cursor-pointer rounded-md mx-1 transition-colors ${assignedId === s.id ? 'bg-red-500/15 ring-1 ring-red-500/30' : ''}`}
+                className={`flex items-center gap-2 px-2 py-1.5 cursor-pointer rounded-lg transition-colors mb-0.5 ${isSelected ? 'bg-red-500/20 ring-1 ring-red-500/40' : 'hover:bg-[#35363c]'}`}
               >
-                <div className="w-12 h-7 rounded bg-[#1e1f22] overflow-hidden shrink-0 border border-[#3f4147] relative">
+                <div className="w-8 h-5 rounded bg-[#1e1f22] overflow-hidden shrink-0 border border-[#3f4147] relative">
                   <div className="w-full h-full relative" style={{ backgroundColor: sc?.canvas?.backgroundColor || '#000' }}>
-                    {sceneLayers.map(layer => layer.visible && layer.src ? (
+                    {sceneLayers.slice(0, 3).map(layer => layer.visible && layer.src ? (
                       <img key={layer.id} src={layer.src} className="absolute object-contain" draggable={false}
                         style={{ left: `${layer.x}%`, top: `${layer.y}%`, width: `${layer.width}%`, height: `${layer.height}%` }} />
                     ) : null)}
                   </div>
                 </div>
-                <span className="text-[10px] text-zinc-300 truncate">{sceneName}</span>
+                <span className={`text-[9px] truncate ${isSelected ? 'text-red-300 font-medium' : 'text-zinc-300'}`}>{sceneName}</span>
+                {isSelected && <span className="ml-auto text-[8px] text-red-400">✓</span>}
               </div>
             )
           })}
