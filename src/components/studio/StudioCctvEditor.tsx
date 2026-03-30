@@ -222,19 +222,30 @@ function SceneSlotDropdown({
   onSlotChange: (index: number, slideId: string) => void
 }) {
   const [open, setOpen] = useState(false)
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 0 })
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
 
   // Close on outside click
   useEffect(() => {
     if (!open) return
     const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node) &&
+          triggerRef.current && !triggerRef.current.contains(e.target as Node)) {
         setOpen(false)
       }
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [open])
+
+  const openDropdown = () => {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect()
+      setMenuPos({ top: rect.bottom + 2, left: rect.left, width: Math.max(rect.width, 200) })
+    }
+    setOpen(v => !v)
+  }
 
   const assignedLabel = assigned
     ? (assigned.title || `Scene ${assignedIdx + 1}`)
@@ -258,24 +269,26 @@ function SceneSlotDropdown({
       </div>
       {/* Dropdown trigger */}
       <button
-        onClick={() => setOpen(v => !v)}
-        className="flex-1 h-5 flex items-center justify-between text-[9px] bg-[#1e1f22] border border-[#3f4147] rounded text-zinc-300 px-1.5 cursor-pointer hover:border-zinc-500 transition-colors"
+        ref={triggerRef}
+        onClick={openDropdown}
+        className="flex-1 h-6 flex items-center justify-between text-[9px] bg-[#1e1f22] border border-[#3f4147] rounded text-zinc-300 px-1.5 cursor-pointer hover:border-red-500/50 transition-colors"
       >
         <span className="truncate">{assignedLabel}</span>
         <ChevronDown className={`w-2.5 h-2.5 shrink-0 text-zinc-500 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
-      {/* Dropdown menu */}
+      {/* Dropdown menu — fixed position so it's not clipped by parent overflow */}
       {open && (
-        <div className="absolute top-full left-3 right-0 mt-0.5 z-50 bg-[#2b2d31] border border-[#3f4147] rounded-md shadow-xl max-h-48 overflow-y-auto py-0.5">
+        <div ref={dropdownRef} className="fixed z-[9999] bg-[#2b2d31] border border-[#3f4147] rounded-lg shadow-2xl max-h-64 overflow-y-auto py-1"
+          style={{ top: menuPos.top, left: menuPos.left, width: menuPos.width }}>
           {/* Empty option */}
           <div
             onClick={() => { onSlotChange(index, ''); setOpen(false) }}
-            className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#35363c] cursor-pointer rounded mx-0.5"
+            className="flex items-center gap-2.5 px-2 py-2 hover:bg-[#35363c] cursor-pointer rounded-md mx-1 transition-colors"
           >
-            <div className="w-10 h-6 rounded bg-[#1e1f22] overflow-hidden shrink-0 border border-[#3f4147] flex items-center justify-center">
-              <span className="text-[7px] text-zinc-600">---</span>
+            <div className="w-12 h-7 rounded bg-[#1e1f22] overflow-hidden shrink-0 border border-[#3f4147] flex items-center justify-center">
+              <span className="text-[8px] text-zinc-600">—</span>
             </div>
-            <span className="text-[9px] text-zinc-500 italic">Empty</span>
+            <span className="text-[10px] text-zinc-500 italic">Empty</span>
           </div>
           {/* Available scenes */}
           {availableSlides.map((s) => {
@@ -287,9 +300,9 @@ function SceneSlotDropdown({
               <div
                 key={s.id}
                 onClick={() => { onSlotChange(index, s.id); setOpen(false) }}
-                className={`flex items-center gap-2 px-2 py-1.5 hover:bg-[#35363c] cursor-pointer rounded mx-0.5 ${assignedId === s.id ? 'bg-red-500/10' : ''}`}
+                className={`flex items-center gap-2.5 px-2 py-2 hover:bg-[#35363c] cursor-pointer rounded-md mx-1 transition-colors ${assignedId === s.id ? 'bg-red-500/15 ring-1 ring-red-500/30' : ''}`}
               >
-                <div className="w-10 h-6 rounded bg-[#1e1f22] overflow-hidden shrink-0 border border-[#3f4147] relative">
+                <div className="w-12 h-7 rounded bg-[#1e1f22] overflow-hidden shrink-0 border border-[#3f4147] relative">
                   <div className="w-full h-full relative" style={{ backgroundColor: sc?.canvas?.backgroundColor || '#000' }}>
                     {sceneLayers.map(layer => layer.visible && layer.src ? (
                       <img key={layer.id} src={layer.src} className="absolute object-contain" draggable={false}
@@ -297,7 +310,7 @@ function SceneSlotDropdown({
                     ) : null)}
                   </div>
                 </div>
-                <span className="text-[9px] text-zinc-300">{sceneName}</span>
+                <span className="text-[10px] text-zinc-300 truncate">{sceneName}</span>
               </div>
             )
           })}
