@@ -8,7 +8,8 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { presentation_id, slide_type, position, title } = await req.json()
+  const body = await req.json()
+  const { presentation_id, slide_type, position, title } = body
 
   const { data: pres } = await supabase
     .from('presentations')
@@ -18,7 +19,8 @@ export async function POST(req: NextRequest) {
     .single()
   if (!pres) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const content = getDefaultSlideContent(slide_type as SlideType)
+  // Use client-provided content if present (e.g. CCTV slides), otherwise default
+  const content = body.content || getDefaultSlideContent(slide_type as SlideType)
   const { data, error } = await supabase
     .from('slides')
     .insert({ presentation_id, slide_type, position: position ?? 0, title: title || '', content })
