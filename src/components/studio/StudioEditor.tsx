@@ -20,6 +20,7 @@ import { StudioCanvas } from '@/components/studio/StudioCanvas'
 import { StudioProperties } from '@/components/studio/StudioProperties'
 import { StudioTimeline } from '@/components/studio/StudioTimeline'
 import { StudioEventSettings } from '@/components/studio/StudioEventSettings'
+import { StudioCctvEditor } from '@/components/studio/StudioCctvEditor'
 import { migrateStudioContent } from '@/lib/studio/migrate-studio-content'
 import { addTrackForLayer } from '@/lib/studio/timeline-manager'
 import { playEvent } from '@/lib/studio/event-playback'
@@ -557,7 +558,15 @@ export function StudioEditor({
             </>
           )}
 
-          {/* Center: Canvas + transport */}
+          {/* Center: Canvas + transport OR CCTV editor */}
+          {content.cctvLayout ? (
+            <StudioCctvEditor
+              content={content}
+              onContentChange={onContentChange}
+              slides={slides || []}
+              currentSlideId={activeSlideId || ''}
+            />
+          ) : (
           <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#313338]">
             {/* Canvas area */}
             <div className="flex-1 min-h-0">
@@ -597,6 +606,7 @@ export function StudioEditor({
               </span>
             </div>
           </div>
+          )}
 
           {/* Right: Properties or Event Settings */}
           {showProperties && (
@@ -636,7 +646,7 @@ export function StudioEditor({
         </div>
 
         {/* Timeline resize splitter */}
-        {showTimeline && (
+        {showTimeline && !content.cctvLayout && (
           <div
             className="h-[5px] shrink-0 cursor-row-resize bg-[#1e1f22] hover:bg-indigo-500/60 transition-colors flex items-center justify-center group"
             onMouseDown={() => startDrag('timeline')}
@@ -646,7 +656,7 @@ export function StudioEditor({
         )}
 
         {/* Bottom: Timeline */}
-        {showTimeline && (
+        {showTimeline && !content.cctvLayout && (
           <div className="shrink-0 bg-[#232428] overflow-hidden border-t border-[#1e1f22]" style={{ height: timelineHeight }}>
             <StudioTimeline
               content={content}

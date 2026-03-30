@@ -10,11 +10,29 @@ interface Props {
   slide: Slide
   session: Session
   channelRef?: React.RefObject<RealtimeChannel | null>
+  allSlides?: Slide[]
 }
 
-export function StudioDisplay({ slide, session, channelRef }: Props) {
+export function StudioDisplay({ slide, session, channelRef, allSlides }: Props) {
   const content = slide.content as StudioContent
   const { canvas, layers, events, eventCategories, timelineEvents } = content
+
+  // CCTV layout — render grid of scene previews instead of normal canvas
+  if (content.cctvLayout && allSlides) {
+    return (
+      <CctvDisplayView
+        content={content}
+        allSlides={allSlides}
+        session={session}
+        events={[...events, ...(timelineEvents?.map(te => ({
+          id: te.id, name: te.name, categoryId: te.categoryId, icon: te.icon, color: te.color,
+          trigger: te.trigger, voteQuestion: te.voteQuestion, voteOptions: te.voteOptions, actions: [],
+        })) || [])]}
+        eventCategories={eventCategories}
+        channelRef={channelRef}
+      />
+    )
+  }
 
   // Initialize layer states from layer defaults
   const [layerStates, setLayerStates] = useState<Record<string, StudioLayerState>>(() =>
@@ -584,6 +602,183 @@ function EventButton({
           )}
         </div>
       )}
+    </div>
+  )
+}
+
+/* ─── CCTV Display View ─── */
+
+type CctvLayout = '1' | '2' | '3' | '4' | '6'
+
+function CctvDisplayView({
+  content,
+  allSlides,
+  session,
+  events: _events,
+  eventCategories: _eventCategories,
+  channelRef: _channelRef,
+}: {
+  content: StudioContent
+  allSlides: Slide[]
+  session: Session
+  events: StudioEvent[]
+  eventCategories: { id: string; name: string; color?: string }[]
+  channelRef?: React.RefObject<RealtimeChannel | null>
+}) {
+  const layout = content.cctvLayout as CctvLayout
+  const slots = content.cctvSlots || []
+  const slotCount = parseInt(layout, 10)
+  const joinUrl = 'command360.co.uk/join'
+
+  // Build the grid cells
+  const cells = Array.from({ length: slotCount }, (_, i) => {
+    const slideId = slots[i]
+    const assignedSlide = slideId ? allSlides.find(s => s.id === slideId) : null
+    const assignedContent = assignedSlide ? (assignedSlide.content as StudioContent) : null
+    const slideIndex = assignedSlide ? allSlides.findIndex(s => s.id === assignedSlide.id) : -1
+    const label = assignedSlide
+      ? (assignedSlide.title || `Scene ${slideIndex + 1}`)
+      : null
+
+    return (
+      <div
+        key={i}
+        className="relative overflow-hidden bg-black"
+        style={{ border: '1px solid #333' }}
+      >
+        {assignedContent && assignedContent.layers ? (
+          <>
+            {/* Mini scene render */}
+            <div
+              className="absolute inset-0"
+              style={{ backgroundColor: assignedContent.canvas?.backgroundColor || '#000' }}
+            >
+              {assignedContent.layers.map((layer) => {
+                if (!layer.visible) return null
+                return <DomLayer key={layer.id} layer={layer} state={{
+                  visible: layer.visible,
+                  opacity: layer.opacity,
+                  x: layer.x,
+                  y: layer.y,
+                  width: layer.width,
+                  height: layer.height,
+                  rotation: layer.rotation,
+                  src: layer.src,
+                }} />
+              })}
+            </div>
+            {/* Scene label */}
+            {label && (
+              <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 bg-black/70 rounded text-[10px] font-semibold text-white/80 backdrop-blur-sm">
+                {label}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900">
+            <Monitor className="w-6 h-6 text-zinc-700 mb-1" />
+            <span className="text-[11px] font-mono text-zinc-600 uppercase tracking-wider">No Signal</span>
+          </div>
+        )}
+      </div>
+    )
+  })
+
+  // CSS grid layout based on cctvLayout
+  const gridStyle = (): React.CSSProperties => {
+    switch (layout) {
+      case '1':
+        return { display: 'grid', gridTemplateColumns: '1fr', gridTemplateRows: '1fr' }
+      case '2':
+        return { display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr' }
+      case '3':
+        return { display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }
+      case '4':
+        return { display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }
+      case '6':
+        return { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr 1fr' }
+      default:
+        return { display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }
+    }
+  }
+
+  // For layout '3', the first cell spans 2 rows
+  const renderCells = () => {
+    if (layout === '3') {
+      return (
+        <>
+          <div className="relative overflow-hidden bg-black row-span-2" style={{ border: '1px solid #333' }}>
+            {cells[0]?.props?.children}
+          </div>
+          {cells[1]}
+          {cells[2]}
+        </>
+      )
+    }
+    return cells
+  }
+
+  return (
+    <div className="w-full h-full flex flex-col">
+      <div
+        className="flex-1 relative overflow-hidden rounded-lg"
+        style={{
+          aspectRatio: '16 / 9',
+          ...gridStyle(),
+          gap: '2px',
+          backgroundColor: '#111',
+        }}
+      >
+        {layout === '3' ? (
+          <>
+            {/* Slot 0: spans 2 rows on the left */}
+            <div className="relative overflow-hidden bg-black" style={{ border: '1px solid #333', gridRow: 'span 2' }}>
+              {(() => {
+                const slideId = slots[0]
+                const assignedSlide = slideId ? allSlides.find(s => s.id === slideId) : null
+                const assignedContent = assignedSlide ? (assignedSlide.content as StudioContent) : null
+                const slideIndex = assignedSlide ? allSlides.findIndex(s => s.id === assignedSlide.id) : -1
+                const label = assignedSlide ? (assignedSlide.title || `Scene ${slideIndex + 1}`) : null
+                if (assignedContent?.layers) {
+                  return (
+                    <>
+                      <div className="absolute inset-0" style={{ backgroundColor: assignedContent.canvas?.backgroundColor || '#000' }}>
+                        {assignedContent.layers.map(layer => {
+                          if (!layer.visible) return null
+                          return <DomLayer key={layer.id} layer={layer} state={{
+                            visible: layer.visible, opacity: layer.opacity, x: layer.x, y: layer.y,
+                            width: layer.width, height: layer.height, rotation: layer.rotation, src: layer.src,
+                          }} />
+                        })}
+                      </div>
+                      {label && (
+                        <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 bg-black/70 rounded text-[10px] font-semibold text-white/80 backdrop-blur-sm">{label}</div>
+                      )}
+                    </>
+                  )
+                }
+                return (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900">
+                    <Monitor className="w-6 h-6 text-zinc-700 mb-1" />
+                    <span className="text-[11px] font-mono text-zinc-600 uppercase tracking-wider">No Signal</span>
+                  </div>
+                )
+              })()}
+            </div>
+            {/* Slots 1 and 2 stacked on the right */}
+            {[1, 2].map(i => cells[i])}
+          </>
+        ) : (
+          cells
+        )}
+      </div>
+      {/* Join URL bar */}
+      <div className="flex items-center justify-center gap-3 mt-2 py-1.5 bg-muted/30 rounded-lg">
+        <QrCode className="w-3.5 h-3.5 text-muted-foreground" />
+        <span className="text-xs font-mono font-semibold text-foreground tracking-wide">{joinUrl}</span>
+        <span className="text-xs text-muted-foreground">|</span>
+        <span className="text-xs text-muted-foreground">Code: <span className="font-mono font-bold text-foreground">{session.room_code}</span></span>
+      </div>
     </div>
   )
 }

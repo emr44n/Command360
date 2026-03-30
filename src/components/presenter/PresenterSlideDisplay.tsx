@@ -11,14 +11,14 @@ import { OpenTextDisplay } from './slide-displays/OpenTextDisplay'
 import { StudioDisplay } from './slide-displays/StudioDisplay'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 
-interface Props { slide: Slide; session: Session; responseCount: number; channelRef?: React.RefObject<RealtimeChannel | null> }
+interface Props { slide: Slide; session: Session; responseCount: number; channelRef?: React.RefObject<RealtimeChannel | null>; allSlides?: Slide[] }
 
-export function PresenterSlideDisplay({ slide, session, responseCount, channelRef }: Props) {
+export function PresenterSlideDisplay({ slide, session, responseCount, channelRef, allSlides }: Props) {
   // Studio slides get full-bleed canvas without title/badge wrapper
   if (slide.slide_type === 'studio') {
     return (
       <div className="w-full h-full">
-        <StudioDisplay slide={slide} session={session} channelRef={channelRef} />
+        <StudioDisplay slide={slide} session={session} channelRef={channelRef} allSlides={allSlides} />
       </div>
     )
   }
@@ -47,7 +47,7 @@ export function PresenterSlideDisplay({ slide, session, responseCount, channelRe
   )
 }
 
-function SlideContent({ slide, session, responseCount, channelRef }: Props) {
+function SlideContent({ slide, session, responseCount, channelRef, allSlides }: Props) {
   switch (slide.slide_type) {
     case 'poll': return <PollResultsDisplay slide={slide} sessionId={session.id} />
     case 'word_cloud': return <WordCloudDisplay slide={slide} sessionId={session.id} />
@@ -57,7 +57,7 @@ function SlideContent({ slide, session, responseCount, channelRef }: Props) {
     case 'content': return <ContentDisplay slide={slide} />
     case 'rating_scale': return <RatingScaleDisplay slide={slide} sessionId={session.id} />
     case 'open_text': return <OpenTextDisplay slide={slide} sessionId={session.id} />
-    case 'studio': return <StudioDisplay slide={slide} session={session} channelRef={channelRef} />
+    case 'studio': return <StudioDisplay slide={slide} session={session} channelRef={channelRef} allSlides={allSlides} />
     default: return null
   }
 }
