@@ -608,7 +608,7 @@ function EventButton({
 
 /* ─── CCTV Display View ─── */
 
-type CctvLayout = '1' | '2' | '3' | '4' | '6'
+type CctvLayout = '1' | '2' | '3' | '4' | '6' | '8'
 
 function CctvDisplayView({
   content,
@@ -697,6 +697,8 @@ function CctvDisplayView({
         return { display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }
       case '6':
         return { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr 1fr' }
+      case '8':
+        return { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gridTemplateRows: '1fr 1fr' }
       default:
         return { display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }
     }

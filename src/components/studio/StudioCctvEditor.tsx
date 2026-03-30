@@ -11,14 +11,15 @@ interface StudioCctvEditorProps {
   currentSlideId: string
 }
 
-type CctvLayout = '1' | '2' | '3' | '4' | '6'
+type CctvLayout = '1' | '2' | '3' | '4' | '6' | '8'
 
 const LAYOUT_OPTIONS: { value: CctvLayout; label: string; icon: React.ReactNode; description: string }[] = [
-  { value: '1', label: '1 Panel', icon: <Square className="w-4 h-4" />, description: 'Full screen' },
-  { value: '2', label: '2 Panels', icon: <Columns2 className="w-4 h-4" />, description: 'Side by side' },
-  { value: '3', label: '3 Panels', icon: <LayoutGrid className="w-4 h-4" />, description: '1 large + 2 stacked' },
-  { value: '4', label: '4 Panels', icon: <Grid2x2 className="w-4 h-4" />, description: '2x2 grid' },
-  { value: '6', label: '6 Panels', icon: <LayoutGrid className="w-4 h-4" />, description: '3x2 grid' },
+  { value: '1', label: '1', icon: <Square className="w-3.5 h-3.5" />, description: 'Full screen' },
+  { value: '2', label: '2', icon: <Columns2 className="w-3.5 h-3.5" />, description: 'Side by side' },
+  { value: '3', label: '3', icon: <LayoutGrid className="w-3.5 h-3.5" />, description: '1 large + 2 stacked' },
+  { value: '4', label: '4', icon: <Grid2x2 className="w-3.5 h-3.5" />, description: '2×2 grid' },
+  { value: '6', label: '6', icon: <LayoutGrid className="w-3.5 h-3.5" />, description: '3×2 grid' },
+  { value: '8', label: '8', icon: <LayoutGrid className="w-3.5 h-3.5" />, description: '4×2 grid' },
 ]
 
 function getSlotCount(layout: CctvLayout): number {
@@ -62,6 +63,19 @@ function LayoutPreview({ layout }: { layout: CctvLayout }) {
     case '6':
       return (
         <div className="w-full aspect-video grid grid-cols-3 grid-rows-2 gap-[2px]">
+          <div className={cellClass} />
+          <div className={cellClass} />
+          <div className={cellClass} />
+          <div className={cellClass} />
+          <div className={cellClass} />
+          <div className={cellClass} />
+        </div>
+      )
+    case '8':
+      return (
+        <div className="w-full aspect-video grid grid-cols-4 grid-rows-2 gap-[2px]">
+          <div className={cellClass} />
+          <div className={cellClass} />
           <div className={cellClass} />
           <div className={cellClass} />
           <div className={cellClass} />

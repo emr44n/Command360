@@ -616,7 +616,15 @@ export function StudioEditor({
                 onMouseDown={() => startDrag('properties')}
               />
               <div className="shrink-0 bg-[#2b2d31] border-l border-[#1e1f22] overflow-y-auto overflow-x-hidden" style={{ width: propertiesWidth }}>
-                {selectedEvent ? (
+                {content.cctvLayout ? (
+                  /* CCTV settings in properties panel */
+                  <StudioCctvEditor
+                    content={content}
+                    onContentChange={onContentChange}
+                    slides={slides || []}
+                    currentSlideId={activeSlideId || ''}
+                  />
+                ) : selectedEvent ? (
                   <StudioEventSettings
                     event={selectedEvent}
                     layers={layers}
