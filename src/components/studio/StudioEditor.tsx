@@ -964,8 +964,12 @@ function SlidesPanel({
           const isEditing = editingId === slide.id
           const isCctv = !!(slide.content as StudioContent)?.cctvLayout
           return (
+            <div key={slide.id} className="relative">
+              {/* Drop indicator line — before this item */}
+              {dragFromIndex !== null && dragOverIndex === index && dragFromIndex !== index && (
+                <div className="absolute -top-[5px] left-1 right-1 h-[3px] bg-red-500 rounded-full z-50 pointer-events-none" />
+              )}
             <div
-              key={slide.id}
               draggable={!isEditing}
               onDragStart={(e) => {
                 setDragFromIndex(index)
@@ -974,24 +978,30 @@ function SlidesPanel({
               onDragOver={(e) => {
                 e.preventDefault()
                 e.dataTransfer.dropEffect = 'move'
-                setDragOverIndex(index)
+                const rect = e.currentTarget.getBoundingClientRect()
+                const midY = rect.top + rect.height / 2
+                setDragOverIndex(e.clientY < midY ? index : index + 1)
               }}
               onDragLeave={() => setDragOverIndex(null)}
               onDrop={(e) => {
                 e.preventDefault()
-                if (dragFromIndex !== null && dragFromIndex !== index && onReorderSlides) {
-                  onReorderSlides(dragFromIndex, index)
+                if (dragFromIndex !== null && dragOverIndex !== null && onReorderSlides) {
+                  const toIndex = dragOverIndex > dragFromIndex ? dragOverIndex - 1 : dragOverIndex
+                  if (toIndex !== dragFromIndex) onReorderSlides(dragFromIndex, toIndex)
                 }
                 setDragFromIndex(null)
                 setDragOverIndex(null)
               }}
               onDragEnd={() => { setDragFromIndex(null); setDragOverIndex(null) }}
               onClick={() => onSelectSlide(slide.id)}
-              className={`w-full rounded-lg overflow-hidden transition-all cursor-pointer group relative ${
-                isActive
+              className={`w-full rounded-lg overflow-hidden transition-all cursor-grab group relative ${
+                dragFromIndex === index ? 'opacity-70 scale-105 shadow-2xl ring-2 ring-red-500 z-50 cursor-grabbing' : ''
+              } ${
+                isActive && dragFromIndex !== index
                   ? 'ring-2 ring-red-500 ring-offset-1 ring-offset-[#2b2d31]'
-                  : 'ring-1 ring-[#3f4147] hover:ring-zinc-500'
-              } ${dragOverIndex === index && dragFromIndex !== index ? 'ring-2 ring-indigo-400 ring-offset-1 ring-offset-[#2b2d31]' : ''}`}
+                  : dragFromIndex !== index ? 'ring-1 ring-[#3f4147] hover:ring-zinc-500' : ''
+              }`}
+              style={dragFromIndex === null && dragOverIndex === null ? {} : undefined}
             >
               <div className="relative aspect-video bg-[#1e1f22] flex items-center justify-center">
                 {isEditing ? (
@@ -1055,6 +1065,11 @@ function SlidesPanel({
                   )}
                 </div>
               </div>
+            </div>
+              {/* Drop indicator line — after last item */}
+              {dragFromIndex !== null && dragOverIndex === index + 1 && index === slides.length - 1 && dragFromIndex !== index && (
+                <div className="absolute -bottom-[5px] left-1 right-1 h-[3px] bg-red-500 rounded-full z-50 pointer-events-none" />
+              )}
             </div>
           )
         })}

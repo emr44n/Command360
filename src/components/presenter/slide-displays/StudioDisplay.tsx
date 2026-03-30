@@ -61,6 +61,23 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
   const canvasRef = useRef<HTMLDivElement>(null)
   const eventControllerRef = useRef<EventPlaybackController | null>(null)
   const initialStatesRef = useRef<Record<string, StudioLayerState>>(buildInitialStates(layers))
+  const [isCanvasFullscreen, setIsCanvasFullscreen] = useState(false)
+
+  // Listen for fullscreen changes
+  useEffect(() => {
+    const handler = () => setIsCanvasFullscreen(!!document.fullscreenElement)
+    document.addEventListener('fullscreenchange', handler)
+    return () => document.removeEventListener('fullscreenchange', handler)
+  }, [])
+
+  // Toggle function
+  const toggleCanvasFullscreen = useCallback(() => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen()
+    } else {
+      canvasRef.current?.requestFullscreen()
+    }
+  }, [])
 
   // Reset states when slide changes
   useEffect(() => {
@@ -266,7 +283,7 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
         >
           {/* Canvas-only fullscreen button (native Fullscreen API) */}
           <button
-            onClick={() => canvasRef.current?.requestFullscreen()}
+            onClick={toggleCanvasFullscreen}
             className="absolute bottom-2 right-2 z-10 w-7 h-7 rounded-md bg-black/40 hover:bg-black/60 text-white/50 hover:text-white flex items-center justify-center transition-all backdrop-blur-sm"
             title="Canvas fullscreen"
           >

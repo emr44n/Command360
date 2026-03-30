@@ -155,7 +155,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       if (e.ctrlKey && e.key === 's') {
         e.preventDefault()
         flushSaves()
-        toast.success('Saved')
+        toast.success('Saved', { duration: 2000 })
       } else if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
         e.preventDefault()
         handleUndo()
@@ -214,7 +214,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
 
     const allOk = results.every(Boolean)
     setSaveStatus(allOk ? 'saved' : 'error')
-    if (!allOk) toast.error('Some changes failed to save')
+    if (!allOk) toast.error('Some changes failed to save', { duration: 2000 })
     return allOk
   }, [])
 
@@ -248,7 +248,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           }
         )
       } else {
-        toast.error(errData.error || 'Failed to add slide')
+        toast.error(errData.error || 'Failed to add slide', { duration: 2000 })
       }
     }
   }, [slides.length, presentation.id])
@@ -279,10 +279,10 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       })
       setSelectedSlideId(data.slide.id)
       setSaveStatus('saved')
-      toast.success('Slide duplicated')
+      toast.success('Slide duplicated', { duration: 2000 })
     } else {
       setSaveStatus('error')
-      toast.error('Failed to duplicate slide')
+      toast.error('Failed to duplicate slide', { duration: 2000 })
     }
   }, [selectedSlide, slides, presentation.id])
 
@@ -313,10 +313,10 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       })
       setSelectedSlideId(data.slide.id)
       setSaveStatus('saved')
-      toast.success('Slide duplicated')
+      toast.success('Slide duplicated', { duration: 2000 })
     } else {
       setSaveStatus('error')
-      toast.error('Failed to duplicate slide')
+      toast.error('Failed to duplicate slide', { duration: 2000 })
     }
   }, [slides, presentation.id])
 
@@ -339,10 +339,10 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
         return next
       })
       setSaveStatus('saved')
-      toast.success('Scene deleted')
+      toast.success('Scene deleted', { duration: 2000 })
     } else {
       setSaveStatus('error')
-      toast.error('Failed to delete')
+      toast.error('Failed to delete', { duration: 2000 })
     }
   }, [deleteTargetId, selectedSlideId])
 
@@ -408,7 +408,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       const text = await file.text()
       const data = JSON.parse(text)
       if (data.format !== 'c360') {
-        toast.error('Invalid file format. Expected a .c360 file.')
+        toast.error('Invalid file format. Expected a .c360 file.', { duration: 2000 })
         return
       }
       const res = await fetch('/api/presentations/import-c360', {
@@ -418,13 +418,13 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       })
       if (res.ok) {
         const { presentation: newPres } = await res.json()
-        toast.success('Presentation imported successfully!')
+        toast.success('Presentation imported successfully!', { duration: 2000 })
         router.push(`/presentations/${newPres.id}/edit`)
       } else {
-        toast.error('Failed to import presentation')
+        toast.error('Failed to import presentation', { duration: 2000 })
       }
     } catch {
-      toast.error('Invalid .c360 file')
+      toast.error('Invalid .c360 file', { duration: 2000 })
     }
   }, [router])
 
@@ -459,7 +459,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       const data = await res.json()
       router.push(`/present/${data.session.id}`)
     } else {
-      toast.error('Failed to start session')
+      toast.error('Failed to start session', { duration: 2000 })
       setStarting(false)
     }
   }
@@ -504,7 +504,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             </button>
             {studioFileMenu && (
               <div className="absolute top-full left-0 mt-1 w-56 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl z-50 py-1 animate-in fade-in slide-in-from-top-1 duration-150">
-                <StudioFileMenuItem icon={Save} label="Save" shortcut="Ctrl+S" onClick={() => { flushSaves(); toast.success('Saved'); setStudioFileMenu(false) }} />
+                <StudioFileMenuItem icon={Save} label="Save" shortcut="Ctrl+S" onClick={() => { flushSaves(); toast.success('Saved', { duration: 2000 }); setStudioFileMenu(false) }} />
                 <StudioFileMenuItem icon={FilePlus} label="New presentation" onClick={() => { setStudioFileMenu(false); router.push('/dashboard') }} />
                 <div className="h-px bg-zinc-700 mx-2 my-1" />
                 <StudioFileMenuItem icon={FolderOpen} label="Open recent" onClick={() => { setStudioFileMenu(false); router.push('/dashboard') }} />
@@ -514,10 +514,10 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                   const res = await fetch(`/api/presentations/${presentation.id}/duplicate`, { method: 'POST' })
                   if (res.ok) {
                     const data = await res.json()
-                    toast.success('Presentation duplicated')
+                    toast.success('Presentation duplicated', { duration: 2000 })
                     router.push(`/presentations/${data.presentation.id}/edit`)
                   } else {
-                    toast.error('Failed to duplicate')
+                    toast.error('Failed to duplicate', { duration: 2000 })
                   }
                 }} />
                 <div className="h-px bg-zinc-700 mx-2 my-1" />
@@ -614,7 +614,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                 toast.success('Scene added', { duration: 2000 })
               } else {
                 setSaveStatus('error')
-                toast.error('Failed to add scene')
+                toast.error('Failed to add scene', { duration: 2000 })
               }
             }}
             onAddCctvSlide={async () => {
@@ -648,7 +648,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                 toast.success('CCTV scene added', { duration: 2000 })
               } else {
                 setSaveStatus('error')
-                toast.error('Failed to add CCTV scene')
+                toast.error('Failed to add CCTV scene', { duration: 2000 })
               }
             }}
             onReorderSlides={async (fromIndex: number, toIndex: number) => {
@@ -677,7 +677,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                 setSaveStatus('saved')
               } catch {
                 setSaveStatus('error')
-                toast.error('Failed to save scene order')
+                toast.error('Failed to save scene order', { duration: 2000 })
               }
             }}
           />
@@ -737,7 +737,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           </button>
           {showFileMenu && (
             <div className="absolute top-full left-0 mt-1 w-64 bg-card border border-border rounded-xl shadow-xl z-50 py-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
-              <FileMenuItem icon={Save} label="Save" shortcut="Ctrl+S" onClick={() => { flushSaves(); toast.success('Saved'); setShowFileMenu(false) }} />
+              <FileMenuItem icon={Save} label="Save" shortcut="Ctrl+S" onClick={() => { flushSaves(); toast.success('Saved', { duration: 2000 }); setShowFileMenu(false) }} />
               <FileMenuItem icon={FilePlus} label="New presentation" onClick={() => { setShowFileMenu(false); router.push('/dashboard') }} />
               <div className="h-px bg-border mx-2 my-1" />
               <FileMenuItem icon={FolderOpen} label="Open recent" shortcut="" onClick={() => { setShowFileMenu(false); router.push('/dashboard') }} />
@@ -747,10 +747,10 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                 const res = await fetch(`/api/presentations/${presentation.id}/duplicate`, { method: 'POST' })
                 if (res.ok) {
                   const data = await res.json()
-                  toast.success('Presentation duplicated')
+                  toast.success('Presentation duplicated', { duration: 2000 })
                   router.push(`/presentations/${data.presentation.id}/edit`)
                 } else {
-                  toast.error('Failed to duplicate')
+                  toast.error('Failed to duplicate', { duration: 2000 })
                 }
               }} />
               <div className="h-px bg-border mx-2 my-1" />

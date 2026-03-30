@@ -1,7 +1,7 @@
 'use client'
 import { useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowRight, Loader2 } from 'lucide-react'
+import { ArrowRight, Loader2, ClipboardPaste } from 'lucide-react'
 
 interface Props {
   variant?: 'hero' | 'page' | 'compact'
@@ -53,16 +53,31 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
   if (variant === 'page') {
     return (
       <form onSubmit={handleSubmit} className={`space-y-4 ${className}`}>
-        <input
-          ref={inputRef}
-          value={code}
-          onChange={handleChange}
-          placeholder="A B C 1 2 3"
-          maxLength={6}
-          autoFocus
-          autoCapitalize="characters"
-          className="w-full text-center text-3xl font-mono font-semibold tracking-[0.4em] h-16 rounded-2xl border border-border bg-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 code-glow transition-all placeholder:text-muted-foreground/30 placeholder:text-xl placeholder:tracking-widest"
-        />
+        <div className="relative">
+          <input
+            ref={inputRef}
+            value={code}
+            onChange={handleChange}
+            placeholder="A B C 1 2 3"
+            maxLength={6}
+            autoFocus
+            autoCapitalize="characters"
+            className="w-full text-center text-3xl font-mono font-semibold tracking-[0.4em] h-16 rounded-2xl border border-border bg-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 code-glow transition-all placeholder:text-muted-foreground/30 placeholder:text-xl placeholder:tracking-widest"
+          />
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                const text = await navigator.clipboard.readText()
+                const cleaned = text.trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6)
+                if (cleaned) setCode(cleaned)
+              } catch {}
+            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 rounded text-[10px] bg-red-600 text-white hover:bg-red-500 transition-colors"
+          >
+            Paste
+          </button>
+        </div>
         <button
           type="submit"
           disabled={code.trim().length < 4 || joining}
@@ -95,8 +110,21 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
           placeholder="Room code"
           maxLength={6}
           autoCapitalize="characters"
-          className="w-40 text-center text-sm font-mono font-semibold tracking-widest px-3 py-2.5 rounded-full border border-border bg-background/80 backdrop-blur-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 code-glow transition-all placeholder:text-muted-foreground/40 placeholder:font-normal placeholder:tracking-normal"
+          className="w-40 text-center text-sm font-mono font-semibold tracking-widest pl-3 pr-14 py-2.5 rounded-full border border-border bg-background/80 backdrop-blur-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 code-glow transition-all placeholder:text-muted-foreground/40 placeholder:font-normal placeholder:tracking-normal"
         />
+        <button
+          type="button"
+          onClick={async () => {
+            try {
+              const text = await navigator.clipboard.readText()
+              const cleaned = text.trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6)
+              if (cleaned) setCode(cleaned)
+            } catch {}
+          }}
+          className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-0.5 rounded text-[10px] bg-red-600 text-white hover:bg-red-500 transition-colors"
+        >
+          Paste
+        </button>
       </div>
       <button
         type="submit"

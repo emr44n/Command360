@@ -60,14 +60,14 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
     await navigator.clipboard.writeText(session.room_code)
     setCodeCopied(true)
     setTimeout(() => setCodeCopied(false), 2000)
-    toast.success('Code copied!')
+    toast.success('Code copied!', { duration: 2000 })
   }, [session.room_code])
 
   const copyUrl = useCallback(async () => {
     await navigator.clipboard.writeText(joinUrl)
     setUrlCopied(true)
     setTimeout(() => setUrlCopied(false), 2000)
-    toast.success('URL copied!')
+    toast.success('URL copied!', { duration: 2000 })
   }, [joinUrl])
 
   const handleCloseQR = useCallback(() => {
@@ -149,7 +149,7 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
         event: newOpen ? 'VOTING_OPENED' : 'VOTING_CLOSED',
         payload: { session_id: session.id },
       })
-      toast(newOpen ? 'Voting opened' : 'Voting closed')
+      toast(newOpen ? 'Voting opened' : 'Voting closed', { duration: 2000 })
     }
   }, [session.id, session.voting_open])
 
@@ -165,7 +165,7 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
       payload: { session_id: session.id },
     })
     await fetch(`/api/sessions/${session.id}/end`, { method: 'POST' })
-    toast.success('Session ended')
+    toast.success('Session ended', { duration: 2000 })
     router.push(`/presentations/${session.presentation_id}/edit`)
   }, [session.id, session.presentation_id, router])
 
@@ -273,8 +273,8 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
 
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
-        <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-10 min-h-0">
-          <div key={slideKey} className={`w-full ${slideDirection === 'next' ? 'slide-next' : 'slide-prev'}`}
+        <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-10 min-h-0 min-w-0 transition-all duration-300">
+          <div key={slideKey} className={`w-full mx-auto ${slideDirection === 'next' ? 'slide-next' : 'slide-prev'}`}
             style={{ maxWidth: 'min(64rem, calc((100vh - 12rem) * 16 / 9))' }}>
             {currentSlide ? (
               <PresenterSlideDisplay slide={currentSlide} session={session} responseCount={responseCount} channelRef={channelRef} allSlides={slides} mode="present" />

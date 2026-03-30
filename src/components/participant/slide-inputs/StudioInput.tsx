@@ -204,13 +204,50 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
     )
   }
 
+  const [sessionSeconds, setSessionSeconds] = useState(0)
+  const [isCanvasFullscreen, setIsCanvasFullscreen] = useState(false)
+
+  useEffect(() => {
+    const interval = setInterval(() => setSessionSeconds(s => s + 1), 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    const handler = () => setIsCanvasFullscreen(!!document.fullscreenElement)
+    document.addEventListener('fullscreenchange', handler)
+    return () => document.removeEventListener('fullscreenchange', handler)
+  }, [])
+
+  const formatTimer = (s: number) => {
+    const m = Math.floor(s / 60)
+    const sec = s % 60
+    return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`
+  }
+
+  const toggleCanvasFullscreen = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen()
+    } else {
+      canvasRef.current?.requestFullscreen()
+    }
+  }
+
   // Default watching state — large canvas scene
   return (
-    <div className="flex flex-col items-center gap-2 animate-in fade-in duration-300 w-full max-w-5xl mx-auto">
+    <div className="flex flex-col items-center gap-2 animate-in fade-in duration-300 w-full max-w-5xl mx-auto relative">
+      {/* Red gradient glow background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_30%,rgba(220,38,38,0.12),transparent)]" />
+        <div className="absolute inset-0 opacity-[0.04]" style={{
+          backgroundImage: 'linear-gradient(rgba(220,38,38,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(220,38,38,0.3) 1px, transparent 1px)',
+          backgroundSize: '48px 48px',
+        }} />
+      </div>
+
       {/* Large scene canvas */}
       <div
         ref={canvasRef}
-        className="w-full relative overflow-hidden rounded-xl"
+        className="w-full relative overflow-hidden rounded-xl z-10"
         style={{
           aspectRatio: '16 / 9',
           backgroundColor: canvas.backgroundColor,
@@ -223,7 +260,7 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
         })}
         {/* Fullscreen button */}
         <button
-          onClick={() => canvasRef.current?.requestFullscreen()}
+          onClick={toggleCanvasFullscreen}
           className="absolute bottom-2 right-2 z-10 w-8 h-8 rounded-lg bg-black/50 hover:bg-black/70 text-white/50 hover:text-white flex items-center justify-center transition-all backdrop-blur-sm"
           title="Fullscreen"
         >
@@ -232,9 +269,14 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
       </div>
 
       {/* Status indicator */}
-      <div className="flex items-center justify-center gap-2">
-        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-        <p className="text-center text-muted-foreground text-xs">Scene in progress</p>
+      <div className="flex flex-col items-center gap-1.5 z-10">
+        <div className="flex items-center justify-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <p className="text-center text-muted-foreground text-xs">Scene in progress</p>
+        </div>
+        <div className="px-2.5 py-1 rounded-md bg-zinc-900/80 border border-zinc-800 text-[11px] font-mono text-zinc-400 tabular-nums">
+          Session: {formatTimer(sessionSeconds)}
+        </div>
       </div>
     </div>
   )
