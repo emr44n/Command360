@@ -41,6 +41,145 @@ interface StudioEditorProps {
   onReorderSlides?: (fromIndex: number, toIndex: number) => void
 }
 
+/* ── CCTV Live Preview — renders scene layers in grid on the canvas area ── */
+function CctvLivePreview({ content, slides }: { content: StudioContent; slides: Slide[] }) {
+  const layout = content.cctvLayout || '4'
+  const slots = content.cctvSlots || []
+  const count = parseInt(layout, 10)
+
+  const gridStyle: React.CSSProperties = (() => {
+    switch (layout) {
+      case '1': return { gridTemplateColumns: '1fr', gridTemplateRows: '1fr' }
+      case '2': return { gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr' }
+      case '3': return { gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }
+      case '4': return { gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }
+      case '6': return { gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr 1fr' }
+      case '8': return { gridTemplateColumns: '1fr 1fr 1fr 1fr', gridTemplateRows: '1fr 1fr' }
+      default: return { gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }
+    }
+  })()
+
+  return (
+    <div
+      className="w-full max-w-4xl aspect-video rounded-lg overflow-hidden border border-[#3f4147] shadow-2xl"
+      style={{ display: 'grid', gap: '2px', background: '#000', ...gridStyle }}
+    >
+      {Array.from({ length: count }, (_, i) => {
+        const slideId = slots[i]
+        const scene = slideId ? slides.find(s => s.id === slideId) : null
+        const sceneContent = scene?.content as StudioContent | undefined
+        const sceneLayers = sceneContent?.layers || []
+        const canvasBg = sceneContent?.canvas?.backgroundColor || '#1a1a1a'
+
+        return (
+          <div
+            key={i}
+            className="relative overflow-hidden"
+            style={{
+              backgroundColor: canvasBg,
+              gridRow: layout === '3' && i === 0 ? 'span 2' : undefined,
+            }}
+          >
+            {/* Scene label */}
+            <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded bg-black/60 text-[8px] text-white/70 font-medium">
+              {scene ? (scene.title || `Scene ${slides.indexOf(scene) + 1}`) : `View ${i + 1}`}
+            </div>
+
+            {scene && sceneLayers.length > 0 ? (
+              /* Render scene layers as positioned elements */
+              sceneLayers.map(layer => {
+                if (!layer.visible) return null
+                const src = layer.src
+                if (!src) {
+                  if (layer.type === 'text') {
+                    return (
+                      <div
+                        key={layer.id}
+                        className="absolute"
+                        style={{
+                          left: `${layer.x}%`, top: `${layer.y}%`,
+                          width: `${layer.width}%`, height: `${layer.height}%`,
+                          color: layer.color || '#fff',
+                          fontSize: `${(layer.fontSize || 24) * 0.4}px`,
+                          opacity: layer.opacity,
+                          transform: `rotate(${layer.rotation}deg)`,
+                          transformOrigin: 'center center',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        {layer.text}
+                      </div>
+                    )
+                  }
+                  if (layer.type === 'shape') {
+                    return (
+                      <div
+                        key={layer.id}
+                        className="absolute"
+                        style={{
+                          left: `${layer.x}%`, top: `${layer.y}%`,
+                          width: `${layer.width}%`, height: `${layer.height}%`,
+                          backgroundColor: layer.color || '#666',
+                          opacity: layer.opacity,
+                          transform: `rotate(${layer.rotation}deg)`,
+                          transformOrigin: 'center center',
+                        }}
+                      />
+                    )
+                  }
+                  return null
+                }
+                return layer.type === 'video' ? (
+                  <video
+                    key={layer.id}
+                    src={src}
+                    className="absolute object-contain pointer-events-none"
+                    style={{
+                      left: `${layer.x}%`, top: `${layer.y}%`,
+                      width: `${layer.width}%`, height: `${layer.height}%`,
+                      opacity: layer.opacity,
+                      transform: `rotate(${layer.rotation}deg)`,
+                      transformOrigin: 'center center',
+                    }}
+                    autoPlay loop muted playsInline
+                  />
+                ) : (
+                  <img
+                    key={layer.id}
+                    src={src}
+                    alt={layer.name}
+                    className="absolute object-contain pointer-events-none"
+                    style={{
+                      left: `${layer.x}%`, top: `${layer.y}%`,
+                      width: `${layer.width}%`, height: `${layer.height}%`,
+                      opacity: layer.opacity,
+                      transform: `rotate(${layer.rotation}deg)`,
+                      transformOrigin: 'center center',
+                    }}
+                  />
+                )
+              })
+            ) : (
+              /* Empty slot — no signal */
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <Monitor className="w-5 h-5 text-zinc-700 mx-auto mb-1" />
+                  <p className="text-[8px] text-zinc-700 uppercase tracking-wider">No Signal</p>
+                </div>
+              </div>
+            )}
+
+            {/* Recording indicator dot */}
+            {scene && (
+              <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 export function StudioEditor({
   content,
   onContentChange,
@@ -558,61 +697,57 @@ export function StudioEditor({
             </>
           )}
 
-          {/* Center: Canvas area — for CCTV slides shows live grid preview, for normal shows Konva canvas */}
+          {/* Center: Canvas area */}
           <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#313338]">
-          {content.cctvLayout ? (
-            /* CCTV live preview in the canvas area */
-            <div className="flex-1 min-h-0 flex items-center justify-center p-4" style={{ background: '#141416' }}>
-              <CctvCanvasPreview
-                content={content}
-                slides={slides || []}
-              />
-            </div>
-          ) : (
-          <>
-          <div className="flex-1 min-h-0 flex flex-col">
-          <div className="flex-1 min-h-0">
-            {/* Canvas area */}
-            <div className="flex-1 min-h-0">
-              <StudioCanvas
-                layers={layers}
-                tracks={tracks}
-                currentTime={currentTime}
-                canvasConfig={content.canvas}
-                interactive
-                selectedLayerId={selectedLayerId}
-                onSelectLayer={setSelectedLayerId}
-                onUpdateLayer={handleUpdateLayer}
-                onDropAsset={handleDropAsset}
-                eventOverrides={eventOverrides}
-              />
-            </div>
-            {/* Transport bar below canvas */}
-            <div className="h-8 shrink-0 bg-[#2b2d31] border-t border-[#1e1f22] flex items-center justify-center gap-4 px-4">
-              <span className="text-[11px] font-mono text-emerald-400 tabular-nums">
-                {formatTime(currentTime)}
-              </span>
-              <div className="flex items-center gap-1">
-                <button onClick={() => { setIsPlaying(false); setCurrentTime(0) }} className="w-6 h-6 rounded flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
-                  <SkipBack className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  onClick={() => {
-                    if (isPlaying) { setIsPlaying(false) } else { if (currentTime >= totalDuration) setCurrentTime(0); setIsPlaying(true) }
-                  }}
-                  className="w-7 h-7 rounded-lg flex items-center justify-center bg-zinc-700 hover:bg-zinc-600 text-white transition-colors cursor-pointer"
-                >
-                  {isPlaying ? <Square className="w-3 h-3 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current ml-0.5" />}
-                </button>
+            {content.cctvLayout ? (
+              /* CCTV: live grid preview of assigned scenes */
+              <div className="flex-1 min-h-0 flex items-center justify-center p-4" style={{ background: '#141416', backgroundImage: 'radial-gradient(circle, #1e1f22 1px, transparent 1px)', backgroundSize: '16px 16px' }}>
+                <CctvLivePreview
+                  content={content}
+                  slides={slides || []}
+                />
               </div>
-              <span className="text-[11px] font-mono text-zinc-500 tabular-nums">
-                / {formatTime(totalDuration)}
-              </span>
-            </div>
-          </div>
-          </div>
-          </>
-          )}
+            ) : (
+              <>
+                {/* Normal canvas */}
+                <div className="flex-1 min-h-0">
+                  <StudioCanvas
+                    layers={layers}
+                    tracks={tracks}
+                    currentTime={currentTime}
+                    canvasConfig={content.canvas}
+                    interactive
+                    selectedLayerId={selectedLayerId}
+                    onSelectLayer={setSelectedLayerId}
+                    onUpdateLayer={handleUpdateLayer}
+                    onDropAsset={handleDropAsset}
+                    eventOverrides={eventOverrides}
+                  />
+                </div>
+                {/* Transport bar */}
+                <div className="h-8 shrink-0 bg-[#2b2d31] border-t border-[#1e1f22] flex items-center justify-center gap-4 px-4">
+                  <span className="text-[11px] font-mono text-emerald-400 tabular-nums">
+                    {formatTime(currentTime)}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => { setIsPlaying(false); setCurrentTime(0) }} className="w-6 h-6 rounded flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
+                      <SkipBack className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (isPlaying) { setIsPlaying(false) } else { if (currentTime >= totalDuration) setCurrentTime(0); setIsPlaying(true) }
+                      }}
+                      className="w-7 h-7 rounded-lg flex items-center justify-center bg-zinc-700 hover:bg-zinc-600 text-white transition-colors cursor-pointer"
+                    >
+                      {isPlaying ? <Square className="w-3 h-3 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current ml-0.5" />}
+                    </button>
+                  </div>
+                  <span className="text-[11px] font-mono text-zinc-500 tabular-nums">
+                    / {formatTime(totalDuration)}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Right: Properties or Event Settings */}
