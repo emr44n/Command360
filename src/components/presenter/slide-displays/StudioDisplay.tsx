@@ -17,20 +17,32 @@ export function StudioDisplay({ slide, session, channelRef, allSlides }: Props) 
   const content = slide.content as StudioContent
   const { canvas, layers, events, eventCategories, timelineEvents } = content
 
-  // CCTV layout — render grid of scene previews instead of normal canvas
+  // CCTV layout — render ONLY the grid, no events panel
   if (content.cctvLayout && allSlides) {
     return (
-      <CctvDisplayView
-        content={content}
-        allSlides={allSlides}
-        session={session}
-        events={[...events, ...(timelineEvents?.map(te => ({
-          id: te.id, name: te.name, categoryId: te.categoryId, icon: te.icon, color: te.color,
-          trigger: te.trigger, voteQuestion: te.voteQuestion, voteOptions: te.voteOptions, actions: [],
-        })) || [])]}
-        eventCategories={eventCategories}
-        channelRef={channelRef}
-      />
+      <div className="w-full h-full relative bg-black">
+        {/* Canvas-only fullscreen button */}
+        <button
+          onClick={() => {
+            const el = document.querySelector('[data-cctv-canvas]') as HTMLElement
+            el?.requestFullscreen?.()
+          }}
+          className="absolute bottom-3 right-3 z-20 w-8 h-8 rounded-lg bg-black/50 hover:bg-black/70 text-white/50 hover:text-white flex items-center justify-center transition-all backdrop-blur-sm"
+          title="Canvas fullscreen (C)"
+        >
+          <Monitor className="w-4 h-4" />
+        </button>
+        <div data-cctv-canvas className="w-full h-full">
+          <CctvDisplayView
+            content={content}
+            allSlides={allSlides}
+            session={session}
+            events={[]}
+            eventCategories={[]}
+            channelRef={channelRef}
+          />
+        </div>
+      </div>
     )
   }
 

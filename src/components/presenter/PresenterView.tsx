@@ -371,28 +371,31 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
 
       {/* Hotkeys modal */}
       {showHotkeys && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 fade-in" onClick={() => setShowHotkeys(false)}>
-          <div className="bg-card rounded-2xl border border-border p-8 w-full max-w-2xl shadow-2xl fade-in-scale" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <Keyboard className="w-5 h-5 text-primary" />Keyboard Shortcuts
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4 fade-in" onClick={() => setShowHotkeys(false)}>
+          <div className="bg-card rounded-2xl border border-border p-6 w-full max-w-lg shadow-2xl fade-in-scale" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
+                <Keyboard className="w-4 h-4 text-primary" />Keyboard Shortcuts
               </h2>
-              <button onClick={() => setShowHotkeys(false)} className="text-muted-foreground hover:text-foreground transition-all">
-                <X className="w-5 h-5" />
+              <button onClick={() => setShowHotkeys(false)} className="text-muted-foreground hover:text-foreground transition-all p-1 rounded-lg hover:bg-muted">
+                <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-x-10 gap-y-1">
+            <div className="grid grid-cols-2 gap-x-8 gap-y-0.5">
               <HotkeySection title="Navigation">
-                <HotkeyRow keys="Arrow Right / Down" action="Next slide" />
-                <HotkeyRow keys="Arrow Left / Up" action="Previous slide" />
-                <HotkeyRow keys="F" action="Toggle fullscreen" />
-                <HotkeyRow keys="Esc" action="Close panels" />
+                <HotkeyRow keys="→ / Space" action="Next slide" />
+                <HotkeyRow keys="← / Backspace" action="Previous slide" />
+                <HotkeyRow keys="Home" action="First slide" />
+                <HotkeyRow keys="End" action="Last slide" />
               </HotkeySection>
-              <HotkeySection title="Participation">
-                <HotkeyRow keys="C" action="Open/close voting" />
-                <HotkeyRow keys="H" action="Toggle results visibility" />
-                <HotkeyRow keys="L" action="Toggle join code & QR" />
-                <HotkeyRow keys="N" action="Toggle speaker notes" />
+              <HotkeySection title="View">
+                <HotkeyRow keys="F" action="Fullscreen" />
+                <HotkeyRow keys="G" action="Grid overview" />
+                <HotkeyRow keys="N" action="Toggle notes" />
+                <HotkeyRow keys="Esc" action="Exit preview" />
+              </HotkeySection>
+              <HotkeySection title="Shortcuts">
+                <HotkeyRow keys="?" action="Shortcuts" />
               </HotkeySection>
             </div>
           </div>

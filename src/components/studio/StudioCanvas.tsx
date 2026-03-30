@@ -694,10 +694,8 @@ export function StudioCanvas({
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       onWheel={(e) => {
-        if (e.ctrlKey || e.metaKey) {
-          e.preventDefault()
-          setCanvasZoom(prev => Math.max(25, Math.min(200, prev + (e.deltaY > 0 ? -10 : 10))))
-        }
+        e.preventDefault()
+        setCanvasZoom(prev => Math.max(25, Math.min(200, prev + (e.deltaY > 0 ? -5 : 5))))
       }}
     >
       {/* Zoom controls — bottom-right of canvas area */}
