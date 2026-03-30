@@ -530,29 +530,29 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
         </div>
       )}
 
-      {/* Shortcuts overlay */}
+      {/* Shortcuts overlay — fixed to viewport, high z-index */}
       {showShortcuts && (
-        <div className="fixed inset-0 bg-background/95 z-[100] flex items-center justify-center"
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4"
           onClick={() => setShowShortcuts(false)}>
-          <div className="bg-card rounded-2xl p-7 max-w-[400px] w-[90%] border border-border shadow-2xl"
+          <div className="bg-[#1e1f22] rounded-xl p-5 max-w-sm w-full border border-[#3f4147] shadow-2xl"
             onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-5">
-              <h3 className="text-base font-bold text-foreground">Keyboard Shortcuts</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-white">Keyboard Shortcuts</h3>
               <button onClick={() => setShowShortcuts(false)}
-                className="p-1 rounded-md bg-muted text-muted-foreground hover:text-foreground transition-colors">
+                className="p-1 rounded-md text-zinc-500 hover:text-white hover:bg-white/10 transition-colors">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               {[
                 ['→ / Space', 'Next slide'], ['← / Backspace', 'Previous slide'],
                 ['Home', 'First slide'], ['End', 'Last slide'],
                 ['G', 'Grid overview'], ['N', 'Toggle notes'],
                 ['F', 'Fullscreen'], ['Esc', 'Exit preview'], ['?', 'Shortcuts'],
               ].map(([key, desc]) => (
-                <div key={key} className="flex items-center justify-between">
-                  <span className="text-[13px] text-muted-foreground">{desc}</span>
-                  <kbd className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border">{key}</kbd>
+                <div key={key} className="flex items-center justify-between py-0.5">
+                  <span className="text-[11px] text-zinc-400">{desc}</span>
+                  <kbd className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-[#2b2d31] text-zinc-300 border border-[#3f4147]">{key}</kbd>
                 </div>
               ))}
             </div>

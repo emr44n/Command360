@@ -51,6 +51,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   const [showAddImageDialog, setShowAddImageDialog] = useState(false)
   const [showFileMenu, setShowFileMenu] = useState(false)
   const [studioFileMenu, setStudioFileMenu] = useState(false)
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
   const [slideListWidth, setSlideListWidth] = useState(220)
   const fileMenuRef = useRef<HTMLDivElement>(null)
   const studioFileMenuRef = useRef<HTMLDivElement>(null)
@@ -305,7 +306,13 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   }, [slides, presentation.id])
 
   const handleDeleteSlide = useCallback(async (id: string) => {
-    if (!confirm('Delete this slide?')) return
+    setDeleteTargetId(id)
+  }, [])
+
+  const confirmDeleteSlide = useCallback(async () => {
+    if (!deleteTargetId) return
+    const id = deleteTargetId
+    setDeleteTargetId(null)
     pushUndo()
     setSaveStatus('saving')
     const res = await fetch(`/api/slides/${id}`, { method: 'DELETE' })
@@ -317,12 +324,12 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
         return next
       })
       setSaveStatus('saved')
-      toast.success('Slide deleted')
+      toast.success('Scene deleted')
     } else {
       setSaveStatus('error')
-      toast.error('Failed to delete slide')
+      toast.error('Failed to delete')
     }
-  }, [selectedSlideId])
+  }, [deleteTargetId, selectedSlideId])
 
   const handleSlideChange = useCallback((updates: Partial<Slide>) => {
     if (!selectedSlideId) return
@@ -660,6 +667,30 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             }}
           />
         </div>
+
+        {/* Custom delete confirmation modal */}
+        {deleteTargetId && (
+          <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setDeleteTargetId(null)}>
+            <div className="bg-[#1e1f22] border border-[#3f4147] rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+              <h3 className="text-sm font-semibold text-white mb-2">Delete this scene?</h3>
+              <p className="text-[11px] text-zinc-400 mb-4">This action cannot be undone. The scene and all its layers will be permanently removed.</p>
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={() => setDeleteTargetId(null)}
+                  className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDeleteSlide}
+                  className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     )
   }
