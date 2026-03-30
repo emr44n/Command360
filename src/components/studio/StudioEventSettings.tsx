@@ -306,7 +306,7 @@ export function StudioEventSettings({
                 <button
                   key={preset.label}
                   onClick={() => handleApplyPreset(preset)}
-                  className="h-7 rounded-md bg-zinc-800 hover:bg-zinc-700 text-[10px] text-zinc-300 font-medium transition-colors cursor-pointer"
+                  className="h-6 rounded-md bg-zinc-800 hover:bg-zinc-700 text-[10px] text-zinc-300 font-medium transition-colors cursor-pointer"
                 >
                   {preset.label}
                 </button>
@@ -447,7 +447,7 @@ export function StudioEventSettings({
           <div className="flex gap-1.5">
             <button
               onClick={() => handleTriggerChange('manual')}
-              className={`flex-1 h-7 rounded-md text-[10px] font-medium transition-colors cursor-pointer ${
+              className={`flex-1 h-6 rounded-md text-[10px] font-medium transition-colors cursor-pointer ${
                 event.trigger === 'manual'
                   ? 'bg-zinc-700 text-white'
                   : 'bg-zinc-800/50 text-zinc-500 hover:text-zinc-300'
@@ -457,7 +457,7 @@ export function StudioEventSettings({
             </button>
             <button
               onClick={() => handleTriggerChange('vote')}
-              className={`flex-1 h-7 rounded-md text-[10px] font-medium transition-colors cursor-pointer ${
+              className={`flex-1 h-6 rounded-md text-[10px] font-medium transition-colors cursor-pointer ${
                 event.trigger === 'vote'
                   ? 'bg-zinc-700 text-white'
                   : 'bg-zinc-800/50 text-zinc-500 hover:text-zinc-300'
@@ -472,7 +472,7 @@ export function StudioEventSettings({
                 value={event.voteQuestion || ''}
                 onChange={(e) => onUpdateEvent({ ...event, voteQuestion: e.target.value })}
                 placeholder="Vote question..."
-                className="h-7 text-xs border-zinc-700 bg-zinc-800/50 text-zinc-100"
+                className="h-6 text-xs border-zinc-700 bg-zinc-800/50 text-zinc-100"
               />
             </div>
           )}
