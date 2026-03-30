@@ -473,7 +473,7 @@ export function StudioEditor({
           {/* Left: Slides / Asset / Events panel — Discord channel list color */}
           {showLeftPanel && (
             <>
-              <div className="shrink-0 bg-[#2b2d31] overflow-hidden flex flex-col border-r border-[#1e1f22]" style={{ width: leftPanelWidth }}>
+              <div className="shrink-0 bg-[#2b2d31] overflow-hidden overflow-x-hidden flex flex-col border-r border-[#1e1f22]" style={{ width: leftPanelWidth }}>
                 {activePanel === 'slides' && hasSlides ? (
                   <SlidesPanel
                     slides={slides!}
@@ -553,19 +553,19 @@ export function StudioEditor({
               />
             </div>
             {/* Transport bar below canvas */}
-            <div className="h-10 shrink-0 bg-[#2b2d31] border-t border-[#1e1f22] flex items-center justify-center gap-4 px-4">
+            <div className="h-8 shrink-0 bg-[#2b2d31] border-t border-[#1e1f22] flex items-center justify-center gap-4 px-4">
               <span className="text-[11px] font-mono text-emerald-400 tabular-nums">
                 {formatTime(currentTime)}
               </span>
               <div className="flex items-center gap-1">
-                <button onClick={() => { setIsPlaying(false); setCurrentTime(0) }} className="w-7 h-7 rounded flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
+                <button onClick={() => { setIsPlaying(false); setCurrentTime(0) }} className="w-6 h-6 rounded flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
                   <SkipBack className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => {
                     if (isPlaying) { setIsPlaying(false) } else { if (currentTime >= totalDuration) setCurrentTime(0); setIsPlaying(true) }
                   }}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center bg-zinc-700 hover:bg-zinc-600 text-white transition-colors cursor-pointer"
+                  className="w-7 h-7 rounded-lg flex items-center justify-center bg-zinc-700 hover:bg-zinc-600 text-white transition-colors cursor-pointer"
                 >
                   {isPlaying ? <Square className="w-3 h-3 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current ml-0.5" />}
                 </button>

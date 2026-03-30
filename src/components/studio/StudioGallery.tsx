@@ -414,7 +414,7 @@ export function StudioGallery({
             </div>
           )}
           {images.length === 0 && <p className="mt-4 text-center text-xs text-zinc-500">No images uploaded yet</p>}
-          <div className="mt-2 grid grid-cols-2 gap-1.5">
+          <div className="mt-1.5 grid grid-cols-2 gap-1">
             {images.map((asset) => (
               <div
                 key={asset.id}
@@ -458,7 +458,7 @@ export function StudioGallery({
             </div>
           )}
           {videos.length === 0 && <p className="mt-4 text-center text-xs text-zinc-500">No videos uploaded yet</p>}
-          <div className="mt-2 grid grid-cols-2 gap-1.5">
+          <div className="mt-1.5 grid grid-cols-2 gap-1">
             {videos.map((asset) => (
               <div
                 key={asset.id}
@@ -513,11 +513,11 @@ export function StudioGallery({
                 onChange={(e) => setNewCategoryName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleAddCategory() }}
                 placeholder="New category..."
-                className="h-7 flex-1 border-[#3f4147] bg-[#383a40] text-xs text-zinc-100 placeholder:text-zinc-500"
+                className="h-6 flex-1 border-[#3f4147] bg-[#383a40] text-xs text-zinc-100 placeholder:text-zinc-500"
               />
               <Button
                 variant="outline" size="sm"
-                className="h-7 shrink-0 border-zinc-600 bg-zinc-800 px-2 text-zinc-300 hover:bg-zinc-700"
+                className="h-6 shrink-0 border-zinc-600 bg-zinc-800 px-2 text-zinc-300 hover:bg-zinc-700"
                 onClick={handleAddCategory} disabled={!newCategoryName.trim()}
               >
                 <PlusIcon className="size-3.5" />
@@ -531,11 +531,11 @@ export function StudioGallery({
                 onChange={(e) => setNewEventName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleAddEvent() }}
                 placeholder="New event..."
-                className="h-6 flex-1 border-zinc-700/50 bg-zinc-800/50 text-[10px] text-zinc-300 placeholder:text-zinc-600"
+                className="h-5 flex-1 border-zinc-700/50 bg-zinc-800/50 text-[10px] text-zinc-300 placeholder:text-zinc-600"
               />
               <Button
                 variant="ghost" size="sm"
-                className="h-6 shrink-0 px-1.5 text-zinc-500 hover:text-zinc-300"
+                className="h-5 shrink-0 px-1.5 text-zinc-500 hover:text-zinc-300"
                 onClick={() => handleAddEvent()} disabled={!newEventName.trim()}
               >
                 <PlusIcon className="size-3" />

@@ -139,8 +139,10 @@ function getPhotoshopCursor(
 
 const TRANSFORMER_PROPS = {
   flipEnabled: false,
-  // Rotation is handled by corner approach detection, NOT by Konva's built-in rotater
-  rotateEnabled: false,
+  rotateEnabled: true,
+  // Hide the rotation anchor by making it tiny and at 0 offset — rotation is via corner approach
+  rotateAnchorOffset: 0,
+  rotateAnchorSize: 0,
   centeredScaling: false,
   anchorCornerRadius: 50,
   anchorStroke: '#3b82f6',
@@ -1137,78 +1139,48 @@ export function StudioCanvas({
                     }}
                   />
 
-                  {/* Rotation handle - offset above top center */}
-                  <div
-                    data-handle="rotate"
-                    className="absolute flex flex-col items-center"
-                    style={{
-                      left: '50%',
-                      top: -28,
-                      marginLeft: -4,
-                    }}
-                  >
-                    {/* Connecting line */}
-                    <div
-                      className="w-px h-[16px]"
-                      style={{ backgroundColor: '#3b82f6' }}
-                    />
-                    {/* Rotation circle */}
-                    <div
-                      className="w-[10px] h-[10px] rounded-full cursor-grab"
-                      style={{
-                        backgroundColor: '#ffffff',
-                        border: '1.5px solid #3b82f6',
-                        marginTop: -1,
-                      }}
-                      onMouseDown={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
+                  {/* Rotation zones — invisible areas OUTSIDE each corner for rotation */}
+                  {['tl', 'tr', 'bl', 'br'].map((corner) => {
+                    const positions: Record<string, { left?: number; right?: number; top?: number; bottom?: number }> = {
+                      tl: { left: -18, top: -18 },
+                      tr: { right: -18, top: -18 },
+                      bl: { left: -18, bottom: -18 },
+                      br: { right: -18, bottom: -18 },
+                    }
+                    return (
+                      <div
+                        key={corner}
+                        data-handle="rotate"
+                        className="absolute w-[22px] h-[22px] cursor-grab z-[5]"
+                        style={positions[corner]}
+                        onMouseDown={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          const videoEl = (e.target as HTMLElement).closest('[class*="absolute"]')?.parentElement
+                          if (!videoEl) return
+                          const rect = videoEl.getBoundingClientRect()
+                          const cx = rect.left + rect.width / 2
+                          const cy = rect.top + rect.height / 2
+                          const startRot = state.rotation
+                          const startAngle = Math.atan2(e.clientY - cy, e.clientX - cx) * (180 / Math.PI)
 
-                        // Get center of the video element for rotation calculation
-                        const elRect = (e.target as HTMLElement).closest('[data-handle]')!
-                          .parentElement!.parentElement!.getBoundingClientRect()
-                        const centerX = elRect.left + elRect.width / 2
-                        const centerY = elRect.top + elRect.height / 2
-                        const startRotation = state.rotation
-
-                        // Calculate initial angle
-                        const startAngle = Math.atan2(
-                          e.clientY - centerY,
-                          e.clientX - centerX
-                        ) * (180 / Math.PI)
-
-                        const rotationSnaps = [0, 45, 90, 135, 180, 225, 270, 315]
-                        const SNAP_THRESHOLD = 5
-
-                        const onMove = (ev: MouseEvent) => {
-                          const currentAngle = Math.atan2(
-                            ev.clientY - centerY,
-                            ev.clientX - centerX
-                          ) * (180 / Math.PI)
-                          let newRotation = startRotation + (currentAngle - startAngle)
-
-                          // Normalize to 0-360
-                          newRotation = ((newRotation % 360) + 360) % 360
-
-                          // Snap to common angles
-                          for (const snap of rotationSnaps) {
-                            if (Math.abs(newRotation - snap) < SNAP_THRESHOLD) {
-                              newRotation = snap
-                              break
-                            }
+                          const onMove = (ev: MouseEvent) => {
+                            const angle = Math.atan2(ev.clientY - cy, ev.clientX - cx) * (180 / Math.PI)
+                            let newRot = startRot + (angle - startAngle)
+                            newRot = ((newRot % 360) + 360) % 360
+                            if (ev.shiftKey) newRot = Math.round(newRot / 45) * 45
+                            onUpdateLayer?.(layer.id, { rotation: newRot })
                           }
-
-                          onUpdateLayer?.(layer.id, { rotation: newRotation })
-                        }
-                        const onUp = () => {
-                          document.removeEventListener('mousemove', onMove)
-                          document.removeEventListener('mouseup', onUp)
-                        }
-                        document.addEventListener('mousemove', onMove)
-                        document.addEventListener('mouseup', onUp)
-                      }}
-                    />
-                  </div>
+                          const onUp = () => {
+                            document.removeEventListener('mousemove', onMove)
+                            document.removeEventListener('mouseup', onUp)
+                          }
+                          document.addEventListener('mousemove', onMove)
+                          document.addEventListener('mouseup', onUp)
+                        }}
+                      />
+                    )
+                  })}
                 </>
               )}
             </div>

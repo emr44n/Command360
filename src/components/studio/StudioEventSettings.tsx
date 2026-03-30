@@ -230,20 +230,20 @@ export function StudioEventSettings({
         {/* Event Info */}
         <section className="space-y-2">
           <div className="space-y-1">
-            <Label className="text-[10px] text-zinc-500 uppercase tracking-wider">Name</Label>
+            <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">Name</Label>
             <Input
               value={event.name}
               onChange={(e) => handleNameChange(e.target.value)}
-              className="h-7 text-xs border-zinc-700 bg-zinc-800/50 text-zinc-100"
+              className="h-6 text-xs border-zinc-700 bg-zinc-800/50 text-zinc-100"
             />
           </div>
           <div className="flex gap-2">
             <div className="flex-1 space-y-1">
-              <Label className="text-[10px] text-zinc-500 uppercase tracking-wider">Category</Label>
+              <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">Category</Label>
               <select
                 value={event.categoryId || ''}
                 onChange={(e) => handleCategoryChange(e.target.value)}
-                className="w-full h-7 text-xs rounded-md border border-zinc-700 bg-zinc-800/50 text-zinc-100 px-2"
+                className="w-full h-6 text-xs rounded-md border border-zinc-700 bg-zinc-800/50 text-zinc-100 px-2"
               >
                 <option value="">Uncategorized</option>
                 {categories.map((cat) => (
@@ -252,12 +252,12 @@ export function StudioEventSettings({
               </select>
             </div>
             <div className="w-12 space-y-1">
-              <Label className="text-[10px] text-zinc-500 uppercase tracking-wider">Color</Label>
+              <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">Color</Label>
               <input
                 type="color"
                 value={event.color || '#6366f1'}
                 onChange={(e) => handleColorChange(e.target.value)}
-                className="w-full h-7 rounded cursor-pointer border border-zinc-700 bg-transparent p-0.5"
+                className="w-full h-6 rounded cursor-pointer border border-zinc-700 bg-transparent p-0.5"
               />
             </div>
           </div>
@@ -265,7 +265,7 @@ export function StudioEventSettings({
 
         {/* Select Object Button */}
         <section className="space-y-2">
-          <Label className="text-[10px] text-zinc-500 uppercase tracking-wider">Target Object</Label>
+          <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">Target Object</Label>
           {objectSelectionMode === 'waiting' ? (
             <button
               onClick={() => cancelObjectSelection()}
@@ -300,7 +300,7 @@ export function StudioEventSettings({
         {/* Animation Presets (only when object is locked) */}
         {objectSelectionMode === 'locked' && objectSelectionTargetLayerId && (
           <section className="space-y-2">
-            <Label className="text-[10px] text-zinc-500 uppercase tracking-wider">Quick Presets</Label>
+            <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">Quick Presets</Label>
             <div className="grid grid-cols-2 gap-1">
               {getPresets().map((preset) => (
                 <button
@@ -318,7 +318,7 @@ export function StudioEventSettings({
         {/* Manual Action Builder (only when object is locked) */}
         {objectSelectionMode === 'locked' && objectSelectionTargetLayerId && (
           <section className="space-y-2">
-            <Label className="text-[10px] text-zinc-500 uppercase tracking-wider">Add Custom Action</Label>
+            <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">Add Custom Action</Label>
             <div className="space-y-1.5 p-2 rounded-lg bg-zinc-800/50 border border-zinc-700/50">
               <div className="grid grid-cols-2 gap-1.5">
                 <div className="space-y-0.5">
@@ -326,7 +326,7 @@ export function StudioEventSettings({
                   <select
                     value={newProperty}
                     onChange={(e) => setNewProperty(e.target.value)}
-                    className="w-full h-6 text-[10px] rounded border border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1"
+                    className="w-full h-5 text-[10px] rounded border border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1"
                   >
                     {PROPERTY_OPTIONS.map((p) => (
                       <option key={p.value} value={p.value}>{p.label}</option>
@@ -338,7 +338,7 @@ export function StudioEventSettings({
                   <select
                     value={newEasing}
                     onChange={(e) => setNewEasing(e.target.value)}
-                    className="w-full h-6 text-[10px] rounded border border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1"
+                    className="w-full h-5 text-[10px] rounded border border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1"
                   >
                     {EASING_OPTIONS.map((e) => (
                       <option key={e.value} value={e.value}>{e.label}</option>
@@ -353,7 +353,7 @@ export function StudioEventSettings({
                     value={newFromValue}
                     onChange={(e) => setNewFromValue(e.target.value)}
                     placeholder="auto"
-                    className="h-6 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
+                    className="h-5 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
                   />
                 </div>
                 <div className="space-y-0.5">
@@ -361,7 +361,7 @@ export function StudioEventSettings({
                   <Input
                     value={newToValue}
                     onChange={(e) => setNewToValue(e.target.value)}
-                    className="h-6 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
+                    className="h-5 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
                   />
                 </div>
               </div>
@@ -372,7 +372,7 @@ export function StudioEventSettings({
                     type="number"
                     value={newDuration}
                     onChange={(e) => setNewDuration(parseInt(e.target.value) || 0)}
-                    className="h-6 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
+                    className="h-5 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
                   />
                 </div>
                 <div className="space-y-0.5">
@@ -381,7 +381,7 @@ export function StudioEventSettings({
                     type="number"
                     value={newDelay}
                     onChange={(e) => setNewDelay(parseInt(e.target.value) || 0)}
-                    className="h-6 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
+                    className="h-5 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
                   />
                 </div>
                 <div className="space-y-0.5">
@@ -389,7 +389,7 @@ export function StudioEventSettings({
                   <select
                     value={newEndBehaviour}
                     onChange={(e) => setNewEndBehaviour(e.target.value)}
-                    className="w-full h-6 text-[10px] rounded border border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1"
+                    className="w-full h-5 text-[10px] rounded border border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1"
                   >
                     {END_BEHAVIOUR_OPTIONS.map((e) => (
                       <option key={e.value} value={e.value}>{e.label}</option>
@@ -401,7 +401,7 @@ export function StudioEventSettings({
                 variant="outline"
                 size="sm"
                 onClick={handleAddAction}
-                className="w-full h-6 text-[10px] border-zinc-600 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 mt-1"
+                className="w-full h-5 text-[10px] border-zinc-600 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 mt-1"
               >
                 <Plus className="size-3 mr-1" /> Add Action
               </Button>
@@ -412,7 +412,7 @@ export function StudioEventSettings({
         {/* Actions List */}
         {event.actions.length > 0 && (
           <section className="space-y-2">
-            <Label className="text-[10px] text-zinc-500 uppercase tracking-wider">
+            <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">
               Actions ({event.actions.length})
             </Label>
             <div className="space-y-1">
@@ -443,7 +443,7 @@ export function StudioEventSettings({
 
         {/* Trigger Type */}
         <section className="space-y-2">
-          <Label className="text-[10px] text-zinc-500 uppercase tracking-wider">Trigger</Label>
+          <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">Trigger</Label>
           <div className="flex gap-1.5">
             <button
               onClick={() => handleTriggerChange('manual')}
