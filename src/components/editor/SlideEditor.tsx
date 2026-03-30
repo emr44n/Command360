@@ -94,6 +94,21 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
 
   // handleAddTextElement and handleAddImageElement are defined after handleSlideChange below
 
+  // Restore selected slide from sessionStorage on mount
+  useEffect(() => {
+    const saved = sessionStorage.getItem(`studio-slide-${presentation.id}`)
+    if (saved && initialSlides.some(s => s.id === saved)) {
+      setSelectedSlideId(saved)
+    }
+  }, []) // eslint-disable-line
+
+  // Persist selected slide to sessionStorage
+  useEffect(() => {
+    if (selectedSlideId) {
+      sessionStorage.setItem(`studio-slide-${presentation.id}`, selectedSlideId)
+    }
+  }, [selectedSlideId, presentation.id])
+
   // Clear saved indicator after delay
   useEffect(() => {
     if (saveStatus === 'saved') {
@@ -217,7 +232,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       setSlides((prev) => [...prev, data.slide])
       setSelectedSlideId(data.slide.id)
       setSaveStatus('saved')
-      toast.success('Slide added')
+      toast.success('Slide added', { duration: 2000 })
     } else {
       setSaveStatus('error')
       const errData = await res.json().catch(() => ({}))
@@ -550,7 +565,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             variant="ghost"
             size="sm"
             className="text-zinc-400 hover:text-white h-7 text-xs gap-1"
-            onClick={() => window.open(`/presentations/${presentation.id}/preview`, '_blank')}
+            onClick={() => window.open(`/presentations/${presentation.id}/preview?slide=${selectedIndex}`, '_blank')}
           >
             <Eye className="w-3.5 h-3.5" />
             Preview
@@ -596,7 +611,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                 setSlides((prev: Slide[]) => [...prev, data.slide])
                 setSelectedSlideId(data.slide.id)
                 setSaveStatus('saved')
-                toast.success('Scene added')
+                toast.success('Scene added', { duration: 2000 })
               } else {
                 setSaveStatus('error')
                 toast.error('Failed to add scene')
@@ -630,7 +645,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                 setSlides((prev: Slide[]) => [...prev, data.slide])
                 setSelectedSlideId(data.slide.id)
                 setSaveStatus('saved')
-                toast.success('CCTV scene added')
+                toast.success('CCTV scene added', { duration: 2000 })
               } else {
                 setSaveStatus('error')
                 toast.error('Failed to add CCTV scene')
@@ -742,7 +757,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
               <FileMenuItem icon={FileDown} label="Export as .c360" onClick={() => { setShowFileMenu(false); window.open(`/api/presentations/${presentation.id}/export-c360`, '_blank') }} />
               <FileMenuItem icon={Upload} label="Import .c360" onClick={() => { setShowFileMenu(false); importInputRef.current?.click() }} />
               <div className="h-px bg-border mx-2 my-1" />
-              <FileMenuItem icon={Eye} label="Preview" shortcut="" onClick={() => { setShowFileMenu(false); window.open(`/presentations/${presentation.id}/preview`, '_blank') }} />
+              <FileMenuItem icon={Eye} label="Preview" shortcut="" onClick={() => { setShowFileMenu(false); window.open(`/presentations/${presentation.id}/preview?slide=${selectedIndex}`, '_blank') }} />
               <FileMenuItem icon={BarChart2} label="View results" onClick={() => { setShowFileMenu(false); router.push(`/presentations/${presentation.id}/results`) }} />
             </div>
           )}
@@ -833,7 +848,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           </Button>
           <Button variant="outline" size="sm"
             className="gap-1.5 text-muted-foreground hover:text-foreground h-8 text-xs rounded-xl"
-            onClick={() => window.open(`/presentations/${presentation.id}/preview`, '_blank')}>
+            onClick={() => window.open(`/presentations/${presentation.id}/preview?slide=${selectedIndex}`, '_blank')}>
             <Maximize2 className="w-3.5 h-3.5" />
             Preview
           </Button>

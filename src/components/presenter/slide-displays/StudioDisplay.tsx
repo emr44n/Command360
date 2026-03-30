@@ -11,9 +11,10 @@ interface Props {
   session: Session
   channelRef?: React.RefObject<RealtimeChannel | null>
   allSlides?: Slide[]
+  mode?: 'preview' | 'present'
 }
 
-export function StudioDisplay({ slide, session, channelRef, allSlides }: Props) {
+export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: Props) {
   const content = slide.content as StudioContent
   const { canvas, layers, events, eventCategories, timelineEvents } = content
 
@@ -309,8 +310,8 @@ export function StudioDisplay({ slide, session, channelRef, allSlides }: Props) 
         </div>
       </div>
 
-      {/* Events panel toggle button */}
-      {!isFullscreen && (
+      {/* Events panel toggle button — hidden in presentation mode */}
+      {!isFullscreen && mode !== 'present' && (
         <button
           onClick={() => setShowEventsPanel(v => !v)}
           className="shrink-0 w-5 flex items-center justify-center bg-[#1e1f22] hover:bg-[#2b2d31] text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer border-l border-[#1e1f22]"
@@ -320,8 +321,8 @@ export function StudioDisplay({ slide, session, channelRef, allSlides }: Props) 
         </button>
       )}
 
-      {/* Events panel (right side) — hidden in fullscreen or when toggled off */}
-      <div className={`w-56 shrink-0 flex flex-col overflow-hidden transition-all duration-200 ${isFullscreen || !showEventsPanel ? 'w-0 opacity-0 overflow-hidden' : ''}`}>
+      {/* Events panel (right side) — hidden in fullscreen, presentation mode, or when toggled off */}
+      <div className={`w-56 shrink-0 flex flex-col overflow-hidden transition-all duration-200 ${isFullscreen || mode === 'present' || !showEventsPanel ? 'w-0 opacity-0 overflow-hidden' : ''}`}>
         <div className="mb-2 flex items-center justify-between">
           <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Events</h3>
           {triggeredEvents.size > 0 && (

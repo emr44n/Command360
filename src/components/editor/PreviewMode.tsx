@@ -47,19 +47,10 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
   const [showGrid, setShowGrid] = useState(false)
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [timerSeconds, setTimerSeconds] = useState(0)
-  const [timerRunning, setTimerRunning] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const slide = slides[current] || null
   const progress = slides.length > 0 ? ((current + 1) / slides.length) * 100 : 0
-
-  // Timer
-  useEffect(() => {
-    if (!timerRunning) return
-    const interval = setInterval(() => setTimerSeconds(s => s + 1), 1000)
-    return () => clearInterval(interval)
-  }, [timerRunning])
 
   // Fullscreen tracking
   useEffect(() => {
@@ -112,12 +103,6 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [goNext, goPrev, router, presentation.id, navigateTo, slides.length, showGrid, showShortcuts, toggleFullscreen])
-
-  function formatTime(secs: number) {
-    const m = Math.floor(secs / 60)
-    const s = secs % 60
-    return `${m}:${s.toString().padStart(2, '0')}`
-  }
 
   if (slides.length === 0) {
     return (
@@ -175,17 +160,6 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
           <span className="text-xs font-semibold text-muted-foreground tracking-tight">Command 360</span>
         </div>
         <div className="flex items-center gap-1">
-          {/* Timer */}
-          <div className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted text-xs font-mono text-muted-foreground font-semibold">
-            <Timer className="w-3 h-3" />
-            {formatTime(timerSeconds)}
-            <button
-              onClick={() => setTimerRunning(v => !v)}
-              className="p-0.5 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {timerRunning ? <Pause className="w-2.5 h-2.5" /> : <Play className="w-2.5 h-2.5" />}
-            </button>
-          </div>
           <div className="px-2.5 py-1 rounded-md bg-muted text-xs text-muted-foreground font-semibold">
             {current + 1} / {slides.length}
           </div>

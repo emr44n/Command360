@@ -11,14 +11,14 @@ import { OpenTextDisplay } from './slide-displays/OpenTextDisplay'
 import { StudioDisplay } from './slide-displays/StudioDisplay'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 
-interface Props { slide: Slide; session: Session; responseCount: number; channelRef?: React.RefObject<RealtimeChannel | null>; allSlides?: Slide[] }
+interface Props { slide: Slide; session: Session; responseCount: number; channelRef?: React.RefObject<RealtimeChannel | null>; allSlides?: Slide[]; mode?: 'preview' | 'present' }
 
-export function PresenterSlideDisplay({ slide, session, responseCount, channelRef, allSlides }: Props) {
+export function PresenterSlideDisplay({ slide, session, responseCount, channelRef, allSlides, mode }: Props) {
   // Studio slides get full-bleed canvas without title/badge wrapper
   if (slide.slide_type === 'studio') {
     return (
       <div className="w-full h-full">
-        <StudioDisplay slide={slide} session={session} channelRef={channelRef} allSlides={allSlides} />
+        <StudioDisplay slide={slide} session={session} channelRef={channelRef} allSlides={allSlides} mode={mode} />
       </div>
     )
   }

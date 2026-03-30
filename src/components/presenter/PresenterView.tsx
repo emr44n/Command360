@@ -37,6 +37,7 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
   const [slideKey, setSlideKey] = useState(0)
   const [votingPulse, setVotingPulse] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
+  const [urlCopied, setUrlCopied] = useState(false)
   const [closingQR, setClosingQR] = useState(false)
   const [closingSummary, setClosingSummary] = useState(false)
   const channelRef = useRef<ReturnType<ReturnType<typeof createClient>['channel']> | null>(null)
@@ -60,6 +61,13 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
     setTimeout(() => setCodeCopied(false), 2000)
     toast.success('Code copied!')
   }, [session.room_code])
+
+  const copyUrl = useCallback(async () => {
+    await navigator.clipboard.writeText(joinUrl)
+    setUrlCopied(true)
+    setTimeout(() => setUrlCopied(false), 2000)
+    toast.success('URL copied!')
+  }, [joinUrl])
 
   const handleCloseQR = useCallback(() => {
     setClosingQR(true)
@@ -264,7 +272,7 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
           <div key={slideKey} className={`w-full ${slideDirection === 'next' ? 'slide-next' : 'slide-prev'}`}
             style={{ maxWidth: 'min(64rem, calc((100vh - 12rem) * 16 / 9))' }}>
             {currentSlide ? (
-              <PresenterSlideDisplay slide={currentSlide} session={session} responseCount={responseCount} channelRef={channelRef} allSlides={slides} />
+              <PresenterSlideDisplay slide={currentSlide} session={session} responseCount={responseCount} channelRef={channelRef} allSlides={slides} mode="present" />
             ) : (
               <div className="text-center text-muted-foreground py-20 fade-in">
                 <Monitor className="w-16 h-16 mx-auto mb-4 opacity-30" />
@@ -293,7 +301,27 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
               <X className="w-4 h-4" />
             </button>
             <QRCodeDisplay roomCode={session.room_code} />
-            <p className="text-muted-foreground/60 text-xs text-center mt-2">
+            {/* Join URL below QR */}
+            <div className="w-full flex flex-col items-center gap-2 mt-1">
+              <button
+                onClick={copyUrl}
+                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted px-3 py-1.5 rounded-lg transition-colors font-mono"
+                title="Copy join URL"
+              >
+                <span className="truncate">{joinUrl.replace(/^https?:\/\//, '')}</span>
+                {urlCopied ? <Check className="w-3 h-3 text-emerald-500 shrink-0" /> : <Copy className="w-3 h-3 shrink-0 opacity-50" />}
+              </button>
+              <button
+                onClick={copyCode}
+                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted px-3 py-1.5 rounded-lg transition-colors"
+                title="Copy room code"
+              >
+                <span className="text-muted-foreground">Code:</span>
+                <span className="font-mono font-bold text-foreground tracking-wider">{formattedCode}</span>
+                {codeCopied ? <Check className="w-3 h-3 text-emerald-500 shrink-0" /> : <Copy className="w-3 h-3 shrink-0 opacity-50" />}
+              </button>
+            </div>
+            <p className="text-muted-foreground/60 text-xs text-center mt-1">
               {participantCount > 0 ? `${participantCount} participant${participantCount !== 1 ? 's' : ''} joined` : 'Waiting for participants'}
             </p>
           </div>
