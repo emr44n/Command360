@@ -685,7 +685,12 @@ export function StudioCanvas({
     <div
       ref={containerRef}
       className="relative flex h-full w-full items-center justify-center overflow-hidden"
-      style={{ background: '#1a1a1a', cursor: objectSelectionMode === 'waiting' ? 'crosshair' : undefined }}
+      style={{
+        background: '#141416',
+        backgroundImage: 'radial-gradient(circle, #1e1f22 1px, transparent 1px)',
+        backgroundSize: '16px 16px',
+        cursor: objectSelectionMode === 'waiting' ? 'crosshair' : undefined,
+      }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       onWheel={(e) => {

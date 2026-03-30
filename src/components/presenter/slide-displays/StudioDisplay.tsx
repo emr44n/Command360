@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import type { Slide, StudioContent, StudioLayer, StudioLayerState, StudioEvent } from '@/types/slide'
 import type { Session } from '@/types/session'
 import type { RealtimeChannel } from '@supabase/supabase-js'
-import { Zap, Vote, QrCode, Play, ChevronRight, RotateCcw, Maximize2, Minimize2 } from 'lucide-react'
+import { Zap, Vote, QrCode, Play, ChevronRight, ChevronDown, RotateCcw, Maximize2, Minimize2, Monitor, Check } from 'lucide-react'
 import { playEvent, type EventPlaybackController } from '@/lib/studio/event-playback'
 
 interface Props {
@@ -34,6 +34,7 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [isFullscreen])
+  const canvasRef = useRef<HTMLDivElement>(null)
   const eventControllerRef = useRef<EventPlaybackController | null>(null)
   const initialStatesRef = useRef<Record<string, StudioLayerState>>(buildInitialStates(layers))
 
@@ -232,19 +233,28 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
       {/* Main canvas area */}
       <div className={`flex flex-col min-w-0 ${isFullscreen ? 'flex-1' : 'flex-1'}`}>
         <div
+          ref={canvasRef}
           className={`w-full relative overflow-hidden flex-1 ${isFullscreen ? 'rounded-none' : 'rounded-lg'}`}
           style={{
             aspectRatio: isFullscreen ? undefined : '16 / 9',
             backgroundColor: canvas.backgroundColor,
           }}
         >
-          {/* Fullscreen toggle button */}
+          {/* Fullscreen toggle button (full preview mode) */}
           <button
             onClick={() => setIsFullscreen(v => !v)}
             className="absolute top-2 right-2 z-10 w-8 h-8 rounded-lg bg-black/50 hover:bg-black/70 text-white/60 hover:text-white flex items-center justify-center transition-all backdrop-blur-sm"
             title={isFullscreen ? 'Exit fullscreen (Esc)' : 'Fullscreen preview'}
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+          </button>
+          {/* Canvas-only fullscreen button (native Fullscreen API) */}
+          <button
+            onClick={() => canvasRef.current?.requestFullscreen()}
+            className="absolute bottom-2 right-2 z-10 w-7 h-7 rounded-md bg-black/40 hover:bg-black/60 text-white/50 hover:text-white flex items-center justify-center transition-all backdrop-blur-sm"
+            title="Canvas fullscreen"
+          >
+            <Monitor className="w-3.5 h-3.5" />
           </button>
           {layers.map((layer) => {
             const state = layerStates[layer.id]
@@ -322,6 +332,7 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
               onTrigger={() =>
                 evt.trigger === 'vote' ? handleTriggerVote(evt) : handleTriggerManual(evt)
               }
+              layers={layers}
             />
           ))}
 
@@ -359,6 +370,7 @@ export function StudioDisplay({ slide, session, channelRef }: Props) {
                     onTrigger={() =>
                       evt.trigger === 'vote' ? handleTriggerVote(evt) : handleTriggerManual(evt)
                     }
+                    layers={layers}
                   />
                 ))}
               </div>
@@ -483,39 +495,90 @@ function EventButton({
   animating,
   disabled,
   onTrigger,
+  layers,
 }: {
   event: StudioEvent
   triggered: boolean
   animating: boolean
   disabled: boolean
   onTrigger: () => void
+  layers?: StudioLayer[]
 }) {
+  const [detailsOpen, setDetailsOpen] = useState(false)
   const isVote = event.trigger === 'vote'
   const actionCount = event.actions.length
+  const hasActions = actionCount > 0
+
   return (
-    <button
-      onClick={onTrigger}
-      disabled={disabled}
-      className={`w-full flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all text-left mb-1 ${
-        animating
-          ? 'bg-amber-500/15 text-amber-600 border border-amber-500/40 animate-pulse'
-          : triggered
-            ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/30'
-            : 'bg-muted hover:bg-muted/80 text-foreground border border-border hover:border-primary/30'
-      } disabled:opacity-40 disabled:cursor-not-allowed`}
-      style={event.color && !triggered && !animating ? { borderColor: `${event.color}40`, color: event.color } : undefined}
-    >
-      {event.icon && <span>{event.icon}</span>}
-      {isVote ? <Vote className="w-3 h-3 shrink-0" /> : <Zap className="w-3 h-3 shrink-0" />}
-      <span className="truncate">{event.name}</span>
-      {actionCount > 0 && (
-        <span className="text-[9px] bg-foreground/10 px-1 py-0.5 rounded-full leading-none">{actionCount}</span>
+    <div className="mb-1">
+      <button
+        onClick={onTrigger}
+        disabled={disabled}
+        className={`w-full flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all text-left ${
+          animating
+            ? 'bg-amber-500/15 text-amber-600 border border-amber-500/40 animate-pulse'
+            : triggered
+              ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/30'
+              : 'bg-muted hover:bg-muted/80 text-foreground border border-border hover:border-primary/30'
+        } disabled:opacity-40 disabled:cursor-not-allowed`}
+        style={event.color && !triggered && !animating ? { borderColor: `${event.color}40`, color: event.color } : undefined}
+      >
+        {event.icon && <span>{event.icon}</span>}
+        {isVote ? <Vote className="w-3 h-3 shrink-0" /> : <Zap className="w-3 h-3 shrink-0" />}
+        <span className="truncate">{event.name}</span>
+        {hasActions && (
+          <span className="text-[9px] bg-foreground/10 px-1 py-0.5 rounded-full leading-none">{actionCount}</span>
+        )}
+        {animating ? (
+          <span className="w-2.5 h-2.5 ml-auto shrink-0 rounded-full bg-amber-500 animate-ping" />
+        ) : (
+          <Play className="w-2.5 h-2.5 ml-auto shrink-0 opacity-40" />
+        )}
+      </button>
+
+      {/* Action details — shown after event is triggered */}
+      {triggered && hasActions && (
+        <div className="ml-2 mt-0.5">
+          <button
+            onClick={() => setDetailsOpen(v => !v)}
+            className="flex items-center gap-0.5 text-[9px] text-muted-foreground hover:text-foreground transition-colors py-0.5"
+          >
+            {detailsOpen ? <ChevronDown className="w-2.5 h-2.5" /> : <ChevronRight className="w-2.5 h-2.5" />}
+            <span>{actionCount} action{actionCount !== 1 ? 's' : ''}</span>
+          </button>
+          {detailsOpen && (
+            <div className="ml-3 space-y-0.5 pb-1">
+              {event.actions.map((action) => {
+                const layerName = layers?.find(l => l.id === action.layerId)?.name || action.layerId.slice(0, 6)
+                return (
+                  <div key={action.id} className="flex items-start gap-1 text-[9px] text-muted-foreground leading-tight">
+                    <Check className="w-2.5 h-2.5 text-emerald-500 shrink-0 mt-px" />
+                    <span>
+                      <span className="font-medium text-foreground/70">{layerName}</span>
+                      {' '}
+                      <span className="opacity-70">{action.property}</span>
+                      {' '}
+                      <span className="opacity-50">{formatValue(action.fromValue)}</span>
+                      <span className="opacity-40">{' \u2192 '}</span>
+                      <span className="opacity-70">{formatValue(action.toValue)}</span>
+                      {action.duration > 0 && (
+                        <span className="opacity-40 ml-0.5">({action.duration}ms)</span>
+                      )}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
       )}
-      {animating ? (
-        <span className="w-2.5 h-2.5 ml-auto shrink-0 rounded-full bg-amber-500 animate-ping" />
-      ) : (
-        <Play className="w-2.5 h-2.5 ml-auto shrink-0 opacity-40" />
-      )}
-    </button>
+    </div>
   )
+}
+
+function formatValue(v: number | boolean | string | undefined): string {
+  if (v === undefined) return '?'
+  if (typeof v === 'boolean') return v ? 'on' : 'off'
+  if (typeof v === 'number') return Number.isInteger(v) ? String(v) : v.toFixed(1)
+  return String(v)
 }

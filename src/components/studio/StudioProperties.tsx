@@ -110,8 +110,8 @@ export function StudioProperties({
   return (
     <div className="flex h-full flex-col overflow-y-auto overflow-x-hidden bg-[#2b2d31] text-zinc-100">
       {/* Header */}
-      <div className="flex items-center gap-2 border-b border-zinc-800 px-2 py-1.5">
-        <span className="flex-1 truncate text-xs font-medium">{layer.name}</span>
+      <div className="flex items-center gap-2 border-b border-[#1e1f22] px-2 py-1.5">
+        <span className="flex-1 truncate text-[10px] font-medium">{layer.name}</span>
         <Button
           variant="ghost"
           size="sm"
@@ -132,23 +132,23 @@ export function StudioProperties({
         </Button>
       </div>
 
-      <div className="space-y-2 p-2">
+      <div className="space-y-1.5 p-1.5">
         {/* Name */}
         <div>
-          <Label className="mb-1 text-[10px] uppercase tracking-wider text-zinc-400">
+          <Label className="mb-1 text-[9px] text-zinc-500 font-medium">
             Name
           </Label>
           <Input
             value={layer.name}
             onChange={(e) => onUpdate({ name: e.target.value })}
-            className="h-6 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100"
+            className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
           />
         </div>
 
         {/* Position */}
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <Label className="mb-1 text-[10px] uppercase tracking-wider text-zinc-400">
+            <Label className="mb-1 text-[9px] text-zinc-500 font-medium">
               X %
             </Label>
             <Input
@@ -158,11 +158,11 @@ export function StudioProperties({
               max={100}
               step={0.1}
               onChange={(e) => onUpdate({ x: parseFloat(e.target.value) || 0 })}
-              className="h-6 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100"
+              className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
             />
           </div>
           <div>
-            <Label className="mb-1 text-[10px] uppercase tracking-wider text-zinc-400">
+            <Label className="mb-1 text-[9px] text-zinc-500 font-medium">
               Y %
             </Label>
             <Input
@@ -172,7 +172,7 @@ export function StudioProperties({
               max={100}
               step={0.1}
               onChange={(e) => onUpdate({ y: parseFloat(e.target.value) || 0 })}
-              className="h-6 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100"
+              className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
             />
           </div>
         </div>
@@ -180,7 +180,7 @@ export function StudioProperties({
         {/* Size */}
         <div>
           <div className="flex items-center justify-between mb-1">
-            <Label className="text-[10px] uppercase tracking-wider text-zinc-400">
+            <Label className="text-[9px] text-zinc-500 font-medium">
               Size
             </Label>
             <button
@@ -219,7 +219,7 @@ export function StudioProperties({
                     onUpdate({ width: newW })
                   }
                 }}
-                className="h-6 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100"
+                className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
               />
             </div>
             <div>
@@ -241,7 +241,7 @@ export function StudioProperties({
                     onUpdate({ height: newH })
                   }
                 }}
-                className="h-6 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100"
+                className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
               />
             </div>
           </div>
@@ -249,7 +249,7 @@ export function StudioProperties({
 
         {/* Rotation */}
         <div>
-          <Label className="mb-1 text-[10px] uppercase tracking-wider text-zinc-400">
+          <Label className="mb-1 text-[9px] text-zinc-500 font-medium">
             Rotation ({Math.round(layer.rotation)}&deg;)
           </Label>
           <Slider
@@ -264,7 +264,7 @@ export function StudioProperties({
 
         {/* Opacity */}
         <div>
-          <Label className="mb-1 text-[10px] uppercase tracking-wider text-zinc-400">
+          <Label className="mb-1 text-[9px] text-zinc-500 font-medium">
             Opacity ({Math.round(layer.opacity * 100)}%)
           </Label>
           <Slider
@@ -279,7 +279,7 @@ export function StudioProperties({
 
         {/* Blend Mode */}
         <div>
-          <Label className="mb-1 text-[10px] uppercase tracking-wider text-zinc-400">
+          <Label className="mb-1 text-[9px] text-zinc-500 font-medium">
             Blend Mode
           </Label>
           <Select
@@ -288,7 +288,7 @@ export function StudioProperties({
               onUpdate({ blendMode: v as StudioLayer['blendMode'] })
             }
           >
-            <SelectTrigger className="h-6 w-full border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100">
+            <SelectTrigger className="h-6 w-full border-[#3f4147] bg-[#1e1f22] text-[10px] text-zinc-100">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -334,8 +334,8 @@ export function StudioProperties({
 
         {/* Text-specific properties */}
         {layer.type === 'text' && (
-          <div className="space-y-2 border-t border-zinc-800 pt-2">
-            <Label className="text-[10px] uppercase tracking-wider text-zinc-400">
+          <div className="space-y-2 border-t border-[#1e1f22] pt-2">
+            <Label className="text-[9px] text-zinc-500 font-medium">
               Text Properties
             </Label>
             <div>
@@ -343,7 +343,7 @@ export function StudioProperties({
               <Input
                 value={layer.text ?? ''}
                 onChange={(e) => onUpdate({ text: e.target.value })}
-                className="h-6 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100"
+                className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
               />
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -357,7 +357,7 @@ export function StudioProperties({
                   onChange={(e) =>
                     onUpdate({ fontSize: parseInt(e.target.value) || 24 })
                   }
-                  className="h-6 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100"
+                  className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
                 />
               </div>
               <div>
@@ -366,7 +366,7 @@ export function StudioProperties({
                   value={layer.fontWeight ?? 'normal'}
                   onValueChange={(v) => onUpdate({ fontWeight: v })}
                 >
-                  <SelectTrigger className="h-6 w-full border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100">
+                  <SelectTrigger className="h-6 w-full border-[#3f4147] bg-[#1e1f22] text-[10px] text-zinc-100">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -388,12 +388,12 @@ export function StudioProperties({
                   type="color"
                   value={layer.color ?? '#ffffff'}
                   onChange={(e) => onUpdate({ color: e.target.value })}
-                  className="h-6 w-8 cursor-pointer rounded border border-zinc-700 bg-zinc-800"
+                  className="h-6 w-8 cursor-pointer rounded border border-[#3f4147] bg-[#1e1f22]"
                 />
                 <Input
                   value={layer.color ?? '#ffffff'}
                   onChange={(e) => onUpdate({ color: e.target.value })}
-                  className="h-6 flex-1 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100"
+                  className="h-6 flex-1 border-[#3f4147] bg-[#1e1f22] text-[10px] text-zinc-100"
                 />
               </div>
             </div>
@@ -402,9 +402,9 @@ export function StudioProperties({
 
         {/* ── Clip Info Section ── */}
         {selectedClip && onUpdateClip && (
-          <div className="border-t border-zinc-800 pt-3">
+          <div className="border-t border-[#1e1f22] pt-3">
             <button
-              className="flex w-full items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-400 hover:text-zinc-200 transition-colors"
+              className="flex w-full items-center gap-1 text-[9px] text-zinc-500 font-medium hover:text-zinc-200 transition-colors"
               onClick={() => setClipInfoOpen(!clipInfoOpen)}
             >
               {clipInfoOpen ? (
@@ -412,7 +412,7 @@ export function StudioProperties({
               ) : (
                 <ChevronRightIcon className="size-3" />
               )}
-              Clip Info
+              Clip Info ({(selectedClip.duration / 1000).toFixed(1)}s)
             </button>
             {clipInfoOpen && (
               <div className="mt-2 space-y-2">
@@ -427,7 +427,7 @@ export function StudioProperties({
                       onChange={(e) =>
                         onUpdateClip({ startTime: parseInt(e.target.value) || 0 })
                       }
-                      className="h-6 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100"
+                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
                     />
                   </div>
                   <div>
@@ -440,7 +440,7 @@ export function StudioProperties({
                       onChange={(e) =>
                         onUpdateClip({ duration: parseInt(e.target.value) || 1000 })
                       }
-                      className="h-6 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100"
+                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
                     />
                   </div>
                 </div>
@@ -455,7 +455,7 @@ export function StudioProperties({
                       onChange={(e) =>
                         onUpdateClip({ trimStart: parseInt(e.target.value) || 0 })
                       }
-                      className="h-6 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100"
+                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
                     />
                   </div>
                   <div>
@@ -468,7 +468,7 @@ export function StudioProperties({
                       onChange={(e) =>
                         onUpdateClip({ trimEnd: parseInt(e.target.value) || 0 })
                       }
-                      className="h-6 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100"
+                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
                     />
                   </div>
                 </div>
@@ -479,9 +479,9 @@ export function StudioProperties({
 
         {/* ── Keyframes Section ── */}
         {selectedClip && onAddKeyframe && onDeleteKeyframe && (
-          <div className="border-t border-zinc-800 pt-3">
+          <div className="border-t border-[#1e1f22] pt-3">
             <button
-              className="flex w-full items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-400 hover:text-zinc-200 transition-colors"
+              className="flex w-full items-center gap-1 text-[9px] text-zinc-500 font-medium hover:text-zinc-200 transition-colors"
               onClick={() => setKeyframesOpen(!keyframesOpen)}
             >
               {keyframesOpen ? (
@@ -530,7 +530,7 @@ export function StudioProperties({
                     value={newKfProperty}
                     onValueChange={setNewKfProperty}
                   >
-                    <SelectTrigger className="h-6 w-24 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100">
+                    <SelectTrigger className="h-6 w-24 border-[#3f4147] bg-[#1e1f22] text-[10px] text-zinc-100">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -570,9 +570,9 @@ export function StudioProperties({
 
         {/* ── Fade Controls Section ── */}
         {selectedClip && onAddKeyframe && (
-          <div className="border-t border-zinc-800 pt-3">
+          <div className="border-t border-[#1e1f22] pt-3">
             <button
-              className="flex w-full items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-400 hover:text-zinc-200 transition-colors"
+              className="flex w-full items-center gap-1 text-[9px] text-zinc-500 font-medium hover:text-zinc-200 transition-colors"
               onClick={() => setFadeOpen(!fadeOpen)}
             >
               {fadeOpen ? (
@@ -595,7 +595,7 @@ export function StudioProperties({
                       min={0}
                       step={100}
                       onChange={(e) => setFadeInDuration(parseInt(e.target.value) || 0)}
-                      className="h-6 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100"
+                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
                     />
                   </div>
                   <Button
@@ -618,7 +618,7 @@ export function StudioProperties({
                       min={0}
                       step={100}
                       onChange={(e) => setFadeOutDuration(parseInt(e.target.value) || 0)}
-                      className="h-6 border-zinc-700 bg-zinc-800 text-[10px] text-zinc-100"
+                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
                     />
                   </div>
                   <Button
@@ -636,11 +636,11 @@ export function StudioProperties({
         )}
 
         {/* Delete / Duplicate buttons */}
-        <div className="grid grid-cols-2 gap-2 border-t border-zinc-800 pt-3">
+        <div className="grid grid-cols-2 gap-2 border-t border-[#1e1f22] pt-3">
           <Button
             variant="outline"
             size="sm"
-            className="border-zinc-700 bg-zinc-800 text-xs text-zinc-300 hover:bg-zinc-700"
+            className="border-[#3f4147] bg-[#1e1f22] text-xs text-zinc-300 hover:bg-zinc-700"
             onClick={() => onDuplicate(layer.id)}
           >
             <CopyIcon className="mr-1 size-3" /> Duplicate

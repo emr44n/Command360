@@ -351,9 +351,9 @@ export function StudioEditor({
   const [showTimeline, setShowTimeline] = useState(true)
 
   // Resizable panel widths
-  const [leftPanelWidth, setLeftPanelWidth] = useState(280)
-  const [propertiesWidth, setPropertiesWidth] = useState(280)
-  const [timelineHeight, setTimelineHeight] = useState(250)
+  const [leftPanelWidth, setLeftPanelWidth] = useState(220)
+  const [propertiesWidth, setPropertiesWidth] = useState(240)
+  const [timelineHeight, setTimelineHeight] = useState(200)
 
   const leftPanelDragging = useRef(false)
   const propertiesDragging = useRef(false)
@@ -511,6 +511,12 @@ export function StudioEditor({
                     onAddLayer={handleAddLayer}
                     onSelectLayer={(id) => setSelectedLayerId(id)}
                     onDeleteLayer={handleDeleteLayer}
+                    onReorderLayers={(fromIndex, toIndex) => {
+                      const reordered = [...layers]
+                      const [moved] = reordered.splice(fromIndex, 1)
+                      reordered.splice(toIndex, 0, moved)
+                      updateContent({ layers: reordered })
+                    }}
                     events={events}
                     eventCategories={eventCategories}
                     onUpdateEvents={handleUpdateEvents}
@@ -524,6 +530,12 @@ export function StudioEditor({
                     onAddLayer={handleAddLayer}
                     onSelectLayer={(id) => setSelectedLayerId(id)}
                     onDeleteLayer={handleDeleteLayer}
+                    onReorderLayers={(fromIndex, toIndex) => {
+                      const reordered = [...layers]
+                      const [moved] = reordered.splice(fromIndex, 1)
+                      reordered.splice(toIndex, 0, moved)
+                      updateContent({ layers: reordered })
+                    }}
                     events={events}
                     eventCategories={eventCategories}
                     onUpdateEvents={handleUpdateEvents}

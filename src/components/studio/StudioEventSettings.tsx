@@ -234,7 +234,7 @@ export function StudioEventSettings({
             <Input
               value={event.name}
               onChange={(e) => handleNameChange(e.target.value)}
-              className="h-6 text-xs border-zinc-700 bg-zinc-800/50 text-zinc-100"
+              className="h-6 text-xs border-[#3f4147] bg-[#1e1f22]/50 text-zinc-100"
             />
           </div>
           <div className="flex gap-2">
@@ -243,7 +243,7 @@ export function StudioEventSettings({
               <select
                 value={event.categoryId || ''}
                 onChange={(e) => handleCategoryChange(e.target.value)}
-                className="w-full h-6 text-xs rounded-md border border-zinc-700 bg-zinc-800/50 text-zinc-100 px-2"
+                className="w-full h-6 text-xs rounded-md border border-[#3f4147] bg-[#1e1f22]/50 text-zinc-100 px-2"
               >
                 <option value="">Uncategorized</option>
                 {categories.map((cat) => (
@@ -257,7 +257,7 @@ export function StudioEventSettings({
                 type="color"
                 value={event.color || '#6366f1'}
                 onChange={(e) => handleColorChange(e.target.value)}
-                className="w-full h-6 rounded cursor-pointer border border-zinc-700 bg-transparent p-0.5"
+                className="w-full h-6 rounded cursor-pointer border border-[#3f4147] bg-transparent p-0.5"
               />
             </div>
           </div>
@@ -306,7 +306,7 @@ export function StudioEventSettings({
                 <button
                   key={preset.label}
                   onClick={() => handleApplyPreset(preset)}
-                  className="h-6 rounded-md bg-zinc-800 hover:bg-zinc-700 text-[10px] text-zinc-300 font-medium transition-colors cursor-pointer"
+                  className="h-6 rounded-md bg-[#1e1f22] hover:bg-zinc-700 text-[10px] text-zinc-300 font-medium transition-colors cursor-pointer"
                 >
                   {preset.label}
                 </button>
@@ -319,14 +319,14 @@ export function StudioEventSettings({
         {objectSelectionMode === 'locked' && objectSelectionTargetLayerId && (
           <section className="space-y-2">
             <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">Add Custom Action</Label>
-            <div className="space-y-1.5 p-2 rounded-lg bg-zinc-800/50 border border-zinc-700/50">
+            <div className="space-y-1.5 p-2 rounded-lg bg-[#1e1f22]/50 border border-[#3f4147]/50">
               <div className="grid grid-cols-2 gap-1.5">
                 <div className="space-y-0.5">
                   <span className="text-[9px] text-zinc-500">Property</span>
                   <select
                     value={newProperty}
                     onChange={(e) => setNewProperty(e.target.value)}
-                    className="w-full h-5 text-[10px] rounded border border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1"
+                    className="w-full h-5 text-[10px] rounded border border-[#3f4147] bg-[#1e1f22] text-zinc-200 px-1"
                   >
                     {PROPERTY_OPTIONS.map((p) => (
                       <option key={p.value} value={p.value}>{p.label}</option>
@@ -338,7 +338,7 @@ export function StudioEventSettings({
                   <select
                     value={newEasing}
                     onChange={(e) => setNewEasing(e.target.value)}
-                    className="w-full h-5 text-[10px] rounded border border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1"
+                    className="w-full h-5 text-[10px] rounded border border-[#3f4147] bg-[#1e1f22] text-zinc-200 px-1"
                   >
                     {EASING_OPTIONS.map((e) => (
                       <option key={e.value} value={e.value}>{e.label}</option>
@@ -353,7 +353,7 @@ export function StudioEventSettings({
                     value={newFromValue}
                     onChange={(e) => setNewFromValue(e.target.value)}
                     placeholder="auto"
-                    className="h-5 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
+                    className="h-5 text-[10px] border-[#3f4147] bg-[#1e1f22] text-zinc-200 px-1.5"
                   />
                 </div>
                 <div className="space-y-0.5">
@@ -361,7 +361,7 @@ export function StudioEventSettings({
                   <Input
                     value={newToValue}
                     onChange={(e) => setNewToValue(e.target.value)}
-                    className="h-5 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
+                    className="h-5 text-[10px] border-[#3f4147] bg-[#1e1f22] text-zinc-200 px-1.5"
                   />
                 </div>
               </div>
@@ -372,7 +372,7 @@ export function StudioEventSettings({
                     type="number"
                     value={newDuration}
                     onChange={(e) => setNewDuration(parseInt(e.target.value) || 0)}
-                    className="h-5 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
+                    className="h-5 text-[10px] border-[#3f4147] bg-[#1e1f22] text-zinc-200 px-1.5"
                   />
                 </div>
                 <div className="space-y-0.5">
@@ -381,7 +381,7 @@ export function StudioEventSettings({
                     type="number"
                     value={newDelay}
                     onChange={(e) => setNewDelay(parseInt(e.target.value) || 0)}
-                    className="h-5 text-[10px] border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1.5"
+                    className="h-5 text-[10px] border-[#3f4147] bg-[#1e1f22] text-zinc-200 px-1.5"
                   />
                 </div>
                 <div className="space-y-0.5">
@@ -389,7 +389,7 @@ export function StudioEventSettings({
                   <select
                     value={newEndBehaviour}
                     onChange={(e) => setNewEndBehaviour(e.target.value)}
-                    className="w-full h-5 text-[10px] rounded border border-zinc-700 bg-[#1e1f22] text-zinc-200 px-1"
+                    className="w-full h-5 text-[10px] rounded border border-[#3f4147] bg-[#1e1f22] text-zinc-200 px-1"
                   >
                     {END_BEHAVIOUR_OPTIONS.map((e) => (
                       <option key={e.value} value={e.value}>{e.label}</option>
@@ -401,7 +401,7 @@ export function StudioEventSettings({
                 variant="outline"
                 size="sm"
                 onClick={handleAddAction}
-                className="w-full h-5 text-[10px] border-zinc-600 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 mt-1"
+                className="w-full h-5 text-[10px] border-zinc-600 bg-[#1e1f22] text-zinc-300 hover:bg-zinc-700 mt-1"
               >
                 <Plus className="size-3 mr-1" /> Add Action
               </Button>
@@ -419,7 +419,7 @@ export function StudioEventSettings({
               {event.actions.map((action) => (
                 <div
                   key={action.id}
-                  className="flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-zinc-800/50 border border-zinc-700/50 text-[10px] group"
+                  className="flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-[#1e1f22]/50 border border-[#3f4147]/50 text-[10px] group"
                 >
                   {layerIcon(getLayerType(action.layerId))}
                   <span className="text-zinc-300 truncate">{getLayerName(action.layerId)}</span>
@@ -450,7 +450,7 @@ export function StudioEventSettings({
               className={`flex-1 h-6 rounded-md text-[10px] font-medium transition-colors cursor-pointer ${
                 event.trigger === 'manual'
                   ? 'bg-zinc-700 text-white'
-                  : 'bg-zinc-800/50 text-zinc-500 hover:text-zinc-300'
+                  : 'bg-[#1e1f22]/50 text-zinc-500 hover:text-zinc-300'
               }`}
             >
               Manual
@@ -460,7 +460,7 @@ export function StudioEventSettings({
               className={`flex-1 h-6 rounded-md text-[10px] font-medium transition-colors cursor-pointer ${
                 event.trigger === 'vote'
                   ? 'bg-zinc-700 text-white'
-                  : 'bg-zinc-800/50 text-zinc-500 hover:text-zinc-300'
+                  : 'bg-[#1e1f22]/50 text-zinc-500 hover:text-zinc-300'
               }`}
             >
               Vote
@@ -472,7 +472,7 @@ export function StudioEventSettings({
                 value={event.voteQuestion || ''}
                 onChange={(e) => onUpdateEvent({ ...event, voteQuestion: e.target.value })}
                 placeholder="Vote question..."
-                className="h-6 text-xs border-zinc-700 bg-zinc-800/50 text-zinc-100"
+                className="h-6 text-xs border-[#3f4147] bg-[#1e1f22]/50 text-zinc-100"
               />
             </div>
           )}
