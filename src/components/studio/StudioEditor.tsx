@@ -575,7 +575,7 @@ export function StudioEditor({
                   ? `${item.activeClass} shadow-lg`
                   : 'text-zinc-500 hover:text-zinc-200 hover:bg-[#35363c]'
               }`}
-              title={item.label}
+              data-tooltip={item.label}
             >
               <item.icon className="w-4 h-4" />
               <span className="text-[7px] leading-none font-medium">{item.label}</span>
@@ -594,7 +594,7 @@ export function StudioEditor({
           className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
             showProperties ? 'bg-[#35363c] text-zinc-300' : 'text-zinc-600 hover:text-zinc-400 hover:bg-[#35363c]'
           }`}
-          title="Properties"
+          data-tooltip="Properties"
         >
           <Settings2 className="w-4 h-4" />
           <span className="text-[7px] leading-none font-medium">Props</span>
@@ -604,7 +604,7 @@ export function StudioEditor({
           className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
             showTimeline ? 'bg-[#35363c] text-zinc-300' : 'text-zinc-600 hover:text-zinc-400 hover:bg-[#35363c]'
           }`}
-          title="Timeline"
+          data-tooltip="Timeline"
         >
           <Film className="w-4 h-4" />
           <span className="text-[7px] leading-none font-medium">Time</span>
@@ -1116,7 +1116,7 @@ function SlidesPanel({
                   {onDuplicateSlide && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onDuplicateSlide(slide.id) }}
-                      className="w-5 h-5 rounded bg-[#383a40]/90 hover:bg-indigo-500/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors"
+                      className="w-5 h-5 rounded-md bg-[#383a40]/90 hover:bg-indigo-500/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
                       title="Duplicate scene"
                     >
                       <Copy className="w-2.5 h-2.5" />
@@ -1125,7 +1125,7 @@ function SlidesPanel({
                   {onDeleteSlide && slides.length > 1 && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onDeleteSlide(slide.id) }}
-                      className="w-5 h-5 rounded bg-[#383a40]/90 hover:bg-red-500/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors"
+                      className="w-5 h-5 rounded-md bg-[#383a40]/90 hover:bg-red-500/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
                       title="Delete scene"
                     >
                       <Trash2Icon className="w-2.5 h-2.5" />

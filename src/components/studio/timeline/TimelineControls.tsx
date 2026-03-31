@@ -45,7 +45,7 @@ export function TimelineControls({
         {isPlaying ? (
           <button
             onClick={onPause}
-            className="flex items-center justify-center w-6 h-6 rounded bg-[#1e1f22] hover:bg-zinc-700 text-white transition-colors"
+            className="flex items-center justify-center w-6 h-6 rounded-md bg-[#1e1f22] hover:bg-zinc-700 text-white transition-colors cursor-pointer"
             title="Pause"
           >
             <Pause className="w-3.5 h-3.5" />
@@ -53,7 +53,7 @@ export function TimelineControls({
         ) : (
           <button
             onClick={onPlay}
-            className="flex items-center justify-center w-6 h-6 rounded bg-zinc-700 hover:bg-zinc-600 text-white transition-colors"
+            className="flex items-center justify-center w-6 h-6 rounded-md bg-zinc-700 hover:bg-zinc-600 text-white transition-colors cursor-pointer"
             title="Play"
           >
             <Play className="w-3.5 h-3.5 ml-0.5" />
@@ -61,7 +61,7 @@ export function TimelineControls({
         )}
         <button
           onClick={onStop}
-          className="flex items-center justify-center w-6 h-6 rounded bg-[#1e1f22] hover:bg-zinc-700 text-white transition-colors"
+          className="flex items-center justify-center w-6 h-6 rounded-md bg-[#1e1f22] hover:bg-zinc-700 text-white transition-colors cursor-pointer"
           title="Stop"
         >
           <Square className="w-3 h-3" />
@@ -82,7 +82,7 @@ export function TimelineControls({
       <div className="flex items-center gap-2">
         <button
           onClick={() => onZoomChange(Math.max(MIN_ZOOM, zoomLevel - 25))}
-          className="flex items-center justify-center w-5 h-5 rounded text-zinc-400 hover:text-zinc-200 hover:bg-[#1e1f22] transition-colors"
+          className="flex items-center justify-center w-5 h-5 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-[#1e1f22] transition-colors cursor-pointer"
           title="Zoom out"
         >
           <ZoomOut className="w-3.5 h-3.5" />
@@ -97,7 +97,7 @@ export function TimelineControls({
         />
         <button
           onClick={() => onZoomChange(Math.min(MAX_ZOOM, zoomLevel + 25))}
-          className="flex items-center justify-center w-5 h-5 rounded text-zinc-400 hover:text-zinc-200 hover:bg-[#1e1f22] transition-colors"
+          className="flex items-center justify-center w-5 h-5 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-[#1e1f22] transition-colors cursor-pointer"
           title="Zoom in"
         >
           <ZoomIn className="w-3.5 h-3.5" />

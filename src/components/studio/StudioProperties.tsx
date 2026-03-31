@@ -141,7 +141,7 @@ export function StudioProperties({
           <Input
             value={layer.name}
             onChange={(e) => onUpdate({ name: e.target.value })}
-            className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
+            className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5 rounded-md focus:ring-1 focus:ring-red-500/30"
           />
         </div>
 
@@ -158,7 +158,7 @@ export function StudioProperties({
               max={100}
               step={0.1}
               onChange={(e) => onUpdate({ x: parseFloat(e.target.value) || 0 })}
-              className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
+              className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5 rounded-md focus:ring-1 focus:ring-red-500/30"
             />
           </div>
           <div>
@@ -172,7 +172,7 @@ export function StudioProperties({
               max={100}
               step={0.1}
               onChange={(e) => onUpdate({ y: parseFloat(e.target.value) || 0 })}
-              className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
+              className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5 rounded-md focus:ring-1 focus:ring-red-500/30"
             />
           </div>
         </div>
@@ -201,7 +201,7 @@ export function StudioProperties({
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <Label className="mb-1 text-[10px] text-zinc-400">
+              <Label className="mb-1 text-[9px] text-zinc-500 font-medium">
                 Width %
               </Label>
               <Input
@@ -219,11 +219,11 @@ export function StudioProperties({
                     onUpdate({ width: newW })
                   }
                 }}
-                className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
+                className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5 rounded-md focus:ring-1 focus:ring-red-500/30"
               />
             </div>
             <div>
-              <Label className="mb-1 text-[10px] text-zinc-400">
+              <Label className="mb-1 text-[9px] text-zinc-500 font-medium">
                 Height %
               </Label>
               <Input
@@ -241,7 +241,7 @@ export function StudioProperties({
                     onUpdate({ height: newH })
                   }
                 }}
-                className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
+                className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5 rounded-md focus:ring-1 focus:ring-red-500/30"
               />
             </div>
           </div>
@@ -339,16 +339,16 @@ export function StudioProperties({
               Text Properties
             </Label>
             <div>
-              <Label className="mb-1 text-[10px] text-zinc-400">Content</Label>
+              <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Content</Label>
               <Input
                 value={layer.text ?? ''}
                 onChange={(e) => onUpdate({ text: e.target.value })}
-                className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
+                className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5 rounded-md focus:ring-1 focus:ring-red-500/30"
               />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label className="mb-1 text-[10px] text-zinc-400">Font Size</Label>
+                <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Font Size</Label>
                 <Input
                   type="number"
                   value={layer.fontSize ?? 24}
@@ -357,11 +357,11 @@ export function StudioProperties({
                   onChange={(e) =>
                     onUpdate({ fontSize: parseInt(e.target.value) || 24 })
                   }
-                  className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
+                  className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5 rounded-md focus:ring-1 focus:ring-red-500/30"
                 />
               </div>
               <div>
-                <Label className="mb-1 text-[10px] text-zinc-400">Weight</Label>
+                <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Weight</Label>
                 <Select
                   value={layer.fontWeight ?? 'normal'}
                   onValueChange={(v) => onUpdate({ fontWeight: v })}
@@ -382,7 +382,7 @@ export function StudioProperties({
               </div>
             </div>
             <div>
-              <Label className="mb-1 text-[10px] text-zinc-400">Color</Label>
+              <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Color</Label>
               <div className="flex items-center gap-2">
                 <input
                   type="color"
@@ -418,7 +418,7 @@ export function StudioProperties({
               <div className="mt-2 space-y-2">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="mb-1 text-[10px] text-zinc-400">Start (ms)</Label>
+                    <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Start (ms)</Label>
                     <Input
                       type="number"
                       value={selectedClip.startTime}
@@ -427,11 +427,11 @@ export function StudioProperties({
                       onChange={(e) =>
                         onUpdateClip({ startTime: parseInt(e.target.value) || 0 })
                       }
-                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
+                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5 rounded-md focus:ring-1 focus:ring-red-500/30"
                     />
                   </div>
                   <div>
-                    <Label className="mb-1 text-[10px] text-zinc-400">Duration (ms)</Label>
+                    <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Duration (ms)</Label>
                     <Input
                       type="number"
                       value={selectedClip.duration}
@@ -440,13 +440,13 @@ export function StudioProperties({
                       onChange={(e) =>
                         onUpdateClip({ duration: parseInt(e.target.value) || 1000 })
                       }
-                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
+                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5 rounded-md focus:ring-1 focus:ring-red-500/30"
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="mb-1 text-[10px] text-zinc-400">Trim Start (ms)</Label>
+                    <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Trim Start (ms)</Label>
                     <Input
                       type="number"
                       value={selectedClip.trimStart}
@@ -455,11 +455,11 @@ export function StudioProperties({
                       onChange={(e) =>
                         onUpdateClip({ trimStart: parseInt(e.target.value) || 0 })
                       }
-                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
+                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5 rounded-md focus:ring-1 focus:ring-red-500/30"
                     />
                   </div>
                   <div>
-                    <Label className="mb-1 text-[10px] text-zinc-400">Trim End (ms)</Label>
+                    <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Trim End (ms)</Label>
                     <Input
                       type="number"
                       value={selectedClip.trimEnd}
@@ -468,7 +468,7 @@ export function StudioProperties({
                       onChange={(e) =>
                         onUpdateClip({ trimEnd: parseInt(e.target.value) || 0 })
                       }
-                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
+                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5 rounded-md focus:ring-1 focus:ring-red-500/30"
                     />
                   </div>
                 </div>
@@ -586,7 +586,7 @@ export function StudioProperties({
               <div className="mt-2 space-y-2">
                 <div className="flex items-end gap-2">
                   <div className="flex-1">
-                    <Label className="mb-1 text-[10px] text-zinc-400">
+                    <Label className="mb-1 text-[9px] text-zinc-500 font-medium">
                       Fade In (ms)
                     </Label>
                     <Input
@@ -595,7 +595,7 @@ export function StudioProperties({
                       min={0}
                       step={100}
                       onChange={(e) => setFadeInDuration(parseInt(e.target.value) || 0)}
-                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
+                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5 rounded-md focus:ring-1 focus:ring-red-500/30"
                     />
                   </div>
                   <Button
@@ -609,7 +609,7 @@ export function StudioProperties({
                 </div>
                 <div className="flex items-end gap-2">
                   <div className="flex-1">
-                    <Label className="mb-1 text-[10px] text-zinc-400">
+                    <Label className="mb-1 text-[9px] text-zinc-500 font-medium">
                       Fade Out (ms)
                     </Label>
                     <Input
@@ -618,7 +618,7 @@ export function StudioProperties({
                       min={0}
                       step={100}
                       onChange={(e) => setFadeOutDuration(parseInt(e.target.value) || 0)}
-                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5"
+                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-zinc-200 px-1.5 rounded-md focus:ring-1 focus:ring-red-500/30"
                     />
                   </div>
                   <Button

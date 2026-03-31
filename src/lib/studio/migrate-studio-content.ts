@@ -78,7 +78,7 @@ export function migrateStudioContent(content: StudioContent): StudioContent {
         muted: false,
         hidden: false,
         locked: layer.locked,
-        color: '#6366f1',
+        color: '#dc2626',
         clips: [clip],
       }
     })
@@ -96,6 +96,15 @@ export function migrateStudioContent(content: StudioContent): StudioContent {
       result.tracks,
       result.timelineEvents ?? []
     )
+  }
+
+  // Migrate legacy purple track colors to red
+  if (result.tracks) {
+    for (const track of result.tracks) {
+      if (track.color === '#6366f1') {
+        track.color = '#dc2626'
+      }
+    }
   }
 
   // Ensure events array always exists

@@ -701,14 +701,25 @@ export function StudioCanvas({
       {/* Zoom controls — bottom-right of canvas area */}
       {interactive && (
         <div className="absolute bottom-2 right-2 z-20 flex items-center gap-1 bg-[#1e1f22]/90 backdrop-blur-sm rounded-lg px-1.5 py-1 border border-[#3f4147]/50">
-          <button onClick={() => setCanvasZoom(prev => Math.max(25, prev - 10))} className="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-white rounded transition-colors text-sm font-bold">−</button>
+          <button onClick={() => setCanvasZoom(prev => Math.max(25, prev - 10))} className="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-white rounded-md transition-colors text-sm font-bold cursor-pointer">−</button>
           <span className="text-[10px] text-zinc-400 font-mono w-10 text-center">{canvasZoom}%</span>
-          <button onClick={() => setCanvasZoom(prev => Math.min(200, prev + 10))} className="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-white rounded transition-colors text-sm font-bold">+</button>
-          <button onClick={() => setCanvasZoom(100)} className="ml-0.5 px-1.5 h-6 flex items-center justify-center text-zinc-500 hover:text-white rounded text-[9px] transition-colors">Fit</button>
+          <button onClick={() => setCanvasZoom(prev => Math.min(200, prev + 10))} className="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-white rounded-md transition-colors text-sm font-bold cursor-pointer">+</button>
+          <button onClick={() => setCanvasZoom(100)} className="ml-0.5 px-1.5 h-6 flex items-center justify-center text-zinc-500 hover:text-white rounded-md text-[9px] transition-colors cursor-pointer">Fit</button>
         </div>
       )}
       {/* Konva stage for non-video layers */}
-      <div className="relative" style={{ width: stageSize.width, height: stageSize.height, boxShadow: '0 2px 20px rgba(0,0,0,0.5)', transform: `scale(${zoomScale})`, transformOrigin: 'center center' }}>
+      <div className="relative" style={{
+        width: stageSize.width,
+        height: stageSize.height,
+        boxShadow: '0 2px 20px rgba(0,0,0,0.5)',
+        transform: `scale(${zoomScale})`,
+        transformOrigin: 'center center',
+        ...(canvasConfig.backgroundColor === '#ffffff' ? {
+          backgroundImage: 'linear-gradient(45deg, #e5e5e5 25%, transparent 25%), linear-gradient(-45deg, #e5e5e5 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e5e5e5 75%), linear-gradient(-45deg, transparent 75%, #e5e5e5 75%)',
+          backgroundSize: '16px 16px',
+          backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px',
+        } : {}),
+      }}>
         <Stage
           width={stageSize.width}
           height={stageSize.height}
@@ -789,7 +800,7 @@ export function StudioCanvas({
               y={0}
               width={stageSize.width}
               height={stageSize.height}
-              fill="#ffffff"
+              fill={canvasConfig.backgroundColor === '#ffffff' ? undefined : canvasConfig.backgroundColor}
             />
           </Layer>
 
