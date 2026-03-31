@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import {
   Target, X, Plus, Trash2, ChevronDown, Play,
-  Image as ImageIcon, Video, Type, Square,
+  Image as ImageIcon, Video, Type, Square, Music,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -30,6 +30,7 @@ const PROPERTY_OPTIONS = [
   { value: 'visible', label: 'Visibility', min: 0, max: 1, step: 1 },
   { value: 'scaleX', label: 'Scale X', min: 0, max: 200, step: 1 },
   { value: 'scaleY', label: 'Scale Y', min: 0, max: 200, step: 1 },
+  { value: 'volume', label: 'Volume', min: 0, max: 1, step: 0.05 },
 ] as const
 
 const EASING_OPTIONS = [
@@ -101,6 +102,7 @@ function layerIcon(type: StudioLayer['type']) {
     case 'video': return <Video className="size-3.5 text-purple-400" />
     case 'text': return <Type className="size-3.5 text-amber-400" />
     case 'shape': return <Square className="size-3.5 text-emerald-400" />
+    case 'audio': return <Music className="size-3.5 text-sky-400" />
     default: return null
   }
 }

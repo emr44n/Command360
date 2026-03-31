@@ -48,6 +48,17 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
   const currentSlide = slides[currentSlideIndex]
   const joinUrl = typeof window !== 'undefined' ? `${window.location.origin}/join` : '/join'
 
+  // Log analytics event
+  const logAnalytics = useCallback(async (eventType: string, data: Record<string, unknown>) => {
+    try {
+      await fetch('/api/studio/analytics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: session.id, event_type: eventType, event_data: data }),
+      })
+    } catch {} // Silent fail
+  }, [session.id])
+
   useEffect(() => {
     if (responseCount > 0) {
       setVotingPulse(true)
@@ -99,6 +110,7 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
           await channel.track({ role: 'presenter', session_id: session.id })
+          logAnalytics('session_start', {})
         }
       })
     channelRef.current = channel
@@ -108,7 +120,7 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
       .eq('session_id', session.id)
       .then(({ count }) => setParticipantCount(count || 0))
     return () => { supabase.removeChannel(channel) }
-  }, [session.id])
+  }, [session.id, logAnalytics])
 
   const broadcastSlideChange = useCallback(async (slideId: string, index: number, votingOpen: boolean) => {
     await channelRef.current?.send({
@@ -132,8 +144,9 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
       setResponseCount(0)
       setSession((s) => ({ ...s, voting_open: false }))
       await broadcastSlideChange(data.slide_id, data.slide_index, false)
+      logAnalytics('slide_change', { slide_id: data.slide_id, slide_index: data.slide_index })
     }
-  }, [session.id, broadcastSlideChange])
+  }, [session.id, broadcastSlideChange, logAnalytics])
 
   const handleToggleVoting = useCallback(async () => {
     const newOpen = !session.voting_open

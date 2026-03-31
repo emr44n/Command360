@@ -61,6 +61,7 @@ export function playEvent(
     if (prop === 'src') return layer.src ?? ''
     if (prop === 'scaleX') return layer.width
     if (prop === 'scaleY') return layer.height
+    if (prop === 'volume') return layer.volume ?? 1
     return 0
   }
 
