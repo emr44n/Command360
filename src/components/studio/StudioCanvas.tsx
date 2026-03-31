@@ -728,11 +728,7 @@ export function StudioCanvas({
         boxShadow: '0 2px 20px rgba(0,0,0,0.5)',
         transform: `scale(${zoomScale})`,
         transformOrigin: 'center center',
-        ...(canvasConfig.backgroundColor === '#ffffff' ? {
-          backgroundImage: 'linear-gradient(45deg, #e5e5e5 25%, transparent 25%), linear-gradient(-45deg, #e5e5e5 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e5e5e5 75%), linear-gradient(-45deg, transparent 75%, #e5e5e5 75%)',
-          backgroundSize: '16px 16px',
-          backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px',
-        } : {}),
+        // No special background pattern — white backgrounds show as white
       }}>
         <Stage
           width={stageSize.width}
@@ -814,7 +810,7 @@ export function StudioCanvas({
               y={0}
               width={stageSize.width}
               height={stageSize.height}
-              fill={canvasConfig.backgroundColor === '#ffffff' ? undefined : canvasConfig.backgroundColor}
+              fill={canvasConfig.backgroundColor}
             />
           </Layer>
 

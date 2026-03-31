@@ -255,7 +255,7 @@ function SceneSlotDropdown({
     <div ref={dropdownRef} className="relative flex items-center gap-1.5">
       <span className="text-[8px] font-bold text-zinc-600 w-3 shrink-0">{index + 1}</span>
       {/* Thumbnail of assigned scene */}
-      <div className="w-10 h-6 rounded bg-[#1e1f22] overflow-hidden shrink-0 border border-[#3f4147] relative">
+      <div className="w-10 min-w-[2.5rem] max-w-[5rem] flex-[0_0_auto] aspect-video rounded bg-[#1e1f22] overflow-hidden border border-[#3f4147] relative" style={{ width: 'clamp(2.5rem, 20%, 5rem)' }}>
         {assignedContent ? (
           <div className="w-full h-full relative" style={{ backgroundColor: assignedContent.canvas?.backgroundColor || '#000' }}>
             {assignedLayers.map(layer => layer.visible && layer.src ? (

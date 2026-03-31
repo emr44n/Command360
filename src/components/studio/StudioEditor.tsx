@@ -1172,15 +1172,57 @@ function SlidesPanel({
                   if (isCctv) {
                     const cctvLayout = slideContent?.cctvLayout || '4'
                     const cctvCount = parseInt(cctvLayout, 10)
+                    const cctvSlots = slideContent?.cctvSlots || []
                     const cols = cctvCount <= 2 ? cctvCount : cctvCount <= 4 ? 2 : cctvCount <= 6 ? 3 : 4
                     return (
                       <div className="absolute inset-0 overflow-hidden bg-black p-[1px]" style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '1px' }}>
-                        {Array.from({ length: cctvCount }, (_, ci) => (
-                          <div key={ci} className="bg-zinc-900 flex items-center justify-center">
-                            <Monitor className="w-2.5 h-2.5 text-indigo-400/50" />
-                          </div>
-                        ))}
-                        <div className="absolute inset-0 flex items-center justify-center">
+                        {Array.from({ length: cctvCount }, (_, ci) => {
+                          const slotId = cctvSlots[ci]
+                          const slotScene = slotId ? slides!.find(s => s.id === slotId) : null
+                          const slotContent = slotScene?.content as StudioContent | undefined
+                          const slotLayers = slotContent?.layers || []
+                          const slotBg = slotContent?.canvas?.backgroundColor || '#1a1a1a'
+                          return (
+                            <div key={ci} className="relative overflow-hidden" style={{ backgroundColor: slotBg }}>
+                              {slotScene && slotLayers.length > 0 ? (
+                                slotLayers.map(layer => {
+                                  if (!layer.visible) return null
+                                  if (layer.type === 'audio') return null
+                                  if (!layer.src) {
+                                    if (layer.type === 'text') {
+                                      return (
+                                        <div key={layer.id} className="absolute overflow-hidden pointer-events-none"
+                                          style={{ left: `${layer.x}%`, top: `${layer.y}%`, width: `${layer.width}%`, height: `${layer.height}%`, color: layer.color || '#fff', fontSize: '3px', opacity: layer.opacity }}>
+                                          {layer.text}
+                                        </div>
+                                      )
+                                    }
+                                    if (layer.type === 'shape') {
+                                      return (
+                                        <div key={layer.id} className="absolute pointer-events-none"
+                                          style={{ left: `${layer.x}%`, top: `${layer.y}%`, width: `${layer.width}%`, height: `${layer.height}%`, backgroundColor: layer.color || '#666', opacity: layer.opacity }} />
+                                      )
+                                    }
+                                    return null
+                                  }
+                                  return layer.type === 'video' ? (
+                                    <video key={layer.id} src={layer.src} className="absolute object-contain pointer-events-none"
+                                      style={{ left: `${layer.x}%`, top: `${layer.y}%`, width: `${layer.width}%`, height: `${layer.height}%`, opacity: layer.opacity }}
+                                      muted playsInline />
+                                  ) : (
+                                    <img key={layer.id} src={layer.src} alt="" className="absolute object-contain pointer-events-none"
+                                      style={{ left: `${layer.x}%`, top: `${layer.y}%`, width: `${layer.width}%`, height: `${layer.height}%`, opacity: layer.opacity }} />
+                                  )
+                                })
+                              ) : (
+                                <div className="flex items-center justify-center h-full">
+                                  <Monitor className="w-2 h-2 text-zinc-700" />
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                           <span className="text-[8px] font-bold text-indigo-400/70 bg-black/60 px-1 py-0.5 rounded">CCTV</span>
                         </div>
                       </div>
@@ -1498,12 +1540,12 @@ function SceneProperties({
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-x-hidden">
       <div className="px-3 py-2.5 border-b border-[#1e1f22]">
         <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Scene Properties</span>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-5">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 space-y-5 min-w-0">
         {/* Scene Name */}
         <div className="space-y-1.5">
           <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Scene Name</label>
@@ -1540,7 +1582,7 @@ function SceneProperties({
         <div className="space-y-1.5">
           <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Background Color</label>
           {/* Preset color swatches */}
-          <div className="flex flex-wrap gap-1 mb-1.5">
+          <div className="flex flex-wrap gap-1 mb-1.5 max-w-full">
             {['#ffffff', '#000000', '#1a1a2e', '#0f0f0f', '#1e3a5f', '#2d1b69', '#1a3c34', '#3b1c1c', '#3a2a0a', '#dc2626'].map(c => (
               <button key={c} onClick={() => handleBgChange(c)}
                 className={`w-5 h-5 rounded-md border transition-all cursor-pointer ${bgColor === c ? 'border-red-500 ring-1 ring-red-500/50 scale-110' : 'border-[#3f4147] hover:border-zinc-400'}`}
@@ -1558,7 +1600,7 @@ function SceneProperties({
                 const v = e.target.value
                 if (/^#[0-9a-fA-F]{0,6}$/.test(v)) handleBgChange(v)
               }}
-              className="flex-1 h-7 text-[11px] text-zinc-300 bg-[#383a40] border border-zinc-600 rounded-md px-2 font-mono outline-none focus:border-red-500/60"
+              className="flex-1 min-w-0 h-7 text-[11px] text-zinc-300 bg-[#383a40] border border-zinc-600 rounded-md px-2 font-mono outline-none focus:border-red-500/60"
             />
           </div>
         </div>
