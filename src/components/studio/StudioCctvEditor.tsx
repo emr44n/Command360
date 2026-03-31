@@ -278,20 +278,17 @@ function SceneSlotDropdown({
       </button>
       {/* Dropdown menu — fixed, grid of scene thumbnails */}
       {open && (
-        <div ref={dropdownRef} className="fixed z-[9999] bg-[#1e1f22] border border-[#3f4147] rounded-xl shadow-2xl p-2 max-h-72 overflow-y-auto"
-          style={{ top: menuPos.top, left: Math.max(8, menuPos.left - 40), width: Math.max(menuPos.width + 80, 240) }}>
-          <p className="text-[8px] text-zinc-600 uppercase tracking-wider mb-1.5 px-1">Select a scene</p>
+        <div ref={dropdownRef} className="fixed z-[9999] bg-[#1e1f22] border border-[#3f4147] rounded-xl shadow-2xl p-1.5 max-h-72 overflow-y-auto"
+          style={{ top: menuPos.top, left: Math.max(4, menuPos.left), width: Math.min(menuPos.width + 40, Math.max(menuPos.width, 180), window.innerWidth - menuPos.left - 8) }}>
           {/* Empty option */}
           <div
             onClick={() => { onSlotChange(index, ''); setOpen(false) }}
-            className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#35363c] cursor-pointer rounded-lg transition-colors mb-0.5"
+            className="flex items-center gap-1.5 px-1.5 py-1 hover:bg-[#35363c] cursor-pointer rounded-md transition-colors mb-0.5"
           >
-            <div className="w-8 h-5 rounded bg-[#2b2d31] border border-dashed border-zinc-600 flex items-center justify-center shrink-0">
-              <span className="text-[7px] text-zinc-600">—</span>
-            </div>
-            <span className="text-[9px] text-zinc-500 italic">Empty</span>
+            <div className="w-6 h-4 rounded bg-[#2b2d31] border border-dashed border-zinc-600 shrink-0" />
+            <span className="text-[8px] text-zinc-500 italic truncate">Empty</span>
           </div>
-          <div className="h-px bg-[#3f4147] my-1" />
+          <div className="h-px bg-[#2b2d31] my-0.5" />
           {/* Available scenes as a list */}
           {availableSlides.map((s) => {
             const sc = s.content as StudioContent
@@ -303,18 +300,18 @@ function SceneSlotDropdown({
               <div
                 key={s.id}
                 onClick={() => { onSlotChange(index, s.id); setOpen(false) }}
-                className={`flex items-center gap-2 px-2 py-1.5 cursor-pointer rounded-lg transition-colors mb-0.5 ${isSelected ? 'bg-red-500/20 ring-1 ring-red-500/40' : 'hover:bg-[#35363c]'}`}
+                className={`flex items-center gap-1.5 px-1.5 py-1 cursor-pointer rounded-md transition-colors mb-0.5 ${isSelected ? 'bg-red-500/20 ring-1 ring-red-500/40' : 'hover:bg-[#35363c]'}`}
               >
-                <div className="w-8 h-5 rounded bg-[#1e1f22] overflow-hidden shrink-0 border border-[#3f4147] relative">
+                <div className="w-6 h-4 rounded bg-[#1e1f22] overflow-hidden shrink-0 border border-[#3f4147] relative">
                   <div className="w-full h-full relative" style={{ backgroundColor: sc?.canvas?.backgroundColor || '#000' }}>
-                    {sceneLayers.slice(0, 3).map(layer => layer.visible && layer.src ? (
+                    {sceneLayers.slice(0, 2).map(layer => layer.visible && layer.src ? (
                       <img key={layer.id} src={layer.src} className="absolute object-contain" draggable={false}
                         style={{ left: `${layer.x}%`, top: `${layer.y}%`, width: `${layer.width}%`, height: `${layer.height}%` }} />
                     ) : null)}
                   </div>
                 </div>
-                <span className={`text-[9px] truncate ${isSelected ? 'text-red-300 font-medium' : 'text-zinc-300'}`}>{sceneName}</span>
-                {isSelected && <span className="ml-auto text-[8px] text-red-400">✓</span>}
+                <span className={`text-[8px] truncate flex-1 ${isSelected ? 'text-red-300 font-medium' : 'text-zinc-300'}`}>{sceneName}</span>
+                {isSelected && <span className="text-[7px] text-red-400 shrink-0">✓</span>}
               </div>
             )
           })}
