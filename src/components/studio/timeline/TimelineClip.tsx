@@ -9,10 +9,14 @@ interface TimelineClipProps {
   zoomLevel: number
   isSelected: boolean
   layerName?: string
+  selectedKeyframeId?: string
   onSelect: () => void
   onMove: (newStartTime: number) => void
   onResize: (newDuration: number) => void
   onContextMenu: (e: React.MouseEvent) => void
+  onSelectKeyframe?: (id: string) => void
+  onDeleteKeyframe?: (id: string) => void
+  onMoveKeyframe?: (id: string, newTime: number) => void
 }
 
 type DragMode = 'move' | 'resize-left' | 'resize-right'
@@ -23,10 +27,14 @@ export function TimelineClip({
   zoomLevel,
   isSelected,
   layerName,
+  selectedKeyframeId,
   onSelect,
   onMove,
   onResize,
   onContextMenu,
+  onSelectKeyframe,
+  onDeleteKeyframe,
+  onMoveKeyframe,
 }: TimelineClipProps) {
   const dragRef = useRef<{
     mode: DragMode
@@ -122,12 +130,30 @@ export function TimelineClip({
       {clip.keyframes.map((kf) => {
         const kfLeft = (kf.time * zoomLevel) / 1000
         if (kfLeft < 0 || kfLeft > width) return null
+        const isKfSelected = selectedKeyframeId === kf.id
         return (
           <div
             key={kf.id}
-            className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-yellow-400 border border-yellow-600 z-10"
-            style={{ left: kfLeft - 4 }}
-            title={`${kf.property}: ${kf.value}`}
+            className={`absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rotate-45 border z-10 cursor-pointer transition-colors ${
+              isKfSelected ? 'bg-red-500 border-red-600' : 'bg-yellow-400 border-yellow-600 hover:bg-yellow-300'
+            }`}
+            style={{ left: kfLeft - 5 }}
+            title={`${kf.property}: ${kf.value} (${kf.easing})`}
+            onClick={(e) => { e.stopPropagation(); onSelectKeyframe?.(kf.id) }}
+            onDoubleClick={(e) => { e.stopPropagation(); onDeleteKeyframe?.(kf.id) }}
+            onMouseDown={(e) => {
+              e.preventDefault(); e.stopPropagation()
+              const startX = e.clientX
+              const startTime = kf.time
+              const onMouseMove = (ev: MouseEvent) => {
+                const dx = ev.clientX - startX
+                const dtMs = (dx * 1000) / zoomLevel
+                onMoveKeyframe?.(kf.id, Math.max(0, startTime + dtMs))
+              }
+              const onMouseUp = () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp) }
+              document.addEventListener('mousemove', onMouseMove)
+              document.addEventListener('mouseup', onMouseUp)
+            }}
           />
         )
       })}

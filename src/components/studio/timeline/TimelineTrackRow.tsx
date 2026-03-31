@@ -12,6 +12,7 @@ interface TimelineTrackRowProps {
   zoomLevel: number
   scrollLeft: number
   selectedClipId: string | null
+  selectedKeyframeId?: string
   labelWidth?: number
   rowHeight?: number
   compact?: boolean
@@ -23,6 +24,9 @@ interface TimelineTrackRowProps {
   onDeleteTrack: () => void
   onRenameTrack?: (newName: string) => void
   onReorderTrack?: (fromIndex: number, toIndex: number) => void
+  onSelectKeyframe?: (id: string) => void
+  onDeleteKeyframe?: (id: string) => void
+  onMoveKeyframe?: (id: string, newTime: number) => void
 }
 
 export function TimelineTrackRow({
@@ -40,6 +44,10 @@ export function TimelineTrackRow({
   onDeleteTrack,
   onRenameTrack,
   onReorderTrack,
+  selectedKeyframeId,
+  onSelectKeyframe,
+  onDeleteKeyframe,
+  onMoveKeyframe,
   labelWidth = 140,
   rowHeight = 40,
   compact = false,
@@ -160,10 +168,14 @@ export function TimelineTrackRow({
               zoomLevel={zoomLevel}
               isSelected={selectedClipId === clip.id}
               layerName={layer.name}
+              selectedKeyframeId={selectedKeyframeId}
               onSelect={() => onSelectClip(clip.id)}
               onMove={(newStartTime) => onMoveClip(clip.id, newStartTime)}
               onResize={(newDuration) => onResizeClip(clip.id, newDuration)}
               onContextMenu={(e) => e.preventDefault()}
+              onSelectKeyframe={onSelectKeyframe}
+              onDeleteKeyframe={onDeleteKeyframe}
+              onMoveKeyframe={onMoveKeyframe}
             />
           ))}
         </div>

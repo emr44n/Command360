@@ -46,6 +46,7 @@ export function StudioTimeline({
   const [scrollLeft, setScrollLeft] = useState(0)
   const [labelWidth, setLabelWidth] = useState(140)
   const [containerHeight, setContainerHeight] = useState(0)
+  const [selectedKeyframeId, setSelectedKeyframeId] = useState<string | null>(null)
   const labelDragging = useRef(false)
 
   const tracks = content.tracks ?? []
@@ -179,6 +180,44 @@ export function StudioTimeline({
     [tracks, onContentChange]
   )
 
+  // Handle keyframe selection
+  const handleSelectKeyframe = useCallback((id: string) => {
+    setSelectedKeyframeId(id)
+  }, [])
+
+  // Handle keyframe deletion
+  const handleDeleteKeyframe = useCallback(
+    (kfId: string) => {
+      const updatedTracks = tracks.map((track) => ({
+        ...track,
+        clips: track.clips.map((clip) => ({
+          ...clip,
+          keyframes: clip.keyframes.filter((kf) => kf.id !== kfId),
+        })),
+      }))
+      onContentChange({ tracks: updatedTracks })
+      if (selectedKeyframeId === kfId) setSelectedKeyframeId(null)
+    },
+    [tracks, onContentChange, selectedKeyframeId]
+  )
+
+  // Handle keyframe move (reposition in time)
+  const handleMoveKeyframe = useCallback(
+    (kfId: string, newTime: number) => {
+      const updatedTracks = tracks.map((track) => ({
+        ...track,
+        clips: track.clips.map((clip) => ({
+          ...clip,
+          keyframes: clip.keyframes.map((kf) =>
+            kf.id === kfId ? { ...kf, time: Math.round(newTime) } : kf
+          ),
+        })),
+      }))
+      onContentChange({ tracks: updatedTracks })
+    },
+    [tracks, onContentChange]
+  )
+
   // Handle event selection
   const handleSelectEvent = useCallback(
     (eventId: string) => {
@@ -304,6 +343,10 @@ export function StudioTimeline({
                   reordered.splice(toIndex, 0, moved)
                   onContentChange({ tracks: reordered })
                 }}
+                selectedKeyframeId={selectedKeyframeId ?? undefined}
+                onSelectKeyframe={handleSelectKeyframe}
+                onDeleteKeyframe={handleDeleteKeyframe}
+                onMoveKeyframe={handleMoveKeyframe}
               />
             )
           })}

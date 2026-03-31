@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import {
   FolderOpen, Type, Shapes, Film, Sparkles, Settings2,
   Play, Square, SkipBack, Layers, Plus, Trash2 as Trash2Icon, Copy, Monitor,
-  Pencil, Image, Undo2, Redo2,
+  Pencil, Image, Undo2, Redo2, Layout, Save,
 } from 'lucide-react'
 import type {
   Slide,
@@ -27,6 +27,7 @@ import { addTrackForLayer } from '@/lib/studio/timeline-manager'
 import { playEvent } from '@/lib/studio/event-playback'
 import { useStudioStore } from '@/stores/studioStore'
 import { generateLayerId } from '@/lib/utils/studio-utils'
+import { TemplateGallery, saveAsTemplate } from '@/components/studio/TemplateGallery'
 
 interface StudioEditorProps {
   content: StudioContent
@@ -666,9 +667,10 @@ export function StudioEditor({
     { icon: Type, label: 'Text', panel: 'text' as const, activeClass: 'bg-sky-600/20 text-sky-400' },
     { icon: Shapes, label: 'Shapes', panel: 'shapes' as const, activeClass: 'bg-emerald-600/20 text-emerald-400' },
     { icon: Sparkles, label: 'Events', panel: 'events' as const, activeClass: 'bg-amber-600/20 text-amber-400' },
+    { icon: Layout, label: 'Templates', panel: 'templates' as const, activeClass: 'bg-pink-600/20 text-pink-400' },
   ]
 
-  const [activePanel, setActivePanel] = useState<'slides' | 'gallery' | 'events' | 'text' | 'shapes'>(hasSlides ? 'slides' : 'gallery')
+  const [activePanel, setActivePanel] = useState<'slides' | 'gallery' | 'events' | 'text' | 'shapes' | 'templates'>(hasSlides ? 'slides' : 'gallery')
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-[#1e1f22]" style={{ minHeight: 0 }}>
@@ -701,6 +703,22 @@ export function StudioEditor({
         })}
 
         <div className="flex-1" />
+
+        {/* Save as Template */}
+        <button
+          onClick={async () => {
+            const title = window.prompt('Template name:')
+            if (!title) return
+            saveAsTemplate(content, title)
+            const { toast } = await import('sonner')
+            toast.success('Saved as template', { duration: 2000 })
+          }}
+          className="w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer text-zinc-500 hover:text-zinc-200 hover:bg-[#35363c]"
+          data-tooltip="Save as Template"
+        >
+          <Save className="w-4 h-4" />
+          <span className="text-[7px] leading-none font-medium">Save</span>
+        </button>
 
         {/* Divider */}
         <div className="w-6 h-px bg-zinc-700/50 mb-1" />
@@ -738,7 +756,7 @@ export function StudioEditor({
               <div className="shrink-0 bg-[#2b2d31] overflow-hidden overflow-x-hidden flex flex-col border-r border-[#1e1f22]" style={{ width: leftPanelWidth }}>
                 {/* Active panel accent strip */}
                 <div className="h-[2px] shrink-0" style={{
-                  backgroundColor: activePanel === 'slides' ? '#7c3aed' : activePanel === 'gallery' ? '#ef4444' : activePanel === 'text' ? '#0ea5e9' : activePanel === 'shapes' ? '#10b981' : '#f59e0b'
+                  backgroundColor: activePanel === 'slides' ? '#7c3aed' : activePanel === 'gallery' ? '#ef4444' : activePanel === 'text' ? '#0ea5e9' : activePanel === 'shapes' ? '#10b981' : activePanel === 'templates' ? '#ec4899' : '#f59e0b'
                 }} />
                 {activePanel === 'slides' && hasSlides ? (
                   <SlidesPanel
@@ -768,6 +786,12 @@ export function StudioEditor({
                     onDeleteLayer={handleDeleteLayer}
                     onUpdateLayer={handleUpdateLayer}
                     selectedLayerId={selectedLayerId}
+                  />
+                ) : activePanel === 'templates' ? (
+                  <TemplateGallery
+                    onUseTemplate={(templateContent) => {
+                      onContentChange(templateContent)
+                    }}
                   />
                 ) : activePanel === 'events' ? (
                   <StudioGallery

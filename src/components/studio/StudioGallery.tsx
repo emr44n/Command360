@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState, useCallback } from 'react'
+import React, { useEffect, useRef, useState, useCallback, memo } from 'react'
 import {
   ImageIcon,
   VideoIcon,
@@ -112,6 +112,51 @@ function extractAssetsFromLayers(layers: StudioLayer[]): { images: AssetItem[]; 
 
   return { images, videos, audios }
 }
+
+const VideoThumbnail = memo(function VideoThumbnail({ src, className }: { src: string; className?: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [hovering, setHovering] = useState(false)
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const video = videoRef.current
+    const canvas = canvasRef.current
+    if (!video || !canvas || !video.duration) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    const pct = (e.clientX - rect.left) / rect.width
+    video.currentTime = pct * video.duration
+  }
+
+  useEffect(() => {
+    const video = videoRef.current
+    const canvas = canvasRef.current
+    if (!video || !canvas) return
+    const ctx = canvas.getContext('2d')
+    const drawFrame = () => {
+      if (ctx && video.videoWidth) {
+        canvas.width = video.videoWidth
+        canvas.height = video.videoHeight
+        ctx.drawImage(video, 0, 0)
+      }
+    }
+    video.addEventListener('seeked', drawFrame)
+    // Set initial poster at 0.5s
+    video.currentTime = 0.5
+    return () => video.removeEventListener('seeked', drawFrame)
+  }, [])
+
+  return (
+    <div
+      className="relative w-full h-full"
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => { setHovering(false); if (videoRef.current) videoRef.current.currentTime = 0.5 }}
+      onMouseMove={hovering ? handleMouseMove : undefined}
+    >
+      <video ref={videoRef} src={src} className={className} muted playsInline preload="metadata" />
+      {hovering && <canvas ref={canvasRef} className="absolute inset-0 w-full h-full object-cover" />}
+    </div>
+  )
+})
 
 export function StudioGallery({
   layers,
@@ -643,7 +688,7 @@ export function StudioGallery({
                 onClick={() => addVideoToCanvas(asset)}
                 draggable onDragStart={(e) => handleAssetDragStart(e, asset)}
               >
-                <video src={asset.url} className="w-8 h-6 object-cover rounded shrink-0" muted playsInline />
+                <div className="w-8 h-6 shrink-0 rounded overflow-hidden"><VideoThumbnail src={asset.url} className="w-full h-full object-cover" /></div>
                 <span className="text-[9px] text-zinc-300 truncate flex-1">{asset.name}</span>
                 <button
                   className="p-0.5 text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -661,7 +706,7 @@ export function StudioGallery({
                 draggable onDragStart={(e) => handleAssetDragStart(e, asset)}
                 onClick={() => addVideoToCanvas(asset)} title={`${asset.name} — drag to canvas or click to add`}
               >
-                <video src={asset.url} className="h-full w-full object-cover pointer-events-none" muted playsInline />
+                <VideoThumbnail src={asset.url} className="h-full w-full object-cover pointer-events-none" />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
                   <PlusIcon className="size-5 text-white" />
                 </div>
