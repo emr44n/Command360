@@ -11,6 +11,7 @@ import { ElementSettings } from './ElementSettings'
 import { AddImageDialog } from './AddImageDialog'
 import type { CanvasElement, StudioContent } from '@/types/slide'
 import { StudioEditor } from '@/components/studio/StudioEditor'
+import { ExportDialog } from '@/components/studio/ExportDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -52,6 +53,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   const [showFileMenu, setShowFileMenu] = useState(false)
   const [studioFileMenu, setStudioFileMenu] = useState(false)
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
+  const [showExportDialog, setShowExportDialog] = useState(false)
   const [slideListWidth, setSlideListWidth] = useState(220)
   const fileMenuRef = useRef<HTMLDivElement>(null)
   const studioFileMenuRef = useRef<HTMLDivElement>(null)
@@ -538,7 +540,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                   }
                 }} />
                 <div className="h-px bg-zinc-700 mx-2 my-1" />
-                <StudioFileMenuItem icon={FileDown} label="Export as .c360" onClick={() => { setStudioFileMenu(false); window.open(`/api/presentations/${presentation.id}/export-c360`, '_blank') }} />
+                <StudioFileMenuItem icon={FileDown} label="Export..." onClick={() => { setStudioFileMenu(false); setShowExportDialog(true) }} />
                 <StudioFileMenuItem icon={Upload} label="Import .c360" onClick={() => { setStudioFileMenu(false); importInputRef.current?.click() }} />
               </div>
             )}
@@ -733,6 +735,15 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             </div>
           </div>
         )}
+
+        {/* Export dialog */}
+        <ExportDialog
+          isOpen={showExportDialog}
+          onClose={() => setShowExportDialog(false)}
+          presentationId={presentation.id}
+          presentationTitle={presentationTitle}
+          slides={slides}
+        />
       </div>
     )
   }
