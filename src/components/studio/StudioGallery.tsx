@@ -15,8 +15,10 @@ import {
   ChevronDown,
   ChevronRight,
   Play,
+  Pause,
   Settings2,
   GripVertical,
+  Volume2,
 } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
@@ -36,14 +38,15 @@ interface StudioGalleryProps {
   onReorderLayers?: (fromIndex: number, toIndex: number) => void
   onUpdateCategories?: (categories: StudioEventCategory[]) => void
   onTriggerEvent?: (eventId: string) => void
-  initialTab?: 'images' | 'videos' | 'placed' | 'events'
+  initialTab?: 'images' | 'videos' | 'placed' | 'events' | 'audio'
 }
 
 interface AssetItem {
   id: string
   name: string
   url: string
-  type: 'image' | 'video'
+  type: 'image' | 'video' | 'audio'
+  duration?: number // seconds, for audio assets
 }
 
 function uploadAssetFile(
@@ -86,13 +89,14 @@ function uploadAssetFile(
   })
 }
 
-function extractAssetsFromLayers(layers: StudioLayer[]): { images: AssetItem[]; videos: AssetItem[] } {
+function extractAssetsFromLayers(layers: StudioLayer[]): { images: AssetItem[]; videos: AssetItem[]; audios: AssetItem[] } {
   const images: AssetItem[] = []
   const videos: AssetItem[] = []
+  const audios: AssetItem[] = []
   const seen = new Set<string>()
 
   for (const layer of layers) {
-    if ((layer.type === 'image' || layer.type === 'video') && layer.src && !seen.has(layer.src)) {
+    if ((layer.type === 'image' || layer.type === 'video' || layer.type === 'audio') && layer.src && !seen.has(layer.src)) {
       seen.add(layer.src)
       const asset: AssetItem = {
         id: layer.id,
@@ -101,11 +105,12 @@ function extractAssetsFromLayers(layers: StudioLayer[]): { images: AssetItem[]; 
         type: layer.type,
       }
       if (layer.type === 'image') images.push(asset)
-      else videos.push(asset)
+      else if (layer.type === 'video') videos.push(asset)
+      else audios.push(asset)
     }
   }
 
-  return { images, videos }
+  return { images, videos, audios }
 }
 
 export function StudioGallery({
@@ -123,6 +128,7 @@ export function StudioGallery({
 }: StudioGalleryProps) {
   const [images, setImages] = useState<AssetItem[]>([])
   const [videos, setVideos] = useState<AssetItem[]>([])
+  const [audios, setAudios] = useState<AssetItem[]>([])
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [newEventName, setNewEventName] = useState('')
@@ -136,6 +142,9 @@ export function StudioGallery({
   const tabContainerRef = useRef<HTMLDivElement>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
   const videoInputRef = useRef<HTMLInputElement>(null)
+  const audioInputRef = useRef<HTMLInputElement>(null)
+  const [playingAudioId, setPlayingAudioId] = useState<string | null>(null)
+  const audioPreviewRef = useRef<HTMLAudioElement | null>(null)
   const { selectedEventId, setSelectedEventId } = useStudioStore()
 
   // Measure tab container width to hide labels when narrow
@@ -160,6 +169,11 @@ export function StudioGallery({
     setVideos((prev) => {
       const urls = new Set(prev.map((a) => a.url))
       const newOnes = existing.videos.filter((a) => !urls.has(a.url))
+      return newOnes.length > 0 ? [...prev, ...newOnes] : prev
+    })
+    setAudios((prev) => {
+      const urls = new Set(prev.map((a) => a.url))
+      const newOnes = existing.audios.filter((a) => !urls.has(a.url))
       return newOnes.length > 0 ? [...prev, ...newOnes] : prev
     })
   }, [layers])
@@ -287,6 +301,69 @@ export function StudioGallery({
     })
   }
 
+  const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files) return
+    setUploading(true)
+    setUploadProgress(0)
+    let successCount = 0
+    try {
+      for (const file of Array.from(files)) {
+        try {
+          const { url, name } = await uploadAssetFile(file, (pct) => setUploadProgress(pct))
+          setAudios((prev) => [...prev, { id: generateLayerId(), name, url, type: 'audio' }])
+          successCount++
+        } catch {
+          // Retry once
+          try {
+            const { url, name } = await uploadAssetFile(file, (pct) => setUploadProgress(pct))
+            setAudios((prev) => [...prev, { id: generateLayerId(), name, url, type: 'audio' }])
+            successCount++
+          } catch {
+            const { toast } = await import('sonner')
+            toast.error(`Failed to upload audio. Check your connection and try again.`, { duration: 4000 })
+          }
+        }
+      }
+    } finally {
+      setUploading(false)
+      setUploadProgress(0)
+      if (successCount > 0) {
+        const { toast } = await import('sonner')
+        toast.success(`${successCount} audio file${successCount > 1 ? 's' : ''} uploaded`, { duration: 2000 })
+      }
+    }
+    e.target.value = ''
+  }
+
+  const addAudioToCanvas = (asset: AssetItem) => {
+    onAddLayer({
+      id: generateLayerId(),
+      name: cleanName(asset.name, 'audio'),
+      type: 'audio',
+      src: asset.url,
+      x: 0, y: 0, width: 0, height: 0,
+      rotation: 0, opacity: 1,
+      blendMode: 'normal', visible: true, locked: false,
+      volume: 1, audioLoop: false,
+    })
+  }
+
+  const toggleAudioPreview = (asset: AssetItem) => {
+    if (playingAudioId === asset.id) {
+      audioPreviewRef.current?.pause()
+      audioPreviewRef.current = null
+      setPlayingAudioId(null)
+    } else {
+      audioPreviewRef.current?.pause()
+      const audio = new Audio(asset.url)
+      audio.onended = () => { setPlayingAudioId(null); audioPreviewRef.current = null }
+      audio.play()
+      audioPreviewRef.current = audio
+      setPlayingAudioId(asset.id)
+    }
+  }
+
   // Event CRUD
   const handleAddEvent = (categoryId?: string) => {
     if (!newEventName.trim() || !onUpdateEvents) return
@@ -361,6 +438,7 @@ export function StudioGallery({
       case 'video': return <VideoIcon className="size-3.5 text-purple-400" />
       case 'text': return <span className="text-xs font-bold text-amber-400">T</span>
       case 'shape': return <span className="text-xs text-emerald-400">&#9632;</span>
+      case 'audio': return <Volume2 className="size-3.5 text-cyan-400" />
       default: return null
     }
   }
@@ -451,6 +529,10 @@ export function StudioGallery({
             <TabsTrigger value="events" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]" title="Events">
               <ZapIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Events'}
+            </TabsTrigger>
+            <TabsTrigger value="audio" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]" title="Audio">
+              <Volume2 className="size-3 shrink-0" />
+              {!tabsNarrow && 'Audio'}
             </TabsTrigger>
           </TabsList>
           {/* Grid/List toggle for assets */}
@@ -622,6 +704,59 @@ export function StudioGallery({
                 {typeIcon(layer.type)}
                 <span className="flex-1 truncate">{layer.name}</span>
                 {!layer.visible && <span className="text-[10px] text-zinc-500">hidden</span>}
+              </div>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* Audio Tab */}
+        <TabsContent value="audio" className="flex-1 overflow-y-auto px-2 pb-2 animate-[fadeIn_0.2s_ease-out]">
+          <input ref={audioInputRef} type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/mp4,audio/*" multiple className="hidden" onChange={handleAudioUpload} />
+          <Button
+            variant="outline" size="sm"
+            className="mt-2 w-full border-dashed border-zinc-600 bg-[#383a40] text-zinc-300 hover:bg-zinc-700"
+            onClick={() => audioInputRef.current?.click()} disabled={uploading}
+          >
+            {uploading ? <Loader2Icon className="mr-1.5 size-3.5 animate-spin" /> : <UploadIcon className="mr-1.5 size-3.5" />}
+            {uploading ? 'Uploading...' : 'Upload Audio'}
+          </Button>
+          {uploading && (
+            <div className="mt-1.5 h-1 w-full rounded-full bg-zinc-800 overflow-hidden">
+              <div className="h-1 bg-red-500 rounded-full transition-all duration-150" style={{ width: `${uploadProgress}%` }} />
+            </div>
+          )}
+          {audios.length === 0 && <p className="mt-4 text-center text-xs text-zinc-500">No audio files uploaded yet</p>}
+          <div className="mt-1.5 flex flex-col gap-0.5">
+            {audios.map((asset) => (
+              <div
+                key={asset.id}
+                className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-[#35363c] group"
+              >
+                <button
+                  onClick={() => toggleAudioPreview(asset)}
+                  className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center shrink-0 hover:bg-red-500 transition-colors"
+                >
+                  {playingAudioId === asset.id ? (
+                    <Pause className="w-3 h-3 text-white" />
+                  ) : (
+                    <Play className="w-3 h-3 text-white ml-0.5" />
+                  )}
+                </button>
+                <span className="text-[9px] text-zinc-300 truncate flex-1">{asset.name}</span>
+                <button
+                  onClick={() => addAudioToCanvas(asset)}
+                  className="text-zinc-600 hover:text-zinc-300 transition-colors"
+                  title="Add to canvas"
+                >
+                  <PlusIcon className="w-3 h-3" />
+                </button>
+                <button
+                  className="p-0.5 text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => setAudios(prev => prev.filter(a => a.id !== asset.id))}
+                  title="Remove"
+                >
+                  <Trash2Icon className="size-2.5" />
+                </button>
               </div>
             ))}
           </div>

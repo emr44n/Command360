@@ -62,6 +62,7 @@ const ANIMATABLE_PROPERTIES = [
   'rotation',
   'opacity',
   'visible',
+  'volume',
 ] as const
 
 type AnimatableProperty = (typeof ANIMATABLE_PROPERTIES)[number]
@@ -136,6 +137,7 @@ function buildDefaultState(layer: StudioLayer): StudioLayerState {
     height: layer.height,
     rotation: layer.rotation,
     src: layer.src,
+    volume: layer.volume,
   }
 }
 

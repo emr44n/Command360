@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
+// Accepts image, video, and audio files (mp3, wav, ogg, webm, mp4 audio).
+// The Supabase 'assets' bucket allowedMimeTypes already includes audio/* MIME types.
 export async function POST(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

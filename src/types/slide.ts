@@ -99,7 +99,7 @@ export interface OpenTextContent {
 export interface StudioLayer {
   id: string
   name: string
-  type: 'image' | 'video' | 'text' | 'shape'
+  type: 'image' | 'video' | 'text' | 'shape' | 'audio'
   src?: string
   x: number        // percentage 0-100
   y: number
@@ -116,16 +116,23 @@ export interface StudioLayer {
   fontSize?: number
   fontWeight?: string
   color?: string
+  fontFamily?: string
+  textAlign?: 'left' | 'center' | 'right'
+  lineHeight?: number
+  letterSpacing?: number
   // Video-specific
   loop?: boolean
   autoplay?: boolean
   muted?: boolean
+  // Audio-specific
+  volume?: number      // 0-1 range, default 1
+  audioLoop?: boolean
 }
 
 export interface StudioAction {
   id: string
   layerId: string
-  property: 'opacity' | 'visible' | 'x' | 'y' | 'width' | 'height' | 'rotation' | 'src' | 'scaleX' | 'scaleY'
+  property: 'opacity' | 'visible' | 'x' | 'y' | 'width' | 'height' | 'rotation' | 'src' | 'scaleX' | 'scaleY' | 'volume'
   fromValue?: number | boolean | string
   toValue: number | boolean | string
   delay: number       // ms before starting
@@ -168,6 +175,7 @@ export interface StudioLayerState {
   height: number
   rotation: number
   src?: string
+  volume?: number  // 0-1 for audio layers
 }
 
 /* ── Timeline types (v2) ── */
@@ -196,7 +204,7 @@ export interface StudioClip {
 export interface StudioKeyframe {
   id: string
   time: number         // ms offset within clip
-  property: 'x' | 'y' | 'width' | 'height' | 'rotation' | 'opacity' | 'visible' | 'src'
+  property: 'x' | 'y' | 'width' | 'height' | 'rotation' | 'opacity' | 'visible' | 'src' | 'volume'
   value: number | boolean | string
   easing: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out'
 }

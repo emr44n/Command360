@@ -328,6 +328,18 @@ function TextLayerNode({
   onDragEnd: (x: number, y: number) => void
   shapeRef: React.RefObject<Konva.Text | null>
 }) {
+  // Load custom font dynamically
+  useEffect(() => {
+    if (layer.fontFamily) {
+      const link = document.createElement('link')
+      link.href = `https://fonts.googleapis.com/css2?family=${layer.fontFamily.replace(/ /g, '+')}&display=swap`
+      link.rel = 'stylesheet'
+      if (!document.querySelector(`link[href="${link.href}"]`)) {
+        document.head.appendChild(link)
+      }
+    }
+  }, [layer.fontFamily])
+
   if (!state.visible) return null
 
   const x = pct2px(state.x, stageWidth)
@@ -346,6 +358,8 @@ function TextLayerNode({
       height={h}
       text={layer.text ?? ''}
       fontSize={layer.fontSize ?? 24}
+      fontFamily={layer.fontFamily || 'Inter'}
+      align={layer.textAlign || 'left'}
       fontStyle={layer.fontWeight ?? 'normal'}
       fill={layer.color ?? '#ffffff'}
       rotation={state.rotation}
@@ -587,7 +601,7 @@ export function StudioCanvas({
   )
 
   const nonVideoLayers = useMemo(
-    () => sortedLayers.filter((l) => l.type !== 'video'),
+    () => sortedLayers.filter((l) => l.type !== 'video' && l.type !== 'audio'),
     [sortedLayers]
   )
 

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import {
   FolderOpen, Type, Shapes, Film, Sparkles, Settings2,
   Play, Square, SkipBack, Layers, Plus, Trash2 as Trash2Icon, Copy, Monitor,
-  Pencil, Image,
+  Pencil, Image, Undo2, Redo2,
 } from 'lucide-react'
 import type {
   Slide,
@@ -90,6 +90,7 @@ function CctvLivePreview({ content, slides }: { content: StudioContent; slides: 
               /* Render scene layers as positioned elements */
               sceneLayers.map(layer => {
                 if (!layer.visible) return null
+                if (layer.type === 'audio') return null // Audio doesn't render on canvas
                 const src = layer.src
                 if (!src) {
                   if (layer.type === 'text') {
@@ -215,6 +216,14 @@ export function StudioEditor({
   const rafRef = useRef<number | null>(null)
   const lastFrameRef = useRef<number>(0)
 
+  // Audio playback refs
+  const audioRefs = useRef<Map<string, HTMLAudioElement>>(new Map())
+
+  // Undo / Redo
+  const [undoStack, setUndoStack] = useState<StudioContent[]>([])
+  const [redoStack, setRedoStack] = useState<StudioContent[]>([])
+  const MAX_HISTORY = 50
+
   // Event animation state
   const [eventOverrides, setEventOverrides] = useState<Record<string, Partial<StudioLayerState>>>({})
   const eventControllerRef = useRef<{ cancel: () => void } | null>(null)
@@ -249,6 +258,76 @@ export function StudioEditor({
     }
   }, [isPlaying, totalDuration])
 
+  // Audio playback sync — create/update audio elements for audio layers
+  useEffect(() => {
+    const audioLayers = content.layers.filter((l) => l.type === 'audio' && l.src)
+    const existingIds = new Set(audioLayers.map((l) => l.id))
+
+    // Remove audio elements for layers that no longer exist
+    for (const [id, el] of audioRefs.current) {
+      if (!existingIds.has(id)) {
+        el.pause()
+        audioRefs.current.delete(id)
+      }
+    }
+
+    // Create or update audio elements
+    for (const layer of audioLayers) {
+      let el = audioRefs.current.get(layer.id)
+      if (!el) {
+        el = new Audio(layer.src!)
+        audioRefs.current.set(layer.id, el)
+      }
+      if (el.src !== layer.src) {
+        el.src = layer.src!
+      }
+      el.loop = layer.audioLoop ?? false
+      el.volume = layer.volume ?? 1
+    }
+  }, [content.layers])
+
+  // Start/stop audio with playback
+  useEffect(() => {
+    const audioLayers = content.layers.filter((l) => l.type === 'audio' && l.src && l.visible)
+    const tracks = content.tracks ?? []
+
+    for (const layer of audioLayers) {
+      const el = audioRefs.current.get(layer.id)
+      if (!el) continue
+
+      // Check if layer has a track/clip active at current time
+      const track = tracks.find((t) => t.layerId === layer.id)
+      let isActive = true
+      if (track && !track.muted && track.clips.length > 0) {
+        isActive = track.clips.some(
+          (c) => currentTime >= c.startTime && currentTime < c.startTime + c.duration
+        )
+      }
+      if (track?.hidden) isActive = false
+
+      if (isPlaying && isActive) {
+        // Sync currentTime (convert ms to seconds)
+        const targetTime = currentTime / 1000
+        if (Math.abs(el.currentTime - targetTime) > 0.3) {
+          el.currentTime = targetTime
+        }
+        if (el.paused) el.play().catch(() => {})
+      } else {
+        if (!el.paused) el.pause()
+      }
+    }
+  }, [isPlaying, currentTime, content.layers, content.tracks])
+
+  // Cleanup audio on unmount
+  useEffect(() => {
+    return () => {
+      for (const [, el] of audioRefs.current) {
+        el.pause()
+      }
+      audioRefs.current.clear()
+    }
+  }, [])
+
   // Derived data
   const layers = content.layers
   const tracks = content.tracks ?? []
@@ -277,12 +356,50 @@ export function StudioEditor({
     )
   }, [selectedLayerId, tracks, currentTime])
 
+  // Undo / Redo helpers
+  const pushUndo = useCallback(() => {
+    setUndoStack(prev => [...prev.slice(-(MAX_HISTORY - 1)), content])
+    setRedoStack([]) // Clear redo on new action
+  }, [content])
+
+  const handleUndo = useCallback(() => {
+    if (undoStack.length === 0) return
+    const prev = undoStack[undoStack.length - 1]
+    setRedoStack(r => [...r, content])
+    setUndoStack(s => s.slice(0, -1))
+    onContentChange(prev)
+  }, [undoStack, content, onContentChange])
+
+  const handleRedo = useCallback(() => {
+    if (redoStack.length === 0) return
+    const next = redoStack[redoStack.length - 1]
+    setUndoStack(s => [...s, content])
+    setRedoStack(r => r.slice(0, -1))
+    onContentChange(next)
+  }, [redoStack, content, onContentChange])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        handleUndo()
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && e.shiftKey) {
+        e.preventDefault()
+        handleRedo()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [handleUndo, handleRedo])
+
   // Content mutation helpers
   const updateContent = useCallback(
     (updates: Partial<StudioContent>) => {
+      pushUndo()
       onContentChange({ ...content, ...updates })
     },
-    [content, onContentChange]
+    [content, onContentChange, pushUndo]
   )
 
   // Layer operations
@@ -731,6 +848,16 @@ export function StudioEditor({
                     {formatTime(currentTime)}
                   </span>
                   <div className="flex items-center gap-1">
+                    <button onClick={handleUndo} disabled={undoStack.length === 0}
+                      className="w-6 h-6 rounded-md flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
+                      data-tooltip="Undo (Ctrl+Z)">
+                      <Undo2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={handleRedo} disabled={redoStack.length === 0}
+                      className="w-6 h-6 rounded-md flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
+                      data-tooltip="Redo (Ctrl+Shift+Z)">
+                      <Redo2 className="w-3.5 h-3.5" />
+                    </button>
                     <button onClick={() => { setIsPlaying(false); setCurrentTime(0) }} className="w-6 h-6 rounded flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
                       <SkipBack className="w-3.5 h-3.5" />
                     </button>

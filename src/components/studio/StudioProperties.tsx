@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { StudioLayer, StudioClip, StudioKeyframe } from '@/types/slide'
+import { FontPicker } from '@/components/studio/FontPicker'
 
 interface StudioPropertiesProps {
   layer: StudioLayer | null
@@ -49,6 +50,7 @@ const KEYFRAME_PROPERTIES = [
   { value: 'height', label: 'Height' },
   { value: 'rotation', label: 'Rotation' },
   { value: 'visible', label: 'Visible' },
+  { value: 'volume', label: 'Volume' },
 ] as const
 
 const EASING_OPTIONS = [
@@ -396,6 +398,57 @@ export function StudioProperties({
                   className="h-6 flex-1 border-[#3f4147] bg-[#1e1f22] text-[10px] text-zinc-100"
                 />
               </div>
+            </div>
+            <div>
+              <label className="text-[9px] text-zinc-500 font-medium mb-1 block">Font</label>
+              <FontPicker value={layer.fontFamily || 'Inter'} onChange={(f) => onUpdate({ fontFamily: f })} />
+            </div>
+            <div>
+              <label className="text-[9px] text-zinc-500 font-medium mb-1 block">Align</label>
+              <div className="flex gap-0.5">
+                {(['left', 'center', 'right'] as const).map(a => (
+                  <button key={a} onClick={() => onUpdate({ textAlign: a })}
+                    className={`flex-1 h-5 rounded-md text-[8px] flex items-center justify-center transition-colors ${layer.textAlign === a ? 'bg-red-500/20 text-red-400' : 'bg-[#1e1f22] text-zinc-500 hover:text-zinc-300'}`}>
+                    {a.charAt(0).toUpperCase() + a.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Audio-specific properties */}
+        {layer.type === 'audio' && (
+          <div className="space-y-2 border-t border-[#1e1f22] pt-2">
+            <Label className="text-[9px] text-zinc-500 font-medium">
+              Audio Properties
+            </Label>
+            {layer.src && (
+              <div>
+                <Label className="mb-1 text-[9px] text-zinc-500 font-medium">File</Label>
+                <p className="text-[9px] text-zinc-300 truncate">{layer.name}</p>
+              </div>
+            )}
+            <div>
+              <Label className="mb-1 text-[9px] text-zinc-500 font-medium">
+                Volume ({Math.round((layer.volume ?? 1) * 100)}%)
+              </Label>
+              <Slider
+                value={[(layer.volume ?? 1) * 100]}
+                min={0}
+                max={100}
+                step={1}
+                onValueChange={([v]) => onUpdate({ volume: v / 100 })}
+                className="py-1"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={layer.audioLoop ?? false}
+                onCheckedChange={(v) => onUpdate({ audioLoop: v })}
+                size="sm"
+              />
+              <span className="text-[10px] text-zinc-400">Loop</span>
             </div>
           </div>
         )}
