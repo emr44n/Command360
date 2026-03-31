@@ -117,7 +117,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
     }
   }, [saveStatus])
 
-  // Flush pending saves on unmount
+  // Clear timers on unmount (flushSaves added in separate effect below)
   useEffect(() => {
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
@@ -217,6 +217,23 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
     if (!allOk) toast.error('Some changes failed to save', { duration: 2000 })
     return allOk
   }, [])
+
+  // Flush saves before page unload — prevents data loss
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const pending = { ...pendingUpdatesRef.current }
+      const entries = Object.entries(pending)
+      for (const [slideId, updates] of entries) {
+        try { navigator.sendBeacon(`/api/slides/${slideId}`, JSON.stringify(updates)) } catch { /* ignore */ }
+      }
+      pendingUpdatesRef.current = {}
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      flushSaves()
+    }
+  }, [flushSaves])
 
   const handleAddSlide = useCallback(async (type: SlideType) => {
     pushUndo()

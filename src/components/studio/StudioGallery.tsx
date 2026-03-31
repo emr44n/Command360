@@ -169,19 +169,33 @@ export function StudioGallery({
     if (!files) return
     setUploading(true)
     setUploadProgress(0)
+    let successCount = 0
     try {
       for (const file of Array.from(files)) {
         try {
           const { url, name } = await uploadAssetFile(file, (pct) => setUploadProgress(pct))
           setImages((prev) => [...prev, { id: generateLayerId(), name, url, type: 'image' }])
-        } catch {
-          const url = URL.createObjectURL(file)
-          setImages((prev) => [...prev, { id: generateLayerId(), name: file.name, url, type: 'image' }])
+          successCount++
+        } catch (err) {
+          // Retry once
+          try {
+            const { url, name } = await uploadAssetFile(file, (pct) => setUploadProgress(pct))
+            setImages((prev) => [...prev, { id: generateLayerId(), name, url, type: 'image' }])
+            successCount++
+          } catch {
+            // DO NOT fallback to blob URL — it will break on refresh
+            const { toast } = await import('sonner')
+            toast.error(`Failed to upload "${file.name}". Check your connection and try again.`, { duration: 4000 })
+          }
         }
       }
     } finally {
       setUploading(false)
       setUploadProgress(0)
+      if (successCount > 0) {
+        const { toast } = await import('sonner')
+        toast.success(`${successCount} image${successCount > 1 ? 's' : ''} uploaded`, { duration: 2000 })
+      }
     }
     e.target.value = ''
   }
@@ -191,19 +205,32 @@ export function StudioGallery({
     if (!files) return
     setUploading(true)
     setUploadProgress(0)
+    let successCount = 0
     try {
       for (const file of Array.from(files)) {
         try {
           const { url, name } = await uploadAssetFile(file, (pct) => setUploadProgress(pct))
           setVideos((prev) => [...prev, { id: generateLayerId(), name, url, type: 'video' }])
+          successCount++
         } catch {
-          const url = URL.createObjectURL(file)
-          setVideos((prev) => [...prev, { id: generateLayerId(), name: file.name, url, type: 'video' }])
+          // Retry once
+          try {
+            const { url, name } = await uploadAssetFile(file, (pct) => setUploadProgress(pct))
+            setVideos((prev) => [...prev, { id: generateLayerId(), name, url, type: 'video' }])
+            successCount++
+          } catch {
+            const { toast } = await import('sonner')
+            toast.error(`Failed to upload video. Check your connection and try again.`, { duration: 4000 })
+          }
         }
       }
     } finally {
       setUploading(false)
       setUploadProgress(0)
+      if (successCount > 0) {
+        const { toast } = await import('sonner')
+        toast.success(`${successCount} video${successCount > 1 ? 's' : ''} uploaded`, { duration: 2000 })
+      }
     }
     e.target.value = ''
   }
