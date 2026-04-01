@@ -699,7 +699,7 @@ export function StudioEditor({
               <item.icon className="w-4 h-4" />
               <span className="text-[7px] leading-none font-medium">{item.label}</span>
             </button>
-            </TooltipTrigger><TooltipContent>{item.label}</TooltipContent></Tooltip>
+            </TooltipTrigger><TooltipContent side="right">{item.label}</TooltipContent></Tooltip>
           )
         })}
 
@@ -720,7 +720,7 @@ export function StudioEditor({
           <Save className="w-4 h-4" />
           <span className="text-[7px] leading-none font-medium">Save</span>
         </button>
-        </TooltipTrigger><TooltipContent>Save as Template</TooltipContent></Tooltip>
+        </TooltipTrigger><TooltipContent side="right">Save as Template</TooltipContent></Tooltip>
 
         {/* Divider */}
         <div className="w-6 h-px bg-zinc-700/50 mb-1" />
@@ -736,7 +736,7 @@ export function StudioEditor({
           <Settings2 className="w-4 h-4" />
           <span className="text-[7px] leading-none font-medium">Props</span>
         </button>
-        </TooltipTrigger><TooltipContent>Properties</TooltipContent></Tooltip>
+        </TooltipTrigger><TooltipContent side="right">Properties</TooltipContent></Tooltip>
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => setShowTimeline(v => !v)}
@@ -747,7 +747,7 @@ export function StudioEditor({
           <Film className="w-4 h-4" />
           <span className="text-[7px] leading-none font-medium">Time</span>
         </button>
-        </TooltipTrigger><TooltipContent>Timeline</TooltipContent></Tooltip>
+        </TooltipTrigger><TooltipContent side="right">Timeline</TooltipContent></Tooltip>
       </div>
 
       {/* Main area */}

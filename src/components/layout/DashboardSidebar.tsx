@@ -153,7 +153,7 @@ export function DashboardSidebar() {
           >
             {creatingPresentation ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
           </button>
-          </TooltipTrigger><TooltipContent>New Presentation</TooltipContent></Tooltip>
+          </TooltipTrigger><TooltipContent side="right">New Presentation</TooltipContent></Tooltip>
         ) : (
           <button
             onClick={() => setShowNewDialog(true)}
@@ -346,7 +346,7 @@ export function DashboardSidebar() {
         >
           {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
-        </TooltipTrigger><TooltipContent>{theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}</TooltipContent></Tooltip>
+        </TooltipTrigger><TooltipContent side="right">{theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}</TooltipContent></Tooltip>
         {!collapsed && (
           <span className="text-[11px] text-muted-foreground flex-1">{theme === 'dark' ? 'Dark' : 'Light'}</span>
         )}
@@ -357,7 +357,7 @@ export function DashboardSidebar() {
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
-        </TooltipTrigger><TooltipContent>{collapsed ? 'Expand sidebar' : 'Collapse sidebar'}</TooltipContent></Tooltip>
+        </TooltipTrigger><TooltipContent side="right">{collapsed ? 'Expand sidebar' : 'Collapse sidebar'}</TooltipContent></Tooltip>
       </div>
 
       {/* User area */}
@@ -373,7 +373,7 @@ export function DashboardSidebar() {
                 <span className="text-[11px] font-bold text-primary">{initials}</span>
               </div>
             </Link>
-            </TooltipTrigger><TooltipContent>{userName || userEmail}</TooltipContent></Tooltip>
+            </TooltipTrigger><TooltipContent side="right">{userName || userEmail}</TooltipContent></Tooltip>
             <Tooltip><TooltipTrigger asChild>
             <button
               onClick={handleSignOut}
@@ -381,7 +381,7 @@ export function DashboardSidebar() {
             >
               <LogOut className="w-4 h-4" />
             </button>
-            </TooltipTrigger><TooltipContent>Sign out</TooltipContent></Tooltip>
+            </TooltipTrigger><TooltipContent side="right">Sign out</TooltipContent></Tooltip>
           </>
         ) : (
           <>

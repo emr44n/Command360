@@ -6,13 +6,15 @@ import { Tooltip as TooltipPrimitive } from "radix-ui"
 import { cn } from "@/lib/utils"
 
 function TooltipProvider({
-  delayDuration = 100,
+  delayDuration = 0,
+  skipDelayDuration = 0,
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
   return (
     <TooltipPrimitive.Provider
       data-slot="tooltip-provider"
       delayDuration={delayDuration}
+      skipDelayDuration={skipDelayDuration}
       {...props}
     />
   )
@@ -32,7 +34,7 @@ function TooltipTrigger({
 
 function TooltipContent({
   className,
-  sideOffset = 6,
+  sideOffset = 8,
   children,
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Content>) {
@@ -43,20 +45,20 @@ function TooltipContent({
         sideOffset={sideOffset}
         className={cn(
           "z-[9999] w-fit origin-(--radix-tooltip-content-transform-origin)",
-          "bg-[#111113] border border-red-500/25 text-white text-[11px] font-medium",
-          "rounded-lg px-2.5 py-1.5 shadow-xl shadow-black/30",
-          "animate-in fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
-          "data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1",
-          "data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1",
-          "data-[state=closed]:data-[side=bottom]:slide-out-to-top-1",
-          "data-[state=closed]:data-[side=top]:slide-out-to-bottom-1",
-          "duration-150",
+          "bg-[#0a0a0b] border border-red-500/30 text-white text-[11px] font-medium",
+          "rounded-lg px-2.5 py-1.5 shadow-xl shadow-black/40",
+          "animate-in fade-in-0 duration-100",
+          "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-75",
+          "data-[side=bottom]:slide-in-from-top-1",
+          "data-[side=left]:slide-in-from-right-1",
+          "data-[side=right]:slide-in-from-left-1",
+          "data-[side=top]:slide-in-from-bottom-1",
           className
         )}
         {...props}
       >
         {children}
-        <TooltipPrimitive.Arrow className="fill-[#111113] z-50" width={8} height={4} />
+        <TooltipPrimitive.Arrow className="fill-[#0a0a0b] drop-shadow-sm" width={10} height={5} />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   )
