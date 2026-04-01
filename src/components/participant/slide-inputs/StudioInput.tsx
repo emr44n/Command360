@@ -30,6 +30,8 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
   )
   const [exerciseEnded, setExerciseEnded] = useState(false)
   const [exerciseStats, setExerciseStats] = useState<{ duration: number; eventsTriggered: number } | null>(null)
+  const [sessionSeconds, setSessionSeconds] = useState(0)
+  const [isCanvasFullscreen, setIsCanvasFullscreen] = useState(false)
   const [activeVote, setActiveVote] = useState<{
     eventId: string
     question: string
@@ -191,6 +193,17 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
     return () => { supabase.removeChannel(mainChannel) }
   }, [sessionId, slide.id])
 
+  useEffect(() => {
+    const interval = setInterval(() => setSessionSeconds(s => s + 1), 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    const handler = () => setIsCanvasFullscreen(!!document.fullscreenElement)
+    document.addEventListener('fullscreenchange', handler)
+    return () => document.removeEventListener('fullscreenchange', handler)
+  }, [])
+
   async function handleVoteSubmit() {
     if (!selectedOptionId || !activeVote || submittingVote) return
     setSubmittingVote(true)
@@ -280,20 +293,6 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
       </div>
     )
   }
-
-  const [sessionSeconds, setSessionSeconds] = useState(0)
-  const [isCanvasFullscreen, setIsCanvasFullscreen] = useState(false)
-
-  useEffect(() => {
-    const interval = setInterval(() => setSessionSeconds(s => s + 1), 1000)
-    return () => clearInterval(interval)
-  }, [])
-
-  useEffect(() => {
-    const handler = () => setIsCanvasFullscreen(!!document.fullscreenElement)
-    document.addEventListener('fullscreenchange', handler)
-    return () => document.removeEventListener('fullscreenchange', handler)
-  }, [])
 
   const formatTimer = (s: number) => {
     const m = Math.floor(s / 60)
@@ -401,7 +400,7 @@ function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerSta
     transform: `rotate(${state.rotation}deg) translateZ(0)`,
     mixBlendMode: layer.blendMode as React.CSSProperties['mixBlendMode'],
     transition: 'left 600ms ease-in-out, top 600ms ease-in-out, width 600ms ease-in-out, height 600ms ease-in-out, opacity 600ms ease-in-out, transform 600ms ease-in-out',
-    willChange: 'left, top, opacity, transform',
+    willChange: 'opacity, transform',
     zIndex: layer.zIndex,
     overflow: 'hidden',
   }

@@ -85,20 +85,6 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     }
   }, [initialLayers])
 
-  // ─── Keyboard handler (Delete/Backspace) ───
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedLayerId) {
-        // Don't delete if user is typing in an input
-        if ((e.target as HTMLElement)?.tagName === 'INPUT' || (e.target as HTMLElement)?.tagName === 'TEXTAREA') return
-        e.preventDefault()
-        deleteLayer(selectedLayerId)
-      }
-    }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [selectedLayerId])
-
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`
 
   // ─── Throttled broadcast ───
@@ -123,6 +109,19 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     setSelectedLayerId(null)
     channelRef.current?.send({ type: 'broadcast', event: 'STUDIO_LAYER_REMOVED', payload: { slide_id: slide.id, layerId } })
   }, [slide.id, channelRef])
+
+  // ─── Keyboard handler (Delete/Backspace) ───
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedLayerId) {
+        if ((e.target as HTMLElement)?.tagName === 'INPUT' || (e.target as HTMLElement)?.tagName === 'TEXTAREA') return
+        e.preventDefault()
+        deleteLayer(selectedLayerId)
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [selectedLayerId, deleteLayer])
 
   // ─── Event triggering ───
   const triggerEvent = useCallback((event: StudioEvent) => {
@@ -370,7 +369,8 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                     key={layer.id}
                     style={{
                       position: 'absolute',
-                      transform: `translate(${(state.x / 100) * (canvasRef.current?.clientWidth || 0)}px, ${(state.y / 100) * (canvasRef.current?.clientHeight || 0)}px)`,
+                      left: `${state.x}%`,
+                      top: `${state.y}%`,
                       width: `${state.width}%`,
                       height: `${state.height}%`,
                       opacity: state.opacity,
