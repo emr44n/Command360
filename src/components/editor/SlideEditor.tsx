@@ -12,6 +12,10 @@ import { AddImageDialog } from './AddImageDialog'
 import type { CanvasElement, StudioContent } from '@/types/slide'
 import { StudioEditor } from '@/components/studio/StudioEditor'
 import { ExportDialog } from '@/components/studio/ExportDialog'
+import { LiveDirectorView, type ExerciseStats } from '@/components/presenter/LiveDirectorView'
+import { ExerciseDebrief } from '@/components/studio/ExerciseDebrief'
+import { ActiveModeEntry } from '@/components/studio/ActiveModeEntry'
+import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -70,6 +74,14 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   // Undo/redo
   const [undoStack, setUndoStack] = useState<Slide[][]>([])
   const [redoStack, setRedoStack] = useState<Slide[][]>([])
+
+  // Active Mode (Live Director)
+  const [activeMode, setActiveMode] = useState(false)
+  const [showActiveEntry, setShowActiveEntry] = useState(false)
+  const [activeModeSession, setActiveModeSession] = useState<{ id: string; room_code: string } | null>(null)
+  const [activeModePresenter, setActiveModePresenter] = useState('')
+  const [exerciseStats, setExerciseStats] = useState<ExerciseStats | null>(null)
+  const channelRef = useRef<ReturnType<ReturnType<typeof createClient>['channel']> | null>(null)
 
   const selectedSlide = slides.find((s) => s.id === selectedSlideId) || null
   const selectedIndex = slides.findIndex((s) => s.id === selectedSlideId)
@@ -485,11 +497,78 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
     }
   }
 
+  async function handleStartActiveMode(presenterName: string) {
+    setShowActiveEntry(false)
+    setActiveModePresenter(presenterName)
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current)
+      saveTimerRef.current = null
+    }
+    await flushSaves()
+
+    setStarting(true)
+    const res = await fetch('/api/sessions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ presentation_id: presentation.id }),
+    })
+    if (res.ok) {
+      const data = await res.json()
+      const supabase = createClient()
+      const channel = supabase.channel(`session:${data.session.id}`)
+      channel.subscribe()
+      channelRef.current = channel
+      setActiveModeSession({ id: data.session.id, room_code: data.session.room_code })
+      setActiveMode(true)
+      setStarting(false)
+    } else {
+      toast.error('Failed to start session', { duration: 2000 })
+      setStarting(false)
+    }
+  }
+
   function selectPrev() {
     if (selectedIndex > 0) setSelectedSlideId(slides[selectedIndex - 1].id)
   }
   function selectNext() {
     if (selectedIndex < slides.length - 1) setSelectedSlideId(slides[selectedIndex + 1].id)
+  }
+
+  // ── Exercise Debrief Screen ──
+  if (exerciseStats) {
+    return (
+      <ExerciseDebrief
+        stats={exerciseStats}
+        onReturn={() => {
+          setExerciseStats(null)
+          setActiveMode(false)
+          setActiveModeSession(null)
+          if (channelRef.current) {
+            const supabase = createClient()
+            supabase.removeChannel(channelRef.current)
+            channelRef.current = null
+          }
+        }}
+      />
+    )
+  }
+
+  // ── Active Mode (Live Director View) ──
+  if (activeMode && activeModeSession && selectedSlide && isStudioSlide) {
+    return (
+      <>
+        <LiveDirectorView
+          slide={selectedSlide}
+          session={activeModeSession}
+          channelRef={channelRef}
+          presenterName={activeModePresenter}
+          onEndExercise={(stats) => {
+            setActiveMode(false)
+            setExerciseStats(stats)
+          }}
+        />
+      </>
+    )
   }
 
   // ── Full-screen Studio Mode — overlays on top of everything ──
@@ -593,9 +672,9 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             Preview
           </Button>
 
-          {/* Present */}
+          {/* Run Scene → Active Mode */}
           <Button
-            onClick={handleStart}
+            onClick={() => setShowActiveEntry(true)}
             disabled={starting}
             size="sm"
             className="bg-red-600 hover:bg-red-500 text-white gap-1 rounded-full px-4 h-7 text-xs font-semibold"
@@ -747,6 +826,15 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           presentationTitle={presentationTitle}
           slides={slides}
         />
+
+        {/* Active Mode Entry */}
+        {showActiveEntry && (
+          <ActiveModeEntry
+            sceneName={presentationTitle || selectedSlide?.title || 'Untitled Scene'}
+            onStart={(presenterName) => handleStartActiveMode(presenterName)}
+            onCancel={() => setShowActiveEntry(false)}
+          />
+        )}
       </div>
     )
   }

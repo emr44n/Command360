@@ -22,11 +22,14 @@ const OPTION_COLORS = [
 
 export function StudioInput({ slide, sessionId, onSubmit }: Props) {
   const content = slide.content as StudioContent
-  const { canvas, layers } = content
+  const { canvas, layers: initialLayers } = content
 
+  const [layers, setLayers] = useState<StudioLayer[]>(initialLayers)
   const [layerStates, setLayerStates] = useState<Record<string, StudioLayerState>>(() =>
-    buildInitialStates(layers)
+    buildInitialStates(initialLayers)
   )
+  const [exerciseEnded, setExerciseEnded] = useState(false)
+  const [exerciseStats, setExerciseStats] = useState<{ duration: number; eventsTriggered: number } | null>(null)
   const [activeVote, setActiveVote] = useState<{
     eventId: string
     question: string
@@ -81,6 +84,32 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
           /* Playback paused — scene holds current state */
         }
       })
+      .on('broadcast', { event: 'STUDIO_LAYER_ADDED' }, ({ payload }) => {
+        if (payload.slide_id === slide.id && payload.layer) {
+          const newLayer = payload.layer as StudioLayer
+          setLayers(prev => [...prev, newLayer])
+          setLayerStates(prev => ({
+            ...prev,
+            [newLayer.id]: {
+              visible: newLayer.visible, opacity: newLayer.opacity,
+              x: newLayer.x, y: newLayer.y, width: newLayer.width, height: newLayer.height,
+              rotation: newLayer.rotation, src: newLayer.src,
+            },
+          }))
+        }
+      })
+      .on('broadcast', { event: 'STUDIO_LAYER_REMOVED' }, ({ payload }) => {
+        if (payload.slide_id === slide.id && payload.layerId) {
+          setLayers(prev => prev.filter(l => l.id !== payload.layerId))
+          setLayerStates(prev => { const n = { ...prev }; delete n[payload.layerId]; return n })
+        }
+      })
+      .on('broadcast', { event: 'STUDIO_EXERCISE_ENDED' }, ({ payload }) => {
+        if (payload.slide_id === slide.id) {
+          setExerciseEnded(true)
+          setExerciseStats({ duration: payload.duration, eventsTriggered: payload.eventsTriggered })
+        }
+      })
       .subscribe()
 
     channelRef.current = channel
@@ -131,6 +160,32 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
           /* Playback paused — scene holds current state */
         }
       })
+      .on('broadcast', { event: 'STUDIO_LAYER_ADDED' }, ({ payload }) => {
+        if (payload.slide_id === slide.id && payload.layer) {
+          const newLayer = payload.layer as StudioLayer
+          setLayers(prev => [...prev, newLayer])
+          setLayerStates(prev => ({
+            ...prev,
+            [newLayer.id]: {
+              visible: newLayer.visible, opacity: newLayer.opacity,
+              x: newLayer.x, y: newLayer.y, width: newLayer.width, height: newLayer.height,
+              rotation: newLayer.rotation, src: newLayer.src,
+            },
+          }))
+        }
+      })
+      .on('broadcast', { event: 'STUDIO_LAYER_REMOVED' }, ({ payload }) => {
+        if (payload.slide_id === slide.id && payload.layerId) {
+          setLayers(prev => prev.filter(l => l.id !== payload.layerId))
+          setLayerStates(prev => { const n = { ...prev }; delete n[payload.layerId]; return n })
+        }
+      })
+      .on('broadcast', { event: 'STUDIO_EXERCISE_ENDED' }, ({ payload }) => {
+        if (payload.slide_id === slide.id) {
+          setExerciseEnded(true)
+          setExerciseStats({ duration: payload.duration, eventsTriggered: payload.eventsTriggered })
+        }
+      })
       .subscribe()
 
     return () => { supabase.removeChannel(mainChannel) }
@@ -150,6 +205,27 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
     await onSubmit({ studio_vote_option_id: selectedOptionId, studio_event_id: activeVote.eventId })
     setVoteSubmitted(true)
     setSubmittingVote(false)
+  }
+
+  // If the exercise has ended, show the ended screen
+  if (exerciseEnded) {
+    const formatDuration = (s: number) => `${Math.floor(s / 60)}m ${s % 60}s`
+    return (
+      <div className="text-center py-12 space-y-4 animate-in fade-in zoom-in-95 duration-500">
+        <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center mx-auto">
+          <svg viewBox="0 0 24 24" className="w-7 h-7 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+        </div>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-medium">Command 360</p>
+        <h2 className="text-xl font-bold">Exercise Complete</h2>
+        {exerciseStats && (
+          <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+            <span>Duration: {formatDuration(exerciseStats.duration)}</span>
+            <span>Events: {exerciseStats.eventsTriggered}</span>
+          </div>
+        )}
+        <p className="text-sm text-muted-foreground">The presenter has ended this exercise session.</p>
+      </div>
+    )
   }
 
   // If there's an active vote, show the vote UI

@@ -12,6 +12,8 @@ export type BroadcastEvent =
   | { event: 'STUDIO_VOTE_CAST'; payload: { slide_id: string; event_id: string; option_id: string } }
   | { event: 'STUDIO_VOTE_RESULT'; payload: { slide_id: string; event_id: string; winning_option_id: string; results: Record<string, number> } }
   | { event: 'STUDIO_LAYER_ADDED'; payload: { slide_id: string; layer: StudioLayer } }
+  | { event: 'STUDIO_LAYER_REMOVED'; payload: { slide_id: string; layerId: string } }
+  | { event: 'STUDIO_EXERCISE_ENDED'; payload: { slide_id: string; duration: number; eventsTriggered: number } }
   /* Command Studio v2 playback events */
   | { event: 'STUDIO_PLAYBACK_START'; payload: { slide_id: string; startTime: number; eventId?: string } }
   | { event: 'STUDIO_PLAYBACK_PAUSE'; payload: { slide_id: string; currentTime: number } }
