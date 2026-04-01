@@ -19,7 +19,7 @@ const NAV_ITEMS = [
   { href: '/dashboard/reports', label: 'Reports', icon: BarChart2 },
   { href: '/dashboard/shared', label: 'Shared', icon: Share2 },
   { href: '/dashboard/admin', label: 'Admin', icon: ShieldCheck },
-  { href: '/dashboard/analytics', label: 'Analytics', icon: TrendingUp },
+  { href: '/dashboard/studio-analytics', label: 'Analytics', icon: TrendingUp },
   { href: '/dashboard/team', label: 'Team', icon: Users },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ]
