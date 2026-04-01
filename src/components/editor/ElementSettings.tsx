@@ -8,6 +8,7 @@ import {
   Trash2, RotateCw, Square, Circle, Maximize, Minimize, Eye,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface Props {
   element: CanvasElement
@@ -231,13 +232,14 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
                 placeholder="transparent"
               />
               {style.backgroundColor && (
+                <Tooltip><TooltipTrigger asChild>
                 <button
                   onClick={() => onUpdateStyle({ backgroundColor: '' })}
                   className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted text-xs"
-                  title="Clear background"
                 >
                   <Trash2 className="w-3 h-3" />
                 </button>
+                </TooltipTrigger><TooltipContent>Clear background</TooltipContent></Tooltip>
               )}
             </div>
           </div>
@@ -285,27 +287,30 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
               <span className="text-xs text-muted-foreground w-10 text-right">{style.borderRadius || 0}px</span>
             </div>
             <div className="flex items-center gap-1.5">
+              <Tooltip><TooltipTrigger asChild>
               <button
                 onClick={() => onUpdateStyle({ borderRadius: 0 })}
                 className={cn('p-1.5 rounded-md transition-colors', (style.borderRadius || 0) === 0 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
-                title="Sharp corners"
               >
                 <Square className="w-3.5 h-3.5" />
               </button>
+              </TooltipTrigger><TooltipContent>Sharp corners</TooltipContent></Tooltip>
+              <Tooltip><TooltipTrigger asChild>
               <button
                 onClick={() => onUpdateStyle({ borderRadius: 8 })}
                 className={cn('p-1.5 rounded-md transition-colors', style.borderRadius === 8 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
-                title="Rounded corners"
               >
                 <Square className="w-3.5 h-3.5" style={{ borderRadius: 3 }} />
               </button>
+              </TooltipTrigger><TooltipContent>Rounded corners</TooltipContent></Tooltip>
+              <Tooltip><TooltipTrigger asChild>
               <button
                 onClick={() => onUpdateStyle({ borderRadius: 50 })}
                 className={cn('p-1.5 rounded-md transition-colors', style.borderRadius === 50 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
-                title="Circle"
               >
                 <Circle className="w-3.5 h-3.5" />
               </button>
+              </TooltipTrigger><TooltipContent>Circle</TooltipContent></Tooltip>
             </div>
           </div>
 

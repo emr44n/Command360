@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import type { StudioEvent, StudioAction, StudioLayer, StudioEventCategory, StudioLayerState } from '@/types/slide'
 import { useStudioStore } from '@/stores/studioStore'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface StudioEventSettingsProps {
   event: StudioEvent
@@ -212,20 +213,22 @@ export function StudioEventSettings({
           style={{ backgroundColor: event.color || '#6366f1' }}
         />
         <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex-1">Event Settings</span>
+        <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => onTriggerEvent(event.id)}
           className="p-1 rounded hover:bg-emerald-600/20 text-emerald-400 transition-colors cursor-pointer"
-          title="Trigger event"
         >
           <Play className="size-3.5 fill-current" />
         </button>
+        </TooltipTrigger><TooltipContent>Trigger event</TooltipContent></Tooltip>
+        <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => onDeleteEvent(event.id)}
           className="p-1 rounded hover:bg-red-600/20 text-zinc-500 hover:text-red-400 transition-colors cursor-pointer"
-          title="Delete event"
         >
           <Trash2 className="size-3.5" />
         </button>
+        </TooltipTrigger><TooltipContent>Delete event</TooltipContent></Tooltip>
       </div>
 
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-4">

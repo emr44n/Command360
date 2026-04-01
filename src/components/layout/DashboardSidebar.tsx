@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
@@ -144,17 +145,15 @@ export function DashboardSidebar() {
       {/* New Presentation button */}
       <div className={cn('pt-4', collapsed ? 'px-2.5' : 'px-3')}>
         {collapsed ? (
+          <Tooltip><TooltipTrigger asChild>
           <button
             onClick={() => setShowNewDialog(true)}
             disabled={creatingPresentation}
             className="w-full flex items-center justify-center p-2.5 rounded-xl bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 active:scale-95 group relative disabled:opacity-70"
-            title="New Presentation"
           >
             {creatingPresentation ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-            <div className="absolute left-full ml-2.5 px-2.5 py-1.5 rounded-lg bg-popover text-popover-foreground text-xs font-medium border border-border shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50">
-              New Presentation
-            </div>
           </button>
+          </TooltipTrigger><TooltipContent>New Presentation</TooltipContent></Tooltip>
         ) : (
           <button
             onClick={() => setShowNewDialog(true)}
@@ -281,7 +280,6 @@ export function DashboardSidebar() {
               )}
               <Link
                 href={item.href}
-                title={collapsed ? item.label : undefined}
                 className={cn(
                   'relative flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-200 group',
                   collapsed ? 'px-0 py-2.5 justify-center' : 'px-3 py-2.5',
@@ -341,56 +339,49 @@ export function DashboardSidebar() {
 
       {/* Theme toggle + Collapse */}
       <div className={cn('px-3 py-2 flex items-center', collapsed ? 'flex-col gap-1 px-2.5' : 'gap-1')}>
+        <Tooltip><TooltipTrigger asChild>
         <button
           onClick={toggleTheme}
           className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200 group relative"
-          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         >
           {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          {collapsed && (
-            <div className="absolute left-full ml-2.5 px-2.5 py-1.5 rounded-lg bg-popover text-popover-foreground text-xs font-medium border border-border shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50">
-              {theme === 'dark' ? 'Light mode' : 'Dark mode'}
-            </div>
-          )}
         </button>
+        </TooltipTrigger><TooltipContent>{theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}</TooltipContent></Tooltip>
         {!collapsed && (
           <span className="text-[11px] text-muted-foreground flex-1">{theme === 'dark' ? 'Dark' : 'Light'}</span>
         )}
+        <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => setCollapsed(v => !v)}
           className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200"
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
+        </TooltipTrigger><TooltipContent>{collapsed ? 'Expand sidebar' : 'Collapse sidebar'}</TooltipContent></Tooltip>
       </div>
 
       {/* User area */}
       <div className={cn('border-t border-border', collapsed ? 'p-2.5' : 'p-3 space-y-1')}>
         {collapsed ? (
           <>
+            <Tooltip><TooltipTrigger asChild>
             <Link
               href="/dashboard/settings"
               className="flex items-center justify-center p-1.5 group relative"
-              title={userName || userEmail}
             >
               <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors duration-200">
                 <span className="text-[11px] font-bold text-primary">{initials}</span>
               </div>
-              <div className="absolute left-full ml-2.5 px-2.5 py-1.5 rounded-lg bg-popover text-popover-foreground text-xs font-medium border border-border shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50">
-                {userName || userEmail}
-              </div>
             </Link>
+            </TooltipTrigger><TooltipContent>{userName || userEmail}</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild>
             <button
               onClick={handleSignOut}
               className="flex items-center justify-center p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/80 w-full transition-all duration-200 group relative"
-              title="Sign out"
             >
               <LogOut className="w-4 h-4" />
-              <div className="absolute left-full ml-2.5 px-2.5 py-1.5 rounded-lg bg-popover text-popover-foreground text-xs font-medium border border-border shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50">
-                Sign out
-              </div>
             </button>
+            </TooltipTrigger><TooltipContent>Sign out</TooltipContent></Tooltip>
           </>
         ) : (
           <>

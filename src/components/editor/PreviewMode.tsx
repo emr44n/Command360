@@ -14,6 +14,7 @@ import {
   Zap, Vote,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface Props {
   presentation: { id: string; title: string }
@@ -540,7 +541,8 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
 /* Toolbar Button — theme aware */
 function TBtn({ icon: Icon, title, onClick, active }: { icon: React.ElementType; title: string; onClick: () => void; active?: boolean }) {
   return (
-    <button onClick={onClick} title={title}
+    <Tooltip><TooltipTrigger asChild>
+    <button onClick={onClick}
       className={cn(
         'p-[5px] rounded-md transition-all',
         active
@@ -550,6 +552,7 @@ function TBtn({ icon: Icon, title, onClick, active }: { icon: React.ElementType;
     >
       <Icon className="w-[15px] h-[15px]" />
     </button>
+    </TooltipTrigger><TooltipContent>{title}</TooltipContent></Tooltip>
   )
 }
 
@@ -963,20 +966,22 @@ function StudioPreviewContent({ slide, animClass, allSlides = [] }: { slide: Sli
     return (
       <div className="flex-1 flex items-center justify-center p-6 min-h-0 bg-black relative">
         {/* Canvas fullscreen button */}
+        <Tooltip><TooltipTrigger asChild>
         <button
           onClick={toggleCanvasFullscreen}
           className="absolute top-3 right-3 z-20 w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white/60 hover:text-white flex items-center justify-center transition-all"
-          title="Fullscreen canvas"
         >
           <Maximize className="w-4 h-4" />
         </button>
+        </TooltipTrigger><TooltipContent>Fullscreen canvas</TooltipContent></Tooltip>
         {/* Red exit button when fullscreen */}
         {isCanvasFullscreen && (
+          <Tooltip><TooltipTrigger asChild>
           <button onClick={toggleCanvasFullscreen}
-            className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors"
-            title="Exit fullscreen">
+            className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors">
             <X className="w-4 h-4" />
           </button>
+          </TooltipTrigger><TooltipContent>Exit fullscreen</TooltipContent></Tooltip>
         )}
         <div ref={canvasRef} className="w-full max-w-5xl" style={{ maxWidth: 'min(64rem, calc((100vh - 10rem) * 16 / 9))' }}>
           <div className="w-full overflow-hidden rounded-xl shadow-2xl" style={{ aspectRatio: '16 / 9', display: 'grid', gap: '2px', background: '#000', ...gridStyle }}>
@@ -1019,20 +1024,22 @@ function StudioPreviewContent({ slide, animClass, allSlides = [] }: { slide: Sli
       <div className={cn('flex-1 flex items-center justify-center p-6 min-h-0', animClass)}>
         <div className="w-full relative" style={{ maxWidth: 'min(56rem, calc((100vh - 10rem) * 16 / 9))' }}>
           {/* Canvas fullscreen button */}
+          <Tooltip><TooltipTrigger asChild>
           <button
             onClick={toggleCanvasFullscreen}
             className="absolute top-2 right-2 z-20 w-7 h-7 rounded-lg bg-black/40 hover:bg-black/60 text-white/50 hover:text-white flex items-center justify-center transition-all"
-            title="Fullscreen canvas"
           >
             <Maximize className="w-3.5 h-3.5" />
           </button>
+          </TooltipTrigger><TooltipContent>Fullscreen canvas</TooltipContent></Tooltip>
           {/* Red exit button when fullscreen */}
           {isCanvasFullscreen && (
+            <Tooltip><TooltipTrigger asChild>
             <button onClick={toggleCanvasFullscreen}
-              className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors"
-              title="Exit fullscreen">
+              className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors">
               <X className="w-4 h-4" />
             </button>
+            </TooltipTrigger><TooltipContent>Exit fullscreen</TooltipContent></Tooltip>
           )}
           <div
             ref={canvasRef}

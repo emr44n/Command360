@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/select'
 import type { StudioLayer, StudioClip, StudioKeyframe } from '@/types/slide'
 import { FontPicker } from '@/components/studio/FontPicker'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface StudioPropertiesProps {
   layer: StudioLayer | null
@@ -114,24 +115,26 @@ export function StudioProperties({
       {/* Header */}
       <div className="flex items-center gap-2 border-b border-[#1e1f22] px-2 py-1.5">
         <span className="flex-1 truncate text-[10px] font-medium">{layer.name}</span>
+        <Tooltip><TooltipTrigger asChild>
         <Button
           variant="ghost"
           size="sm"
           className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-100"
           onClick={() => onDuplicate(layer.id)}
-          title="Duplicate"
         >
           <CopyIcon className="size-3.5" />
         </Button>
+        </TooltipTrigger><TooltipContent>Duplicate</TooltipContent></Tooltip>
+        <Tooltip><TooltipTrigger asChild>
         <Button
           variant="ghost"
           size="sm"
           className="h-6 w-6 p-0 text-red-400 hover:text-red-300"
           onClick={() => onDelete(layer.id)}
-          title="Delete"
         >
           <Trash2Icon className="size-3.5" />
         </Button>
+        </TooltipTrigger><TooltipContent>Delete</TooltipContent></Tooltip>
       </div>
 
       <div className="space-y-1.5 p-1.5">
@@ -185,6 +188,7 @@ export function StudioProperties({
             <Label className="text-[9px] text-zinc-500 font-medium">
               Size
             </Label>
+            <Tooltip><TooltipTrigger asChild>
             <button
               onClick={() => setAspectLocked(!aspectLocked)}
               className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-medium transition-colors ${
@@ -192,7 +196,6 @@ export function StudioProperties({
                   ? 'text-red-400 bg-red-400/10 hover:bg-red-400/20'
                   : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-700'
               }`}
-              title={aspectLocked ? 'Unlock aspect ratio' : 'Lock aspect ratio'}
             >
               {aspectLocked ? (
                 <><Link2Icon className="size-3" /> Locked</>
@@ -200,6 +203,7 @@ export function StudioProperties({
                 <><Unlink2Icon className="size-3" /> Unlocked</>
               )}
             </button>
+            </TooltipTrigger><TooltipContent>{aspectLocked ? 'Unlock aspect ratio' : 'Lock aspect ratio'}</TooltipContent></Tooltip>
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
@@ -567,13 +571,14 @@ export function StudioProperties({
                     <span className="w-12 shrink-0 truncate text-zinc-500">
                       {kf.easing}
                     </span>
+                    <Tooltip><TooltipTrigger asChild>
                     <button
                       className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors"
                       onClick={() => onDeleteKeyframe(kf.id)}
-                      title="Delete keyframe"
                     >
                       <Trash2Icon className="size-3" />
                     </button>
+                    </TooltipTrigger><TooltipContent>Delete keyframe</TooltipContent></Tooltip>
                   </div>
                 ))}
 

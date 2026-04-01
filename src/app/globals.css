@@ -166,31 +166,7 @@ html, body {
 .dark ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
 .dark ::-webkit-scrollbar-corner { background: transparent; }
 
-/* ── Custom tooltip bubble ── */
-[data-tooltip] {
-  position: relative;
-}
-[data-tooltip]::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 4px 8px;
-  border-radius: 6px;
-  background: #1e1f22;
-  border: 1px solid #3f4147;
-  color: #e4e4e7;
-  font-size: 10px;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
-  z-index: 100;
-}
-[data-tooltip]:hover::after {
-  opacity: 1;
-}
+/* Tooltip styles handled by Radix UI TooltipContent component */
 @keyframes marqueeLeft {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }

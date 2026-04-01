@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface ReactionBarProps {
   sessionId: string
@@ -69,14 +70,14 @@ export function ReactionBar({ sessionId, channelName }: ReactionBarProps) {
       {/* Reaction buttons */}
       <div className="flex items-center justify-center gap-2 bg-card border border-border rounded-full px-4 py-2 shadow-lg">
         {REACTIONS.map(r => (
+          <Tooltip key={r.label}><TooltipTrigger asChild>
           <button
-            key={r.label}
             onClick={() => sendReaction(r.emoji)}
             className="w-10 h-10 rounded-full flex items-center justify-center text-xl hover:bg-muted/80 hover:scale-125 active:scale-95 transition-all duration-200"
-            title={r.label}
           >
             {r.emoji}
           </button>
+          </TooltipTrigger><TooltipContent>{r.label}</TooltipContent></Tooltip>
         ))}
       </div>
 

@@ -28,6 +28,7 @@ import { playEvent } from '@/lib/studio/event-playback'
 import { useStudioStore } from '@/stores/studioStore'
 import { generateLayerId } from '@/lib/utils/studio-utils'
 import { TemplateGallery, saveAsTemplate } from '@/components/studio/TemplateGallery'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface StudioEditorProps {
   content: StudioContent
@@ -679,8 +680,8 @@ export function StudioEditor({
         {SIDEBAR_ICONS.map((item) => {
           const isActive = item.panel && showLeftPanel && activePanel === item.panel
           return (
+            <Tooltip key={item.label}><TooltipTrigger asChild>
             <button
-              key={item.label}
               onClick={() => {
                 if (showLeftPanel && activePanel === item.panel) {
                   setShowLeftPanel(false)
@@ -694,17 +695,18 @@ export function StudioEditor({
                   ? `${item.activeClass} shadow-lg`
                   : 'text-zinc-500 hover:text-zinc-200 hover:bg-[#35363c]'
               }`}
-              data-tooltip={item.label}
             >
               <item.icon className="w-4 h-4" />
               <span className="text-[7px] leading-none font-medium">{item.label}</span>
             </button>
+            </TooltipTrigger><TooltipContent>{item.label}</TooltipContent></Tooltip>
           )
         })}
 
         <div className="flex-1" />
 
         {/* Save as Template */}
+        <Tooltip><TooltipTrigger asChild>
         <button
           onClick={async () => {
             const title = window.prompt('Template name:')
@@ -714,36 +716,38 @@ export function StudioEditor({
             toast.success('Saved as template', { duration: 2000 })
           }}
           className="w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer text-zinc-500 hover:text-zinc-200 hover:bg-[#35363c]"
-          data-tooltip="Save as Template"
         >
           <Save className="w-4 h-4" />
           <span className="text-[7px] leading-none font-medium">Save</span>
         </button>
+        </TooltipTrigger><TooltipContent>Save as Template</TooltipContent></Tooltip>
 
         {/* Divider */}
         <div className="w-6 h-px bg-zinc-700/50 mb-1" />
 
         {/* Panel toggles at bottom */}
+        <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => setShowProperties(v => !v)}
           className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
             showProperties ? 'bg-[#35363c] text-zinc-300' : 'text-zinc-600 hover:text-zinc-400 hover:bg-[#35363c]'
           }`}
-          data-tooltip="Properties"
         >
           <Settings2 className="w-4 h-4" />
           <span className="text-[7px] leading-none font-medium">Props</span>
         </button>
+        </TooltipTrigger><TooltipContent>Properties</TooltipContent></Tooltip>
+        <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => setShowTimeline(v => !v)}
           className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
             showTimeline ? 'bg-[#35363c] text-zinc-300' : 'text-zinc-600 hover:text-zinc-400 hover:bg-[#35363c]'
           }`}
-          data-tooltip="Timeline"
         >
           <Film className="w-4 h-4" />
           <span className="text-[7px] leading-none font-medium">Time</span>
         </button>
+        </TooltipTrigger><TooltipContent>Timeline</TooltipContent></Tooltip>
       </div>
 
       {/* Main area */}
@@ -872,16 +876,18 @@ export function StudioEditor({
                     {formatTime(currentTime)}
                   </span>
                   <div className="flex items-center gap-1">
+                    <Tooltip><TooltipTrigger asChild>
                     <button onClick={handleUndo} disabled={undoStack.length === 0}
-                      className="w-6 h-6 rounded-md flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
-                      data-tooltip="Undo (Ctrl+Z)">
+                      className="w-6 h-6 rounded-md flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer">
                       <Undo2 className="w-3.5 h-3.5" />
                     </button>
+                    </TooltipTrigger><TooltipContent>Undo (Ctrl+Z)</TooltipContent></Tooltip>
+                    <Tooltip><TooltipTrigger asChild>
                     <button onClick={handleRedo} disabled={redoStack.length === 0}
-                      className="w-6 h-6 rounded-md flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
-                      data-tooltip="Redo (Ctrl+Shift+Z)">
+                      className="w-6 h-6 rounded-md flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer">
                       <Redo2 className="w-3.5 h-3.5" />
                     </button>
+                    </TooltipTrigger><TooltipContent>Redo (Ctrl+Shift+Z)</TooltipContent></Tooltip>
                     <button onClick={() => { setIsPlaying(false); setCurrentTime(0) }} className="w-6 h-6 rounded flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
                       <SkipBack className="w-3.5 h-3.5" />
                     </button>
@@ -1284,6 +1290,7 @@ function SlidesPanel({
                   </div>
                 ) : (
                   <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1">
+                    <Tooltip><TooltipTrigger asChild>
                     <span
                       className="text-[9px] text-zinc-300 font-medium flex items-center gap-1 truncate"
                       onDoubleClick={(e) => {
@@ -1291,11 +1298,11 @@ function SlidesPanel({
                         setEditTitle(slide.title || (isCctv ? `CCTV ${index + 1}` : `Scene ${index + 1}`))
                         setEditingId(slide.id)
                       }}
-                      title="Double-click to rename"
                     >
                       {isCctv && <Monitor className="w-2.5 h-2.5 text-indigo-400 shrink-0" />}
                       {slide.title || (isCctv ? `CCTV ${index + 1}` : `Scene ${index + 1}`)}
                     </span>
+                    </TooltipTrigger><TooltipContent>Double-click to rename</TooltipContent></Tooltip>
                   </div>
                 )}
                 {/* Scene number badge */}
@@ -1307,22 +1314,24 @@ function SlidesPanel({
                 {/* Duplicate & Delete buttons — visible on hover */}
                 <div className="absolute top-1 right-1 z-20 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
                   {onDuplicateSlide && (
+                    <Tooltip><TooltipTrigger asChild>
                     <button
                       onClick={(e) => { e.stopPropagation(); onDuplicateSlide(slide.id) }}
                       className="w-5 h-5 rounded-md bg-[#383a40]/90 hover:bg-indigo-500/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
-                      title="Duplicate scene"
                     >
                       <Copy className="w-2.5 h-2.5" />
                     </button>
+                    </TooltipTrigger><TooltipContent>Duplicate scene</TooltipContent></Tooltip>
                   )}
                   {onDeleteSlide && slides.length > 1 && (
+                    <Tooltip><TooltipTrigger asChild>
                     <button
                       onClick={(e) => { e.stopPropagation(); onDeleteSlide(slide.id) }}
                       className="w-5 h-5 rounded-md bg-[#383a40]/90 hover:bg-red-500/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
-                      title="Delete scene"
                     >
                       <Trash2Icon className="w-2.5 h-2.5" />
                     </button>
+                    </TooltipTrigger><TooltipContent>Delete scene</TooltipContent></Tooltip>
                   )}
                 </div>
               </div>
@@ -1408,13 +1417,14 @@ function TextPanel({
               <Type className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span className="flex-1 truncate">{layer.name}</span>
               <span className="text-[10px] text-zinc-600 truncate max-w-[80px]">{layer.text}</span>
+              <Tooltip><TooltipTrigger asChild>
               <button
                 onClick={(e) => { e.stopPropagation(); onDeleteLayer(layer.id) }}
                 className="p-0.5 text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all"
-                title="Delete"
               >
                 <Trash2Icon className="w-3 h-3" />
               </button>
+              </TooltipTrigger><TooltipContent>Delete</TooltipContent></Tooltip>
             </div>
           )
         })}
@@ -1495,15 +1505,15 @@ function ShapesPanel({
                 onChange={(e) => { e.stopPropagation(); onUpdateLayer(layer.id, { color: e.target.value }) }}
                 onClick={(e) => e.stopPropagation()}
                 className="w-5 h-5 rounded cursor-pointer border-0 bg-transparent p-0"
-                title="Change color"
               />
+              <Tooltip><TooltipTrigger asChild>
               <button
                 onClick={(e) => { e.stopPropagation(); onDeleteLayer(layer.id) }}
                 className="p-0.5 text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all"
-                title="Delete"
               >
                 <Trash2Icon className="w-3 h-3" />
               </button>
+              </TooltipTrigger><TooltipContent>Delete</TooltipContent></Tooltip>
             </div>
           )
         })}
@@ -1586,7 +1596,7 @@ function SceneProperties({
             {['#ffffff', '#000000', '#1a1a2e', '#0f0f0f', '#1e3a5f', '#2d1b69', '#1a3c34', '#3b1c1c', '#3a2a0a', '#dc2626'].map(c => (
               <button key={c} onClick={() => handleBgChange(c)}
                 className={`w-5 h-5 rounded-md border transition-all cursor-pointer ${bgColor === c ? 'border-red-500 ring-1 ring-red-500/50 scale-110' : 'border-[#3f4147] hover:border-zinc-400'}`}
-                style={{ backgroundColor: c }} title={c} />
+                style={{ backgroundColor: c }} />
             ))}
           </div>
           <div className="flex items-center gap-2">

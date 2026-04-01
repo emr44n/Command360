@@ -3,6 +3,7 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react'
 import { Monitor, Grid2x2, LayoutGrid, Columns2, Square, ChevronDown } from 'lucide-react'
 import type { Slide, StudioContent } from '@/types/slide'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface StudioCctvEditorProps {
   content: StudioContent
@@ -146,20 +147,20 @@ export function StudioCctvEditor({ content, onContentChange, slides, currentSlid
             {LAYOUT_OPTIONS.map((opt) => {
               const isActive = layout === opt.value
               return (
+                <Tooltip key={opt.value}><TooltipTrigger asChild>
                 <button
-                  key={opt.value}
                   onClick={() => handleLayoutChange(opt.value)}
                   className={`flex items-center justify-center w-8 h-8 rounded border transition-all cursor-pointer ${
                     isActive
                       ? 'border-red-500 bg-red-500/15 text-red-400'
                       : 'border-[#3f4147] bg-[#1e1f22] text-zinc-500 hover:border-zinc-500 hover:text-zinc-300'
                   }`}
-                  title={opt.description}
                 >
                   <div className="w-5">
                     <LayoutPreview layout={opt.value} />
                   </div>
                 </button>
+                </TooltipTrigger><TooltipContent>{opt.description}</TooltipContent></Tooltip>
               )
             })}
           </div>

@@ -5,6 +5,7 @@ import type { Slide, StudioContent, StudioLayer, StudioLayerState } from '@/type
 import { Monitor, CheckCircle2, Maximize2, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface Props {
   slide: Slide
@@ -259,20 +260,22 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
           return <MiniLayer key={layer.id} layer={layer} state={state} />
         })}
         {/* Fullscreen button */}
+        <Tooltip><TooltipTrigger asChild>
         <button
           onClick={toggleCanvasFullscreen}
           className="absolute bottom-2 right-2 z-10 w-8 h-8 rounded-lg bg-black/50 hover:bg-black/70 text-white/50 hover:text-white flex items-center justify-center transition-all backdrop-blur-sm"
-          title="Fullscreen"
         >
           <Maximize2 className="w-4 h-4" />
         </button>
+        </TooltipTrigger><TooltipContent>Fullscreen</TooltipContent></Tooltip>
         {/* Red exit button when fullscreen */}
         {isCanvasFullscreen && (
+          <Tooltip><TooltipTrigger asChild>
           <button onClick={toggleCanvasFullscreen}
-            className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors"
-            title="Exit fullscreen">
+            className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors">
             <X className="w-4 h-4" />
           </button>
+          </TooltipTrigger><TooltipContent>Exit fullscreen</TooltipContent></Tooltip>
         )}
       </div>
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { Play, Pause, Square, ZoomIn, ZoomOut } from 'lucide-react'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface TimelineControlsProps {
   isPlaying: boolean
@@ -43,29 +44,32 @@ export function TimelineControls({
       {/* Transport controls */}
       <div className="flex items-center gap-1">
         {isPlaying ? (
+          <Tooltip><TooltipTrigger asChild>
           <button
             onClick={onPause}
             className="flex items-center justify-center w-6 h-6 rounded-md bg-[#1e1f22] hover:bg-zinc-700 text-white transition-colors cursor-pointer"
-            title="Pause"
           >
             <Pause className="w-3.5 h-3.5" />
           </button>
+          </TooltipTrigger><TooltipContent>Pause</TooltipContent></Tooltip>
         ) : (
+          <Tooltip><TooltipTrigger asChild>
           <button
             onClick={onPlay}
             className="flex items-center justify-center w-6 h-6 rounded-md bg-zinc-700 hover:bg-zinc-600 text-white transition-colors cursor-pointer"
-            title="Play"
           >
             <Play className="w-3.5 h-3.5 ml-0.5" />
           </button>
+          </TooltipTrigger><TooltipContent>Play</TooltipContent></Tooltip>
         )}
+        <Tooltip><TooltipTrigger asChild>
         <button
           onClick={onStop}
           className="flex items-center justify-center w-6 h-6 rounded-md bg-[#1e1f22] hover:bg-zinc-700 text-white transition-colors cursor-pointer"
-          title="Stop"
         >
           <Square className="w-3 h-3" />
         </button>
+        </TooltipTrigger><TooltipContent>Stop</TooltipContent></Tooltip>
       </div>
 
       {/* Time display */}
@@ -80,13 +84,14 @@ export function TimelineControls({
 
       {/* Zoom controls */}
       <div className="flex items-center gap-2">
+        <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => onZoomChange(Math.max(MIN_ZOOM, zoomLevel - 25))}
           className="flex items-center justify-center w-5 h-5 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-[#1e1f22] transition-colors cursor-pointer"
-          title="Zoom out"
         >
           <ZoomOut className="w-3.5 h-3.5" />
         </button>
+        </TooltipTrigger><TooltipContent>Zoom out</TooltipContent></Tooltip>
         <input
           type="range"
           min={MIN_ZOOM}
@@ -95,13 +100,14 @@ export function TimelineControls({
           onChange={handleZoomSlider}
           className="w-24 h-1 accent-red-500 bg-zinc-700 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-red-500"
         />
+        <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => onZoomChange(Math.min(MAX_ZOOM, zoomLevel + 25))}
           className="flex items-center justify-center w-5 h-5 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-[#1e1f22] transition-colors cursor-pointer"
-          title="Zoom in"
         >
           <ZoomIn className="w-3.5 h-3.5" />
         </button>
+        </TooltipTrigger><TooltipContent>Zoom in</TooltipContent></Tooltip>
         <span className="text-[10px] text-zinc-500 w-12 text-right tabular-nums">
           {zoomLevel}px/s
         </span>

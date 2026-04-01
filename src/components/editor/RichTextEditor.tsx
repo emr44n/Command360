@@ -11,6 +11,7 @@ import {
   Heading1, Heading2, Heading3, Undo2, Redo2, Minus,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface RichTextEditorProps {
   content: string
@@ -214,11 +215,10 @@ function ToolbarButton({ children, onClick, active, disabled, title }: {
   disabled?: boolean
   title?: string
 }) {
-  return (
+  const btn = (
     <button
       onClick={onClick}
       disabled={disabled}
-      title={title}
       className={cn(
         'p-1.5 rounded-md transition-colors',
         active
@@ -229,6 +229,10 @@ function ToolbarButton({ children, onClick, active, disabled, title }: {
     >
       {children}
     </button>
+  )
+  if (!title) return btn
+  return (
+    <Tooltip><TooltipTrigger asChild>{btn}</TooltipTrigger><TooltipContent>{title}</TooltipContent></Tooltip>
   )
 }
 

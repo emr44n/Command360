@@ -26,6 +26,7 @@ import { Input } from '@/components/ui/input'
 import type { StudioLayer, StudioEvent, StudioEventCategory } from '@/types/slide'
 import { generateLayerId } from '@/lib/utils/studio-utils'
 import { useStudioStore } from '@/stores/studioStore'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface StudioGalleryProps {
   layers: StudioLayer[]
@@ -535,21 +536,23 @@ export function StudioGallery({
           </span>
         )}
         {onTriggerEvent && (
+          <Tooltip><TooltipTrigger asChild>
           <button
             className="p-0.5 text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-emerald-400 transition-all cursor-pointer"
             onClick={(e) => { e.stopPropagation(); onTriggerEvent(evt.id) }}
-            title="Trigger"
           >
             <Play className="size-3 fill-current" />
           </button>
+          </TooltipTrigger><TooltipContent>Trigger</TooltipContent></Tooltip>
         )}
+        <Tooltip><TooltipTrigger asChild>
         <button
           className="p-0.5 text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all cursor-pointer"
           onClick={(e) => { e.stopPropagation(); handleDeleteEvent(evt.id) }}
-          title="Delete"
         >
           <Trash2Icon className="size-3" />
         </button>
+        </TooltipTrigger><TooltipContent>Delete</TooltipContent></Tooltip>
       </div>
     )
   }
@@ -559,43 +562,45 @@ export function StudioGallery({
       <Tabs defaultValue={initialTab} key={initialTab} className="flex h-full flex-col">
         <div ref={tabContainerRef} className="flex border-b border-[#1e1f22] shrink-0">
           <TabsList className="w-full bg-transparent p-0 h-auto rounded-none gap-0">
-            <TabsTrigger value="images" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]" title="Images">
+            <Tooltip><TooltipTrigger asChild><TabsTrigger value="images" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
               <ImageIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Images'}
-            </TabsTrigger>
-            <TabsTrigger value="videos" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]" title="Videos">
+            </TabsTrigger></TooltipTrigger><TooltipContent>Images</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild><TabsTrigger value="videos" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
               <VideoIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Videos'}
-            </TabsTrigger>
-            <TabsTrigger value="placed" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]" title="Layers">
+            </TabsTrigger></TooltipTrigger><TooltipContent>Videos</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild><TabsTrigger value="placed" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
               <LayersIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Layers'}
-            </TabsTrigger>
-            <TabsTrigger value="events" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]" title="Events">
+            </TabsTrigger></TooltipTrigger><TooltipContent>Layers</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild><TabsTrigger value="events" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
               <ZapIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Events'}
-            </TabsTrigger>
-            <TabsTrigger value="audio" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]" title="Audio">
+            </TabsTrigger></TooltipTrigger><TooltipContent>Events</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild><TabsTrigger value="audio" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
               <Volume2 className="size-3 shrink-0" />
               {!tabsNarrow && 'Audio'}
-            </TabsTrigger>
+            </TabsTrigger></TooltipTrigger><TooltipContent>Audio</TooltipContent></Tooltip>
           </TabsList>
           {/* Grid/List toggle for assets */}
           <div className="flex items-center px-1 gap-0.5 border-b-2 border-transparent">
+            <Tooltip><TooltipTrigger asChild>
             <button
               onClick={() => setViewMode('grid')}
               className={`p-1 rounded transition-colors ${viewMode === 'grid' ? 'text-zinc-300 bg-[#35363c]' : 'text-zinc-600 hover:text-zinc-400'}`}
-              title="Grid view"
             >
               <LayoutGrid className="size-3" />
             </button>
+            </TooltipTrigger><TooltipContent>Grid view</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild>
             <button
               onClick={() => setViewMode('list')}
               className={`p-1 rounded transition-colors ${viewMode === 'list' ? 'text-zinc-300 bg-[#35363c]' : 'text-zinc-600 hover:text-zinc-400'}`}
-              title="List view"
             >
               <List className="size-3" />
             </button>
+            </TooltipTrigger><TooltipContent>List view</TooltipContent></Tooltip>
           </div>
         </div>
 
@@ -642,19 +647,20 @@ export function StudioGallery({
                 tabIndex={0}
                 className="group relative aspect-video overflow-hidden rounded border border-[#3f4147] bg-[#383a40] hover:border-zinc-500 cursor-grab active:cursor-grabbing"
                 draggable onDragStart={(e) => handleAssetDragStart(e, asset)}
-                onClick={() => addImageToCanvas(asset)} title={`${asset.name} — drag to canvas or click to add`}
+                onClick={() => addImageToCanvas(asset)}
               >
                 <img src={asset.url} alt={asset.name} className="h-full w-full object-cover pointer-events-none" />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
                   <PlusIcon className="size-5 text-white" />
                 </div>
+                <Tooltip><TooltipTrigger asChild>
                 <button
                   className="absolute top-0.5 right-0.5 p-0.5 rounded bg-red-600/80 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 z-10"
                   onClick={(e) => { e.stopPropagation(); onDeleteLayer?.(asset.id); setImages(prev => prev.filter(a => a.id !== asset.id)) }}
-                  title="Remove from canvas"
                 >
                   <Trash2Icon className="size-2.5" />
                 </button>
+                </TooltipTrigger><TooltipContent>Remove from canvas</TooltipContent></Tooltip>
                 <span className="absolute bottom-0 left-0 right-0 truncate bg-black/60 px-1 py-0.5 text-[10px] text-zinc-300">{asset.name}</span>
               </div>
             ))}
@@ -704,19 +710,20 @@ export function StudioGallery({
                 tabIndex={0}
                 className="group relative aspect-video overflow-hidden rounded border border-[#3f4147] bg-[#383a40] hover:border-zinc-500 cursor-grab active:cursor-grabbing"
                 draggable onDragStart={(e) => handleAssetDragStart(e, asset)}
-                onClick={() => addVideoToCanvas(asset)} title={`${asset.name} — drag to canvas or click to add`}
+                onClick={() => addVideoToCanvas(asset)}
               >
                 <VideoThumbnail src={asset.url} className="h-full w-full object-cover pointer-events-none" />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
                   <PlusIcon className="size-5 text-white" />
                 </div>
+                <Tooltip><TooltipTrigger asChild>
                 <button
                   className="absolute top-0.5 right-0.5 p-0.5 rounded bg-red-600/80 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 z-10"
                   onClick={(e) => { e.stopPropagation(); onDeleteLayer?.(asset.id); setVideos(prev => prev.filter(a => a.id !== asset.id)) }}
-                  title="Remove from canvas"
                 >
                   <Trash2Icon className="size-2.5" />
                 </button>
+                </TooltipTrigger><TooltipContent>Remove from canvas</TooltipContent></Tooltip>
                 <span className="absolute bottom-0 left-0 right-0 truncate bg-black/60 px-1 py-0.5 text-[10px] text-zinc-300">{asset.name}</span>
               </div>
             ))}
@@ -788,20 +795,22 @@ export function StudioGallery({
                   )}
                 </button>
                 <span className="text-[9px] text-zinc-300 truncate flex-1">{asset.name}</span>
+                <Tooltip><TooltipTrigger asChild>
                 <button
                   onClick={() => addAudioToCanvas(asset)}
                   className="text-zinc-600 hover:text-zinc-300 transition-colors"
-                  title="Add to canvas"
                 >
                   <PlusIcon className="w-3 h-3" />
                 </button>
+                </TooltipTrigger><TooltipContent>Add to canvas</TooltipContent></Tooltip>
+                <Tooltip><TooltipTrigger asChild>
                 <button
                   className="p-0.5 text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={() => setAudios(prev => prev.filter(a => a.id !== asset.id))}
-                  title="Remove"
                 >
                   <Trash2Icon className="size-2.5" />
                 </button>
+                </TooltipTrigger><TooltipContent>Remove</TooltipContent></Tooltip>
               </div>
             ))}
           </div>
@@ -865,13 +874,14 @@ export function StudioGallery({
                       {category.name}
                       <span className="text-zinc-600 font-normal ml-1">({catEvents.length})</span>
                     </button>
+                    <Tooltip><TooltipTrigger asChild>
                     <button
                       className="p-0.5 text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all cursor-pointer"
                       onClick={() => handleDeleteCategory(category.id)}
-                      title="Delete category"
                     >
                       <Trash2Icon className="size-2.5" />
                     </button>
+                    </TooltipTrigger><TooltipContent>Delete category</TooltipContent></Tooltip>
                   </div>
                   {!isCollapsed && (
                     <div className="ml-2 space-y-0.5">

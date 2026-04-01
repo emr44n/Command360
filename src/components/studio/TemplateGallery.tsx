@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Layout, Plus, Trash2, Download, FolderOpen } from 'lucide-react'
 import type { StudioContent } from '@/types/slide'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface StudioTemplate {
   id: string
@@ -146,9 +147,9 @@ export function TemplateGallery({
                   {/* Overlay actions */}
                   <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="flex items-center gap-1.5">
+                      <Tooltip><TooltipTrigger asChild>
                       <button
                         className="p-1.5 rounded-lg bg-amber-500/90 text-white hover:bg-amber-500 transition-colors"
-                        title="Use template"
                         onClick={(e) => {
                           e.stopPropagation()
                           handleUse(template)
@@ -156,10 +157,11 @@ export function TemplateGallery({
                       >
                         <Download className="w-3.5 h-3.5" />
                       </button>
+                      </TooltipTrigger><TooltipContent>Use template</TooltipContent></Tooltip>
                       {!isBuiltIn && (
+                        <Tooltip><TooltipTrigger asChild>
                         <button
                           className="p-1.5 rounded-lg bg-red-500/80 text-white hover:bg-red-500 transition-colors"
-                          title="Delete template"
                           onClick={(e) => {
                             e.stopPropagation()
                             handleDelete(template.id)
@@ -167,6 +169,7 @@ export function TemplateGallery({
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
+                        </TooltipTrigger><TooltipContent>Delete template</TooltipContent></Tooltip>
                       )}
                     </div>
                   </div>

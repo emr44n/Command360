@@ -2,6 +2,7 @@
 
 import { useCallback, useRef } from 'react'
 import type { StudioClip } from '@/types/slide'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface TimelineClipProps {
   clip: StudioClip
@@ -132,13 +133,12 @@ export function TimelineClip({
         if (kfLeft < 0 || kfLeft > width) return null
         const isKfSelected = selectedKeyframeId === kf.id
         return (
+          <Tooltip key={kf.id}><TooltipTrigger asChild>
           <div
-            key={kf.id}
             className={`absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rotate-45 border z-10 cursor-pointer transition-colors ${
               isKfSelected ? 'bg-red-500 border-red-600' : 'bg-yellow-400 border-yellow-600 hover:bg-yellow-300'
             }`}
             style={{ left: kfLeft - 5 }}
-            title={`${kf.property}: ${kf.value} (${kf.easing})`}
             onClick={(e) => { e.stopPropagation(); onSelectKeyframe?.(kf.id) }}
             onDoubleClick={(e) => { e.stopPropagation(); onDeleteKeyframe?.(kf.id) }}
             onMouseDown={(e) => {
@@ -155,6 +155,7 @@ export function TimelineClip({
               document.addEventListener('mouseup', onMouseUp)
             }}
           />
+          </TooltipTrigger><TooltipContent>{`${kf.property}: ${kf.value} (${kf.easing})`}</TooltipContent></Tooltip>
         )
       })}
 

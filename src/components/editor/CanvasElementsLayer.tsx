@@ -3,6 +3,7 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import type { CanvasElement } from '@/types/slide'
 import { Type, Image, X, Bold, Italic, AlignLeft, AlignCenter, AlignRight, Trash2, GripVertical } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface Props {
   elements: CanvasElement[]
@@ -474,14 +475,15 @@ function TextFormatToolbar({ element, onUpdateStyle, onDelete }: {
       <div className="w-px h-4 bg-border mx-0.5" />
 
       {/* Color */}
+      <Tooltip><TooltipTrigger asChild>
       <input
         type="color"
         value={style.color || '#374151'}
         onChange={(e) => onUpdateStyle({ color: e.target.value })}
         className="w-5 h-5 rounded cursor-pointer border-none"
-        title="Text color"
         onMouseDown={(e) => e.stopPropagation()}
       />
+      </TooltipTrigger><TooltipContent>Text color</TooltipContent></Tooltip>
 
       <div className="w-px h-4 bg-border mx-0.5" />
 

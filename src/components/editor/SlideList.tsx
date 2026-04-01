@@ -22,6 +22,7 @@ import {
   MessageCircle, ClipboardList, FileText, Star, AlignLeft,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 const ICONS: Record<string, React.ElementType> = {
   poll: BarChart2, word_cloud: Cloud, quiz: HelpCircle, qna: MessageCircle,
@@ -140,20 +141,22 @@ function SortableSlideItem({ slide, index, isSelected, onSelect, onDelete, onDup
         </div>
         {/* Action buttons overlay */}
         <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
+          <Tooltip><TooltipTrigger asChild>
           <button
             onClick={(e) => { e.stopPropagation(); onDuplicate() }}
             className="p-0.5 rounded bg-white/80 hover:bg-blue-50 text-muted-foreground hover:text-blue-600 transition-colors"
-            title="Duplicate slide"
           >
             <Copy style={{ width: 10, height: 10 }} />
           </button>
+          </TooltipTrigger><TooltipContent>Duplicate slide</TooltipContent></Tooltip>
+          <Tooltip><TooltipTrigger asChild>
           <button
             onClick={(e) => { e.stopPropagation(); onDelete() }}
             className="p-0.5 rounded bg-white/80 hover:bg-red-50 text-muted-foreground hover:text-destructive transition-colors"
-            title="Delete slide"
           >
             <Trash2 style={{ width: 10, height: 10 }} />
           </button>
+          </TooltipTrigger><TooltipContent>Delete slide</TooltipContent></Tooltip>
         </div>
       </div>
 

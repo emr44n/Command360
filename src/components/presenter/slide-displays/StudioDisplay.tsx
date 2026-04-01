@@ -5,6 +5,7 @@ import type { Session } from '@/types/session'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { Zap, Vote, QrCode, Play, ChevronRight, ChevronDown, RotateCcw, Monitor, Check, X } from 'lucide-react'
 import { playEvent, type EventPlaybackController } from '@/lib/studio/event-playback'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface Props {
   slide: Slide
@@ -40,20 +41,22 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
     return (
       <div className="w-full h-full relative bg-black">
         {/* Canvas-only fullscreen button */}
+        <Tooltip><TooltipTrigger asChild>
         <button
           onClick={toggleCctvFullscreen}
           className="absolute bottom-3 right-3 z-20 w-8 h-8 rounded-lg bg-black/50 hover:bg-black/70 text-white/50 hover:text-white flex items-center justify-center transition-all backdrop-blur-sm"
-          title="Canvas fullscreen (C)"
         >
           <Monitor className="w-4 h-4" />
         </button>
+        </TooltipTrigger><TooltipContent>Canvas fullscreen (C)</TooltipContent></Tooltip>
         {/* Red exit button when fullscreen */}
         {isCctvFullscreen && (
+          <Tooltip><TooltipTrigger asChild>
           <button onClick={toggleCctvFullscreen}
-            className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors"
-            title="Exit fullscreen">
+            className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors">
             <X className="w-4 h-4" />
           </button>
+          </TooltipTrigger><TooltipContent>Exit fullscreen</TooltipContent></Tooltip>
         )}
         <div ref={cctvCanvasRef} className="w-full h-full">
           <CctvDisplayView
@@ -304,20 +307,22 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
           }}
         >
           {/* Canvas-only fullscreen button (native Fullscreen API) */}
+          <Tooltip><TooltipTrigger asChild>
           <button
             onClick={toggleCanvasFullscreen}
             className="absolute bottom-2 right-2 z-10 w-7 h-7 rounded-md bg-black/40 hover:bg-black/60 text-white/50 hover:text-white flex items-center justify-center transition-all backdrop-blur-sm"
-            title="Canvas fullscreen"
           >
             <Monitor className="w-3.5 h-3.5" />
           </button>
+          </TooltipTrigger><TooltipContent>Canvas fullscreen</TooltipContent></Tooltip>
           {/* Red exit button when fullscreen */}
           {isCanvasFullscreen && (
+            <Tooltip><TooltipTrigger asChild>
             <button onClick={toggleCanvasFullscreen}
-              className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors"
-              title="Exit fullscreen">
+              className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors">
               <X className="w-4 h-4" />
             </button>
+            </TooltipTrigger><TooltipContent>Exit fullscreen</TooltipContent></Tooltip>
           )}
           {layers.map((layer) => {
             const state = layerStates[layer.id]
@@ -343,13 +348,14 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
 
       {/* Events panel toggle button — hidden in presentation mode */}
       {mode !== 'present' && (
+        <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => setShowEventsPanel(v => !v)}
           className="shrink-0 w-5 flex items-center justify-center bg-[#1e1f22] hover:bg-[#2b2d31] text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer border-l border-[#1e1f22]"
-          title={showEventsPanel ? 'Hide events' : 'Show events'}
         >
           <ChevronRight className={`w-3 h-3 transition-transform ${showEventsPanel ? '' : 'rotate-180'}`} />
         </button>
+        </TooltipTrigger><TooltipContent>{showEventsPanel ? 'Hide events' : 'Show events'}</TooltipContent></Tooltip>
       )}
 
       {/* Events panel (right side) — hidden in fullscreen, presentation mode, or when toggled off */}
@@ -357,14 +363,15 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
         <div className="mb-2 flex items-center justify-between">
           <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Events</h3>
           {triggeredEvents.size > 0 && (
+            <Tooltip><TooltipTrigger asChild>
             <button
               onClick={handleResetAll}
               className="flex items-center gap-1 text-[9px] font-medium text-muted-foreground hover:text-foreground transition-colors px-1.5 py-0.5 rounded hover:bg-muted"
-              title="Reset all events"
             >
               <RotateCcw className="w-2.5 h-2.5" />
               Reset
             </button>
+            </TooltipTrigger><TooltipContent>Reset all events</TooltipContent></Tooltip>
           )}
         </div>
 

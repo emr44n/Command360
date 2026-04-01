@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Eye, EyeOff, Volume2, VolumeX, Lock, Trash2, GripVertical } from 'lucide-react'
 import type { StudioTrack, StudioLayer } from '@/types/slide'
 import { TimelineClip } from './TimelineClip'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface TimelineTrackRowProps {
   track: StudioTrack
@@ -112,45 +113,49 @@ export function TimelineTrackRow({
             autoFocus
           />
         ) : (
+          <Tooltip><TooltipTrigger asChild>
           <span
             className="text-zinc-300 truncate flex-1 cursor-default"
             style={{ fontSize: compact ? 9 : 11 }}
-            title={`${track.name} (double-click to rename)`}
             onDoubleClick={handleDoubleClick}
           >
             {track.name}
           </span>
+          </TooltipTrigger><TooltipContent>{`${track.name} (double-click to rename)`}</TooltipContent></Tooltip>
         )}
         {/* Track action buttons */}
         <div className="flex items-center gap-0.5 shrink-0">
+          <Tooltip><TooltipTrigger asChild>
           <button
             onClick={onToggleMute}
             className={`p-0.5 rounded transition-colors ${
               track.muted ? 'text-red-400 opacity-100' : 'text-zinc-500 hover:text-zinc-300'
             }`}
-            title={track.muted ? 'Unmute' : 'Mute'}
           >
             {track.muted ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
           </button>
+          </TooltipTrigger><TooltipContent>{track.muted ? 'Unmute' : 'Mute'}</TooltipContent></Tooltip>
+          <Tooltip><TooltipTrigger asChild>
           <button
             onClick={onToggleHidden}
             className={`p-0.5 rounded transition-colors ${
               track.hidden ? 'text-red-400 opacity-100' : 'text-zinc-500 hover:text-zinc-300'
             }`}
-            title={track.hidden ? 'Show' : 'Hide'}
           >
             {track.hidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
           </button>
+          </TooltipTrigger><TooltipContent>{track.hidden ? 'Show' : 'Hide'}</TooltipContent></Tooltip>
           {track.locked && (
             <Lock className="w-3 h-3 text-zinc-600" />
           )}
+          <Tooltip><TooltipTrigger asChild>
           <button
             onClick={onDeleteTrack}
             className="p-0.5 rounded text-zinc-500 hover:text-red-400 transition-colors"
-            title="Delete track"
           >
             <Trash2 className="w-3 h-3" />
           </button>
+          </TooltipTrigger><TooltipContent>Delete track</TooltipContent></Tooltip>
         </div>
       </div>
 

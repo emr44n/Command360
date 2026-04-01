@@ -13,6 +13,7 @@ import {
   Eye, EyeOff, Keyboard, StickyNote, Monitor, Copy, Check, OctagonX,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 
 interface PresenterViewProps {
@@ -268,9 +269,17 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
         </div>
         {/* Current slide title */}
         {currentSlide && (
-          <span className="text-sm font-semibold text-foreground truncate max-w-[200px] ml-4" title={currentSlide.title || undefined}>
-            {currentSlide.title || `Slide ${currentSlideIndex + 1}`}
-          </span>
+          currentSlide.title ? (
+            <Tooltip><TooltipTrigger asChild>
+            <span className="text-sm font-semibold text-foreground truncate max-w-[200px] ml-4">
+              {currentSlide.title}
+            </span>
+            </TooltipTrigger><TooltipContent>{currentSlide.title}</TooltipContent></Tooltip>
+          ) : (
+            <span className="text-sm font-semibold text-foreground truncate max-w-[200px] ml-4">
+              {`Slide ${currentSlideIndex + 1}`}
+            </span>
+          )
         )}
         {/* Center join info */}
         <div className="flex-1 flex items-center justify-center gap-4">
@@ -327,23 +336,25 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
             <QRCodeDisplay roomCode={session.room_code} />
             {/* Join URL below QR */}
             <div className="w-full flex flex-col items-center gap-2 mt-1">
+              <Tooltip><TooltipTrigger asChild>
               <button
                 onClick={copyUrl}
                 className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted px-3 py-1.5 rounded-lg transition-colors font-mono"
-                title="Copy join URL"
               >
                 <span className="truncate">{joinUrl.replace(/^https?:\/\//, '')}</span>
                 {urlCopied ? <Check className="w-3 h-3 text-emerald-500 shrink-0" /> : <Copy className="w-3 h-3 shrink-0 opacity-50" />}
               </button>
+              </TooltipTrigger><TooltipContent>Copy join URL</TooltipContent></Tooltip>
+              <Tooltip><TooltipTrigger asChild>
               <button
                 onClick={copyCode}
                 className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted px-3 py-1.5 rounded-lg transition-colors"
-                title="Copy room code"
               >
                 <span className="text-muted-foreground">Code:</span>
                 <span className="font-mono font-bold text-foreground tracking-wider">{formattedCode}</span>
                 {codeCopied ? <Check className="w-3 h-3 text-emerald-500 shrink-0" /> : <Copy className="w-3 h-3 shrink-0 opacity-50" />}
               </button>
+              </TooltipTrigger><TooltipContent>Copy room code</TooltipContent></Tooltip>
             </div>
             <p className="text-muted-foreground/60 text-xs text-center mt-1">
               {participantCount > 0 ? `${participantCount} participant${participantCount !== 1 ? 's' : ''} joined` : 'Waiting for participants'}

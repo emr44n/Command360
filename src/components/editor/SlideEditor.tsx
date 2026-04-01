@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface Presentation {
   id: string
@@ -564,11 +565,11 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           </span>
 
           {/* Fullscreen toggle */}
+          <Tooltip><TooltipTrigger asChild>
           <Button
             variant="ghost"
             size="sm"
             className="text-zinc-400 hover:text-white h-7 w-7 p-0"
-            title="Toggle fullscreen"
             onClick={() => {
               if (document.fullscreenElement) {
                 document.exitFullscreen()
@@ -579,6 +580,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           >
             <Maximize2 className="w-3.5 h-3.5" />
           </Button>
+          </TooltipTrigger><TooltipContent>Toggle fullscreen</TooltipContent></Tooltip>
 
           {/* Preview */}
           <Button
@@ -832,39 +834,51 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
 
         {/* Center: toolbar */}
         <div className="flex items-center gap-0.5 bg-muted/60 rounded-xl px-1.5 py-1">
+          <Tooltip><TooltipTrigger asChild>
           <button onClick={handleUndo} disabled={undoStack.length === 0}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all" title="Undo (Ctrl+Z)">
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all">
             <Undo2 className="w-4 h-4" />
           </button>
+          </TooltipTrigger><TooltipContent>Undo (Ctrl+Z)</TooltipContent></Tooltip>
+          <Tooltip><TooltipTrigger asChild>
           <button onClick={handleRedo} disabled={redoStack.length === 0}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all" title="Redo (Ctrl+Shift+Z)">
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all">
             <Redo2 className="w-4 h-4" />
           </button>
+          </TooltipTrigger><TooltipContent>Redo (Ctrl+Shift+Z)</TooltipContent></Tooltip>
           <div className="w-px h-4 bg-border mx-1" />
+          <Tooltip><TooltipTrigger asChild>
           <button onClick={handleDuplicateSlide} disabled={!selectedSlide}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all" title="Duplicate slide">
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all">
             <Copy className="w-4 h-4" />
           </button>
+          </TooltipTrigger><TooltipContent>Duplicate slide</TooltipContent></Tooltip>
           <div className="w-px h-4 bg-border mx-1" />
+          <Tooltip><TooltipTrigger asChild>
           <button onClick={handleAddTextElement} disabled={!selectedSlide}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all" title="Add text">
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all">
             <Type className="w-4 h-4" />
           </button>
+          </TooltipTrigger><TooltipContent>Add text</TooltipContent></Tooltip>
+          <Tooltip><TooltipTrigger asChild>
           <button onClick={handleAddImageElement} disabled={!selectedSlide}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all" title="Add image">
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all">
             <ImageIcon className="w-4 h-4" />
           </button>
+          </TooltipTrigger><TooltipContent>Add image</TooltipContent></Tooltip>
           <div className="w-px h-4 bg-border mx-1" />
+          <Tooltip><TooltipTrigger asChild>
           <button onClick={() => setNotesOpen(v => !v)}
-            className={cn('p-1.5 rounded-lg transition-all', notesOpen ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-background')}
-            title="Speaker notes">
+            className={cn('p-1.5 rounded-lg transition-all', notesOpen ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-background')}>
             <StickyNote className="w-4 h-4" />
           </button>
+          </TooltipTrigger><TooltipContent>Speaker notes</TooltipContent></Tooltip>
+          <Tooltip><TooltipTrigger asChild>
           <button onClick={() => setShowQR(v => !v)}
-            className={cn('p-1.5 rounded-lg transition-all', showQR ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-background')}
-            title="QR code / join info">
+            className={cn('p-1.5 rounded-lg transition-all', showQR ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-background')}>
             <QrCode className="w-4 h-4" />
           </button>
+          </TooltipTrigger><TooltipContent>QR code / join info</TooltipContent></Tooltip>
         </div>
 
         <div className="flex-1" />
@@ -916,11 +930,12 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             <div style={{ width: slideListWidth }} className="bg-card border-r border-border flex flex-col shrink-0">
               <div className="flex items-center justify-between px-3 py-2 border-b border-border shrink-0">
                 <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Slides</span>
+                <Tooltip><TooltipTrigger asChild>
                 <button onClick={() => setSlideListOpen(false)}
-                  className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                  title="Collapse slides">
+                  className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
                   <ChevronLeft className="w-3.5 h-3.5" />
                 </button>
+                </TooltipTrigger><TooltipContent>Collapse slides</TooltipContent></Tooltip>
               </div>
               <div className="flex-1 overflow-y-auto p-2.5 slide-list-scroll">
                 {slides.length === 0 ? (
@@ -978,12 +993,13 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           </>
         )}
         {!slideListOpen && (
+          <Tooltip><TooltipTrigger asChild>
           <button onClick={() => setSlideListOpen(true)}
-            className="w-10 bg-card border-r border-border flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
-            title="Show slides">
+            className="w-10 bg-card border-r border-border flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0">
             <ChevronRight className="w-4 h-4" />
             <span className="text-[9px] font-semibold [writing-mode:vertical-lr] rotate-180">Slides</span>
           </button>
+          </TooltipTrigger><TooltipContent>Show slides</TooltipContent></Tooltip>
         )}
 
         {/* Center + Right: Studio layout vs normal layout */}
@@ -1122,11 +1138,12 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
 
             {/* Settings toggle when collapsed */}
             {selectedSlide && !settingsOpen && (
+              <Tooltip><TooltipTrigger asChild>
               <button onClick={() => setSettingsOpen(true)}
-                className="w-10 bg-card border-l border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
-                title="Open settings">
+                className="w-10 bg-card border-l border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0">
                 <ChevronLeft className="w-4 h-4" />
               </button>
+              </TooltipTrigger><TooltipContent>Open settings</TooltipContent></Tooltip>
             )}
           </>
         )}
