@@ -807,7 +807,7 @@ export function StudioEditor({
                       const reordered = [...layers]
                       const [moved] = reordered.splice(fromIndex, 1)
                       reordered.splice(toIndex, 0, moved)
-                      updateContent({ layers: reordered })
+                      updateContent({ layers: reordered.map((l, i) => ({ ...l, zIndex: i })) })
                     }}
                     events={events}
                     eventCategories={eventCategories}
@@ -826,7 +826,7 @@ export function StudioEditor({
                       const reordered = [...layers]
                       const [moved] = reordered.splice(fromIndex, 1)
                       reordered.splice(toIndex, 0, moved)
-                      updateContent({ layers: reordered })
+                      updateContent({ layers: reordered.map((l, i) => ({ ...l, zIndex: i })) })
                     }}
                     events={events}
                     eventCategories={eventCategories}

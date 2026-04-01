@@ -398,16 +398,17 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     addLayerToCanvasAndQueue(layer)
   }, [layers, addLayerToCanvasAndQueue])
 
-  // ─── Layer reorder ───
-  const reorderLayers = useCallback((from: number, to: number) => {
+  // ─── Layer reorder (visual indices — 0 = top of list = highest zIndex) ───
+  const reorderLayers = useCallback((fromVisual: number, toVisual: number) => {
     setLayers(prev => {
-      const n = [...prev]
-      const [moved] = n.splice(from, 1)
-      n.splice(to, 0, moved)
-      // Reassign zIndex based on new position (0 = bottom, length-1 = top)
-      return n.map((l, i) => ({ ...l, zIndex: i }))
+      // Work on a reversed copy (visual order: index 0 = top layer)
+      const visual = [...prev].reverse()
+      const [moved] = visual.splice(fromVisual, 1)
+      visual.splice(toVisual, 0, moved)
+      // Reverse back and assign zIndex (0 = bottom, length-1 = top)
+      const result = visual.reverse()
+      return result.map((l, i) => ({ ...l, zIndex: i }))
     })
-    // Force layerStates to refresh so canvas re-renders with new z-order
     setLayerStates(prev => ({ ...prev }))
   }, [])
 
@@ -632,7 +633,6 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
               {layers.length === 0 ? <p className="text-[10px] text-zinc-600 text-center py-4">No layers on canvas</p> : (
                 <div className="space-y-0.5">
                   {[...layers].reverse().map((layer, vi) => {
-                    const idx = layers.length - 1 - vi
                     const state = layerStates[layer.id]
                     const isSelected = selectedLayerId === layer.id
                     return (
@@ -640,9 +640,9 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                         className={`flex items-center gap-1.5 px-1.5 py-1 rounded-md text-[9px] cursor-pointer transition-all ${isSelected ? 'bg-red-500/15 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`}
                         onClick={() => setSelectedLayerId(layer.id)}
                         draggable
-                        onDragStart={() => { dragLayerIdxRef.current = idx }}
+                        onDragStart={() => { dragLayerIdxRef.current = vi }}
                         onDragOver={e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move' }}
-                        onDrop={() => { if (dragLayerIdxRef.current !== null) { reorderLayers(dragLayerIdxRef.current, idx); dragLayerIdxRef.current = null } }}
+                        onDrop={() => { if (dragLayerIdxRef.current !== null) { reorderLayers(dragLayerIdxRef.current, vi); dragLayerIdxRef.current = null } }}
                       >
                         <GripVertical className="w-2.5 h-2.5 text-zinc-600 shrink-0 cursor-grab" />
                         {layer.type === 'image' && <ImageIcon className="w-3 h-3 text-blue-400 shrink-0" />}
