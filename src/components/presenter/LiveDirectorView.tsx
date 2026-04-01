@@ -56,8 +56,8 @@ function buildInitialStates(layers: StudioLayer[]): Record<string, StudioLayerSt
 /* ─── Shape presets ─── */
 const SHAPE_PRESETS = [
   { name: 'Rectangle', w: 20, h: 12, color: '#666666' },
-  { name: 'Circle', w: 15, h: 26.67, color: '#666666' },  // 26.67% height ≈ 15% width on 16:9 canvas → equal pixels
-  { name: 'Triangle', w: 15, h: 26.67, color: '#666666' },
+  { name: 'Circle', w: 15, h: 15, color: '#666666' },
+  { name: 'Triangle', w: 15, h: 15, color: '#666666' },
   { name: 'Line', w: 30, h: 0.5, color: '#666666' },
 ]
 

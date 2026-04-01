@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
-import { Stage, Layer, Rect, Text, Image as KonvaImage, Transformer, Group, Line as KonvaLine } from 'react-konva'
+import { Stage, Layer, Rect, Text, Image as KonvaImage, Transformer, Group, Line as KonvaLine, Ellipse } from 'react-konva'
 import Konva from 'konva'
 import type { StudioLayer, StudioTrack, StudioLayerState } from '@/types/slide'
 import { computeLayerStatesAtTime } from '@/lib/studio/playback-engine'
@@ -197,9 +197,19 @@ function ImageLayerNode({
   shapeRef: React.RefObject<Konva.Image | null>
 }) {
   const [image, setImage] = useState<HTMLImageElement | null>(null)
+  const imageNodeRef = useRef<Konva.Image>(null)
   // Use a Group with a Rect as the base — this ALWAYS has the ref so the
   // Transformer can attach even while the image is still loading.
   const groupRef = useRef<Konva.Group>(null)
+
+  // Konva filters require caching
+  useEffect(() => {
+    if (imageNodeRef.current && layer.feather && layer.feather > 0) {
+      imageNodeRef.current.cache()
+    } else if (imageNodeRef.current) {
+      try { imageNodeRef.current.clearCache() } catch { /* ok */ }
+    }
+  }, [layer.feather, image])
 
   const src = state.src ?? layer.src
   useEffect(() => {
@@ -292,6 +302,7 @@ function ImageLayerNode({
       {/* Image rendered on top when loaded */}
       {image && (
         <KonvaImage
+          ref={imageNodeRef}
           image={image}
           width={w}
           height={h}
@@ -424,6 +435,15 @@ function ShapeLayerNode({
   onDragEnd: (x: number, y: number) => void
   shapeRef: React.RefObject<Konva.Rect | null>
 }) {
+  // Konva filters require caching
+  useEffect(() => {
+    if (shapeRef.current && layer.feather && layer.feather > 0) {
+      shapeRef.current.cache()
+    } else if (shapeRef.current) {
+      try { shapeRef.current.clearCache() } catch { /* ok */ }
+    }
+  }, [layer.feather, shapeRef])
+
   if (!state.visible) return null
 
   const x = pct2px(state.x, stageWidth)
@@ -457,7 +477,6 @@ function ShapeLayerNode({
   }
 
   if (layer.name === 'Triangle') {
-    // Triangle via KonvaLine (closed polygon)
     return (
       <KonvaLine
         ref={shapeRef as unknown as React.RefObject<Konva.Line>}
@@ -469,12 +488,22 @@ function ShapeLayerNode({
     )
   }
 
+  if (layer.name === 'Circle') {
+    return (
+      <Ellipse
+        ref={shapeRef as unknown as React.RefObject<Konva.Ellipse>}
+        x={x + w / 2} y={y + h / 2}
+        radiusX={w / 2} radiusY={h / 2}
+        {...commonProps}
+      />
+    )
+  }
+
   return (
     <Rect
       ref={shapeRef}
       x={x + w / 2} y={y + h / 2} offsetX={w / 2} offsetY={h / 2}
       width={w} height={h}
-      cornerRadius={layer.name === 'Circle' ? Math.min(w, h) / 2 : 0}
       {...commonProps}
     />
   )
