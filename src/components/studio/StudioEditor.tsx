@@ -871,8 +871,8 @@ export function StudioEditor({
                   />
                 </div>
                 {/* Transport bar */}
-                <div className="h-7 shrink-0 bg-[#2b2d31] border-t border-[#1e1f22] flex items-center justify-center gap-4 px-4">
-                  <span className="text-[11px] font-mono text-emerald-400 tabular-nums">
+                <div className="h-6 shrink-0 bg-[#2b2d31] border-t border-[#1e1f22] flex items-center justify-center gap-3 px-3">
+                  <span className="text-[9px] font-mono text-emerald-400 tabular-nums">
                     {formatTime(currentTime)}
                   </span>
                   <div className="flex items-center gap-1">
@@ -895,12 +895,12 @@ export function StudioEditor({
                       onClick={() => {
                         if (isPlaying) { setIsPlaying(false) } else { if (currentTime >= totalDuration) setCurrentTime(0); setIsPlaying(true) }
                       }}
-                      className="w-6 h-6 rounded-lg flex items-center justify-center bg-zinc-700 hover:bg-zinc-600 text-white transition-colors cursor-pointer"
+                      className="w-5 h-5 rounded-md flex items-center justify-center bg-zinc-700 hover:bg-zinc-600 text-white transition-colors cursor-pointer"
                     >
-                      {isPlaying ? <Square className="w-2.5 h-2.5 fill-current" /> : <Play className="w-3 h-3 fill-current ml-0.5" />}
+                      {isPlaying ? <Square className="w-2 h-2 fill-current" /> : <Play className="w-2.5 h-2.5 fill-current ml-0.5" />}
                     </button>
                   </div>
-                  <span className="text-[11px] font-mono text-zinc-500 tabular-nums">
+                  <span className="text-[9px] font-mono text-zinc-500 tabular-nums">
                     / {formatTime(totalDuration)}
                   </span>
                 </div>
