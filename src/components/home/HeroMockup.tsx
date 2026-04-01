@@ -5,7 +5,7 @@ import { BarChart2, Cloud, HelpCircle, MessageCircle, Sparkles, Star, Layers, Za
 
 const TOOLS = [
   {
-    label: 'Studio',
+    label: 'Command Studio',
     icon: Layers,
     color: '#8b5cf6',
     bg: 'rgba(139,92,246,0.12)',

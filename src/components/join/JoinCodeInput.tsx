@@ -73,7 +73,7 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
                 if (cleaned) setCode(cleaned)
               } catch {}
             }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 rounded text-[10px] bg-red-600 text-white hover:bg-red-500 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-md text-[11px] font-medium bg-red-600 text-white border border-red-500/30 hover:bg-red-500 transition-colors"
           >
             Paste
           </button>
@@ -121,7 +121,7 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
               if (cleaned) setCode(cleaned)
             } catch {}
           }}
-          className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-0.5 rounded text-[10px] bg-red-600 text-white hover:bg-red-500 transition-colors"
+          className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-md text-[11px] font-medium bg-red-600 text-white border border-red-500/30 hover:bg-red-500 transition-colors"
         >
           Paste
         </button>

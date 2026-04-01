@@ -290,7 +290,7 @@ export default function LandingPage() {
         </div>
         <div className="relative max-w-5xl mx-auto px-5">
           <ScrollReveal className="text-center mb-14">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[10px] uppercase tracking-[0.2em] text-white/40 font-medium">Platform</span>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/[0.08] border border-blue-500/[0.15] text-[10px] uppercase tracking-[0.2em] text-blue-400/70 font-medium">Command Classroom</span>
             <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5 text-white">Everything you need to engage your team</h2>
             <p className="text-white/35 mt-4 max-w-lg mx-auto text-sm">Six powerful tools in one secure environment, designed for the realities of operational training.</p>
           </ScrollReveal>

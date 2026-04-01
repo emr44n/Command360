@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { PresentationGrid } from '@/components/presentations/PresentationGrid'
-import { CreatePresentationButton } from '@/components/presentations/CreatePresentationButton'
+import { DashboardCreateNewButton } from '@/components/dashboard/DashboardCreateNewButton'
 import { DashboardStats } from '@/components/dashboard/DashboardStats'
 import { QuickCreate } from '@/components/dashboard/QuickCreate'
 import { QuickCreateStudioCard } from '@/components/dashboard/QuickCreateStudioCard'
@@ -158,7 +158,7 @@ export default async function DashboardPage() {
             Manage your classrooms, scenes, and training sessions
           </p>
         </div>
-        <CreatePresentationButton />
+        <DashboardCreateNewButton />
       </div>
 
       {/* Trial countdown banner */}

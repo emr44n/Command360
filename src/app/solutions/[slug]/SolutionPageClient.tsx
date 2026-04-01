@@ -826,12 +826,12 @@ export function SolutionPageClient({ slug }: { slug: string }) {
         <div className="relative max-w-5xl mx-auto">
           <ScrollReveal direction="left">
             <div className="text-center mb-14">
-              <span className="feature-badge bg-primary/10 text-primary">Interactive Tools</span>
+              <span className="feature-badge bg-blue-500/10 text-blue-500">Command Classroom</span>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight mt-4 mb-4">
                 Five powerful question types at your fingertips
               </h2>
               <p className="text-muted-foreground text-sm sm:text-lg max-w-xl mx-auto">
-                Mix and match slide types to create engaging {service.name} training sessions.
+                Mix and match polls, quizzes, word clouds, Q&amp;A, and surveys in Command Classroom to create engaging {service.name} training sessions.
               </p>
             </div>
           </ScrollReveal>

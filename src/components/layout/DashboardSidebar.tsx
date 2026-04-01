@@ -17,7 +17,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
   { href: '/dashboard/presentations', label: 'Command Classroom', icon: FileText },
-  { href: '/dashboard/studio', label: 'Command Studio', icon: Monitor, badge: 'New' },
+  { href: '/dashboard/studio', label: 'Command Studio', icon: Monitor },
   { href: '/dashboard/sessions', label: 'Activity', icon: Radio },
   { href: '/dashboard/templates', label: 'Templates', icon: LayoutTemplate },
   { href: '/dashboard/reports', label: 'Reports', icon: BarChart2 },
@@ -266,10 +266,14 @@ export function DashboardSidebar() {
         {NAV_ITEMS.map((item, index) => {
           const active = isActive(item)
           const hasBadge = item.label === 'Activity' && activeSessions > 0
-          const hasNewBadge = 'badge' in item && item.badge
+          const hasNewBadge = 'badge' in item && (item as Record<string, unknown>).badge
 
           /* Insert a separator before "Reports" to visually group nav sections */
           const showSeparator = item.label === 'Reports'
+
+          /* Core product items get a subtle colored left border when not active */
+          const isClassroom = item.label === 'Command Classroom'
+          const isStudio = item.label === 'Command Studio'
 
           return (
             <div key={item.href}>
@@ -285,7 +289,9 @@ export function DashboardSidebar() {
                   collapsed ? 'px-0 py-2.5 justify-center' : 'px-3 py-2.5',
                   active
                     ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/80'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/80',
+                  !active && isClassroom && 'border-l-2 border-blue-500/40',
+                  !active && isStudio && 'border-l-2 border-violet-500/40',
                 )}
               >
                 {/* Active indicator line */}
@@ -361,7 +367,7 @@ export function DashboardSidebar() {
       </div>
 
       {/* User area */}
-      <div className={cn('border-t border-border', collapsed ? 'p-2.5' : 'p-3 space-y-1')}>
+      <div className={cn('border-t border-border shrink-0', collapsed ? 'p-2.5' : 'p-3 space-y-1')}>
         {collapsed ? (
           <>
             <Tooltip><TooltipTrigger asChild>

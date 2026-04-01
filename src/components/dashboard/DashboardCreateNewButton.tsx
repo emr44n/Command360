@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Loader2, Presentation, Clapperboard } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 
-export function QuickCreatePresentationCard() {
+export function DashboardCreateNewButton() {
   const router = useRouter()
   const [showDialog, setShowDialog] = useState(false)
   const [selectedType, setSelectedType] = useState<'presentation' | 'command_studio' | null>(null)
@@ -54,21 +55,14 @@ export function QuickCreatePresentationCard() {
 
   return (
     <>
-      <button onClick={() => setShowDialog(true)} disabled={creating} className="group text-left w-full">
-        <div className="relative bg-primary/5 border border-primary/20 rounded-2xl p-5 hover:bg-primary/10 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer overflow-hidden dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
-          {/* Top accent line */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
-          <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
-            {creating ? (
-              <Loader2 className="w-5 h-5 text-primary animate-spin" />
-            ) : (
-              <Plus className="w-5 h-5 text-primary" />
-            )}
-          </div>
-          <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">Create New</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">Classroom or Studio</p>
-        </div>
-      </button>
+      <Button
+        onClick={() => setShowDialog(true)}
+        disabled={creating}
+        className="rounded-full gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+      >
+        {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+        Create New
+      </Button>
 
       <Dialog open={showDialog} onOpenChange={(open) => { setShowDialog(open); if (!open) { setSelectedType(null); setNewTitle('') } }}>
         <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden">
