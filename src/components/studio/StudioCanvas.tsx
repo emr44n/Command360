@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
-import { Stage, Layer, Rect, Text, Image as KonvaImage, Transformer, Group } from 'react-konva'
+import { Stage, Layer, Rect, Text, Image as KonvaImage, Transformer, Group, Line as KonvaLine } from 'react-konva'
 import Konva from 'konva'
 import type { StudioLayer, StudioTrack, StudioLayerState } from '@/types/slide'
 import { computeLayerStatesAtTime } from '@/lib/studio/playback-engine'
@@ -431,53 +431,51 @@ function ShapeLayerNode({
   const w = pct2px(state.width, stageWidth)
   const h = pct2px(state.height, stageHeight)
 
+  const commonProps = {
+    fill: layer.fillTransparent ? 'transparent' : (layer.color ?? '#666666'),
+    stroke: layer.borderWidth ? (layer.borderColor || '#ffffff') : undefined,
+    strokeWidth: layer.borderWidth || 0,
+    dash: layer.borderStyle === 'dashed' ? [8, 4] : layer.borderStyle === 'dotted' ? [2, 2] : undefined,
+    rotation: state.rotation,
+    opacity: state.opacity,
+    filters: layer.feather ? [Konva.Filters.Blur] : undefined,
+    blurRadius: layer.feather || 0,
+    draggable: interactive && !layer.locked,
+    onClick: onSelect,
+    onTap: onSelect,
+    globalCompositeOperation: (layer.blendMode === 'normal' ? 'source-over' : layer.blendMode) as GlobalCompositeOperation,
+    onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => {
+      onDragEnd(px2pct(e.target.x() - w / 2, stageWidth), px2pct(e.target.y() - h / 2, stageHeight))
+    },
+    onTransformEnd: () => {
+      const node = shapeRef.current; if (!node) return
+      const scaleX = node.scaleX(), scaleY = node.scaleY()
+      const newW = node.width() * scaleX, newH = node.height() * scaleY
+      node.scaleX(1); node.scaleY(1); node.offsetX(newW / 2); node.offsetY(newH / 2)
+      onTransformEnd({ x: px2pct(node.x() - newW / 2, stageWidth), y: px2pct(node.y() - newH / 2, stageHeight), width: px2pct(newW, stageWidth), height: px2pct(newH, stageHeight), rotation: node.rotation() })
+    },
+  }
+
+  if (layer.name === 'Triangle') {
+    // Triangle via KonvaLine (closed polygon)
+    return (
+      <KonvaLine
+        ref={shapeRef as unknown as React.RefObject<Konva.Line>}
+        points={[w / 2, 0, w, h, 0, h]}
+        closed
+        x={x + w / 2} y={y + h / 2} offsetX={w / 2} offsetY={h / 2}
+        {...commonProps}
+      />
+    )
+  }
+
   return (
     <Rect
       ref={shapeRef}
-      x={x + w / 2}
-      y={y + h / 2}
-      offsetX={w / 2}
-      offsetY={h / 2}
-      width={w}
-      height={h}
-      fill={layer.fillTransparent ? 'transparent' : (layer.color ?? '#666666')}
-      stroke={layer.borderWidth ? (layer.borderColor || '#ffffff') : undefined}
-      strokeWidth={layer.borderWidth || 0}
-      dash={layer.borderStyle === 'dashed' ? [8, 4] : layer.borderStyle === 'dotted' ? [2, 2] : undefined}
+      x={x + w / 2} y={y + h / 2} offsetX={w / 2} offsetY={h / 2}
+      width={w} height={h}
       cornerRadius={layer.name === 'Circle' ? Math.min(w, h) / 2 : 0}
-      rotation={state.rotation}
-      opacity={state.opacity}
-      filters={layer.feather ? [Konva.Filters.Blur] : undefined}
-      blurRadius={layer.feather || 0}
-      draggable={interactive && !layer.locked}
-      onClick={onSelect}
-      onTap={onSelect}
-      globalCompositeOperation={layer.blendMode === 'normal' ? 'source-over' : layer.blendMode}
-      onDragEnd={(e) => {
-        onDragEnd(
-          px2pct(e.target.x() - w / 2, stageWidth),
-          px2pct(e.target.y() - h / 2, stageHeight)
-        )
-      }}
-      onTransformEnd={() => {
-        const node = shapeRef.current
-        if (!node) return
-        const scaleX = node.scaleX()
-        const scaleY = node.scaleY()
-        const newW = node.width() * scaleX
-        const newH = node.height() * scaleY
-        node.scaleX(1)
-        node.scaleY(1)
-        node.offsetX(newW / 2)
-        node.offsetY(newH / 2)
-        onTransformEnd({
-          x: px2pct(node.x() - newW / 2, stageWidth),
-          y: px2pct(node.y() - newH / 2, stageHeight),
-          width: px2pct(newW, stageWidth),
-          height: px2pct(newH, stageHeight),
-          rotation: node.rotation(),
-        })
-      }}
+      {...commonProps}
     />
   )
 }

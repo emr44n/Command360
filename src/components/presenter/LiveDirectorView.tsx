@@ -670,7 +670,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                           className="flex flex-col items-center gap-1.5 py-3 rounded-lg border border-[#3f4147] bg-[#2b2d31] hover:bg-[#35363c] hover:border-zinc-500 transition-colors"
                           draggable onDragStart={e => { e.dataTransfer.setData('studio/asset-type', 'shape'); e.dataTransfer.setData('studio/asset-name', p.name); e.dataTransfer.effectAllowed = 'copy' }}
                         >
-                          <div className="w-6 h-6 bg-zinc-500 rounded-sm" style={{ borderRadius: p.name === 'Circle' ? '50%' : p.name === 'Line' ? 0 : 4, width: p.name === 'Line' ? 24 : undefined, height: p.name === 'Line' ? 2 : undefined }} />
+                          <div className="w-6 h-6 bg-zinc-500" style={{ borderRadius: p.name === 'Circle' ? '50%' : 2, width: p.name === 'Line' ? 24 : p.name === 'Rectangle' ? 28 : undefined, height: p.name === 'Line' ? 2 : p.name === 'Rectangle' ? 16 : undefined, clipPath: p.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined }} />
                           <span className="text-[8px] text-zinc-400">{p.name}</span>
                         </button>
                       ))}
@@ -749,11 +749,15 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                     onMouseDown={e => handleLayerMouseDown(e, layer.id)} onClick={e => { e.stopPropagation(); setSelectedLayerId(layer.id) }}
                     onDoubleClick={e => { e.stopPropagation(); if (layer.type === 'shape' && (layer.name === 'Rectangle' || layer.name === 'Triangle')) setDistortMode(layer.id) }}>
                     {/* Image with feather */}
-                    {layer.type === 'image' && (
-                      <div className="w-full h-full overflow-hidden pointer-events-none" style={{ filter: layer.feather ? `blur(${layer.feather}px)` : undefined, transform: `rotate(${state.rotation}deg)` }}>
-                        <img src={src!} alt="" className="w-full h-full object-contain" />
-                      </div>
-                    )}
+                    {layer.type === 'image' && (() => {
+                      const fp = layer.feather || 0
+                      const fMask = fp > 0 ? `linear-gradient(to right, transparent, black ${fp}px, black calc(100% - ${fp}px), transparent), linear-gradient(to bottom, transparent, black ${fp}px, black calc(100% - ${fp}px), transparent)` : undefined
+                      return (
+                        <div className="w-full h-full pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)`, WebkitMaskImage: fMask, maskImage: fMask, WebkitMaskComposite: fp > 0 ? 'destination-in' as unknown as string : undefined, maskComposite: fp > 0 ? 'intersect' : undefined }}>
+                          <img src={src!} alt="" className="w-full h-full object-contain" />
+                        </div>
+                      )
+                    })()}
                     {/* Video — YouTube iframe or native */}
                     {layer.type === 'video' && (
                       layer.youtubeUrl ? (
@@ -771,24 +775,22 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                         ? `polygon(${dp.tl.x}% ${dp.tl.y}%, ${dp.tr.x}% ${dp.tr.y}%, ${dp.br.x}% ${dp.br.y}%, ${dp.bl.x}% ${dp.bl.y}%)`
                         : layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined
                       const featherPx = layer.feather || 0
-                      // Feather: render a slightly larger shape inside an overflow:hidden container
-                      // The inner shape extends beyond the container so blur clips inward
+                      // Feather uses CSS mask-image with gradient to fade edges inward
+                      const featherMask = featherPx > 0
+                        ? `linear-gradient(to right, transparent, black ${featherPx}px, black calc(100% - ${featherPx}px), transparent), linear-gradient(to bottom, transparent, black ${featherPx}px, black calc(100% - ${featherPx}px), transparent)`
+                        : undefined
                       return <div className="w-full h-full pointer-events-none" style={{
-                        overflow: 'hidden',
-                        transform: `rotate(${state.rotation}deg)`,
-                        display: layer.maskMode && layer.maskMode !== 'none' ? 'none' : undefined,
+                        backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#666'),
                         borderRadius: layer.name === 'Circle' && !dp ? '50%' : undefined,
                         clipPath: shapeClip,
-                      }}>
-                        <div style={{
-                          position: 'absolute',
-                          inset: featherPx > 0 ? `-${featherPx}px` : 0,
-                          backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#666'),
-                          borderRadius: layer.name === 'Circle' && !dp ? '50%' : undefined,
-                          border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
-                          filter: featherPx > 0 ? `blur(${featherPx}px)` : undefined,
-                        }} />
-                      </div>
+                        border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
+                        transform: `rotate(${state.rotation}deg)`,
+                        display: layer.maskMode && layer.maskMode !== 'none' ? 'none' : undefined,
+                        WebkitMaskImage: featherMask,
+                        maskImage: featherMask,
+                        WebkitMaskComposite: featherPx > 0 ? 'destination-in' as unknown as string : undefined,
+                        maskComposite: featherPx > 0 ? 'intersect' : undefined,
+                      }} />
                     })()}
                     {/* Distort mode corner handles */}
                     {distortMode === layer.id && layer.type === 'shape' && (() => {

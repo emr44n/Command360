@@ -406,9 +406,11 @@ function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerSta
   }
 
   switch (layer.type) {
-    case 'image':
+    case 'image': {
+      const ifp = layer.feather || 0
+      const ifMask = ifp > 0 ? `linear-gradient(to right, transparent, black ${ifp}px, black calc(100% - ${ifp}px), transparent), linear-gradient(to bottom, transparent, black ${ifp}px, black calc(100% - ${ifp}px), transparent)` : undefined
       return (
-        <div style={{ ...baseStyle, overflow: 'hidden', filter: layer.feather ? `blur(${layer.feather}px)` : undefined }}>
+        <div style={{ ...baseStyle, WebkitMaskImage: ifMask, maskImage: ifMask, WebkitMaskComposite: ifp > 0 ? 'destination-in' : undefined, maskComposite: ifp > 0 ? 'intersect' : undefined } as React.CSSProperties}>
           {(state.src || layer.src) && (
             <img
               src={state.src || layer.src}
@@ -419,6 +421,7 @@ function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerSta
           )}
         </div>
       )
+    }
     case 'video':
       return (
         <div style={baseStyle}>
@@ -472,8 +475,11 @@ function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerSta
             borderRadius: layer.name === 'Circle' && !dp ? '50%' : undefined,
             clipPath: shapeClip,
             border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
-            filter: layer.feather ? `blur(${layer.feather}px)` : undefined,
             display: layer.maskMode && layer.maskMode !== 'none' ? 'none' : undefined,
+            WebkitMaskImage: layer.feather ? `linear-gradient(to right, transparent, black ${layer.feather}px, black calc(100% - ${layer.feather}px), transparent), linear-gradient(to bottom, transparent, black ${layer.feather}px, black calc(100% - ${layer.feather}px), transparent)` : undefined,
+            maskImage: layer.feather ? `linear-gradient(to right, transparent, black ${layer.feather}px, black calc(100% - ${layer.feather}px), transparent), linear-gradient(to bottom, transparent, black ${layer.feather}px, black calc(100% - ${layer.feather}px), transparent)` : undefined,
+            WebkitMaskComposite: layer.feather ? 'destination-in' : undefined,
+            maskComposite: layer.feather ? 'intersect' : undefined,
           }}
         />
       )
