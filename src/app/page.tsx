@@ -330,6 +330,43 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════
+          COMMAND CLASSROOM CALLOUT
+          ═══════════════════════════════════════════ */}
+      <section className="relative bg-[#07070a] border-t border-white/[0.04] overflow-hidden">
+        <div className="relative max-w-5xl mx-auto px-5 py-20 md:py-28">
+          <ScrollReveal>
+            <div className="text-center mb-10">
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/[0.08] border border-blue-500/[0.15] text-[10px] uppercase tracking-[0.2em] text-blue-400/70 font-medium">
+                Command Classroom
+              </span>
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight text-white mb-4 mt-5">
+                Command Classroom
+              </h2>
+              <p className="text-white/40 text-lg max-w-xl mx-auto">
+                Run interactive training sessions with live polls, quizzes, word clouds, and real-time Q&A — all from any device.
+              </p>
+            </div>
+          </ScrollReveal>
+          <ScrollReveal>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-8">
+              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+                <h3 className="text-sm font-bold text-white mb-2">Live Interaction</h3>
+                <p className="text-xs text-white/35">Polls, word clouds, and Q&A that engage every team member in real time.</p>
+              </div>
+              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+                <h3 className="text-sm font-bold text-white mb-2">Knowledge Assessment</h3>
+                <p className="text-xs text-white/35">Timed quizzes with leaderboards and scoring for CPD and competency checks.</p>
+              </div>
+              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+                <h3 className="text-sm font-bold text-white mb-2">AI-Powered Insights</h3>
+                <p className="text-xs text-white/35">Auto-generated summaries, themes, and sentiment analysis after every session.</p>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
           COMMAND STUDIO CALLOUT
           ═══════════════════════════════════════════ */}
       <section className="relative bg-[#07070a] overflow-hidden">

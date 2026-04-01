@@ -275,6 +275,52 @@ export function DashboardSidebar() {
           const isClassroom = item.label === 'Command Classroom'
           const isStudio = item.label === 'Command Studio'
 
+          const linkContent = (
+            <Link
+              href={item.href}
+              className={cn(
+                'relative flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-200 group',
+                collapsed ? 'px-0 py-2.5 justify-center' : 'px-3 py-2.5',
+                active
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/80',
+                !active && isClassroom && 'border-l-2 border-blue-500/40',
+                !active && isStudio && 'border-l-2 border-violet-500/40',
+              )}
+            >
+              {/* Active indicator line */}
+              <div className={cn(
+                'absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-r-full bg-primary transition-all duration-300',
+                collapsed ? 'h-4' : 'h-5',
+                active ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'
+              )} />
+
+              <item.icon className={cn(
+                'shrink-0 transition-all duration-200',
+                collapsed ? 'w-[18px] h-[18px]' : 'w-4 h-4',
+                active ? '' : 'group-hover:scale-110'
+              )} />
+              {!collapsed && (
+                <>
+                  <span className="flex-1">{item.label}</span>
+                  {hasBadge && (
+                    <span className="flex items-center justify-center min-w-[20px] h-5 rounded-full bg-emerald-500 text-white text-[10px] font-bold px-1.5">
+                      {activeSessions}
+                    </span>
+                  )}
+                  {hasNewBadge && (
+                    <span className="flex items-center justify-center h-4 rounded-full bg-red-500/15 text-red-500 text-[9px] font-bold px-1.5 uppercase tracking-wider">
+                      New
+                    </span>
+                  )}
+                </>
+              )}
+              {collapsed && hasBadge && (
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-background" />
+              )}
+            </Link>
+          )
+
           return (
             <div key={item.href}>
               {showSeparator && (
@@ -282,57 +328,9 @@ export function DashboardSidebar() {
                   <div className="h-px bg-border/60" />
                 </div>
               )}
-              <Link
-                href={item.href}
-                className={cn(
-                  'relative flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-200 group',
-                  collapsed ? 'px-0 py-2.5 justify-center' : 'px-3 py-2.5',
-                  active
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/80',
-                  !active && isClassroom && 'border-l-2 border-blue-500/40',
-                  !active && isStudio && 'border-l-2 border-violet-500/40',
-                )}
-              >
-                {/* Active indicator line */}
-                <div className={cn(
-                  'absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-r-full bg-primary transition-all duration-300',
-                  collapsed ? 'h-4' : 'h-5',
-                  active ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'
-                )} />
-
-                <item.icon className={cn(
-                  'shrink-0 transition-all duration-200',
-                  collapsed ? 'w-[18px] h-[18px]' : 'w-4 h-4',
-                  active ? '' : 'group-hover:scale-110'
-                )} />
-                {!collapsed && (
-                  <>
-                    <span className="flex-1">{item.label}</span>
-                    {hasBadge && (
-                      <span className="flex items-center justify-center min-w-[20px] h-5 rounded-full bg-emerald-500 text-white text-[10px] font-bold px-1.5">
-                        {activeSessions}
-                      </span>
-                    )}
-                    {hasNewBadge && (
-                      <span className="flex items-center justify-center h-4 rounded-full bg-red-500/15 text-red-500 text-[9px] font-bold px-1.5 uppercase tracking-wider">
-                        New
-                      </span>
-                    )}
-                  </>
-                )}
-                {collapsed && hasBadge && (
-                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-background" />
-                )}
-
-                {/* Tooltip for collapsed mode */}
-                {collapsed && (
-                  <div className="absolute left-full ml-2.5 px-2.5 py-1.5 rounded-lg bg-popover text-popover-foreground text-xs font-medium border border-border shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50">
-                    {item.label}
-                    {hasBadge && <span className="ml-1.5 text-emerald-500">({activeSessions})</span>}
-                  </div>
-                )}
-              </Link>
+              {collapsed ? (
+                <Tooltip><TooltipTrigger asChild>{linkContent}</TooltipTrigger><TooltipContent side="right">{item.label}{hasBadge && ` (${activeSessions})`}</TooltipContent></Tooltip>
+              ) : linkContent}
             </div>
           )
         })}

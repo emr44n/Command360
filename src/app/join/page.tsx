@@ -42,10 +42,10 @@ export default function JoinPage() {
               <QrCode className="w-8 h-8 text-red-400" />
             </div>
             <h1 className="text-4xl font-bold tracking-tight text-white">
-              Join a session
+              Join a Session
             </h1>
-            <p className="text-white/40 text-base max-w-xs mx-auto leading-relaxed">
-              Enter the 6-digit room code shown on the presenter&apos;s screen
+            <p className="text-white/40 text-base max-w-sm mx-auto leading-relaxed">
+              Enter your code to join a Command Classroom session or Command Studio scene
             </p>
           </div>
 

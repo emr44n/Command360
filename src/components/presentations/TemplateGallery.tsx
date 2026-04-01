@@ -27,6 +27,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import {
   Shield, AlertTriangle, Flame, Radio, BookOpen, ClipboardList,
   HelpCircle, Users, Heart, BarChart2, Star, FileText,
@@ -421,15 +422,16 @@ function HeartButton({ templateId, favorites, onToggle, className = '' }: {
 }) {
   const isFav = favorites.includes(templateId)
   return (
-    <button
-      onClick={(e) => { e.stopPropagation(); onToggle(templateId) }}
-      className={`p-1.5 rounded-lg transition-all hover:scale-110 ${className}`}
-      title={isFav ? 'Remove from favourites' : 'Add to favourites'}
-    >
-      <Heart
-        className={`w-3.5 h-3.5 transition-colors ${isFav ? 'fill-red-500 text-red-500' : 'text-muted-foreground hover:text-red-400'}`}
-      />
-    </button>
+    <Tooltip><TooltipTrigger asChild>
+      <button
+        onClick={(e) => { e.stopPropagation(); onToggle(templateId) }}
+        className={`p-1.5 rounded-lg transition-all hover:scale-110 ${className}`}
+      >
+        <Heart
+          className={`w-3.5 h-3.5 transition-colors ${isFav ? 'fill-red-500 text-red-500' : 'text-muted-foreground hover:text-red-400'}`}
+        />
+      </button>
+    </TooltipTrigger><TooltipContent>{isFav ? 'Remove from favourites' : 'Add to favourites'}</TooltipContent></Tooltip>
   )
 }
 
@@ -729,13 +731,14 @@ export function TemplateGallery() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button
-            onClick={(e) => e.stopPropagation()}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-            title="Move to category"
-          >
-            <FolderInput className="w-3.5 h-3.5" />
-          </button>
+          <Tooltip><TooltipTrigger asChild>
+            <button
+              onClick={(e) => e.stopPropagation()}
+              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            >
+              <FolderInput className="w-3.5 h-3.5" />
+            </button>
+          </TooltipTrigger><TooltipContent>Move to category</TooltipContent></Tooltip>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48" onClick={(e) => e.stopPropagation()}>
           <DropdownMenuLabel className="text-xs">Move to category</DropdownMenuLabel>
@@ -1013,14 +1016,15 @@ export function TemplateGallery() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="grid grid-cols-4 gap-1 p-2 w-auto">
                     {PRESET_ICONS.map((p) => (
-                      <button
-                        key={p.value}
-                        onClick={() => setNewCatIcon(p.value)}
-                        className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors ${newCatIcon === p.value ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-muted-foreground'}`}
-                        title={p.label}
-                      >
-                        <p.Icon className="w-4 h-4" />
-                      </button>
+                      <Tooltip><TooltipTrigger asChild>
+                        <button
+                          key={p.value}
+                          onClick={() => setNewCatIcon(p.value)}
+                          className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors ${newCatIcon === p.value ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-muted-foreground'}`}
+                        >
+                          <p.Icon className="w-4 h-4" />
+                        </button>
+                      </TooltipTrigger><TooltipContent>{p.label}</TooltipContent></Tooltip>
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -1293,7 +1297,7 @@ function BuiltInListCard({ t, creating, createFromTemplate, openPreview, favorit
             {uniqueTypes.slice(0, 3).map((type) => {
               const TypeIcon = TYPE_ICONS[type] || FileText
               const color = TYPE_COLORS[type] || '#6b7280'
-              return <TypeIcon key={type} style={{ width: 11, height: 11, color }} title={TYPE_LABELS[type] || type} />
+              return <Tooltip key={type}><TooltipTrigger asChild><span style={{ display: 'inline-flex' }}><TypeIcon style={{ width: 11, height: 11, color }} /></span></TooltipTrigger><TooltipContent>{TYPE_LABELS[type] || type}</TooltipContent></Tooltip>
             })}
             {uniqueTypes.length > 3 && <span className="text-[10px]">+{uniqueTypes.length - 3}</span>}
           </span>
