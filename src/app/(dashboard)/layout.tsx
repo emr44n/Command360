@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { DashboardSidebar } from '@/components/layout/DashboardSidebar'
+import { CommandPalette } from '@/components/search/CommandPalette'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -24,6 +25,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <div className="pointer-events-none absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full bg-primary/[0.03] blur-3xl hidden dark:block" />
         <div className="relative z-0">{children}</div>
       </main>
+      <CommandPalette />
     </div>
   )
 }

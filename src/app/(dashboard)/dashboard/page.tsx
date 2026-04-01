@@ -8,6 +8,7 @@ import { QuickCreateStudioCard } from '@/components/dashboard/QuickCreateStudioC
 import { QuickCreatePresentationCard } from '@/components/dashboard/QuickCreatePresentationCard'
 import { RecentlyOpened } from '@/components/dashboard/RecentlyOpened'
 import { TrialBanner } from '@/components/dashboard/TrialBanner'
+import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
 import Link from 'next/link'
 import { LayoutTemplate, ArrowRight, Radio, Monitor } from 'lucide-react'
 import type { Metadata } from 'next'
@@ -280,6 +281,9 @@ export default async function DashboardPage() {
         </div>
         <PresentationGrid presentations={enrichedPresentations} />
       </div>
+
+      {/* Onboarding checklist for new users */}
+      <OnboardingChecklist />
     </div>
   )
 }

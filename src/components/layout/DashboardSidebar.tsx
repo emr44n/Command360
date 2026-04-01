@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard, LogOut, LayoutTemplate, Settings,
-  Radio, BarChart2, Users, ChevronLeft, ChevronRight, Plus, Moon, Sun, Monitor, FileText,
+  Radio, BarChart2, Users, ChevronLeft, ChevronRight, Plus, Moon, Sun, Monitor, FileText, Share2, ShieldCheck, TrendingUp,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
@@ -17,6 +17,9 @@ const NAV_ITEMS = [
   { href: '/dashboard/templates', label: 'Templates', icon: LayoutTemplate },
   { href: '/dashboard/studio', label: 'Command Studio', icon: Monitor, badge: 'New' },
   { href: '/dashboard/reports', label: 'Reports', icon: BarChart2 },
+  { href: '/dashboard/shared', label: 'Shared', icon: Share2 },
+  { href: '/dashboard/admin', label: 'Admin', icon: ShieldCheck },
+  { href: '/dashboard/analytics', label: 'Analytics', icon: TrendingUp },
   { href: '/dashboard/team', label: 'Team', icon: Users },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ]
