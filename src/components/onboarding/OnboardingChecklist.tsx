@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 
 const CHECKLIST_ITEMS = [
   { key: 'profile', label: 'Set up your profile', href: '/dashboard/settings', flag: 'c360_onboard_profile' },
-  { key: 'first_presentation', label: 'Create your first presentation', href: '/dashboard', flag: 'c360_onboard_presentation' },
+  { key: 'first_presentation', label: 'Create your first session', href: '/dashboard', flag: 'c360_onboard_presentation' },
   { key: 'add_slides', label: 'Add interactive slides', href: '/dashboard', flag: 'c360_onboard_presentation' },
   { key: 'start_session', label: 'Start a live session', href: '/dashboard/sessions', flag: 'c360_onboard_session' },
   { key: 'view_report', label: 'View a session report', href: '/dashboard/reports', flag: 'c360_onboard_report' },

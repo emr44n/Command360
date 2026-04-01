@@ -41,8 +41,8 @@ export default function AdminPage() {
   }
 
   const statCards = [
-    { label: 'Presentations', value: stats.presentationCount, icon: FileText, color: 'text-blue-500 bg-blue-500/10' },
-    { label: 'Sessions', value: stats.sessionCount, icon: Radio, color: 'text-emerald-500 bg-emerald-500/10' },
+    { label: 'Classrooms', value: stats.presentationCount, icon: FileText, color: 'text-blue-500 bg-blue-500/10' },
+    { label: 'Activity', value: stats.sessionCount, icon: Radio, color: 'text-emerald-500 bg-emerald-500/10' },
     { label: 'Participants', value: stats.participantCount, icon: Users, color: 'text-violet-500 bg-violet-500/10' },
     { label: 'Responses', value: stats.responseCount, icon: BarChart2, color: 'text-orange-500 bg-orange-500/10' },
   ]
@@ -73,9 +73,9 @@ export default function AdminPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Presentations */}
         <div className="bg-card border border-border rounded-2xl p-6">
-          <h2 className="font-semibold text-foreground mb-4">Recent Presentations</h2>
+          <h2 className="font-semibold text-foreground mb-4">Recent Classrooms</h2>
           {stats.recentPresentations.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No presentations yet.</p>
+            <p className="text-sm text-muted-foreground">No classrooms yet.</p>
           ) : (
             <div className="space-y-2">
               {stats.recentPresentations.map(p => (
@@ -95,9 +95,9 @@ export default function AdminPage() {
 
         {/* Recent Sessions */}
         <div className="bg-card border border-border rounded-2xl p-6">
-          <h2 className="font-semibold text-foreground mb-4">Recent Sessions</h2>
+          <h2 className="font-semibold text-foreground mb-4">Recent Activity</h2>
           {stats.recentSessions.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No sessions yet.</p>
+            <p className="text-sm text-muted-foreground">No activity yet.</p>
           ) : (
             <div className="space-y-2">
               {stats.recentSessions.map(s => (

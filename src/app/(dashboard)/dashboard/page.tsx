@@ -155,7 +155,7 @@ export default async function DashboardPage() {
             {getGreeting()}, <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text" style={{ WebkitTextFillColor: 'transparent' }}>{displayName}</span>
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Manage your interactive training presentations and sessions
+            Manage your classrooms, scenes, and training sessions
           </p>
         </div>
         <CreatePresentationButton />
@@ -238,8 +238,8 @@ export default async function DashboardPage() {
               <div className="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
                 <Radio className="w-5 h-5 text-blue-500" />
               </div>
-              <h3 className="text-sm font-semibold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">View Sessions</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">Manage live & past sessions</p>
+              <h3 className="text-sm font-semibold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">View Activity</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Manage live & past activity</p>
             </div>
           </Link>
         </div>
@@ -267,9 +267,9 @@ export default async function DashboardPage() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground">All Presentations</h2>
+            <h2 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground">All Classrooms</h2>
             <p className="text-xs text-muted-foreground/70 mt-1">
-              {enrichedPresentations.length} presentation{enrichedPresentations.length !== 1 ? 's' : ''} total
+              {enrichedPresentations.length} classroom{enrichedPresentations.length !== 1 ? 's' : ''} total
             </p>
           </div>
           <Link

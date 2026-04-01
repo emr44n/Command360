@@ -16,14 +16,14 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-  { href: '/dashboard/presentations', label: 'Presentations', icon: FileText },
-  { href: '/dashboard/sessions', label: 'Sessions', icon: Radio },
-  { href: '/dashboard/templates', label: 'Templates', icon: LayoutTemplate },
+  { href: '/dashboard/presentations', label: 'Command Classroom', icon: FileText },
   { href: '/dashboard/studio', label: 'Command Studio', icon: Monitor, badge: 'New' },
+  { href: '/dashboard/sessions', label: 'Activity', icon: Radio },
+  { href: '/dashboard/templates', label: 'Templates', icon: LayoutTemplate },
   { href: '/dashboard/reports', label: 'Reports', icon: BarChart2 },
-  { href: '/dashboard/shared', label: 'Shared', icon: Share2 },
   { href: '/dashboard/admin', label: 'Admin', icon: ShieldCheck },
   { href: '/dashboard/studio-analytics', label: 'Analytics', icon: TrendingUp },
+  { href: '/dashboard/shared', label: 'Shared', icon: Share2 },
   { href: '/dashboard/team', label: 'Team', icon: Users },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ]
@@ -93,7 +93,7 @@ export function DashboardSidebar() {
     setSelectedType(null)
     setNewTitle('')
     try {
-      const finalTitle = title?.trim() || (type === 'command_studio' ? 'Untitled Studio Project' : 'Untitled Presentation')
+      const finalTitle = title?.trim() || (type === 'command_studio' ? 'Untitled Scene' : 'Untitled Session')
       const res = await fetch('/api/presentations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -153,7 +153,7 @@ export function DashboardSidebar() {
           >
             {creatingPresentation ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
           </button>
-          </TooltipTrigger><TooltipContent side="right">New Presentation</TooltipContent></Tooltip>
+          </TooltipTrigger><TooltipContent side="right">Create New</TooltipContent></Tooltip>
         ) : (
           <button
             onClick={() => setShowNewDialog(true)}
@@ -161,7 +161,7 @@ export function DashboardSidebar() {
             className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-red-600 text-white text-[13px] font-semibold hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 active:scale-[0.98] disabled:opacity-70"
           >
             {creatingPresentation ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-            New Presentation
+            Create New
           </button>
         )}
       </div>
@@ -186,9 +186,9 @@ export function DashboardSidebar() {
                   <Presentation className="w-5 h-5 text-blue-500" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground">Presentation</p>
+                  <p className="text-sm font-semibold text-foreground">Command Classroom</p>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Interactive slides with polls, quizzes, word clouds, and live audience participation
+                    Interactive sessions with polls, quizzes, word clouds, and live audience participation
                   </p>
                 </div>
               </button>
@@ -200,7 +200,7 @@ export function DashboardSidebar() {
                     value={newTitle}
                     onChange={e => setNewTitle(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') createPresentation('presentation', newTitle) }}
-                    placeholder="Untitled Presentation"
+                    placeholder="Untitled Session"
                     className="flex-1 h-9 px-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                   <button
@@ -208,7 +208,7 @@ export function DashboardSidebar() {
                     disabled={creatingPresentation}
                     className="h-9 px-4 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-500 transition-colors disabled:opacity-70"
                   >
-                    {creatingPresentation ? 'Creating...' : 'Create'}
+                    {creatingPresentation ? 'Creating...' : 'Create Session'}
                   </button>
                 </div>
               )}
@@ -239,7 +239,7 @@ export function DashboardSidebar() {
                     value={newTitle}
                     onChange={e => setNewTitle(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') createPresentation('command_studio', newTitle) }}
-                    placeholder="Untitled Studio"
+                    placeholder="Untitled Scene"
                     className="flex-1 h-9 px-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                   <button
@@ -247,7 +247,7 @@ export function DashboardSidebar() {
                     disabled={creatingPresentation}
                     className="h-9 px-4 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-500 transition-colors disabled:opacity-70"
                   >
-                    {creatingPresentation ? 'Creating...' : 'Create'}
+                    {creatingPresentation ? 'Creating...' : 'Create Scene'}
                   </button>
                 </div>
               )}
@@ -265,7 +265,7 @@ export function DashboardSidebar() {
       <nav className={cn('flex-1 py-3 space-y-0.5', collapsed ? 'px-2.5' : 'px-3')}>
         {NAV_ITEMS.map((item, index) => {
           const active = isActive(item)
-          const hasBadge = item.label === 'Sessions' && activeSessions > 0
+          const hasBadge = item.label === 'Activity' && activeSessions > 0
           const hasNewBadge = 'badge' in item && item.badge
 
           /* Insert a separator before "Reports" to visually group nav sections */

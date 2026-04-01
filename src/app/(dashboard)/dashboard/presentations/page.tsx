@@ -5,7 +5,7 @@ import { CreatePresentationButton } from '@/components/presentations/CreatePrese
 import { FileText } from 'lucide-react'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Presentations — Command 360' }
+export const metadata: Metadata = { title: 'Command Classroom — Command 360' }
 
 export default async function PresentationsPage() {
   const supabase = await createClient()
@@ -82,10 +82,10 @@ export default async function PresentationsPage() {
             <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center">
               <FileText className="w-5 h-5 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight">Presentations</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Command Classroom</h1>
           </div>
           <p className="text-muted-foreground text-sm mt-1">
-            Create and manage your interactive presentations
+            Create and manage your interactive sessions
           </p>
         </div>
         <CreatePresentationButton />
@@ -131,7 +131,7 @@ export default async function PresentationsPage() {
 
       {/* Presentations grid with built-in search/sort/view toggle */}
       <div>
-        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-2.5">All Presentations</p>
+        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-2.5">All Sessions</p>
         <PresentationGrid presentations={enrichedPresentations} />
       </div>
     </div>

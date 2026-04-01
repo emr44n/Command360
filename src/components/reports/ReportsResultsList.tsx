@@ -39,7 +39,7 @@ function getTypeInfo(title: string): { label: string; color: string; icon: React
   if (lower.includes('cctv') || lower.includes('camera') || lower.includes('surveillance')) {
     return { label: 'CCTV', color: 'bg-amber-500/15 text-amber-400 border-amber-500/20', icon: Video }
   }
-  return { label: 'Presentation', color: 'bg-blue-500/15 text-blue-400 border-blue-500/20', icon: FileText }
+  return { label: 'Classroom', color: 'bg-blue-500/15 text-blue-400 border-blue-500/20', icon: FileText }
 }
 
 export function ReportsResultsList({ decks }: { decks: DeckResult[] }) {
@@ -72,7 +72,7 @@ export function ReportsResultsList({ decks }: { decks: DeckResult[] }) {
     <div>
       {/* Controls bar */}
       <div className="flex items-center justify-between mb-3">
-        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium">Presentation Results</p>
+        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium">Results</p>
         <div className="flex items-center gap-2">
           {/* Sort */}
           <div className="relative">

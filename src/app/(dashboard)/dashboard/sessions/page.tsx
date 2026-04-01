@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { SessionsList } from '@/components/sessions/SessionsList'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Sessions — Command 360' }
+export const metadata: Metadata = { title: 'Activity — Command 360' }
 
 export default async function SessionsPage() {
   const supabase = await createClient()
@@ -92,9 +92,9 @@ export default async function SessionsPage() {
     <div className="p-6 md:p-8 max-w-7xl mx-auto">
       <div className="mb-8">
         <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-1.5">Dashboard</p>
-        <h1 className="text-2xl font-bold tracking-tight">Sessions</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Activity</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          View and manage your presentation sessions
+          View and manage your session activity
         </p>
       </div>
 
@@ -132,7 +132,7 @@ export default async function SessionsPage() {
         </div>
       </div>
 
-      <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-2.5">All Sessions</p>
+      <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-2.5">All Activity</p>
       <SessionsList sessions={enrichedSessions} />
     </div>
   )

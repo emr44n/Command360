@@ -115,7 +115,7 @@ export function CommandPalette() {
             <input
               ref={inputRef}
               type="text"
-              placeholder="Search presentations, sessions..."
+              placeholder="Search classrooms, activity..."
               className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
               value={query}
               onChange={e => handleInputChange(e.target.value)}
@@ -142,7 +142,7 @@ export function CommandPalette() {
 
             {presentations.length > 0 && (
               <div className="mb-2">
-                <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground px-2 py-1">Presentations</p>
+                <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground px-2 py-1">Classrooms</p>
                 {presentations.map(r => {
                   const globalIdx = results.indexOf(r)
                   return (
@@ -164,7 +164,7 @@ export function CommandPalette() {
 
             {sessions.length > 0 && (
               <div>
-                <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground px-2 py-1">Sessions</p>
+                <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground px-2 py-1">Activity</p>
                 {sessions.map(r => {
                   const globalIdx = results.indexOf(r)
                   return (

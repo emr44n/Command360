@@ -84,7 +84,7 @@ const SLIDE_TYPES = [
 ]
 
 const STEPS = [
-  { n: '01', title: 'Create your presentation', desc: 'Build interactive slides with polls, quizzes, word clouds, and Q&A. Use a template or start from scratch.', icon: FileText },
+  { n: '01', title: 'Create your session', desc: 'Build interactive slides with polls, quizzes, word clouds, and Q&A. Use a template or start from scratch.', icon: FileText },
   { n: '02', title: 'Launch a live session', desc: 'Share a 6-digit code or QR at your briefing. Crew join instantly on any device — no app or account needed.', icon: Zap },
   { n: '03', title: 'See results instantly', desc: 'Review live results, get AI summaries, and export data for evaluation records and learning logs.', icon: BarChart2 },
 ]
@@ -598,7 +598,7 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-10">
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Templates</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Start with a ready-made presentation</h2>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Start with a ready-made template</h2>
             <p className="text-muted-foreground mt-4 max-w-lg mx-auto text-sm">Purpose-built templates for operational training, debriefs, and learning capture.</p>
           </ScrollReveal>
 

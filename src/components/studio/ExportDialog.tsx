@@ -28,7 +28,7 @@ export function ExportDialog({ isOpen, onClose, presentationId, presentationTitl
       const pptx = new PptxGenJS()
       pptx.title = presentationTitle
       pptx.author = 'Command 360'
-      pptx.subject = 'Command Studio Presentation'
+      pptx.subject = 'Command Studio Scene'
 
       for (const slide of slides) {
         const pptSlide = pptx.addSlide()
@@ -152,7 +152,7 @@ export function ExportDialog({ isOpen, onClose, presentationId, presentationTitl
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-white flex items-center gap-2">
             <Download className="w-4 h-4 text-red-400" />
-            Export Presentation
+            Export Scene
           </h3>
           <button onClick={onClose} className="p-1 rounded-md text-zinc-500 hover:text-white hover:bg-white/10 transition-colors">
             <X className="w-3.5 h-3.5" />

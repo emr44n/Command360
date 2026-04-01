@@ -15,7 +15,7 @@ export function QuickCreatePresentationCard() {
       const res = await fetch('/api/presentations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: 'Untitled Presentation', description: '' }),
+        body: JSON.stringify({ title: 'Untitled Session', description: '' }),
       })
       const data = await res.json()
       if (res.ok) {
@@ -40,7 +40,7 @@ export function QuickCreatePresentationCard() {
             <Plus className="w-5 h-5 text-primary" />
           )}
         </div>
-        <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">New Presentation</h3>
+        <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">Create New</h3>
         <p className="text-xs text-muted-foreground mt-0.5">Start from scratch</p>
       </div>
     </button>

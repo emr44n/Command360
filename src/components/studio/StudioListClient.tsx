@@ -70,14 +70,14 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
     if (!confirm(`Delete "${title}"? This cannot be undone.`)) return
     setLoading(id, 'deleting')
     const res = await fetch(`/api/presentations/${id}`, { method: 'DELETE' })
-    if (res.ok) { toast.success('Presentation deleted'); router.refresh() } else { toast.error('Failed to delete') }
+    if (res.ok) { toast.success('Scene deleted'); router.refresh() } else { toast.error('Failed to delete') }
     clearLoading(id)
   }
 
   async function handleDuplicate(id: string) {
     setLoading(id, 'duplicating')
     const res = await fetch(`/api/presentations/${id}/duplicate`, { method: 'POST' })
-    if (res.ok) { toast.success('Presentation duplicated'); router.refresh() } else { toast.error('Failed to duplicate') }
+    if (res.ok) { toast.success('Duplicated'); router.refresh() } else { toast.error('Failed to duplicate') }
     clearLoading(id)
   }
 
@@ -88,10 +88,10 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
           <Monitor className="w-8 h-8 text-cyan-500/60" />
         </div>
         <h3 className="text-lg font-semibold text-foreground mb-1">
-          No studio presentations yet
+          No scenes yet
         </h3>
         <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-          Create your first Command Studio presentation to start building interactive visual experiences with layers, animations, and live audience interaction.
+          Create your first Command Studio scene to start building interactive visual experiences with layers, animations, and live audience interaction.
         </p>
       </div>
     )
@@ -113,7 +113,7 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search studio presentations..."
+            placeholder="Search scenes..."
             className="pl-9 h-9 rounded-xl bg-background border-border"
           />
         </div>
@@ -168,7 +168,7 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
           <div className="w-16 h-16 rounded-2xl bg-muted/50 border border-border/50 flex items-center justify-center mx-auto mb-3">
             <Search className="w-8 h-8 opacity-20" />
           </div>
-          <p className="text-sm">No studio presentations matching &quot;{search}&quot;</p>
+          <p className="text-sm">No scenes matching &quot;{search}&quot;</p>
           <button onClick={() => setSearch('')} className="text-primary text-xs mt-2 hover:underline">
             Clear search
           </button>
@@ -179,7 +179,7 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
       {view === 'grid' ? (
         <div>
           <h2 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-3">
-            Studio Presentations ({filtered.length})
+            Scenes ({filtered.length})
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((p) => {
@@ -264,7 +264,7 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
         /* List View */
         <div>
           <h2 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-3">
-            Studio Presentations ({filtered.length})
+            Scenes ({filtered.length})
           </h2>
           <div className="space-y-2">
             {filtered.map((p) => {

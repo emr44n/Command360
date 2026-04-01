@@ -215,7 +215,7 @@ export default async function ReportsPage() {
           <BarChart2 className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">No session data yet</p>
           <p className="text-xs text-muted-foreground/70 mt-1">
-            Run a session from one of your presentations to see reports here
+            Run a session from one of your classrooms to see reports here
           </p>
         </div>
       ) : (
@@ -227,7 +227,7 @@ export default async function ReportsPage() {
               <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
               <div className="flex items-center gap-2 text-muted-foreground/60 mb-1.5">
                 <FileText className="w-3.5 h-3.5" />
-                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Presentations</span>
+                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Classrooms</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{decksWithSessions.length}</p>
             </div>

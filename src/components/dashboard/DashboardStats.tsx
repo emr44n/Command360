@@ -36,7 +36,7 @@ function AnimatedCounter({ target, duration = 1000 }: { target: number; duration
 const STATS_CONFIG = [
   {
     key: 'presentations',
-    label: 'Presentations',
+    label: 'Classrooms',
     icon: Presentation,
     gradient: 'from-primary/10 to-primary/5',
     iconBg: 'bg-primary/15',
@@ -46,7 +46,7 @@ const STATS_CONFIG = [
   },
   {
     key: 'sessions',
-    label: 'Sessions',
+    label: 'Activity Runs',
     icon: Activity,
     gradient: 'from-blue-500/10 to-blue-500/5',
     iconBg: 'bg-blue-500/15',

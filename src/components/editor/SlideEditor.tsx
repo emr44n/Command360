@@ -438,10 +438,10 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       })
       if (res.ok) {
         const { presentation: newPres } = await res.json()
-        toast.success('Presentation imported successfully!', { duration: 2000 })
+        toast.success('Imported successfully!', { duration: 2000 })
         router.push(`/presentations/${newPres.id}/edit`)
       } else {
-        toast.error('Failed to import presentation', { duration: 2000 })
+        toast.error('Failed to import', { duration: 2000 })
       }
     } catch {
       toast.error('Invalid .c360 file', { duration: 2000 })
@@ -526,16 +526,16 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             {studioFileMenu && (
               <div className="absolute top-full left-0 mt-1 w-56 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl z-50 py-1 animate-in fade-in slide-in-from-top-1 duration-150">
                 <StudioFileMenuItem icon={Save} label="Save" shortcut="Ctrl+S" onClick={() => { flushSaves(); toast.success('Saved', { duration: 2000 }); setStudioFileMenu(false) }} />
-                <StudioFileMenuItem icon={FilePlus} label="New presentation" onClick={() => { setStudioFileMenu(false); router.push('/dashboard') }} />
+                <StudioFileMenuItem icon={FilePlus} label="New scene" onClick={() => { setStudioFileMenu(false); router.push('/dashboard') }} />
                 <div className="h-px bg-zinc-700 mx-2 my-1" />
                 <StudioFileMenuItem icon={FolderOpen} label="Open recent" onClick={() => { setStudioFileMenu(false); router.push('/dashboard') }} />
                 <div className="h-px bg-zinc-700 mx-2 my-1" />
-                <StudioFileMenuItem icon={Copy} label="Duplicate presentation" onClick={async () => {
+                <StudioFileMenuItem icon={Copy} label="Duplicate scene" onClick={async () => {
                   setStudioFileMenu(false)
                   const res = await fetch(`/api/presentations/${presentation.id}/duplicate`, { method: 'POST' })
                   if (res.ok) {
                     const data = await res.json()
-                    toast.success('Presentation duplicated', { duration: 2000 })
+                    toast.success('Duplicated', { duration: 2000 })
                     router.push(`/presentations/${data.presentation.id}/edit`)
                   } else {
                     toast.error('Failed to duplicate', { duration: 2000 })
@@ -555,7 +555,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
               value={presentationTitle}
               onChange={(e) => handleTitleChange(e.target.value)}
               className="bg-transparent border border-transparent hover:border-zinc-700 focus:border-zinc-600 text-sm text-white font-medium focus:outline-none rounded px-2 py-0.5 w-auto max-w-[300px] truncate transition-colors"
-              placeholder="Untitled Studio"
+              placeholder="Untitled Scene"
             />
             <svg className="w-3 h-3 text-zinc-600 group-hover/title:text-zinc-400 transition-colors -ml-5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
           </div>
@@ -601,7 +601,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             className="bg-red-600 hover:bg-red-500 text-white gap-1 rounded-full px-4 h-7 text-xs font-semibold"
           >
             <Play className="w-3 h-3" />
-            {starting ? 'Starting...' : 'Present'}
+            {starting ? 'Starting...' : 'Run Scene'}
           </Button>
 
           <Button variant="ghost" size="sm" onClick={() => router.push('/dashboard')} className="text-zinc-400 hover:text-white h-7 text-xs">
@@ -779,16 +779,16 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           {showFileMenu && (
             <div className="absolute top-full left-0 mt-1 w-64 bg-card border border-border rounded-xl shadow-xl z-50 py-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
               <FileMenuItem icon={Save} label="Save" shortcut="Ctrl+S" onClick={() => { flushSaves(); toast.success('Saved', { duration: 2000 }); setShowFileMenu(false) }} />
-              <FileMenuItem icon={FilePlus} label="New presentation" onClick={() => { setShowFileMenu(false); router.push('/dashboard') }} />
+              <FileMenuItem icon={FilePlus} label="New session" onClick={() => { setShowFileMenu(false); router.push('/dashboard') }} />
               <div className="h-px bg-border mx-2 my-1" />
               <FileMenuItem icon={FolderOpen} label="Open recent" shortcut="" onClick={() => { setShowFileMenu(false); router.push('/dashboard') }} />
               <div className="h-px bg-border mx-2 my-1" />
-              <FileMenuItem icon={Copy} label="Duplicate presentation" onClick={async () => {
+              <FileMenuItem icon={Copy} label="Duplicate session" onClick={async () => {
                 setShowFileMenu(false)
                 const res = await fetch(`/api/presentations/${presentation.id}/duplicate`, { method: 'POST' })
                 if (res.ok) {
                   const data = await res.json()
-                  toast.success('Presentation duplicated', { duration: 2000 })
+                  toast.success('Duplicated', { duration: 2000 })
                   router.push(`/presentations/${data.presentation.id}/edit`)
                 } else {
                   toast.error('Failed to duplicate', { duration: 2000 })
@@ -917,7 +917,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             className="bg-red-600 hover:bg-red-500 text-white gap-1.5 rounded-full px-5 h-8 text-xs font-semibold transition-all hover:shadow-lg hover:shadow-red-500/25"
             size="sm">
             <Play className="w-3.5 h-3.5" />
-            {starting ? 'Starting...' : 'Present'}
+            {starting ? 'Starting...' : 'Start Session'}
           </Button>
         </div>
       </div>

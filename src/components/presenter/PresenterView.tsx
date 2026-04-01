@@ -309,7 +309,7 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
             ) : (
               <div className="text-center text-muted-foreground py-20 fade-in">
                 <Monitor className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                <p>No slides in this presentation</p>
+                <p>No slides in this session</p>
               </div>
             )}
           </div>

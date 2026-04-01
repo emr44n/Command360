@@ -73,7 +73,7 @@ function NewStudioButton() {
         className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-600 text-white text-[13px] font-semibold hover:bg-cyan-500 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/25 active:scale-[0.98]"
       >
         <Plus className="w-4 h-4" />
-        New Studio
+        New Scene
       </button>
     </form>
   )
@@ -91,7 +91,7 @@ async function createStudioPresentation() {
     .from('presentations')
     .insert({
       user_id: user.id,
-      title: 'Untitled Studio',
+      title: 'Untitled Scene',
       description: '',
     })
     .select('id')

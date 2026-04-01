@@ -551,7 +551,7 @@ export function TemplateGallery() {
         return
       }
       const data = await res.json()
-      toast.success('Presentation created from template')
+      toast.success('Session created from template')
       router.push(`/presentations/${data.presentation.id}/edit`)
     } catch {
       toast.error('Something went wrong')
@@ -691,7 +691,7 @@ export function TemplateGallery() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: template.title, description: template.description }),
       })
-      if (!res.ok) { toast.error('Failed to create presentation'); setCreating(null); return }
+      if (!res.ok) { toast.error('Failed to create session'); setCreating(null); return }
       const { presentation } = await res.json()
 
       for (let i = 0; i < template.slides.length; i++) {

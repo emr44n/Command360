@@ -97,9 +97,9 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
         <div className="w-20 h-20 rounded-2xl bg-muted/50 border border-border/50 flex items-center justify-center mb-5 animate-pulse">
           <Presentation className="w-10 h-10 text-muted-foreground/30" />
         </div>
-        <h3 className="text-lg font-semibold mb-2">No presentations yet</h3>
+        <h3 className="text-lg font-semibold mb-2">No sessions yet</h3>
         <p className="text-muted-foreground text-sm max-w-xs mb-6">
-          Create your first presentation to get started with live polls, quizzes, word clouds and more.
+          Create your first session to get started with live polls, quizzes, word clouds and more.
         </p>
       </div>
     )
@@ -121,7 +121,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
     setLoading(id, 'deleting')
     const res = await fetch(`/api/presentations/${id}`, { method: 'DELETE' })
     if (res.ok) {
-      toast.success('Presentation deleted')
+      toast.success('Deleted')
       router.refresh()
     } else {
       toast.error('Failed to delete')
@@ -149,7 +149,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
     setLoading(id, 'duplicating')
     const res = await fetch(`/api/presentations/${id}/duplicate`, { method: 'POST' })
     if (res.ok) {
-      toast.success('Presentation duplicated')
+      toast.success('Duplicated')
       router.refresh()
     } else {
       toast.error('Failed to duplicate')
@@ -201,7 +201,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search presentations..."
+            placeholder="Search sessions..."
             className="pl-9 h-9 rounded-xl bg-background border-border"
           />
         </div>
@@ -266,7 +266,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
           <div className="w-16 h-16 rounded-2xl bg-muted/50 border border-border/50 flex items-center justify-center mx-auto mb-3">
             <Search className="w-8 h-8 opacity-20" />
           </div>
-          <p className="text-sm">No presentations matching &quot;{search}&quot;</p>
+          <p className="text-sm">No sessions matching &quot;{search}&quot;</p>
           <button onClick={() => setSearch('')} className="text-primary text-xs mt-2 hover:underline">
             Clear search
           </button>
@@ -549,7 +549,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
                     className="h-8 gap-1.5 text-xs text-muted-foreground hover:text-primary hover:bg-primary/5"
                     onClick={() => handleStart(pres.id)}
                   >
-                    <Play className="w-3 h-3" /> Present
+                    <Play className="w-3 h-3" /> Start Session
                   </Button>
                   <Button
                     size="sm" variant="ghost"

@@ -16,7 +16,7 @@ export default async function SharedPage() {
         <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-1.5">Collaboration</p>
         <h1 className="text-2xl font-bold tracking-tight">Shared</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Presentations shared with you and by you
+          Sessions shared with you and by you
         </p>
       </div>
 
@@ -29,13 +29,13 @@ export default async function SharedPage() {
             <Users className="w-4 h-4 text-muted-foreground/50" />
           </div>
         </div>
-        <p className="text-base font-medium text-foreground mb-1.5">No shared presentations yet</p>
+        <p className="text-base font-medium text-foreground mb-1.5">No shared sessions yet</p>
         <p className="text-sm text-muted-foreground/70 max-w-sm">
-          When you share a presentation with collaborators or someone shares one with you, it will appear here.
+          When you share a session with collaborators or someone shares one with you, it will appear here.
         </p>
         <div className="flex items-center gap-2 mt-6 text-xs text-muted-foreground/50">
           <Link2 className="w-3.5 h-3.5" />
-          <span>Share presentations from the editor using the share button</span>
+          <span>Share sessions from the editor using the share button</span>
         </div>
       </div>
     </div>
