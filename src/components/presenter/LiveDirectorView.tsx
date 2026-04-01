@@ -770,15 +770,25 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                       const shapeClip = dp
                         ? `polygon(${dp.tl.x}% ${dp.tl.y}%, ${dp.tr.x}% ${dp.tr.y}%, ${dp.br.x}% ${dp.br.y}%, ${dp.bl.x}% ${dp.bl.y}%)`
                         : layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined
+                      const featherPx = layer.feather || 0
+                      // Feather: render a slightly larger shape inside an overflow:hidden container
+                      // The inner shape extends beyond the container so blur clips inward
                       return <div className="w-full h-full pointer-events-none" style={{
-                        backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#666'),
-                        borderRadius: layer.name === 'Circle' && !dp ? '50%' : undefined,
-                        clipPath: shapeClip,
-                        border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
-                        filter: layer.feather ? `blur(${layer.feather}px)` : undefined,
+                        overflow: 'hidden',
                         transform: `rotate(${state.rotation}deg)`,
                         display: layer.maskMode && layer.maskMode !== 'none' ? 'none' : undefined,
-                      }} />
+                        borderRadius: layer.name === 'Circle' && !dp ? '50%' : undefined,
+                        clipPath: shapeClip,
+                      }}>
+                        <div style={{
+                          position: 'absolute',
+                          inset: featherPx > 0 ? `-${featherPx}px` : 0,
+                          backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#666'),
+                          borderRadius: layer.name === 'Circle' && !dp ? '50%' : undefined,
+                          border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
+                          filter: featherPx > 0 ? `blur(${featherPx}px)` : undefined,
+                        }} />
+                      </div>
                     })()}
                     {/* Distort mode corner handles */}
                     {distortMode === layer.id && layer.type === 'shape' && (() => {

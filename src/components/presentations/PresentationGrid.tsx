@@ -116,8 +116,16 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
     })
   }
 
+  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; title: string } | null>(null)
+
   async function handleDelete(id: string, title: string) {
-    if (!confirm(`Delete "${title}"? This cannot be undone.`)) return
+    setDeleteConfirm({ id, title })
+  }
+
+  async function confirmDelete() {
+    if (!deleteConfirm) return
+    const { id } = deleteConfirm
+    setDeleteConfirm(null)
     setLoading(id, 'deleting')
     const res = await fetch(`/api/presentations/${id}`, { method: 'DELETE' })
     if (res.ok) {
@@ -192,7 +200,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
     return []
   }
 
-  return (
+  return (<>
     <div>
       {/* Toolbar */}
       <div className="flex items-center gap-3 mb-5">
@@ -594,5 +602,18 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
         </div>
       )}
     </div>
+    {deleteConfirm && (
+      <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setDeleteConfirm(null)}>
+        <div className="bg-card border border-border rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+          <h3 className="text-sm font-semibold mb-2">Delete &ldquo;{deleteConfirm.title}&rdquo;?</h3>
+          <p className="text-[11px] text-muted-foreground mb-4">This action cannot be undone.</p>
+          <div className="flex gap-2 justify-end">
+            <button onClick={() => setDeleteConfirm(null)} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-muted text-muted-foreground hover:bg-muted/80 transition-colors">Cancel</button>
+            <button onClick={confirmDelete} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors">Delete</button>
+          </div>
+        </div>
+      </div>
+    )}
+  </>
   )
 }

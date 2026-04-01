@@ -66,8 +66,16 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
     setLoadingStates((prev) => { const next = { ...prev }; delete next[id]; return next })
   }
 
-  async function handleDelete(id: string, title: string) {
-    if (!confirm(`Delete "${title}"? This cannot be undone.`)) return
+  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; title: string } | null>(null)
+
+  function handleDelete(id: string, title: string) {
+    setDeleteConfirm({ id, title })
+  }
+
+  async function confirmDelete() {
+    if (!deleteConfirm) return
+    const { id } = deleteConfirm
+    setDeleteConfirm(null)
     setLoading(id, 'deleting')
     const res = await fetch(`/api/presentations/${id}`, { method: 'DELETE' })
     if (res.ok) { toast.success('Scene deleted'); router.refresh() } else { toast.error('Failed to delete') }
@@ -104,7 +112,7 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
     { label: 'Most slides', value: 'slides' },
   ]
 
-  return (
+  return (<>
     <div>
       {/* Toolbar */}
       <div className="flex items-center gap-3 mb-5">
@@ -345,5 +353,17 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
         </div>
       )}
     </div>
-  )
+    {deleteConfirm && (
+      <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setDeleteConfirm(null)}>
+        <div className="bg-[#1e1f22] border border-[#3f4147] rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+          <h3 className="text-sm font-semibold text-white mb-2">Delete &ldquo;{deleteConfirm.title}&rdquo;?</h3>
+          <p className="text-[11px] text-zinc-400 mb-4">This action cannot be undone.</p>
+          <div className="flex gap-2 justify-end">
+            <button onClick={() => setDeleteConfirm(null)} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
+            <button onClick={confirmDelete} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors">Delete</button>
+          </div>
+        </div>
+      </div>
+    )}
+  </>)
 }

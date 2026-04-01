@@ -612,6 +612,8 @@ export function StudioEditor({
   // Panel visibility
   const [showLeftPanel, setShowLeftPanel] = useState(true)
   const [showProperties, setShowProperties] = useState(true)
+  const [showTemplateName, setShowTemplateName] = useState(false)
+  const [templateNameInput, setTemplateNameInput] = useState('')
   const [showTimeline, setShowTimeline] = useState(true)
 
   // Resizable panel widths
@@ -708,13 +710,7 @@ export function StudioEditor({
         {/* Save as Template */}
         <Tooltip><TooltipTrigger asChild>
         <button
-          onClick={async () => {
-            const title = window.prompt('Template name:')
-            if (!title) return
-            saveAsTemplate(content, title)
-            const { toast } = await import('sonner')
-            toast.success('Saved as template', { duration: 2000 })
-          }}
+          onClick={() => setShowTemplateName(true)}
           className="w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer text-zinc-500 hover:text-zinc-200 hover:bg-[#35363c]"
         >
           <Save className="w-4 h-4" />
@@ -1009,6 +1005,19 @@ export function StudioEditor({
           </div>
         )}
       </div>
+      {/* Template name dialog */}
+      {showTemplateName && (
+        <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowTemplateName(false)}>
+          <div className="bg-[#1e1f22] border border-[#3f4147] rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-sm font-semibold text-white mb-3">Save as Template</h3>
+            <input type="text" value={templateNameInput} onChange={e => setTemplateNameInput(e.target.value)} onKeyDown={async e => { if (e.key === 'Enter' && templateNameInput.trim()) { saveAsTemplate(content, templateNameInput.trim()); const { toast } = await import('sonner'); toast.success('Saved as template', { duration: 2000 }); setShowTemplateName(false); setTemplateNameInput('') } }} placeholder="Template name..." className="w-full h-8 px-3 text-sm rounded-lg border border-[#3f4147] bg-[#2b2d31] text-white placeholder:text-zinc-500 focus:outline-none focus:border-red-500 mb-3" autoFocus />
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => { setShowTemplateName(false); setTemplateNameInput('') }} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
+              <button onClick={async () => { if (!templateNameInput.trim()) return; saveAsTemplate(content, templateNameInput.trim()); const { toast } = await import('sonner'); toast.success('Saved as template', { duration: 2000 }); setShowTemplateName(false); setTemplateNameInput('') }} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors">Save</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

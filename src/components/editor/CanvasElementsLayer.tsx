@@ -50,8 +50,8 @@ export function CanvasElementsLayer({ elements, onChange, containerRef, selected
       onRequestAddImage()
       return
     }
-    const url = prompt('Enter image URL:')
-    if (!url) return
+    // Fallback: use a placeholder image instead of browser prompt
+    const url = 'https://placehold.co/400x300/1e1f22/666?text=Image'
     const el: CanvasElement = {
       id: generateId(),
       type: 'image',
@@ -157,8 +157,7 @@ export function CanvasElementsLayer({ elements, onChange, containerRef, selected
           <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-card/95 backdrop-blur border border-border shadow-lg">
             <button
               onClick={() => {
-                const url = prompt('Enter new image URL:', selected.content)
-                if (url) updateElement(selectedId, { content: url })
+                if (onRequestAddImage) { onRequestAddImage(); return }
               }}
               className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
