@@ -408,9 +408,10 @@ function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerSta
   switch (layer.type) {
     case 'image': {
       const ifp = layer.feather || 0
-      const ifMask = ifp > 0 ? `linear-gradient(to right, transparent, black ${ifp}px, black calc(100% - ${ifp}px), transparent), linear-gradient(to bottom, transparent, black ${ifp}px, black calc(100% - ${ifp}px), transparent)` : undefined
+      const ifpPct = ifp > 0 ? Math.max(5, 50 - ifp * 0.5) : 0
+      const ifStyle = ifp > 0 ? { WebkitMaskImage: `radial-gradient(ellipse at center, black ${ifpPct}%, transparent 100%)`, maskImage: `radial-gradient(ellipse at center, black ${ifpPct}%, transparent 100%)` } : {}
       return (
-        <div style={{ ...baseStyle, WebkitMaskImage: ifMask, maskImage: ifMask, WebkitMaskComposite: ifp > 0 ? 'destination-in' : undefined, maskComposite: ifp > 0 ? 'intersect' : undefined } as React.CSSProperties}>
+        <div style={{ ...baseStyle, ...ifStyle } as React.CSSProperties}>
           {(state.src || layer.src) && (
             <img
               src={state.src || layer.src}
@@ -476,10 +477,7 @@ function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerSta
             clipPath: shapeClip,
             border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
             display: layer.maskMode && layer.maskMode !== 'none' ? 'none' : undefined,
-            WebkitMaskImage: layer.feather ? `linear-gradient(to right, transparent, black ${layer.feather}px, black calc(100% - ${layer.feather}px), transparent), linear-gradient(to bottom, transparent, black ${layer.feather}px, black calc(100% - ${layer.feather}px), transparent)` : undefined,
-            maskImage: layer.feather ? `linear-gradient(to right, transparent, black ${layer.feather}px, black calc(100% - ${layer.feather}px), transparent), linear-gradient(to bottom, transparent, black ${layer.feather}px, black calc(100% - ${layer.feather}px), transparent)` : undefined,
-            WebkitMaskComposite: layer.feather ? 'destination-in' : undefined,
-            maskComposite: layer.feather ? 'intersect' : undefined,
+            ...(layer.feather ? { WebkitMaskImage: `radial-gradient(ellipse at center, black ${Math.max(5, 50 - layer.feather * 0.5)}%, transparent 100%)`, maskImage: `radial-gradient(ellipse at center, black ${Math.max(5, 50 - layer.feather * 0.5)}%, transparent 100%)` } : {}),
           }}
         />
       )

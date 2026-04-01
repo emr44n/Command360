@@ -876,7 +876,7 @@ export function StudioGallery({
           {layers.filter(l => l.type === 'text').length === 0 && <p className="mt-4 text-center text-xs text-zinc-500">No text layers yet</p>}
           <div className="mt-2 space-y-0.5">
             {layers.filter(l => l.type === 'text').map(layer => (
-              <div key={layer.id} className={`flex items-center gap-1.5 px-1.5 py-1 rounded cursor-pointer text-xs transition-colors ${selectedLayerId === layer.id ? 'bg-red-500/15 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`} onClick={() => onSelectLayer(layer.id)}>
+              <div key={layer.id} className={`group flex items-center gap-1.5 px-1.5 py-1 rounded cursor-pointer text-xs transition-colors ${selectedLayerId === layer.id ? 'bg-red-500/20 border-l-2 border-red-500 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`} onClick={() => onSelectLayer(layer.id)}>
                 <span className="text-zinc-400 font-mono">T</span>
                 <span className="flex-1 truncate text-zinc-300">{layer.text || layer.name}</span>
                 <button onClick={e => { e.stopPropagation(); onDeleteLayer?.(layer.id) }} className="p-0.5 text-zinc-600 hover:text-red-400 transition-opacity opacity-0 group-hover:opacity-100"><Trash2Icon className="size-2.5" /></button>
@@ -888,7 +888,7 @@ export function StudioGallery({
         {/* Shapes Tab */}
         <TabsContent value="shapes" className="flex-1 overflow-y-auto px-2 pb-2 animate-[fadeIn_0.2s_ease-out]">
           <div className="mt-2 grid grid-cols-2 gap-1.5">
-            {[{ name: 'Rectangle', w: 15, h: 15, color: '#666666' }, { name: 'Circle', w: 15, h: 15, color: '#666666' }, { name: 'Triangle', w: 15, h: 15, color: '#666666' }, { name: 'Line', w: 30, h: 1, color: '#666666' }].map(p => (
+            {[{ name: 'Rectangle', w: 20, h: 12, color: '#666666' }, { name: 'Circle', w: 15, h: 26.67, color: '#666666' }, { name: 'Triangle', w: 15, h: 26.67, color: '#666666' }, { name: 'Line', w: 30, h: 0.5, color: '#666666' }].map(p => (
               <button key={p.name} onClick={() => onAddLayer({ type: 'shape', name: p.name, color: p.color, x: 10, y: 10, width: p.w, height: p.h, rotation: 0, opacity: 1, blendMode: 'normal', visible: true, locked: false })}
                 className="flex flex-col items-center gap-1 py-2.5 rounded-lg border border-[#3f4147] bg-[#383a40] hover:bg-[#35363c] hover:border-zinc-500 transition-colors">
                 <div className="w-5 h-5 bg-zinc-500" style={{ borderRadius: p.name === 'Circle' ? '50%' : 2, width: p.name === 'Line' ? 20 : p.name === 'Rectangle' ? 24 : undefined, height: p.name === 'Line' ? 2 : p.name === 'Rectangle' ? 14 : undefined, clipPath: p.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined }} />
@@ -899,7 +899,7 @@ export function StudioGallery({
           {layers.filter(l => l.type === 'shape').length === 0 && <p className="mt-4 text-center text-xs text-zinc-500">No shapes placed yet</p>}
           <div className="mt-2 space-y-0.5">
             {layers.filter(l => l.type === 'shape').map(layer => (
-              <div key={layer.id} className={`group flex items-center gap-1.5 px-1.5 py-1 rounded cursor-pointer text-xs transition-colors ${selectedLayerId === layer.id ? 'bg-red-500/15 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`} onClick={() => onSelectLayer(layer.id)}>
+              <div key={layer.id} className={`group flex items-center gap-1.5 px-1.5 py-1 rounded cursor-pointer text-xs transition-colors ${selectedLayerId === layer.id ? 'bg-red-500/20 border-l-2 border-red-500 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`} onClick={() => onSelectLayer(layer.id)}>
                 <div className="w-3 h-3 shrink-0" style={{ backgroundColor: layer.color || '#666', borderRadius: layer.name === 'Circle' ? '50%' : 2, clipPath: layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined }} />
                 <span className="flex-1 truncate text-zinc-300">{layer.name}{layer.maskMode && layer.maskMode !== 'none' ? ` (${layer.maskMode === 'mask' ? 'Mask' : 'Multi-Mask'})` : ''}</span>
                 <button onClick={e => { e.stopPropagation(); onDeleteLayer?.(layer.id) }} className="p-0.5 text-zinc-600 hover:text-red-400 transition-opacity opacity-0 group-hover:opacity-100"><Trash2Icon className="size-2.5" /></button>

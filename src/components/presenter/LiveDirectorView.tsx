@@ -55,10 +55,10 @@ function buildInitialStates(layers: StudioLayer[]): Record<string, StudioLayerSt
 
 /* ─── Shape presets ─── */
 const SHAPE_PRESETS = [
-  { name: 'Rectangle', w: 15, h: 15, color: '#666666' },
-  { name: 'Circle', w: 15, h: 15, color: '#666666' },
-  { name: 'Triangle', w: 15, h: 15, color: '#666666' },
-  { name: 'Line', w: 30, h: 1, color: '#666666' },
+  { name: 'Rectangle', w: 20, h: 12, color: '#666666' },
+  { name: 'Circle', w: 15, h: 26.67, color: '#666666' },  // 26.67% height ≈ 15% width on 16:9 canvas → equal pixels
+  { name: 'Triangle', w: 15, h: 26.67, color: '#666666' },
+  { name: 'Line', w: 30, h: 0.5, color: '#666666' },
 ]
 
 export function LiveDirectorView({ slide, session, channelRef, presenterName, onEndExercise }: Props) {
@@ -751,9 +751,10 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                     {/* Image with feather */}
                     {layer.type === 'image' && (() => {
                       const fp = layer.feather || 0
-                      const fMask = fp > 0 ? `linear-gradient(to right, transparent, black ${fp}px, black calc(100% - ${fp}px), transparent), linear-gradient(to bottom, transparent, black ${fp}px, black calc(100% - ${fp}px), transparent)` : undefined
+                      const fpPct = fp > 0 ? Math.max(5, 50 - fp * 0.5) : 0
+                      const fStyle: React.CSSProperties = fp > 0 ? { WebkitMaskImage: `radial-gradient(ellipse at center, black ${fpPct}%, transparent 100%)`, maskImage: `radial-gradient(ellipse at center, black ${fpPct}%, transparent 100%)` } : {}
                       return (
-                        <div className="w-full h-full pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)`, WebkitMaskImage: fMask, maskImage: fMask, WebkitMaskComposite: fp > 0 ? 'destination-in' as unknown as string : undefined, maskComposite: fp > 0 ? 'intersect' : undefined }}>
+                        <div className="w-full h-full pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)`, ...fStyle }}>
                           <img src={src!} alt="" className="w-full h-full object-contain" />
                         </div>
                       )
@@ -775,10 +776,11 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                         ? `polygon(${dp.tl.x}% ${dp.tl.y}%, ${dp.tr.x}% ${dp.tr.y}%, ${dp.br.x}% ${dp.br.y}%, ${dp.bl.x}% ${dp.bl.y}%)`
                         : layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined
                       const featherPx = layer.feather || 0
-                      // Feather uses CSS mask-image with gradient to fade edges inward
-                      const featherMask = featherPx > 0
-                        ? `linear-gradient(to right, transparent, black ${featherPx}px, black calc(100% - ${featherPx}px), transparent), linear-gradient(to bottom, transparent, black ${featherPx}px, black calc(100% - ${featherPx}px), transparent)`
-                        : undefined
+                      const featherPct = featherPx > 0 ? Math.max(5, 50 - featherPx * 0.5) : 0
+                      const featherStyle: React.CSSProperties = featherPx > 0 ? {
+                        WebkitMaskImage: `radial-gradient(ellipse at center, black ${featherPct}%, transparent 100%)`,
+                        maskImage: `radial-gradient(ellipse at center, black ${featherPct}%, transparent 100%)`,
+                      } : {}
                       return <div className="w-full h-full pointer-events-none" style={{
                         backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#666'),
                         borderRadius: layer.name === 'Circle' && !dp ? '50%' : undefined,
@@ -786,10 +788,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                         border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
                         transform: `rotate(${state.rotation}deg)`,
                         display: layer.maskMode && layer.maskMode !== 'none' ? 'none' : undefined,
-                        WebkitMaskImage: featherMask,
-                        maskImage: featherMask,
-                        WebkitMaskComposite: featherPx > 0 ? 'destination-in' as unknown as string : undefined,
-                        maskComposite: featherPx > 0 ? 'intersect' : undefined,
+                        ...featherStyle,
                       }} />
                     })()}
                     {/* Distort mode corner handles */}
