@@ -476,6 +476,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
     })
     if (res.ok) {
       const data = await res.json()
+      localStorage.setItem('c360_onboard_session', 'true')
       router.push(`/present/${data.session.id}`)
     } else {
       toast.error('Failed to start session', { duration: 2000 })

@@ -54,7 +54,10 @@ export function ProfileSettings({ user }: Props) {
     setSaving(true)
     const { error } = await supabase.auth.updateUser({ data: { display_name: displayName.trim() } })
     if (error) toast.error(error.message)
-    else toast.success('Profile updated')
+    else {
+      toast.success('Profile updated')
+      localStorage.setItem('c360_onboard_profile', 'true')
+    }
     setSaving(false)
   }
 

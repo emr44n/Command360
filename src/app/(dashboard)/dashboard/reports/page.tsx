@@ -4,6 +4,7 @@ import { BarChart2, FileText, Users, Clock, TrendingUp, MessageSquare, ArrowRigh
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { ReportsResultsList } from '@/components/reports/ReportsResultsList'
+import Script from 'next/script'
 
 export const metadata: Metadata = { title: 'Reports — Command 360' }
 
@@ -200,6 +201,7 @@ export default async function ReportsPage() {
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto">
+      <Script id="onboard-report" strategy="afterInteractive">{`localStorage.setItem('c360_onboard_report','true')`}</Script>
       <div className="mb-8">
         <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-1.5">Analytics</p>
         <h1 className="text-2xl font-bold tracking-tight">Reports</h1>

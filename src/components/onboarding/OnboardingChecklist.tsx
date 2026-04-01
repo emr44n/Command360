@@ -3,43 +3,69 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle2, Circle, X, ChevronDown, ChevronUp, Sparkles } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const CHECKLIST_ITEMS = [
-  { key: 'profile', label: 'Set up your profile', href: '/dashboard/settings' },
-  { key: 'first_presentation', label: 'Create your first presentation', href: '/dashboard' },
-  { key: 'add_slides', label: 'Add interactive slides', href: '/dashboard' },
-  { key: 'start_session', label: 'Start a live session', href: '/dashboard/sessions' },
-  { key: 'view_report', label: 'View a session report', href: '/dashboard/reports' },
+  { key: 'profile', label: 'Set up your profile', href: '/dashboard/settings', flag: 'c360_onboard_profile' },
+  { key: 'first_presentation', label: 'Create your first presentation', href: '/dashboard', flag: 'c360_onboard_presentation' },
+  { key: 'add_slides', label: 'Add interactive slides', href: '/dashboard', flag: 'c360_onboard_presentation' },
+  { key: 'start_session', label: 'Start a live session', href: '/dashboard/sessions', flag: 'c360_onboard_session' },
+  { key: 'view_report', label: 'View a session report', href: '/dashboard/reports', flag: 'c360_onboard_report' },
 ]
 
-const STORAGE_KEY = 'c360_onboarding'
 const DISMISSED_KEY = 'c360_onboarding_dismissed'
 
 export function OnboardingChecklist() {
   const [completed, setCompleted] = useState<Record<string, boolean>>({})
   const [dismissed, setDismissed] = useState(true) // start hidden until we read localStorage
   const [expanded, setExpanded] = useState(true)
+  const [allDoneMessage, setAllDoneMessage] = useState(false)
+  const pathname = usePathname()
+
+  // Hide on editor/present/preview pages
+  const isEditorPage = pathname.includes('/edit') || pathname.includes('/present') || pathname.includes('/preview')
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      try { setCompleted(JSON.parse(stored)) } catch { /* ignore */ }
-    }
     const wasDismissed = localStorage.getItem(DISMISSED_KEY)
-    setDismissed(wasDismissed === 'true')
+    if (wasDismissed === 'true') {
+      setDismissed(true)
+      return
+    }
+    setDismissed(false)
+
+    // Auto-detect completion from localStorage flags
+    function checkFlags() {
+      const next: Record<string, boolean> = {}
+      for (const item of CHECKLIST_ITEMS) {
+        next[item.key] = localStorage.getItem(item.flag) === 'true'
+      }
+      setCompleted(next)
+    }
+
+    checkFlags()
+
+    // Re-check periodically in case flags are set by other actions
+    const interval = setInterval(checkFlags, 3000)
+    return () => clearInterval(interval)
   }, [])
 
-  if (dismissed) return null
+  // Auto-dismiss when all done
+  useEffect(() => {
+    const completedCount = CHECKLIST_ITEMS.filter(i => completed[i.key]).length
+    if (completedCount === CHECKLIST_ITEMS.length && completedCount > 0) {
+      setAllDoneMessage(true)
+      const timer = setTimeout(() => {
+        setDismissed(true)
+        localStorage.setItem(DISMISSED_KEY, 'true')
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [completed])
+
+  if (dismissed || isEditorPage) return null
 
   const completedCount = CHECKLIST_ITEMS.filter(i => completed[i.key]).length
   const progress = Math.round((completedCount / CHECKLIST_ITEMS.length) * 100)
-  const allDone = completedCount === CHECKLIST_ITEMS.length
-
-  function toggleItem(key: string) {
-    const next = { ...completed, [key]: !completed[key] }
-    setCompleted(next)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-  }
 
   function handleDismiss() {
     setDismissed(true)
@@ -81,16 +107,13 @@ export function OnboardingChecklist() {
             <div className="space-y-1">
               {CHECKLIST_ITEMS.map(item => (
                 <div key={item.key} className="flex items-center gap-2 group">
-                  <button
-                    onClick={() => toggleItem(item.key)}
-                    className="shrink-0 text-muted-foreground hover:text-primary transition-colors"
-                  >
+                  <span className="shrink-0 text-muted-foreground">
                     {completed[item.key] ? (
                       <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                     ) : (
                       <Circle className="w-4 h-4" />
                     )}
-                  </button>
+                  </span>
                   <Link
                     href={item.href}
                     className={`text-xs transition-colors ${
@@ -105,9 +128,9 @@ export function OnboardingChecklist() {
               ))}
             </div>
 
-            {allDone && (
+            {allDoneMessage && (
               <p className="text-xs text-emerald-600 font-medium text-center pt-1">
-                All done! You are all set.
+                All done! You're ready to go.
               </p>
             )}
           </div>
