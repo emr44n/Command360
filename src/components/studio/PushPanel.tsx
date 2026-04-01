@@ -32,9 +32,11 @@ interface PushPanelProps {
   onPushItem: (layerId: string) => void
   onPushAll: () => void
   onRemoveItem: (layerId: string) => void
+  globalTransition: 'fade' | 'instant'
+  onSetGlobalTransition: (t: 'fade' | 'instant') => void
 }
 
-export function PushPanel({ queue, onUpdateTransition, onPushItem, onPushAll, onRemoveItem }: PushPanelProps) {
+export function PushPanel({ queue, onUpdateTransition, onPushItem, onPushAll, onRemoveItem, globalTransition, onSetGlobalTransition }: PushPanelProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   return (
@@ -114,8 +116,15 @@ export function PushPanel({ queue, onUpdateTransition, onPushItem, onPushAll, on
         )}
       </div>
 
-      {/* Push All button — always visible */}
+      {/* Global transition + Push All — always visible */}
       <div className="p-2 border-t border-[#2b2d31] shrink-0 space-y-1.5">
+        <p className="text-[7px] text-zinc-600 uppercase tracking-wider">Default Transition</p>
+        <div className="flex gap-1">
+          <button onClick={() => onSetGlobalTransition('fade')} className={`flex-1 text-[8px] py-1 rounded-md transition-colors ${globalTransition === 'fade' ? 'bg-red-500/20 text-red-400' : 'bg-[#1e1f22] text-zinc-500 hover:text-zinc-300'}`}>Fade In</button>
+          <button onClick={() => onSetGlobalTransition('instant')} className={`flex-1 text-[8px] py-1 rounded-md transition-colors ${globalTransition === 'instant' ? 'bg-red-500/20 text-red-400' : 'bg-[#1e1f22] text-zinc-500 hover:text-zinc-300'}`}>Instant</button>
+        </div>
+      </div>
+      <div className="px-2 pb-2 shrink-0">
         <button
           onClick={onPushAll}
           disabled={queue.length === 0}

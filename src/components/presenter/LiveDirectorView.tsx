@@ -91,6 +91,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   // ─── Right panel ───
   const [rightTab, setRightTab] = useState<'push' | 'details'>('push')
   const [pushQueue, setPushQueue] = useState<PushQueueItem[]>([])
+  const [globalTransition, setGlobalTransition] = useState<'fade' | 'instant'>('fade')
 
   // ─── Refs ───
   const eventControllerRef = useRef<EventPlaybackController | null>(null)
@@ -211,7 +212,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   const addLayerToCanvasAndQueue = useCallback((layer: StudioLayer) => {
     setLayers(prev => [...prev, layer])
     setLayerStates(prev => ({ ...prev, [layer.id]: { visible: layer.visible, opacity: layer.opacity, x: layer.x, y: layer.y, width: layer.width, height: layer.height, rotation: layer.rotation, src: layer.src, volume: layer.volume } }))
-    setPushQueue(prev => [...prev, { layer, transition: 'fade' }])
+    setPushQueue(prev => [...prev, { layer, transition: globalTransition }])
     setSelectedLayerId(layer.id)
   }, [])
 
@@ -353,9 +354,10 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   }, [])
 
   const addAssetToCanvas = useCallback((asset: AssetItem) => {
+    const off = nextOffset()
     const layer: StudioLayer = {
       id: generateLayerId(), name: asset.name, type: asset.type, src: asset.url,
-      x: 10, y: 10, width: asset.type === 'video' ? 40 : asset.type === 'audio' ? 0 : 30, height: asset.type === 'video' ? 22.5 : asset.type === 'audio' ? 0 : 30,
+      x: off.x, y: off.y, width: asset.type === 'video' ? 40 : asset.type === 'audio' ? 0 : 30, height: asset.type === 'video' ? 22.5 : asset.type === 'audio' ? 0 : 30,
       rotation: 0, zIndex: layers.length + 1, opacity: 1, blendMode: 'normal', visible: true, locked: false,
       ...(asset.type === 'video' ? { loop: true, autoplay: true, muted: true } : {}),
       ...(asset.type === 'audio' ? { volume: 1, audioLoop: false } : {}),
@@ -363,9 +365,16 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     addLayerToCanvasAndQueue(layer)
   }, [layers, addLayerToCanvasAndQueue])
 
+  // Offset so new layers don't stack
+  const nextOffset = useCallback(() => {
+    const count = layers.length
+    return { x: 10 + (count % 8) * 3, y: 10 + (count % 8) * 3 }
+  }, [layers.length])
+
   const addTextLayer = useCallback(() => {
+    const off = nextOffset()
     const layer: StudioLayer = {
-      id: generateLayerId(), name: 'Text', type: 'text', x: 10, y: 10, width: 20, height: 10,
+      id: generateLayerId(), name: 'Text', type: 'text', x: off.x, y: off.y, width: 20, height: 10,
       rotation: 0, zIndex: layers.length + 1, opacity: 1, blendMode: 'normal', visible: true, locked: false,
       text: 'Text', fontSize: 24, color: '#ffffff',
     }
@@ -373,8 +382,9 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   }, [layers, addLayerToCanvasAndQueue])
 
   const addShapeLayer = useCallback((preset: typeof SHAPE_PRESETS[0]) => {
+    const off = nextOffset()
     const layer: StudioLayer = {
-      id: generateLayerId(), name: preset.name, type: 'shape', x: 10, y: 10, width: preset.w, height: preset.h,
+      id: generateLayerId(), name: preset.name, type: 'shape', x: off.x, y: off.y, width: preset.w, height: preset.h,
       rotation: 0, zIndex: layers.length + 1, opacity: 1, blendMode: 'normal', visible: true, locked: false,
       color: preset.color,
     }
@@ -387,6 +397,48 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   }, [])
 
   // ─── Event grouping ───
+  // ─── Mask clip computation ───
+  const maskClips = useMemo(() => {
+    const clips: Record<string, string> = {}
+    const sortedLayers = [...layers].sort((a, b) => (b.zIndex || 0) - (a.zIndex || 0))
+    for (let i = 0; i < sortedLayers.length; i++) {
+      const ml = sortedLayers[i]
+      if (ml.type !== 'shape' || !ml.maskMode || ml.maskMode === 'none') continue
+      const ms = layerStates[ml.id]
+      if (!ms) continue
+      // Compute an invert clip — show everything EXCEPT the mask shape area
+      // The mask "cuts a hole" so we use polygon-based invert
+      let clip = ''
+      if (ml.name === 'Circle') {
+        clip = `circle(${Math.min(ms.width, ms.height) / 2}% at ${ms.x + ms.width / 2}% ${ms.y + ms.height / 2}%)`
+      } else if (ml.name === 'Triangle') {
+        const cx = ms.x, cy = ms.y, w = ms.width, h = ms.height
+        clip = `polygon(${cx + w / 2}% ${cy}%, ${cx}% ${cy + h}%, ${cx + w}% ${cy + h}%)`
+      } else {
+        clip = `inset(${ms.y}% ${100 - ms.x - ms.width}% ${100 - ms.y - ms.height}% ${ms.x}%)`
+      }
+      if (!clip) continue
+      // Apply to layers below
+      if (ml.maskMode === 'mask') {
+        // Only the next visible non-mask layer below
+        for (let j = i + 1; j < sortedLayers.length; j++) {
+          const target = sortedLayers[j]
+          if (target.type === 'shape' && target.maskMode && target.maskMode !== 'none') continue
+          clips[target.id] = clip
+          break
+        }
+      } else {
+        // Multi-layer: all layers below
+        for (let j = i + 1; j < sortedLayers.length; j++) {
+          const target = sortedLayers[j]
+          if (target.type === 'shape' && target.maskMode && target.maskMode !== 'none') continue
+          clips[target.id] = clip
+        }
+      }
+    }
+    return clips
+  }, [layers, layerStates])
+
   const grouped = useMemo(() => {
     const uncategorized: StudioEvent[] = [], byCategory = new Map<string, StudioEvent[]>()
     for (const evt of events) { if (evt.categoryId) { const l = byCategory.get(evt.categoryId) || []; l.push(evt); byCategory.set(evt.categoryId, l) } else uncategorized.push(evt) }
@@ -610,7 +662,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                 const src = state.src ?? layer.src; if (!src && layer.type !== 'text' && layer.type !== 'shape') return null
                 const isSel = selectedLayerId === layer.id
                 return (
-                  <div key={layer.id} style={{ position: 'absolute', left: `${state.x}%`, top: `${state.y}%`, width: `${state.width}%`, height: `${state.height}%`, opacity: state.opacity, zIndex: layer.zIndex, transition: dragRef.current?.layerId === layer.id || resizeRef.current?.layerId === layer.id ? 'none' : 'all 0.6s ease-out', cursor: 'move' }}
+                  <div key={layer.id} style={{ position: 'absolute', left: `${state.x}%`, top: `${state.y}%`, width: `${state.width}%`, height: `${state.height}%`, opacity: state.opacity, zIndex: layer.zIndex, transition: dragRef.current?.layerId === layer.id || resizeRef.current?.layerId === layer.id ? 'none' : 'all 0.6s ease-out', cursor: 'move', clipPath: maskClips[layer.id] || undefined }}
                     onMouseDown={e => handleLayerMouseDown(e, layer.id)} onClick={e => { e.stopPropagation(); setSelectedLayerId(layer.id) }}>
                     {layer.type === 'image' && <img src={src!} alt="" className="w-full h-full object-contain pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)` }} />}
                     {layer.type === 'video' && <video src={src!} autoPlay loop muted playsInline className="w-full h-full object-contain pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)` }} />}
@@ -659,7 +711,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
             <button onClick={() => setRightTab('details')} className={`flex-1 py-2 text-[8px] font-bold uppercase tracking-wider transition-colors ${rightTab === 'details' ? 'text-red-400 border-b-2 border-red-500' : 'text-zinc-500 hover:text-zinc-300'}`}>Details</button>
           </div>
           {rightTab === 'push' && (
-            <PushPanel queue={pushQueue} onUpdateTransition={updateQueueTransition} onPushItem={pushItem} onPushAll={pushAll} onRemoveItem={removeFromQueue} />
+            <PushPanel queue={pushQueue} onUpdateTransition={updateQueueTransition} onPushItem={pushItem} onPushAll={pushAll} onRemoveItem={removeFromQueue} globalTransition={globalTransition} onSetGlobalTransition={setGlobalTransition} />
           )}
           {rightTab === 'details' && (
             <div className="flex-1 overflow-y-auto">

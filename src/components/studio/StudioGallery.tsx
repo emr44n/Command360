@@ -39,7 +39,7 @@ interface StudioGalleryProps {
   onReorderLayers?: (fromIndex: number, toIndex: number) => void
   onUpdateCategories?: (categories: StudioEventCategory[]) => void
   onTriggerEvent?: (eventId: string) => void
-  initialTab?: 'images' | 'videos' | 'placed' | 'events' | 'audio'
+  initialTab?: 'images' | 'videos' | 'placed' | 'events' | 'audio' | 'text' | 'shapes'
 }
 
 interface AssetItem {
