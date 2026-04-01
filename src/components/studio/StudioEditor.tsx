@@ -871,7 +871,7 @@ export function StudioEditor({
                   />
                 </div>
                 {/* Transport bar */}
-                <div className="h-8 shrink-0 bg-[#2b2d31] border-t border-[#1e1f22] flex items-center justify-center gap-4 px-4">
+                <div className="h-7 shrink-0 bg-[#2b2d31] border-t border-[#1e1f22] flex items-center justify-center gap-4 px-4">
                   <span className="text-[11px] font-mono text-emerald-400 tabular-nums">
                     {formatTime(currentTime)}
                   </span>
@@ -888,16 +888,16 @@ export function StudioEditor({
                       <Redo2 className="w-3.5 h-3.5" />
                     </button>
                     </TooltipTrigger><TooltipContent>Redo (Ctrl+Shift+Z)</TooltipContent></Tooltip>
-                    <button onClick={() => { setIsPlaying(false); setCurrentTime(0) }} className="w-6 h-6 rounded flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
-                      <SkipBack className="w-3.5 h-3.5" />
+                    <button onClick={() => { setIsPlaying(false); setCurrentTime(0) }} className="w-5 h-5 rounded flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
+                      <SkipBack className="w-3 h-3" />
                     </button>
                     <button
                       onClick={() => {
                         if (isPlaying) { setIsPlaying(false) } else { if (currentTime >= totalDuration) setCurrentTime(0); setIsPlaying(true) }
                       }}
-                      className="w-7 h-7 rounded-lg flex items-center justify-center bg-zinc-700 hover:bg-zinc-600 text-white transition-colors cursor-pointer"
+                      className="w-6 h-6 rounded-lg flex items-center justify-center bg-zinc-700 hover:bg-zinc-600 text-white transition-colors cursor-pointer"
                     >
-                      {isPlaying ? <Square className="w-3 h-3 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current ml-0.5" />}
+                      {isPlaying ? <Square className="w-2.5 h-2.5 fill-current" /> : <Play className="w-3 h-3 fill-current ml-0.5" />}
                     </button>
                   </div>
                   <span className="text-[11px] font-mono text-zinc-500 tabular-nums">
@@ -1593,7 +1593,7 @@ function SceneProperties({
           <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Background Color</label>
           {/* Preset color swatches */}
           <div className="flex flex-wrap gap-1 mb-1.5 max-w-full">
-            {['#ffffff', '#000000', '#1a1a2e', '#0f0f0f', '#1e3a5f', '#2d1b69', '#1a3c34', '#3b1c1c', '#3a2a0a', '#dc2626'].map(c => (
+            {['#ffffff', '#000000', '#1a1a2e', '#dc2626'].map(c => (
               <button key={c} onClick={() => handleBgChange(c)}
                 className={`w-5 h-5 rounded-md border transition-all cursor-pointer ${bgColor === c ? 'border-red-500 ring-1 ring-red-500/50 scale-110' : 'border-[#3f4147] hover:border-zinc-400'}`}
                 style={{ backgroundColor: c }} />
@@ -1634,7 +1634,7 @@ function SceneProperties({
               className="h-8 rounded-lg border border-[#3f4147] hover:border-red-500/50 text-zinc-400 hover:text-red-400 flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
             >
               <Image className="w-3 h-3" />
-              Add Image
+              Add Assets
             </button>
             <button
               onClick={() => onOpenPanel('text')}

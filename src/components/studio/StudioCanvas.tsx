@@ -571,8 +571,8 @@ export function StudioCanvas({
   const updateSize = useCallback(() => {
     const container = containerRef.current
     if (!container) return
-    const containerWidth = container.clientWidth
-    const containerHeight = container.clientHeight
+    const containerWidth = container.clientWidth - 40  // 20px padding each side
+    const containerHeight = container.clientHeight - 40
     let width = containerWidth
     let height = width / ASPECT_RATIO
     if (height > containerHeight) {

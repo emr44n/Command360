@@ -570,6 +570,10 @@ export function StudioGallery({
               <VideoIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Videos'}
             </TabsTrigger></TooltipTrigger><TooltipContent>Videos</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild><TabsTrigger value="audio" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
+              <Volume2 className="size-3 shrink-0" />
+              {!tabsNarrow && 'Audio'}
+            </TabsTrigger></TooltipTrigger><TooltipContent>Audio</TooltipContent></Tooltip>
             <Tooltip><TooltipTrigger asChild><TabsTrigger value="placed" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
               <LayersIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Layers'}
@@ -578,10 +582,6 @@ export function StudioGallery({
               <ZapIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Events'}
             </TabsTrigger></TooltipTrigger><TooltipContent>Events</TooltipContent></Tooltip>
-            <Tooltip><TooltipTrigger asChild><TabsTrigger value="audio" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
-              <Volume2 className="size-3 shrink-0" />
-              {!tabsNarrow && 'Audio'}
-            </TabsTrigger></TooltipTrigger><TooltipContent>Audio</TooltipContent></Tooltip>
           </TabsList>
           {/* Grid/List toggle for assets */}
           <div className="flex items-center px-1 gap-0.5 border-b-2 border-transparent">
