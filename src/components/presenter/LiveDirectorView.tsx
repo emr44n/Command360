@@ -13,6 +13,7 @@ import { PushPanel, type PushQueueItem } from '@/components/studio/PushPanel'
 import { StudioProperties } from '@/components/studio/StudioProperties'
 import { generateLayerId } from '@/lib/utils/studio-utils'
 import { QRCodeSVG } from 'qrcode.react'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 export interface ExerciseStats {
   duration: number; eventsTriggered: number; assetsAdded: number
@@ -82,6 +83,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   const [audios, setAudios] = useState<AssetItem[]>([])
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [uploadError, setUploadError] = useState<string | null>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
   const videoInputRef = useRef<HTMLInputElement>(null)
   const audioInputRef = useRef<HTMLInputElement>(null)
@@ -327,10 +329,21 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
 
   // ─── Asset handlers ───
   const doUpload = useCallback(async (files: FileList, type: 'image' | 'video' | 'audio', setter: React.Dispatch<React.SetStateAction<AssetItem[]>>) => {
-    setUploading(true); setUploadProgress(0)
+    setUploading(true); setUploadProgress(0); setUploadError(null)
     for (const file of Array.from(files)) {
-      try { const { url, name } = await uploadAssetFile(file, p => setUploadProgress(p)); setter(prev => [...prev, { id: generateLayerId(), name, url, type }]) }
-      catch { try { const { url, name } = await uploadAssetFile(file, p => setUploadProgress(p)); setter(prev => [...prev, { id: generateLayerId(), name, url, type }]) } catch { /* silent */ } }
+      try {
+        const { url, name } = await uploadAssetFile(file, p => setUploadProgress(p))
+        setter(prev => [...prev, { id: generateLayerId(), name, url, type }])
+      } catch (err) {
+        console.error('Upload failed, retrying...', err)
+        try {
+          const { url, name } = await uploadAssetFile(file, p => setUploadProgress(p))
+          setter(prev => [...prev, { id: generateLayerId(), name, url, type }])
+        } catch (err2) {
+          console.error('Upload retry failed:', err2)
+          setUploadError(`Failed to upload "${file.name}". Check connection.`)
+        }
+      }
     }
     setUploading(false); setUploadProgress(0)
   }, [])
@@ -435,10 +448,18 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
           {/* ── ASSETS TAB ── */}
           {leftTab === 'assets' && (
             <div className="flex-1 flex flex-col overflow-hidden">
-              {/* Sub-tabs */}
-              <div className="flex border-b border-[#2b2d31] shrink-0 overflow-x-auto">
-                {(['images', 'videos', 'audio', 'text', 'shapes'] as const).map(t => (
-                  <button key={t} onClick={() => setAssetSub(t)} className={`px-2 py-1.5 text-[7px] font-bold uppercase tracking-wider whitespace-nowrap transition-colors ${assetSub === t ? 'text-white bg-[#2b2d31]' : 'text-zinc-500 hover:text-zinc-300'}`}>{t}</button>
+              {/* Sub-tabs — icons, evenly spaced */}
+              <div className="flex border-b border-[#2b2d31] shrink-0">
+                {([
+                  { key: 'images' as const, icon: <ImageIcon className="w-4 h-4" />, label: 'Images' },
+                  { key: 'videos' as const, icon: <VideoIcon className="w-4 h-4" />, label: 'Videos' },
+                  { key: 'audio' as const, icon: <Volume2 className="w-4 h-4" />, label: 'Audio' },
+                  { key: 'text' as const, icon: <Type className="w-4 h-4" />, label: 'Text' },
+                  { key: 'shapes' as const, icon: <Square className="w-4 h-4" />, label: 'Shapes' },
+                ]).map(t => (
+                  <Tooltip key={t.key}><TooltipTrigger asChild>
+                    <button onClick={() => setAssetSub(t.key)} className={`flex-1 flex items-center justify-center py-2 transition-colors ${assetSub === t.key ? 'text-white bg-[#2b2d31]' : 'text-zinc-500 hover:text-zinc-300'}`}>{t.icon}</button>
+                  </TooltipTrigger><TooltipContent>{t.label}</TooltipContent></Tooltip>
                 ))}
               </div>
 
@@ -450,6 +471,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                     {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />} {uploading ? `${uploadProgress}%` : 'Upload Image'}
                   </button>
                   {uploading && <div className="h-0.5 w-full rounded-full bg-zinc-800 overflow-hidden mb-2"><div className="h-0.5 bg-red-500 rounded-full transition-all" style={{ width: `${uploadProgress}%` }} /></div>}
+                  {uploadError && <p className="text-[8px] text-red-400 mb-2">{uploadError}</p>}
                   {images.length === 0 ? <p className="text-[9px] text-zinc-600 text-center py-4">No images yet</p> : (
                     <div className="grid grid-cols-2 gap-1">{images.map(a => <AssetThumb key={a.id} asset={a} onDragStart={handleAssetDragStart} onClick={() => addAssetToCanvas(a)} />)}</div>
                   )}
@@ -484,25 +506,52 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                 {/* TEXT */}
                 {assetSub === 'text' && (
                   <div>
-                    <button onClick={addTextLayer} className="w-full flex items-center justify-center gap-1.5 py-3 text-[10px] font-medium rounded-lg border border-dashed border-zinc-600 bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">
-                      <Type className="w-4 h-4" /> Add Text Layer
+                    <button onClick={addTextLayer} className="w-full flex items-center justify-center gap-1.5 py-2.5 text-[10px] font-medium rounded-lg border border-dashed border-zinc-600 bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">
+                      <Plus className="w-3.5 h-3.5" /> Add Text
                     </button>
-                    <p className="text-[8px] text-zinc-600 text-center mt-2">Click to add a text layer to the canvas</p>
+                    {/* List of text layers */}
+                    {layers.filter(l => l.type === 'text').length > 0 && (
+                      <div className="mt-2 space-y-0.5">
+                        <p className="text-[7px] text-zinc-600 uppercase tracking-wider px-1 mb-1">Text Layers</p>
+                        {layers.filter(l => l.type === 'text').map(l => (
+                          <div key={l.id} className={`flex items-center gap-1.5 px-2 py-1 rounded-md cursor-pointer transition-colors ${selectedLayerId === l.id ? 'bg-red-500/15 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`} onClick={() => setSelectedLayerId(l.id)}>
+                            <Type className="w-3 h-3 text-zinc-400 shrink-0" />
+                            <span className="flex-1 text-[9px] truncate">{l.text || l.name}</span>
+                            <button onClick={e => { e.stopPropagation(); deleteLayer(l.id) }} className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors"><Trash2 className="w-2.5 h-2.5" /></button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
 
                 {/* SHAPES */}
                 {assetSub === 'shapes' && (
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {SHAPE_PRESETS.map(p => (
-                      <button key={p.name} onClick={() => addShapeLayer(p)}
-                        className="flex flex-col items-center gap-1.5 py-3 rounded-lg border border-[#3f4147] bg-[#2b2d31] hover:bg-[#35363c] hover:border-zinc-500 transition-colors"
-                        draggable onDragStart={e => { e.dataTransfer.setData('studio/asset-type', 'shape'); e.dataTransfer.setData('studio/asset-name', p.name); e.dataTransfer.effectAllowed = 'copy' }}
-                      >
-                        <div className="w-6 h-6 bg-zinc-500 rounded-sm" style={{ borderRadius: p.name === 'Circle' ? '50%' : p.name === 'Line' ? 0 : 4, width: p.name === 'Line' ? 24 : undefined, height: p.name === 'Line' ? 2 : undefined }} />
-                        <span className="text-[8px] text-zinc-400">{p.name}</span>
-                      </button>
-                    ))}
+                  <div>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {SHAPE_PRESETS.map(p => (
+                        <button key={p.name} onClick={() => addShapeLayer(p)}
+                          className="flex flex-col items-center gap-1.5 py-3 rounded-lg border border-[#3f4147] bg-[#2b2d31] hover:bg-[#35363c] hover:border-zinc-500 transition-colors"
+                          draggable onDragStart={e => { e.dataTransfer.setData('studio/asset-type', 'shape'); e.dataTransfer.setData('studio/asset-name', p.name); e.dataTransfer.effectAllowed = 'copy' }}
+                        >
+                          <div className="w-6 h-6 bg-zinc-500 rounded-sm" style={{ borderRadius: p.name === 'Circle' ? '50%' : p.name === 'Line' ? 0 : 4, width: p.name === 'Line' ? 24 : undefined, height: p.name === 'Line' ? 2 : undefined }} />
+                          <span className="text-[8px] text-zinc-400">{p.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                    {/* List of placed shapes */}
+                    {layers.filter(l => l.type === 'shape').length > 0 && (
+                      <div className="mt-3 space-y-0.5">
+                        <p className="text-[7px] text-zinc-600 uppercase tracking-wider px-1 mb-1">Placed Shapes</p>
+                        {layers.filter(l => l.type === 'shape').map(l => (
+                          <div key={l.id} className={`flex items-center gap-1.5 px-2 py-1 rounded-md cursor-pointer transition-colors ${selectedLayerId === l.id ? 'bg-red-500/15 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`} onClick={() => setSelectedLayerId(l.id)}>
+                            <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: l.color || '#666', borderRadius: l.name === 'Circle' ? '50%' : 2 }} />
+                            <span className="flex-1 text-[9px] truncate">{l.name}{l.maskMode && l.maskMode !== 'none' ? ` (${l.maskMode === 'mask' ? 'Mask' : 'Multi-Mask'})` : ''}</span>
+                            <button onClick={e => { e.stopPropagation(); deleteLayer(l.id) }} className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors"><Trash2 className="w-2.5 h-2.5" /></button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -553,7 +602,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
           <div ref={canvasWrapperRef} className="flex-1 flex items-center justify-center bg-[#111113] min-w-0 p-2 overflow-auto relative">
             <div ref={canvasRef}
               className={`relative overflow-hidden rounded-lg ${isDragOver ? 'ring-2 ring-red-500 ring-offset-2 ring-offset-[#111113]' : ''}`}
-              style={{ width: 'min(56rem, calc((100vh - 10rem) * 16 / 9))', aspectRatio: '16/9', backgroundColor: canvas.backgroundColor, transform: `scale(${canvasZoom / 100})`, transformOrigin: 'center center', transition: 'transform 0.15s ease-out' }}
+              style={{ width: 'min(72rem, calc((100vh - 8rem) * 16 / 9))', aspectRatio: '16/9', backgroundColor: canvas.backgroundColor, transform: `scale(${canvasZoom / 100})`, transformOrigin: 'center center', transition: 'transform 0.15s ease-out' }}
               onClick={handleCanvasClick} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
             >
               {layers.map(layer => {
@@ -566,7 +615,14 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                     {layer.type === 'image' && <img src={src!} alt="" className="w-full h-full object-contain pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)` }} />}
                     {layer.type === 'video' && <video src={src!} autoPlay loop muted playsInline className="w-full h-full object-contain pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)` }} />}
                     {layer.type === 'text' && <div className="w-full h-full flex items-center justify-center pointer-events-none" style={{ color: layer.color || '#fff', fontSize: `${(layer.fontSize || 24) * 0.5}px`, fontWeight: layer.fontWeight || '400', transform: `rotate(${state.rotation}deg)` }}>{layer.text}</div>}
-                    {layer.type === 'shape' && <div className="w-full h-full pointer-events-none" style={{ backgroundColor: layer.color || '#666', transform: `rotate(${state.rotation}deg)` }} />}
+                    {layer.type === 'shape' && <div className="w-full h-full pointer-events-none" style={{
+                      backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#666'),
+                      borderRadius: layer.name === 'Circle' ? '50%' : undefined,
+                      clipPath: layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined,
+                      border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
+                      transform: `rotate(${state.rotation}deg)`,
+                      display: layer.maskMode && layer.maskMode !== 'none' ? 'none' : undefined,
+                    }} />}
                     {isSel && (<>
                       <div className="absolute inset-0 border-2 border-blue-500 border-dashed pointer-events-none rounded" />
                       {['tl', 'tr', 'bl', 'br'].map(h => (<div key={h} className="absolute w-2.5 h-2.5 bg-white border-2 border-blue-500 rounded-sm z-10" style={{ top: h.includes('t') ? -5 : undefined, bottom: h.includes('b') ? -5 : undefined, left: h.includes('l') ? -5 : undefined, right: h.includes('r') ? -5 : undefined, cursor: h === 'tl' || h === 'br' ? 'nwse-resize' : 'nesw-resize' }} onMouseDown={e => handleResizeMouseDown(e, layer.id, h)} />))}

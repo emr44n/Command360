@@ -578,6 +578,14 @@ export function StudioGallery({
               <LayersIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Layers'}
             </TabsTrigger></TooltipTrigger><TooltipContent>Layers</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild><TabsTrigger value="text" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
+              <svg viewBox="0 0 24 24" className="size-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+              {!tabsNarrow && 'Text'}
+            </TabsTrigger></TooltipTrigger><TooltipContent>Text</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild><TabsTrigger value="shapes" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
+              <svg viewBox="0 0 24 24" className="size-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+              {!tabsNarrow && 'Shapes'}
+            </TabsTrigger></TooltipTrigger><TooltipContent>Shapes</TooltipContent></Tooltip>
             <Tooltip><TooltipTrigger asChild><TabsTrigger value="events" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
               <ZapIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Events'}
@@ -811,6 +819,47 @@ export function StudioGallery({
                   <Trash2Icon className="size-2.5" />
                 </button>
                 </TooltipTrigger><TooltipContent>Remove</TooltipContent></Tooltip>
+              </div>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* Text Tab */}
+        <TabsContent value="text" className="flex-1 overflow-y-auto px-2 pb-2 animate-[fadeIn_0.2s_ease-out]">
+          <Button variant="outline" size="sm" className="mt-2 w-full border-dashed border-zinc-600 bg-[#383a40] text-zinc-300 hover:bg-zinc-700"
+            onClick={() => onAddLayer({ type: 'text', name: 'Text', text: 'Text', fontSize: 24, color: '#ffffff', x: 10, y: 10, width: 20, height: 10, rotation: 0, opacity: 1, blendMode: 'normal', visible: true, locked: false })}>
+            <PlusIcon className="mr-1.5 size-3.5" /> Add Text Layer
+          </Button>
+          {layers.filter(l => l.type === 'text').length === 0 && <p className="mt-4 text-center text-xs text-zinc-500">No text layers yet</p>}
+          <div className="mt-2 space-y-0.5">
+            {layers.filter(l => l.type === 'text').map(layer => (
+              <div key={layer.id} className="flex items-center gap-1.5 px-1.5 py-1 rounded hover:bg-[#35363c] cursor-pointer text-xs" onClick={() => onSelectLayer(layer.id)}>
+                <span className="text-zinc-400 font-mono">T</span>
+                <span className="flex-1 truncate text-zinc-300">{layer.text || layer.name}</span>
+                <button onClick={e => { e.stopPropagation(); onDeleteLayer?.(layer.id) }} className="p-0.5 text-zinc-600 hover:text-red-400 transition-opacity opacity-0 group-hover:opacity-100"><Trash2Icon className="size-2.5" /></button>
+              </div>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* Shapes Tab */}
+        <TabsContent value="shapes" className="flex-1 overflow-y-auto px-2 pb-2 animate-[fadeIn_0.2s_ease-out]">
+          <div className="mt-2 grid grid-cols-2 gap-1.5">
+            {[{ name: 'Rectangle', w: 15, h: 15, color: '#666666' }, { name: 'Circle', w: 15, h: 15, color: '#666666' }, { name: 'Triangle', w: 15, h: 15, color: '#666666' }, { name: 'Line', w: 30, h: 1, color: '#666666' }].map(p => (
+              <button key={p.name} onClick={() => onAddLayer({ type: 'shape', name: p.name, color: p.color, x: 10, y: 10, width: p.w, height: p.h, rotation: 0, opacity: 1, blendMode: 'normal', visible: true, locked: false })}
+                className="flex flex-col items-center gap-1 py-2.5 rounded-lg border border-[#3f4147] bg-[#383a40] hover:bg-[#35363c] hover:border-zinc-500 transition-colors">
+                <div className="w-5 h-5 bg-zinc-500" style={{ borderRadius: p.name === 'Circle' ? '50%' : 2, width: p.name === 'Line' ? 20 : undefined, height: p.name === 'Line' ? 2 : undefined }} />
+                <span className="text-[8px] text-zinc-400">{p.name}</span>
+              </button>
+            ))}
+          </div>
+          {layers.filter(l => l.type === 'shape').length === 0 && <p className="mt-4 text-center text-xs text-zinc-500">No shapes placed yet</p>}
+          <div className="mt-2 space-y-0.5">
+            {layers.filter(l => l.type === 'shape').map(layer => (
+              <div key={layer.id} className="group flex items-center gap-1.5 px-1.5 py-1 rounded hover:bg-[#35363c] cursor-pointer text-xs" onClick={() => onSelectLayer(layer.id)}>
+                <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: layer.color || '#666', borderRadius: layer.name === 'Circle' ? '50%' : 2 }} />
+                <span className="flex-1 truncate text-zinc-300">{layer.name}{layer.maskMode && layer.maskMode !== 'none' ? ` (${layer.maskMode === 'mask' ? 'Mask' : 'Multi-Mask'})` : ''}</span>
+                <button onClick={e => { e.stopPropagation(); onDeleteLayer?.(layer.id) }} className="p-0.5 text-zinc-600 hover:text-red-400 transition-opacity opacity-0 group-hover:opacity-100"><Trash2Icon className="size-2.5" /></button>
               </div>
             ))}
           </div>

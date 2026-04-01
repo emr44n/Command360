@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import type { StudioLayer } from '@/types/slide'
 import { Zap, X, ChevronDown, ImageIcon, VideoIcon, Type, Square, Volume2 } from 'lucide-react'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 /* Type color map for visual distinction */
 const TYPE_COLORS: Record<string, { bg: string; text: string; label: string }> = {
@@ -68,27 +69,23 @@ export function PushPanel({ queue, onUpdateTransition, onPushItem, onPushAll, on
                     {/* Name */}
                     <span className="flex-1 text-[9px] text-zinc-300 truncate">{item.layer.name}</span>
                     {/* Expand for options */}
-                    <button
-                      onClick={() => setExpandedId(isExpanded ? null : item.layer.id)}
-                      className="p-0.5 text-zinc-600 hover:text-zinc-300 transition-colors"
-                    >
+                    <Tooltip><TooltipTrigger asChild>
+                    <button onClick={() => setExpandedId(isExpanded ? null : item.layer.id)} className="p-0.5 text-zinc-600 hover:text-zinc-300 transition-colors">
                       <ChevronDown className={`w-2.5 h-2.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                     </button>
+                    </TooltipTrigger><TooltipContent>Options</TooltipContent></Tooltip>
                     {/* Individual push */}
-                    <button
-                      onClick={() => onPushItem(item.layer.id)}
-                      className="p-1 rounded bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white transition-colors"
-                      title="Push this item"
-                    >
+                    <Tooltip><TooltipTrigger asChild>
+                    <button onClick={() => onPushItem(item.layer.id)} className="p-1 rounded bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white transition-colors">
                       <Zap className="w-2.5 h-2.5" />
                     </button>
+                    </TooltipTrigger><TooltipContent>Push this item live</TooltipContent></Tooltip>
                     {/* Remove */}
-                    <button
-                      onClick={() => onRemoveItem(item.layer.id)}
-                      className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors"
-                    >
+                    <Tooltip><TooltipTrigger asChild>
+                    <button onClick={() => onRemoveItem(item.layer.id)} className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors">
                       <X className="w-2.5 h-2.5" />
                     </button>
+                    </TooltipTrigger><TooltipContent>Remove from queue</TooltipContent></Tooltip>
                   </div>
                   {/* Expanded options */}
                   {isExpanded && (
@@ -117,17 +114,16 @@ export function PushPanel({ queue, onUpdateTransition, onPushItem, onPushAll, on
         )}
       </div>
 
-      {/* Push All button */}
-      {queue.length > 0 && (
-        <div className="p-2 border-t border-[#2b2d31] shrink-0 space-y-1.5">
-          <button
-            onClick={onPushAll}
-            className="w-full py-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-[10px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5"
-          >
-            <Zap className="w-3.5 h-3.5" /> Push All Live ({queue.length})
-          </button>
-        </div>
-      )}
+      {/* Push All button — always visible */}
+      <div className="p-2 border-t border-[#2b2d31] shrink-0 space-y-1.5">
+        <button
+          onClick={onPushAll}
+          disabled={queue.length === 0}
+          className="w-full py-2.5 rounded-lg bg-red-600 hover:bg-red-500 disabled:opacity-30 disabled:cursor-not-allowed text-white text-[10px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5"
+        >
+          <Zap className="w-3.5 h-3.5" /> Push All Live{queue.length > 0 ? ` (${queue.length})` : ''}
+        </button>
+      </div>
     </div>
   )
 }

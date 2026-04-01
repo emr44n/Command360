@@ -127,6 +127,12 @@ export interface StudioLayer {
   // Audio-specific
   volume?: number      // 0-1 range, default 1
   audioLoop?: boolean
+  // Shape-specific
+  borderColor?: string
+  borderWidth?: number
+  borderStyle?: 'solid' | 'dashed' | 'dotted' | 'none'
+  fillTransparent?: boolean
+  maskMode?: 'none' | 'mask' | 'multi-layer-mask'
 }
 
 export interface StudioAction {

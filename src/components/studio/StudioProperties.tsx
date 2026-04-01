@@ -457,6 +457,77 @@ export function StudioProperties({
           </div>
         )}
 
+        {/* Shape-specific properties */}
+        {layer.type === 'shape' && (
+          <div className="space-y-2 border-t border-[#1e1f22] pt-2">
+            <Label className="text-[9px] text-zinc-500 font-medium">Shape Properties</Label>
+            {/* Fill Color */}
+            <div>
+              <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Fill Color</Label>
+              <div className="flex items-center gap-2">
+                <input type="color" value={layer.color ?? '#666666'} onChange={(e) => onUpdate({ color: e.target.value })} className="h-6 w-8 cursor-pointer rounded border border-[#3f4147] bg-[#1e1f22]" />
+                <Input value={layer.color ?? '#666666'} onChange={(e) => onUpdate({ color: e.target.value })} className="h-6 flex-1 border-[#3f4147] bg-[#1e1f22] text-[10px] text-zinc-100" />
+              </div>
+            </div>
+            {/* Transparent Fill */}
+            <div className="flex items-center gap-2">
+              <Switch checked={layer.fillTransparent ?? false} onCheckedChange={(v) => onUpdate({ fillTransparent: v })} />
+              <span className="text-[10px] text-zinc-400">Transparent fill</span>
+            </div>
+            {/* Border */}
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Switch checked={!!layer.borderWidth && layer.borderWidth > 0} onCheckedChange={(v) => onUpdate(v ? { borderWidth: 2, borderStyle: 'solid', borderColor: '#ffffff' } : { borderWidth: 0, borderStyle: 'none' })} />
+                <span className="text-[10px] text-zinc-400">Border</span>
+              </div>
+              {layer.borderWidth && layer.borderWidth > 0 && (
+                <div className="space-y-2 pl-2 border-l-2 border-[#3f4147] ml-1">
+                  <div>
+                    <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Border Color</Label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={layer.borderColor ?? '#ffffff'} onChange={(e) => onUpdate({ borderColor: e.target.value })} className="h-6 w-8 cursor-pointer rounded border border-[#3f4147] bg-[#1e1f22]" />
+                      <Input value={layer.borderColor ?? '#ffffff'} onChange={(e) => onUpdate({ borderColor: e.target.value })} className="h-6 flex-1 border-[#3f4147] bg-[#1e1f22] text-[10px] text-zinc-100" />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Width ({layer.borderWidth ?? 2}px)</Label>
+                    <Slider value={[layer.borderWidth ?? 2]} min={1} max={20} step={1} onValueChange={([v]) => onUpdate({ borderWidth: v })} className="py-1" />
+                  </div>
+                  <div>
+                    <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Style</Label>
+                    <div className="flex gap-0.5">
+                      {(['solid', 'dashed', 'dotted'] as const).map(s => (
+                        <button key={s} onClick={() => onUpdate({ borderStyle: s })}
+                          className={`flex-1 h-5 rounded-md text-[8px] flex items-center justify-center transition-colors ${layer.borderStyle === s ? 'bg-red-500/20 text-red-400' : 'bg-[#1e1f22] text-zinc-500 hover:text-zinc-300'}`}>
+                          {s.charAt(0).toUpperCase() + s.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* Mask Mode */}
+            <div>
+              <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Mask Mode</Label>
+              <div className="flex gap-0.5">
+                {([
+                  { value: 'none' as const, label: 'None' },
+                  { value: 'mask' as const, label: 'Mask' },
+                  { value: 'multi-layer-mask' as const, label: 'Multi' },
+                ]).map(m => (
+                  <button key={m.value} onClick={() => onUpdate({ maskMode: m.value })}
+                    className={`flex-1 h-5 rounded-md text-[8px] flex items-center justify-center transition-colors ${(layer.maskMode || 'none') === m.value ? 'bg-red-500/20 text-red-400' : 'bg-[#1e1f22] text-zinc-500 hover:text-zinc-300'}`}>
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+              {layer.maskMode === 'mask' && <p className="text-[7px] text-zinc-600 mt-1">Cuts through the layer directly below</p>}
+              {layer.maskMode === 'multi-layer-mask' && <p className="text-[7px] text-zinc-600 mt-1">Cuts through all layers below to base</p>}
+            </div>
+          </div>
+        )}
+
         {/* ── Clip Info Section ── */}
         {selectedClip && onUpdateClip && (
           <div className="border-t border-[#1e1f22] pt-3">
