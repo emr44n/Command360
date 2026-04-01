@@ -422,7 +422,15 @@ function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerSta
     case 'video':
       return (
         <div style={baseStyle}>
-          {(state.src || layer.src) && (
+          {layer.youtubeUrl ? (
+            <iframe
+              src={layer.youtubeUrl}
+              className="w-full h-full border-0"
+              style={{ width: '100%', height: '100%', display: 'block' }}
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            />
+          ) : (state.src || layer.src) && (
             <video
               src={state.src || layer.src}
               autoPlay

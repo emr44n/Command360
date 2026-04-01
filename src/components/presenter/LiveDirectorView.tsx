@@ -333,7 +333,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     addLayerToCanvasAndQueue(layer)
   }, [layers, addLayerToCanvasAndQueue])
 
-  const handleCanvasClick = useCallback((e: React.MouseEvent) => { if (e.target === canvasRef.current) { setSelectedLayerId(null); setRightTab('push') } }, [])
+  const handleCanvasClick = useCallback((e: React.MouseEvent) => { if (e.target === canvasRef.current) { setSelectedLayerId(null); setRightTab('push'); setDistortMode(null) } }, [])
   const toggleFullscreen = useCallback(() => { if (document.fullscreenElement) document.exitFullscreen(); else canvasWrapperRef.current?.requestFullscreen() }, [])
 
   // ─── Asset handlers ───
