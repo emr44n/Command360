@@ -3,9 +3,11 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import type { Slide, StudioContent, StudioLayer, StudioLayerState, StudioEvent, StudioEventCategory } from '@/types/slide'
 import type { RealtimeChannel } from '@supabase/supabase-js'
-import { Play, RotateCcw, ChevronRight, ChevronDown, Square, Clock, Radio, Zap } from 'lucide-react'
+import { Play, RotateCcw, ChevronRight, ChevronDown, Square, Clock, Radio, Zap, Trash2 } from 'lucide-react'
 import { playEvent, type EventPlaybackController } from '@/lib/studio/event-playback'
 import { PushPanel } from '@/components/studio/PushPanel'
+import { generateLayerId } from '@/lib/utils/studio-utils'
+import { QRCodeSVG } from 'qrcode.react'
 
 export interface ExerciseStats {
   duration: number
@@ -46,9 +48,24 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   const [pendingLayers, setPendingLayers] = useState<StudioLayer[]>([])
   const [assetsAdded, setAssetsAdded] = useState(0)
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set())
+
+  // Canvas interaction state
+  const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null)
+  const [isDragOver, setIsDragOver] = useState(false)
+
   const eventControllerRef = useRef<EventPlaybackController | null>(null)
   const startTimeRef = useRef(new Date().toISOString())
+  const canvasRef = useRef<HTMLDivElement>(null)
 
+  // Drag state refs (no re-renders during drag)
+  const dragRef = useRef<{ layerId: string; startMX: number; startMY: number; startX: number; startY: number } | null>(null)
+  const resizeRef = useRef<{ layerId: string; handle: string; startMX: number; startMY: number; startX: number; startY: number; startW: number; startH: number } | null>(null)
+
+  // Broadcast throttling
+  const lastBroadcastRef = useRef(0)
+  const pendingBroadcastRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // ─── Session timer ───
   useEffect(() => {
     const interval = setInterval(() => setSessionSeconds(s => s + 1), 1000)
     return () => clearInterval(interval)
@@ -58,8 +75,56 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     return () => { eventControllerRef.current?.cancel() }
   }, [])
 
+  // ─── Asset Preloading ───
+  useEffect(() => {
+    for (const layer of initialLayers) {
+      if (layer.src && layer.type === 'image') {
+        const img = new Image()
+        img.src = layer.src
+      }
+    }
+  }, [initialLayers])
+
+  // ─── Keyboard handler (Delete/Backspace) ───
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedLayerId) {
+        // Don't delete if user is typing in an input
+        if ((e.target as HTMLElement)?.tagName === 'INPUT' || (e.target as HTMLElement)?.tagName === 'TEXTAREA') return
+        e.preventDefault()
+        deleteLayer(selectedLayerId)
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [selectedLayerId])
+
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`
 
+  // ─── Throttled broadcast ───
+  const broadcastLayerStates = useCallback((states: Record<string, Partial<StudioLayerState>>) => {
+    const now = Date.now()
+    const send = () => {
+      channelRef.current?.send({ type: 'broadcast', event: 'STUDIO_LAYER_STATES_UPDATE', payload: { slide_id: slide.id, layerStates: states } })
+      lastBroadcastRef.current = Date.now()
+    }
+    if (pendingBroadcastRef.current) clearTimeout(pendingBroadcastRef.current)
+    if (now - lastBroadcastRef.current >= 100) {
+      send()
+    } else {
+      pendingBroadcastRef.current = setTimeout(send, 100 - (now - lastBroadcastRef.current))
+    }
+  }, [slide.id, channelRef])
+
+  // ─── Layer deletion ───
+  const deleteLayer = useCallback((layerId: string) => {
+    setLayers(prev => prev.filter(l => l.id !== layerId))
+    setLayerStates(prev => { const n = { ...prev }; delete n[layerId]; return n })
+    setSelectedLayerId(null)
+    channelRef.current?.send({ type: 'broadcast', event: 'STUDIO_LAYER_REMOVED', payload: { slide_id: slide.id, layerId } })
+  }, [slide.id, channelRef])
+
+  // ─── Event triggering ───
   const triggerEvent = useCallback((event: StudioEvent) => {
     eventControllerRef.current?.cancel()
     setAnimatingEventId(event.id)
@@ -83,6 +148,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     setTriggeredEvents(prev => { const n = new Set(prev); n.delete(eventId); return n })
   }, [])
 
+  // ─── Push handler ───
   const handlePush = useCallback((pushLayers: StudioLayer[], transition: 'fade' | 'instant') => {
     for (const layer of pushLayers) {
       setLayers(prev => [...prev, layer])
@@ -102,6 +168,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     setPendingLayers([])
   }, [slide.id, channelRef])
 
+  // ─── End exercise ───
   const handleEndExercise = useCallback(async () => {
     eventControllerRef.current?.cancel()
     const endTime = new Date().toISOString()
@@ -112,6 +179,119 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     onEndExercise({ duration: sessionSeconds, eventsTriggered: triggeredEvents.size, assetsAdded, presenterName, sceneName: slide.title || 'Untitled Scene', startTime: startTimeRef.current, endTime })
   }, [sessionSeconds, triggeredEvents, assetsAdded, presenterName, slide, session, channelRef, onEndExercise])
 
+  // ─── Canvas mouse handlers for layer move ───
+  const handleLayerMouseDown = useCallback((e: React.MouseEvent, layerId: string) => {
+    e.stopPropagation()
+    e.preventDefault()
+    setSelectedLayerId(layerId)
+    const state = layerStates[layerId]
+    if (!state) return
+    dragRef.current = { layerId, startMX: e.clientX, startMY: e.clientY, startX: state.x, startY: state.y }
+
+    const handleMouseMove = (ev: MouseEvent) => {
+      if (!dragRef.current || !canvasRef.current) return
+      const rect = canvasRef.current.getBoundingClientRect()
+      const dx = ((ev.clientX - dragRef.current.startMX) / rect.width) * 100
+      const dy = ((ev.clientY - dragRef.current.startMY) / rect.height) * 100
+      const newX = dragRef.current.startX + dx
+      const newY = dragRef.current.startY + dy
+      setLayerStates(prev => ({ ...prev, [dragRef.current!.layerId]: { ...prev[dragRef.current!.layerId], x: newX, y: newY } }))
+      broadcastLayerStates({ [dragRef.current.layerId]: { x: newX, y: newY } })
+    }
+    const handleMouseUp = () => {
+      dragRef.current = null
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
+      // Final broadcast
+      if (pendingBroadcastRef.current) { clearTimeout(pendingBroadcastRef.current); pendingBroadcastRef.current = null }
+      broadcastLayerStates(layerStates)
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mouseup', handleMouseUp)
+  }, [layerStates, broadcastLayerStates])
+
+  // ─── Resize handlers ───
+  const handleResizeMouseDown = useCallback((e: React.MouseEvent, layerId: string, handle: string) => {
+    e.stopPropagation()
+    e.preventDefault()
+    const state = layerStates[layerId]
+    if (!state) return
+    resizeRef.current = { layerId, handle, startMX: e.clientX, startMY: e.clientY, startX: state.x, startY: state.y, startW: state.width, startH: state.height }
+
+    const handleMouseMove = (ev: MouseEvent) => {
+      if (!resizeRef.current || !canvasRef.current) return
+      const rect = canvasRef.current.getBoundingClientRect()
+      const dx = ((ev.clientX - resizeRef.current.startMX) / rect.width) * 100
+      const dy = ((ev.clientY - resizeRef.current.startMY) / rect.height) * 100
+      const r = resizeRef.current
+      let { startX: x, startY: y, startW: w, startH: h } = r
+
+      if (r.handle.includes('r')) w = Math.max(3, r.startW + dx)
+      if (r.handle.includes('l')) { w = Math.max(3, r.startW - dx); x = r.startX + dx }
+      if (r.handle.includes('b')) h = Math.max(3, r.startH + dy)
+      if (r.handle.includes('t')) { h = Math.max(3, r.startH - dy); y = r.startY + dy }
+
+      setLayerStates(prev => ({ ...prev, [r.layerId]: { ...prev[r.layerId], x, y, width: w, height: h } }))
+      broadcastLayerStates({ [r.layerId]: { x, y, width: w, height: h } })
+    }
+    const handleMouseUp = () => {
+      resizeRef.current = null
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
+      if (pendingBroadcastRef.current) { clearTimeout(pendingBroadcastRef.current); pendingBroadcastRef.current = null }
+      broadcastLayerStates(layerStates)
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mouseup', handleMouseUp)
+  }, [layerStates, broadcastLayerStates])
+
+  // ─── Drop handler ───
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'copy'
+    setIsDragOver(true)
+  }, [])
+
+  const handleDragLeave = useCallback(() => setIsDragOver(false), [])
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(false)
+    const assetType = e.dataTransfer.getData('studio/asset-type') as 'image' | 'video'
+    const assetSrc = e.dataTransfer.getData('studio/asset-src')
+    const assetName = e.dataTransfer.getData('studio/asset-name') || 'Dropped Asset'
+    if (!assetType || !assetSrc || !canvasRef.current) return
+
+    const rect = canvasRef.current.getBoundingClientRect()
+    const xPct = ((e.clientX - rect.left) / rect.width) * 100
+    const yPct = ((e.clientY - rect.top) / rect.height) * 100
+
+    const layer: StudioLayer = {
+      id: generateLayerId(),
+      name: assetName,
+      type: assetType,
+      src: assetSrc,
+      x: Math.max(0, xPct - 15), y: Math.max(0, yPct - 15),
+      width: assetType === 'video' ? 40 : 30,
+      height: assetType === 'video' ? 22.5 : 30,
+      rotation: 0, zIndex: layers.length + 1, opacity: 1,
+      blendMode: 'normal', visible: true, locked: false,
+      ...(assetType === 'video' ? { loop: true, autoplay: true, muted: true } : {}),
+    }
+    // Add directly to canvas + broadcast
+    setLayers(prev => [...prev, layer])
+    setLayerStates(prev => ({ ...prev, [layer.id]: { visible: true, opacity: 1, x: layer.x, y: layer.y, width: layer.width, height: layer.height, rotation: 0, src: layer.src } }))
+    channelRef.current?.send({ type: 'broadcast', event: 'STUDIO_LAYER_ADDED', payload: { slide_id: slide.id, layer } })
+    setAssetsAdded(prev => prev + 1)
+    setSelectedLayerId(layer.id)
+  }, [layers, slide.id, channelRef])
+
+  // ─── Click canvas to deselect ───
+  const handleCanvasClick = useCallback((e: React.MouseEvent) => {
+    if (e.target === canvasRef.current) setSelectedLayerId(null)
+  }, [])
+
+  // ─── Event grouping ───
   const grouped = useMemo(() => {
     const uncategorized: StudioEvent[] = []
     const byCategory = new Map<string, StudioEvent[]>()
@@ -122,8 +302,11 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     return { uncategorized, byCategory }
   }, [events])
 
+  const joinUrl = typeof window !== 'undefined' ? `${window.location.origin}/join/${session.room_code}` : ''
+
   return (
     <div className="fixed inset-0 z-[100] flex flex-col bg-[#0a0a0b]" style={{ border: '3px solid #dc2626' }}>
+      {/* ─── Top Bar ─── */}
       <div className="h-10 bg-[#1a1a1c] border-b border-red-500/30 flex items-center justify-between px-4 shrink-0">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
@@ -140,7 +323,9 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
         </div>
       </div>
 
+      {/* ─── Main Content ─── */}
       <div className="flex-1 flex min-h-0">
+        {/* Events Panel (Left) */}
         <div className="w-56 shrink-0 bg-[#1e1f22] border-r border-[#2b2d31] overflow-y-auto p-2">
           <h3 className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-2 px-1">Events</h3>
           {events.length === 0 && <p className="text-[10px] text-zinc-600 text-center py-4">No events defined</p>}
@@ -161,26 +346,112 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
           })}
         </div>
 
-        <div className="flex-1 flex items-center justify-center bg-[#111113] min-w-0 p-4">
-          <div className="w-full relative overflow-hidden rounded-lg" style={{ maxWidth: 'min(56rem, calc((100vh - 6rem) * 16 / 9))', aspectRatio: '16/9', backgroundColor: canvas.backgroundColor }}>
-            {layers.map(layer => {
-              const state = layerStates[layer.id]
-              if (!state || !state.visible) return null
-              const src = state.src ?? layer.src
-              if (!src && layer.type !== 'text' && layer.type !== 'shape') return null
-              const style: React.CSSProperties = { position: 'absolute', left: `${state.x}%`, top: `${state.y}%`, width: `${state.width}%`, height: `${state.height}%`, opacity: state.opacity, transform: `rotate(${state.rotation}deg)`, transformOrigin: 'center', transition: 'all 0.6s ease-out', zIndex: layer.zIndex }
-              if (layer.type === 'image') return <img key={layer.id} src={src!} alt="" className="pointer-events-none" style={{ ...style, objectFit: 'contain' }} />
-              if (layer.type === 'video') return <video key={layer.id} src={src!} autoPlay loop muted playsInline className="pointer-events-none" style={{ ...style, objectFit: 'contain' }} />
-              if (layer.type === 'text') return <div key={layer.id} style={{ ...style, color: layer.color || '#fff', fontSize: `${(layer.fontSize || 24) * 0.5}px` }}>{layer.text}</div>
-              if (layer.type === 'shape') return <div key={layer.id} style={{ ...style, backgroundColor: layer.color || '#666' }} />
-              return null
-            })}
+        {/* Live Canvas (Center) */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 flex items-center justify-center bg-[#111113] min-w-0 p-4">
+            <div
+              ref={canvasRef}
+              className={`w-full relative overflow-hidden rounded-lg ${isDragOver ? 'ring-2 ring-red-500 ring-offset-2 ring-offset-[#111113]' : ''}`}
+              style={{ maxWidth: 'min(56rem, calc((100vh - 10rem) * 16 / 9))', aspectRatio: '16/9', backgroundColor: canvas.backgroundColor }}
+              onClick={handleCanvasClick}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              {layers.map(layer => {
+                const state = layerStates[layer.id]
+                if (!state || !state.visible) return null
+                const src = state.src ?? layer.src
+                if (!src && layer.type !== 'text' && layer.type !== 'shape') return null
+                const isSelected = selectedLayerId === layer.id
+
+                return (
+                  <div
+                    key={layer.id}
+                    style={{
+                      position: 'absolute',
+                      transform: `translate(${(state.x / 100) * (canvasRef.current?.clientWidth || 0)}px, ${(state.y / 100) * (canvasRef.current?.clientHeight || 0)}px)`,
+                      width: `${state.width}%`,
+                      height: `${state.height}%`,
+                      opacity: state.opacity,
+                      zIndex: layer.zIndex,
+                      transition: dragRef.current?.layerId === layer.id || resizeRef.current?.layerId === layer.id ? 'none' : 'all 0.6s ease-out',
+                      cursor: 'move',
+                    }}
+                    onMouseDown={(e) => handleLayerMouseDown(e, layer.id)}
+                    onClick={(e) => { e.stopPropagation(); setSelectedLayerId(layer.id) }}
+                  >
+                    {/* Layer content */}
+                    {layer.type === 'image' && <img src={src!} alt="" className="w-full h-full object-contain pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)` }} />}
+                    {layer.type === 'video' && <video src={src!} autoPlay loop muted playsInline className="w-full h-full object-contain pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)` }} />}
+                    {layer.type === 'text' && <div className="w-full h-full flex items-center justify-center pointer-events-none" style={{ color: layer.color || '#fff', fontSize: `${(layer.fontSize || 24) * 0.5}px`, transform: `rotate(${state.rotation}deg)` }}>{layer.text}</div>}
+                    {layer.type === 'shape' && <div className="w-full h-full pointer-events-none" style={{ backgroundColor: layer.color || '#666', transform: `rotate(${state.rotation}deg)` }} />}
+
+                    {/* Selection overlay */}
+                    {isSelected && (
+                      <>
+                        <div className="absolute inset-0 border-2 border-blue-500 border-dashed pointer-events-none rounded" />
+                        {/* Resize handles */}
+                        {['tl', 'tr', 'bl', 'br'].map(h => (
+                          <div
+                            key={h}
+                            className="absolute w-2.5 h-2.5 bg-white border-2 border-blue-500 rounded-sm z-10"
+                            style={{
+                              top: h.includes('t') ? -5 : undefined,
+                              bottom: h.includes('b') ? -5 : undefined,
+                              left: h.includes('l') ? -5 : undefined,
+                              right: h.includes('r') ? -5 : undefined,
+                              cursor: h === 'tl' || h === 'br' ? 'nwse-resize' : 'nesw-resize',
+                            }}
+                            onMouseDown={(e) => {
+                              const handleMap: Record<string, string> = { tl: 'tl', tr: 'tr', bl: 'bl', br: 'br' }
+                              handleResizeMouseDown(e, layer.id, handleMap[h])
+                            }}
+                          />
+                        ))}
+                        {/* Delete button */}
+                        <button
+                          className="absolute -top-3 -right-3 z-20 w-5 h-5 bg-red-600 hover:bg-red-500 rounded-full flex items-center justify-center shadow-lg transition-colors"
+                          onClick={(e) => { e.stopPropagation(); deleteLayer(layer.id) }}
+                        >
+                          <Trash2 className="w-2.5 h-2.5 text-white" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )
+              })}
+              {/* Drop hint */}
+              {isDragOver && (
+                <div className="absolute inset-0 flex items-center justify-center bg-red-500/10 pointer-events-none z-50">
+                  <div className="px-4 py-2 bg-red-600 rounded-lg text-white text-xs font-bold uppercase tracking-wider">Drop to add to canvas</div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ─── QR Code + Join Bar (Bottom) ─── */}
+          <div className="h-12 bg-[#1a1a1c] border-t border-[#2b2d31] flex items-center justify-center gap-6 px-4 shrink-0">
+            <div className="bg-white p-0.5 rounded">
+              <QRCodeSVG value={joinUrl} size={32} />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-zinc-500">Join at</span>
+              <span className="text-[10px] text-zinc-300 font-mono">{typeof window !== 'undefined' ? window.location.origin : ''}/join</span>
+            </div>
+            <div className="h-4 w-px bg-zinc-700" />
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-zinc-500">Code:</span>
+              <span className="text-lg font-mono font-bold text-white tracking-[0.15em]">{session.room_code}</span>
+            </div>
           </div>
         </div>
 
+        {/* Push Panel (Right) */}
         <PushPanel layers={layers} pendingLayers={pendingLayers} onAddPendingLayer={l => setPendingLayers(prev => [...prev, l])} onRemovePendingLayer={id => setPendingLayers(prev => prev.filter(l => l.id !== id))} onPush={handlePush} onClear={() => setPendingLayers([])} />
       </div>
 
+      {/* ─── End Confirm Dialog ─── */}
       {showEndConfirm && (
         <div className="fixed inset-0 z-[200] bg-black/70 backdrop-blur-sm flex items-center justify-center">
           <div className="bg-[#1e1f22] border border-[#3f4147] rounded-xl p-6 max-w-sm w-full shadow-2xl">
@@ -196,6 +467,8 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     </div>
   )
 }
+
+/* ─── Event Button ─── */
 
 function EventBtn({ event, triggered, animating, onTrigger, onRedo }: { event: StudioEvent; triggered: boolean; animating: boolean; onTrigger: () => void; onRedo: () => void }) {
   return (

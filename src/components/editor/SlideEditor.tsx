@@ -628,6 +628,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           </div>
 
           <span className="text-[10px] uppercase tracking-[0.15em] text-zinc-500 font-medium">Command Studio</span>
+          <span className="text-[9px] uppercase tracking-wider font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">Build Mode</span>
           <div className="relative group/title flex items-center">
             <input
               type="text"

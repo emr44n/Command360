@@ -398,9 +398,10 @@ function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerSta
     width: `${state.width}%`,
     height: `${state.height}%`,
     opacity: state.opacity,
-    transform: `rotate(${state.rotation}deg)`,
+    transform: `rotate(${state.rotation}deg) translateZ(0)`,
     mixBlendMode: layer.blendMode as React.CSSProperties['mixBlendMode'],
-    transition: 'all 600ms ease-in-out',
+    transition: 'left 600ms ease-in-out, top 600ms ease-in-out, width 600ms ease-in-out, height 600ms ease-in-out, opacity 600ms ease-in-out, transform 600ms ease-in-out',
+    willChange: 'left, top, opacity, transform',
     zIndex: layer.zIndex,
     overflow: 'hidden',
   }
