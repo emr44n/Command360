@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { BarChart2, FileText, Users, Clock, TrendingUp, MessageSquare, ArrowRight, Timer, Activity, PieChart, Play } from 'lucide-react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { ReportsResultsList } from '@/components/reports/ReportsResultsList'
 
 export const metadata: Metadata = { title: 'Reports — Command 360' }
 
@@ -262,63 +263,8 @@ export default async function ReportsPage() {
             </div>
           </div>
 
-          {/* Presentation list with engagement bars */}
-          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-2.5">Presentation Results</p>
-          <div className="grid gap-3">
-            {decksWithSessions.map((deck) => {
-              const barWidth = Math.max((deck.response_count / maxResponses) * 100, 2)
-              return (
-                <Link
-                  key={deck.id}
-                  href={`/presentations/${deck.id}/results`}
-                  className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-primary/20 transition-all duration-300 group overflow-hidden"
-                >
-                  {/* Colored top accent */}
-                  <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-
-                  {/* Engagement bar background */}
-                  <div
-                    className="absolute left-0 top-0 bottom-0 bg-primary/[0.04] transition-all duration-500"
-                    style={{ width: `${barWidth}%` }}
-                  />
-
-                  <div className="relative flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/[0.08] flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-primary/15 transition-all duration-200">
-                      <BarChart2 className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors duration-200">
-                        {deck.title}
-                      </p>
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="text-xs text-muted-foreground/70 flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {deck.session_count} session{deck.session_count !== 1 ? 's' : ''}
-                        </span>
-                        <span className="text-xs text-muted-foreground/70 flex items-center gap-1">
-                          <Users className="w-3 h-3" />
-                          {deck.participant_count}
-                        </span>
-                        <span className="text-xs text-muted-foreground/70 flex items-center gap-1">
-                          <MessageSquare className="w-3 h-3" />
-                          {deck.response_count} response{deck.response_count !== 1 ? 's' : ''}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-xs text-muted-foreground/60">
-                        {deck.latest_session
-                          ? new Date(deck.latest_session).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-                          : new Date(deck.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-                        }
-                      </span>
-                      <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-200" />
-                    </div>
-                  </div>
-                </Link>
-              )
-            })}
-          </div>
+          {/* Presentation list with sort, view toggle, and type badges */}
+          <ReportsResultsList decks={decksWithSessions} />
 
           {/* Session Analytics Cards */}
           <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-2.5 mt-10">Session Analytics</p>

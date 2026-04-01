@@ -5,10 +5,13 @@ import { cn } from '@/lib/utils'
 import {
   LayoutDashboard, LogOut, LayoutTemplate, Settings,
   Radio, BarChart2, Users, ChevronLeft, ChevronRight, Plus, Moon, Sun, Monitor, FileText, Share2, ShieldCheck, TrendingUp,
+  Loader2, Presentation, Clapperboard,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog'
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
@@ -34,6 +37,7 @@ export function DashboardSidebar() {
   const [activeSessions, setActiveSessions] = useState(0)
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
   const [creatingPresentation, setCreatingPresentation] = useState(false)
+  const [showNewDialog, setShowNewDialog] = useState(false)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -79,6 +83,30 @@ export function DashboardSidebar() {
     ? userName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
     : userEmail ? userEmail[0].toUpperCase() : '?'
 
+  async function createPresentation(type: 'presentation' | 'command_studio') {
+    if (creatingPresentation) return
+    setCreatingPresentation(true)
+    setShowNewDialog(false)
+    try {
+      const title = type === 'command_studio' ? 'Untitled Studio Project' : 'Untitled Presentation'
+      const res = await fetch('/api/presentations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, description: '' }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        if (type === 'command_studio') {
+          router.push(`/presentations/${data.presentation.id}/edit?studio=1`)
+        } else {
+          router.push(`/presentations/${data.presentation.id}/edit`)
+        }
+      }
+    } catch {} finally {
+      setCreatingPresentation(false)
+    }
+  }
+
   return (
     <aside className={cn(
       'relative bg-background border-r border-border flex flex-col h-full shrink-0 transition-all duration-300 ease-in-out',
@@ -88,7 +116,7 @@ export function DashboardSidebar() {
       <div className="pointer-events-none absolute inset-y-0 -right-px w-px dark:shadow-[0_0_12px_1px_rgba(var(--primary-rgb,239,68,68),0.08)]" />
 
       {/* Logo */}
-      <div className={cn('h-16 flex items-center border-b border-border', collapsed ? 'px-3 justify-center' : 'px-5')}>
+      <div className={cn('h-16 flex items-center', collapsed ? 'px-3 justify-center' : 'px-5')}>
         <Link href="/dashboard" className="flex items-center gap-2.5 font-semibold text-sm text-foreground">
           <div className="w-8 h-8 bg-red-600 rounded-xl flex items-center justify-center shrink-0 shadow-sm shadow-red-500/20">
             <svg viewBox="0 0 24 24" className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
@@ -101,21 +129,7 @@ export function DashboardSidebar() {
       <div className={cn('pt-4', collapsed ? 'px-2.5' : 'px-3')}>
         {collapsed ? (
           <button
-            onClick={async () => {
-              if (creatingPresentation) return
-              setCreatingPresentation(true)
-              try {
-                const res = await fetch('/api/presentations', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ title: 'Untitled Presentation', description: '' }),
-                })
-                const data = await res.json()
-                if (res.ok) router.push(`/presentations/${data.presentation.id}/edit`)
-              } catch {} finally {
-                setCreatingPresentation(false)
-              }
-            }}
+            onClick={() => setShowNewDialog(true)}
             disabled={creatingPresentation}
             className="w-full flex items-center justify-center p-2.5 rounded-xl bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 active:scale-95 group relative disabled:opacity-70"
             title="New Presentation"
@@ -127,21 +141,7 @@ export function DashboardSidebar() {
           </button>
         ) : (
           <button
-            onClick={async () => {
-              if (creatingPresentation) return
-              setCreatingPresentation(true)
-              try {
-                const res = await fetch('/api/presentations', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ title: 'Untitled Presentation', description: '' }),
-                })
-                const data = await res.json()
-                if (res.ok) router.push(`/presentations/${data.presentation.id}/edit`)
-              } catch {} finally {
-                setCreatingPresentation(false)
-              }
-            }}
+            onClick={() => setShowNewDialog(true)}
             disabled={creatingPresentation}
             className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-red-600 text-white text-[13px] font-semibold hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 active:scale-[0.98] disabled:opacity-70"
           >
@@ -150,6 +150,46 @@ export function DashboardSidebar() {
           </button>
         )}
       </div>
+
+      {/* New Presentation Type Dialog */}
+      <Dialog open={showNewDialog} onOpenChange={setShowNewDialog}>
+        <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden">
+          <DialogHeader className="px-6 pt-6 pb-4">
+            <DialogTitle className="text-lg font-semibold">Create New</DialogTitle>
+            <p className="text-sm text-muted-foreground mt-1">Choose what you want to create</p>
+          </DialogHeader>
+          <div className="px-6 pb-6 grid gap-3">
+            <button
+              onClick={() => createPresentation('presentation')}
+              className="group relative flex items-start gap-4 p-4 rounded-xl border border-border bg-card hover:border-primary/30 hover:bg-primary/[0.04] transition-all duration-200 text-left"
+            >
+              <div className="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/[0.15] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-200">
+                <Presentation className="w-5 h-5 text-blue-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-foreground">Presentation</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Interactive slides with polls, quizzes, word clouds, and live audience participation
+                </p>
+              </div>
+            </button>
+            <button
+              onClick={() => createPresentation('command_studio')}
+              className="group relative flex items-start gap-4 p-4 rounded-xl border border-border bg-card hover:border-primary/30 hover:bg-primary/[0.04] transition-all duration-200 text-left"
+            >
+              <div className="w-11 h-11 rounded-xl bg-violet-500/10 border border-violet-500/[0.15] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-200">
+                <Clapperboard className="w-5 h-5 text-violet-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-foreground">Command Studio</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Scene-based editor with canvas, timeline, layers, and timed events
+                </p>
+              </div>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Separator */}
       <div className={cn('pt-3', collapsed ? 'px-4' : 'px-5')}>
