@@ -31,15 +31,20 @@ interface Props {
 interface AssetItem { id: string; name: string; url: string; type: 'image' | 'video' | 'audio' }
 
 /* ─── Upload helper ─── */
-function uploadAssetFile(file: File, onProgress?: (pct: number) => void): Promise<{ url: string; name: string }> {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest()
-    const fd = new FormData(); fd.append('file', file)
-    xhr.upload.addEventListener('progress', (e) => { if (e.lengthComputable && onProgress) onProgress(Math.round((e.loaded / e.total) * 100)) })
-    xhr.addEventListener('load', () => { if (xhr.status >= 200 && xhr.status < 300) { try { resolve(JSON.parse(xhr.responseText)) } catch { reject(new Error('Bad response')) } } else { reject(new Error('Upload failed')) } })
-    xhr.addEventListener('error', () => reject(new Error('Upload failed')))
-    xhr.open('POST', '/api/studio/assets'); xhr.send(fd)
-  })
+async function uploadAssetFile(file: File, onProgress?: (pct: number) => void): Promise<{ url: string; name: string }> {
+  // Use fetch for reliability with Next.js API routes (cookies auto-sent)
+  const fd = new FormData()
+  fd.append('file', file)
+  if (onProgress) onProgress(50) // Approximate progress since fetch doesn't support upload progress
+  const res = await fetch('/api/studio/assets', { method: 'POST', body: fd })
+  if (onProgress) onProgress(100)
+  if (!res.ok) {
+    const errText = await res.text().catch(() => 'Unknown error')
+    throw new Error(`Upload failed (${res.status}): ${errText}`)
+  }
+  const data = await res.json()
+  if (!data.url) throw new Error('Upload succeeded but no URL returned')
+  return { url: data.url, name: data.name || file.name }
 }
 
 function buildInitialStates(layers: StudioLayer[]): Record<string, StudioLayerState> {
@@ -334,15 +339,17 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     for (const file of Array.from(files)) {
       try {
         const { url, name } = await uploadAssetFile(file, p => setUploadProgress(p))
-        setter(prev => [...prev, { id: generateLayerId(), name, url, type }])
+        if (url) setter(prev => [...prev, { id: generateLayerId(), name, url, type }])
+        else throw new Error('No URL returned')
       } catch (err) {
-        console.error('Upload failed, retrying...', err)
+        console.error('Upload attempt 1 failed:', err)
         try {
           const { url, name } = await uploadAssetFile(file, p => setUploadProgress(p))
-          setter(prev => [...prev, { id: generateLayerId(), name, url, type }])
+          if (url) setter(prev => [...prev, { id: generateLayerId(), name, url, type }])
+          else throw new Error('No URL returned')
         } catch (err2) {
-          console.error('Upload retry failed:', err2)
-          setUploadError(`Failed to upload "${file.name}". Check connection.`)
+          console.error('Upload attempt 2 failed:', err2)
+          setUploadError(`Failed to upload "${file.name}". ${err2 instanceof Error ? err2.message : 'Check connection.'}`)
         }
       }
     }
@@ -393,7 +400,15 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
 
   // ─── Layer reorder ───
   const reorderLayers = useCallback((from: number, to: number) => {
-    setLayers(prev => { const n = [...prev]; const [moved] = n.splice(from, 1); n.splice(to, 0, moved); return n.map((l, i) => ({ ...l, zIndex: i })) })
+    setLayers(prev => {
+      const n = [...prev]
+      const [moved] = n.splice(from, 1)
+      n.splice(to, 0, moved)
+      // Reassign zIndex based on new position (0 = bottom, length-1 = top)
+      return n.map((l, i) => ({ ...l, zIndex: i }))
+    })
+    // Force layerStates to refresh so canvas re-renders with new z-order
+    setLayerStates(prev => ({ ...prev }))
   }, [])
 
   // ─── Event grouping ───

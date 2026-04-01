@@ -42,11 +42,18 @@ export async function POST(request: Request) {
   const ext = file.name.split('.').pop()
   const path = `studio/${user.id}/${crypto.randomUUID()}.${ext}`
 
+  // Convert File to ArrayBuffer for reliable server-side upload
+  const arrayBuffer = await file.arrayBuffer()
+  const buffer = Buffer.from(arrayBuffer)
+
   const { data, error } = await supabase.storage
     .from('assets')
-    .upload(path, file, { contentType: file.type })
+    .upload(path, buffer, { contentType: file.type || 'application/octet-stream', upsert: true })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) {
+    console.error('Supabase upload error:', error)
+    return NextResponse.json({ error: error.message, details: JSON.stringify(error) }, { status: 500 })
+  }
 
   const { data: urlData } = supabase.storage.from('assets').getPublicUrl(path)
 
