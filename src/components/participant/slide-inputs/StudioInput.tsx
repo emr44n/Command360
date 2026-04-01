@@ -408,7 +408,7 @@ function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerSta
   switch (layer.type) {
     case 'image':
       return (
-        <div style={baseStyle}>
+        <div style={{ ...baseStyle, overflow: 'hidden', filter: layer.feather ? `blur(${layer.feather}px)` : undefined }}>
           {(state.src || layer.src) && (
             <img
               src={state.src || layer.src}
@@ -451,16 +451,25 @@ function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerSta
           {layer.text}
         </div>
       )
-    case 'shape':
+    case 'shape': {
+      const dp = layer.distortPoints
+      const shapeClip = dp
+        ? `polygon(${dp.tl.x}% ${dp.tl.y}%, ${dp.tr.x}% ${dp.tr.y}%, ${dp.br.x}% ${dp.br.y}%, ${dp.bl.x}% ${dp.bl.y}%)`
+        : layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined
       return (
         <div
           style={{
             ...baseStyle,
-            backgroundColor: layer.color || '#ffffff',
-            borderRadius: 4,
+            backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#ffffff'),
+            borderRadius: layer.name === 'Circle' && !dp ? '50%' : undefined,
+            clipPath: shapeClip,
+            border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
+            filter: layer.feather ? `blur(${layer.feather}px)` : undefined,
+            display: layer.maskMode && layer.maskMode !== 'none' ? 'none' : undefined,
           }}
         />
       )
+    }
     default:
       return null
   }

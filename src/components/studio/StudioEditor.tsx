@@ -807,7 +807,11 @@ export function StudioEditor({
                       const reordered = [...layers]
                       const [moved] = reordered.splice(fromIndex, 1)
                       reordered.splice(toIndex, 0, moved)
-                      updateContent({ layers: reordered.map((l, i) => ({ ...l, zIndex: i })) })
+                      const newLayers = reordered.map((l, i) => ({ ...l, zIndex: i }))
+                      // Sync timeline tracks to match new layer order
+                      const reorderedTracks = newLayers.map(l => tracks.find(t => t.layerId === l.id)).filter(Boolean)
+                      const unmatchedTracks = tracks.filter(t => !newLayers.some(l => l.id === t.layerId))
+                      updateContent({ layers: newLayers, tracks: [...reorderedTracks, ...unmatchedTracks] as typeof tracks })
                     }}
                     events={events}
                     eventCategories={eventCategories}
@@ -826,7 +830,11 @@ export function StudioEditor({
                       const reordered = [...layers]
                       const [moved] = reordered.splice(fromIndex, 1)
                       reordered.splice(toIndex, 0, moved)
-                      updateContent({ layers: reordered.map((l, i) => ({ ...l, zIndex: i })) })
+                      const newLayers = reordered.map((l, i) => ({ ...l, zIndex: i }))
+                      // Sync timeline tracks to match new layer order
+                      const reorderedTracks = newLayers.map(l => tracks.find(t => t.layerId === l.id)).filter(Boolean)
+                      const unmatchedTracks = tracks.filter(t => !newLayers.some(l => l.id === t.layerId))
+                      updateContent({ layers: newLayers, tracks: [...reorderedTracks, ...unmatchedTracks] as typeof tracks })
                     }}
                     events={events}
                     eventCategories={eventCategories}

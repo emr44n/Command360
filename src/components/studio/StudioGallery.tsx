@@ -678,14 +678,32 @@ export function StudioGallery({
         {/* Videos Tab */}
         <TabsContent value="videos" className="flex-1 overflow-y-auto px-2 pb-2 animate-[fadeIn_0.2s_ease-out]">
           <input ref={videoInputRef} type="file" accept="video/mp4,video/webm" multiple className="hidden" onChange={handleVideoUpload} />
-          <Button
-            variant="outline" size="sm"
-            className="mt-2 w-full border-dashed border-zinc-600 bg-[#383a40] text-zinc-300 hover:bg-zinc-700"
-            onClick={() => videoInputRef.current?.click()} disabled={uploading}
-          >
-            {uploading ? <Loader2Icon className="mr-1.5 size-3.5 animate-spin" /> : <UploadIcon className="mr-1.5 size-3.5" />}
-            {uploading ? 'Uploading...' : 'Upload Video'}
-          </Button>
+          <div className="mt-2 flex gap-1">
+            <Button
+              variant="outline" size="sm"
+              className="flex-1 border-dashed border-zinc-600 bg-[#383a40] text-zinc-300 hover:bg-zinc-700"
+              onClick={() => videoInputRef.current?.click()} disabled={uploading}
+            >
+              {uploading ? <Loader2Icon className="mr-1.5 size-3.5 animate-spin" /> : <UploadIcon className="mr-1.5 size-3.5" />}
+              {uploading ? 'Uploading...' : 'Upload'}
+            </Button>
+            <Button
+              variant="outline" size="sm"
+              className="border-zinc-600 bg-[#383a40] text-zinc-300 hover:bg-zinc-700 px-2"
+              onClick={() => {
+                const url = prompt('Paste YouTube URL:')
+                if (!url) return
+                const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+                if (!m) return
+                const id = m[1]
+                const thumb = `https://img.youtube.com/vi/${id}/hqdefault.jpg`
+                onAddLayer({ type: 'video', name: `YouTube: ${id}`, youtubeUrl: `https://www.youtube.com/embed/${id}?autoplay=1&mute=1`, src: thumb, x: 10, y: 10, width: 40, height: 22.5, rotation: 0, opacity: 1, blendMode: 'normal', visible: true, locked: false, loop: false, autoplay: true, muted: true })
+                setVideos(prev => [...prev, { id: generateLayerId(), name: `YouTube: ${id}`, url: thumb, type: 'video' }])
+              }}
+            >
+              <svg viewBox="0 0 24 24" className="size-3.5" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.8 3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+            </Button>
+          </div>
           {uploading && (
             <div className="mt-1.5 h-1 w-full rounded-full bg-zinc-800 overflow-hidden">
               <div className="h-1 bg-red-500 rounded-full transition-all duration-150" style={{ width: `${uploadProgress}%` }} />

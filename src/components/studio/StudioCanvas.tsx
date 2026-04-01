@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import { Stage, Layer, Rect, Text, Image as KonvaImage, Transformer, Group } from 'react-konva'
-import type Konva from 'konva'
+import Konva from 'konva'
 import type { StudioLayer, StudioTrack, StudioLayerState } from '@/types/slide'
 import { computeLayerStatesAtTime } from '@/lib/studio/playback-engine'
 import { useStudioStore } from '@/stores/studioStore'
@@ -297,6 +297,8 @@ function ImageLayerNode({
           height={h}
           listening={false}
           globalCompositeOperation={layer.blendMode === 'normal' ? 'source-over' : layer.blendMode}
+          filters={layer.feather ? [Konva.Filters.Blur] : undefined}
+          blurRadius={layer.feather || 0}
         />
       )}
     </Group>
@@ -438,9 +440,15 @@ function ShapeLayerNode({
       offsetY={h / 2}
       width={w}
       height={h}
-      fill={layer.color ?? '#666666'}
+      fill={layer.fillTransparent ? 'transparent' : (layer.color ?? '#666666')}
+      stroke={layer.borderWidth ? (layer.borderColor || '#ffffff') : undefined}
+      strokeWidth={layer.borderWidth || 0}
+      dash={layer.borderStyle === 'dashed' ? [8, 4] : layer.borderStyle === 'dotted' ? [2, 2] : undefined}
+      cornerRadius={layer.name === 'Circle' ? Math.min(w, h) / 2 : 0}
       rotation={state.rotation}
       opacity={state.opacity}
+      filters={layer.feather ? [Konva.Filters.Blur] : undefined}
+      blurRadius={layer.feather || 0}
       draggable={interactive && !layer.locked}
       onClick={onSelect}
       onTap={onSelect}

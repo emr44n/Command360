@@ -133,6 +133,10 @@ export interface StudioLayer {
   borderStyle?: 'solid' | 'dashed' | 'dotted' | 'none'
   fillTransparent?: boolean
   maskMode?: 'none' | 'mask' | 'multi-layer-mask'
+  distortPoints?: { tl: { x: number; y: number }; tr: { x: number; y: number }; bl: { x: number; y: number }; br: { x: number; y: number } }
+  // Universal
+  feather?: number  // 0-100, blur radius in px for feathered/soft edge
+  youtubeUrl?: string
 }
 
 export interface StudioAction {

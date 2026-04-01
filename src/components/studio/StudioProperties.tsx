@@ -479,6 +479,13 @@ export function StudioProperties({
                 <Switch checked={layer.borderStyle === 'dashed'} onCheckedChange={(v) => onUpdate({ borderStyle: v ? 'dashed' : 'solid' })} />
                 <span className="text-[10px] text-zinc-400">Dashed</span>
               </div>
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <Label className="text-[9px] text-zinc-500 font-medium">Feather ({layer.feather ?? 0}px)</Label>
+                  {(layer.feather ?? 0) > 0 && <button onClick={() => onUpdate({ feather: 0 })} className="text-[7px] text-zinc-600 hover:text-zinc-300 transition-colors">Reset</button>}
+                </div>
+                <Slider value={[layer.feather ?? 0]} min={0} max={100} step={1} onValueChange={([v]) => onUpdate({ feather: v })} className="py-1" />
+              </div>
             </>) : (<>
               {/* NON-LINE SHAPES — full UI */}
               {/* Fill Color */}
@@ -545,6 +552,29 @@ export function StudioProperties({
               </div>
               {layer.maskMode === 'mask' && <p className="text-[7px] text-zinc-600 mt-1">Cuts through the layer directly below</p>}
               {layer.maskMode === 'multi-layer-mask' && <p className="text-[7px] text-zinc-600 mt-1">Cuts through all layers below to base</p>}
+            </div>
+            {/* Feather Edge */}
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <Label className="text-[9px] text-zinc-500 font-medium">Feather ({layer.feather ?? 0}px)</Label>
+                {(layer.feather ?? 0) > 0 && <button onClick={() => onUpdate({ feather: 0 })} className="text-[7px] text-zinc-600 hover:text-zinc-300 transition-colors">Reset</button>}
+              </div>
+              <Slider value={[layer.feather ?? 0]} min={0} max={100} step={1} onValueChange={([v]) => onUpdate({ feather: v })} className="py-1" />
+              <p className="text-[7px] text-zinc-600 mt-0.5">Soft/transparent edge — Photoshop-style feathering</p>
+            </div>
+          </div>
+        )}
+
+        {/* Image feather */}
+        {layer.type === 'image' && (
+          <div className="space-y-2 border-t border-[#1e1f22] pt-2">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <Label className="text-[9px] text-zinc-500 font-medium">Feather ({layer.feather ?? 0}px)</Label>
+                {(layer.feather ?? 0) > 0 && <button onClick={() => onUpdate({ feather: 0 })} className="text-[7px] text-zinc-600 hover:text-zinc-300 transition-colors">Reset</button>}
+              </div>
+              <Slider value={[layer.feather ?? 0]} min={0} max={100} step={1} onValueChange={([v]) => onUpdate({ feather: v })} className="py-1" />
+              <p className="text-[7px] text-zinc-600 mt-0.5">Soft/transparent edge inward</p>
             </div>
           </div>
         )}

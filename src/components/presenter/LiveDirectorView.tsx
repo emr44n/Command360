@@ -79,6 +79,9 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null)
   const [isDragOver, setIsDragOver] = useState(false)
   const [canvasZoom, setCanvasZoom] = useState(125)
+  const [distortMode, setDistortMode] = useState<string | null>(null) // layer ID in distort mode
+  const [showYoutubeInput, setShowYoutubeInput] = useState(false)
+  const [youtubeUrl, setYoutubeUrl] = useState('')
 
   // ─── Left panel ───
   const [leftTab, setLeftTab] = useState<'events' | 'assets' | 'layers'>('events')
@@ -412,7 +415,49 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     setLayerStates(prev => ({ ...prev }))
   }, [])
 
-  // ─── Event grouping ───
+  // ─── YouTube helper ───
+  const extractYoutubeId = useCallback((url: string): string | null => {
+    const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+    return m ? m[1] : null
+  }, [])
+
+  const addYoutubeVideo = useCallback(() => {
+    const id = extractYoutubeId(youtubeUrl)
+    if (!id) return
+    const thumb = `https://img.youtube.com/vi/${id}/hqdefault.jpg`
+    const off = nextOffset()
+    const layer: StudioLayer = {
+      id: generateLayerId(), name: `YouTube: ${id}`, type: 'video',
+      youtubeUrl: `https://www.youtube.com/embed/${id}?autoplay=1&mute=1`,
+      src: thumb, x: off.x, y: off.y, width: 40, height: 22.5,
+      rotation: 0, zIndex: layers.length + 1, opacity: 1,
+      blendMode: 'normal', visible: true, locked: false,
+      loop: false, autoplay: true, muted: true,
+    }
+    // Add to videos gallery
+    setVideos(prev => [...prev, { id: layer.id, name: layer.name, url: thumb, type: 'video' }])
+    addLayerToCanvasAndQueue(layer)
+    setYoutubeUrl('')
+    setShowYoutubeInput(false)
+  }, [youtubeUrl, layers, nextOffset, extractYoutubeId, addLayerToCanvasAndQueue])
+
+  // ─── Distort mode ───
+  const handleDistortPointDrag = useCallback((layerId: string, corner: 'tl' | 'tr' | 'bl' | 'br', dx: number, dy: number) => {
+    setLayers(prev => prev.map(l => {
+      if (l.id !== layerId) return l
+      const pts = l.distortPoints || { tl: { x: 0, y: 0 }, tr: { x: 100, y: 0 }, bl: { x: 0, y: 100 }, br: { x: 100, y: 100 } }
+      return { ...l, distortPoints: { ...pts, [corner]: { x: pts[corner].x + dx, y: pts[corner].y + dy } } }
+    }))
+  }, [])
+
+  // Escape exits distort mode
+  useEffect(() => {
+    if (!distortMode) return
+    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') setDistortMode(null) }
+    window.addEventListener('keydown', h)
+    return () => window.removeEventListener('keydown', h)
+  }, [distortMode])
+
   // ─── Mask clip computation ───
   const maskClips = useMemo(() => {
     const clips: Record<string, string> = {}
@@ -548,11 +593,34 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                 {/* VIDEOS */}
                 {assetSub === 'videos' && (<>
                   <input ref={videoInputRef} type="file" accept="video/mp4,video/webm" multiple className="hidden" onChange={e => { if (e.target.files) doUpload(e.target.files, 'video', setVideos); e.target.value = '' }} />
-                  <button onClick={() => videoInputRef.current?.click()} disabled={uploading} className="w-full flex items-center justify-center gap-1 py-1.5 text-[9px] font-medium rounded-md border border-dashed border-zinc-600 bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] disabled:opacity-50 transition-colors mb-2">
-                    {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />} {uploading ? `${uploadProgress}%` : 'Upload Video'}
-                  </button>
+                  <div className="flex gap-1 mb-2">
+                    <button onClick={() => videoInputRef.current?.click()} disabled={uploading} className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[9px] font-medium rounded-md border border-dashed border-zinc-600 bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] disabled:opacity-50 transition-colors">
+                      {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />} {uploading ? `${uploadProgress}%` : 'Upload'}
+                    </button>
+                    <button onClick={() => setShowYoutubeInput(v => !v)} className={`flex items-center justify-center gap-1 px-2 py-1.5 text-[9px] font-medium rounded-md border transition-colors ${showYoutubeInput ? 'border-red-500 bg-red-500/10 text-red-400' : 'border-dashed border-zinc-600 bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c]'}`}>
+                      <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.8 3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+                      YT
+                    </button>
+                  </div>
+                  {/* YouTube URL input */}
+                  {showYoutubeInput && (
+                    <div className="mb-2 animate-in slide-in-from-top-1 duration-200">
+                      <div className="flex gap-1">
+                        <input type="text" value={youtubeUrl} onChange={e => setYoutubeUrl(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addYoutubeVideo() }} placeholder="Paste YouTube URL..." className="flex-1 h-7 px-2 text-[9px] rounded-md border border-zinc-600 bg-[#1e1f22] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-red-500" />
+                        <button onClick={addYoutubeVideo} disabled={!extractYoutubeId(youtubeUrl)} className="h-7 px-2 text-[8px] font-bold rounded-md bg-red-600 hover:bg-red-500 disabled:opacity-30 text-white transition-colors">Add</button>
+                      </div>
+                    </div>
+                  )}
                   {videos.length === 0 ? <p className="text-[9px] text-zinc-600 text-center py-4">No videos yet</p> : (
-                    <div className="grid grid-cols-2 gap-1">{videos.map(a => <AssetThumb key={a.id} asset={a} onDragStart={handleAssetDragStart} onClick={() => addAssetToCanvas(a)} />)}</div>
+                    <div className="grid grid-cols-2 gap-1">{videos.map(a => (
+                      <div key={a.id} className="relative">
+                        <AssetThumb asset={a} onDragStart={handleAssetDragStart} onClick={() => addAssetToCanvas(a)} />
+                        {/* YouTube overlay icon */}
+                        {a.url.includes('img.youtube.com') && (
+                          <div className="absolute top-1 left-1 bg-red-600 rounded-sm px-1 py-0.5 text-[6px] font-bold text-white pointer-events-none">YT</div>
+                        )}
+                      </div>
+                    ))}</div>
                   )}
                 </>)}
 
@@ -678,18 +746,62 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                 const isSel = selectedLayerId === layer.id
                 return (
                   <div key={layer.id} style={{ position: 'absolute', left: `${state.x}%`, top: `${state.y}%`, width: `${state.width}%`, height: `${state.height}%`, opacity: state.opacity, zIndex: layer.zIndex, transition: dragRef.current?.layerId === layer.id || resizeRef.current?.layerId === layer.id ? 'none' : 'all 0.6s ease-out', cursor: 'move', clipPath: maskClips[layer.id] || undefined }}
-                    onMouseDown={e => handleLayerMouseDown(e, layer.id)} onClick={e => { e.stopPropagation(); setSelectedLayerId(layer.id) }}>
-                    {layer.type === 'image' && <img src={src!} alt="" className="w-full h-full object-contain pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)` }} />}
-                    {layer.type === 'video' && <video src={src!} autoPlay loop muted playsInline className="w-full h-full object-contain pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)` }} />}
+                    onMouseDown={e => handleLayerMouseDown(e, layer.id)} onClick={e => { e.stopPropagation(); setSelectedLayerId(layer.id) }}
+                    onDoubleClick={e => { e.stopPropagation(); if (layer.type === 'shape' && (layer.name === 'Rectangle' || layer.name === 'Triangle')) setDistortMode(layer.id) }}>
+                    {/* Image with feather */}
+                    {layer.type === 'image' && (
+                      <div className="w-full h-full overflow-hidden pointer-events-none" style={{ filter: layer.feather ? `blur(${layer.feather}px)` : undefined, transform: `rotate(${state.rotation}deg)` }}>
+                        <img src={src!} alt="" className="w-full h-full object-contain" />
+                      </div>
+                    )}
+                    {/* Video — YouTube iframe or native */}
+                    {layer.type === 'video' && (
+                      layer.youtubeUrl ? (
+                        <iframe src={layer.youtubeUrl} className="w-full h-full pointer-events-none border-0" style={{ transform: `rotate(${state.rotation}deg)` }} allow="autoplay; encrypted-media" allowFullScreen />
+                      ) : (
+                        <video src={src!} autoPlay loop muted playsInline className="w-full h-full object-contain pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)` }} />
+                      )
+                    )}
+                    {/* Text */}
                     {layer.type === 'text' && <div className="w-full h-full flex items-center justify-center pointer-events-none" style={{ color: layer.color || '#fff', fontSize: `${(layer.fontSize || 24) * 0.5}px`, fontWeight: layer.fontWeight || '400', transform: `rotate(${state.rotation}deg)` }}>{layer.text}</div>}
-                    {layer.type === 'shape' && <div className="w-full h-full pointer-events-none" style={{
-                      backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#666'),
-                      borderRadius: layer.name === 'Circle' ? '50%' : undefined,
-                      clipPath: layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined,
-                      border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
-                      transform: `rotate(${state.rotation}deg)`,
-                      display: layer.maskMode && layer.maskMode !== 'none' ? 'none' : undefined,
-                    }} />}
+                    {/* Shape with feather + distort + border */}
+                    {layer.type === 'shape' && (() => {
+                      const dp = layer.distortPoints
+                      const shapeClip = dp
+                        ? `polygon(${dp.tl.x}% ${dp.tl.y}%, ${dp.tr.x}% ${dp.tr.y}%, ${dp.br.x}% ${dp.br.y}%, ${dp.bl.x}% ${dp.bl.y}%)`
+                        : layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined
+                      return <div className="w-full h-full pointer-events-none" style={{
+                        backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#666'),
+                        borderRadius: layer.name === 'Circle' && !dp ? '50%' : undefined,
+                        clipPath: shapeClip,
+                        border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
+                        filter: layer.feather ? `blur(${layer.feather}px)` : undefined,
+                        transform: `rotate(${state.rotation}deg)`,
+                        display: layer.maskMode && layer.maskMode !== 'none' ? 'none' : undefined,
+                      }} />
+                    })()}
+                    {/* Distort mode corner handles */}
+                    {distortMode === layer.id && layer.type === 'shape' && (() => {
+                      const dp = layer.distortPoints || { tl: { x: 0, y: 0 }, tr: { x: 100, y: 0 }, bl: { x: 0, y: 100 }, br: { x: 100, y: 100 } }
+                      return Object.entries(dp).map(([corner, pt]) => (
+                        <div key={corner} className="absolute w-3 h-3 bg-yellow-400 border-2 border-yellow-600 rounded-full z-30 cursor-move"
+                          style={{ left: `${pt.x}%`, top: `${pt.y}%`, transform: 'translate(-50%,-50%)' }}
+                          onMouseDown={e => {
+                            e.stopPropagation(); e.preventDefault()
+                            const startX = e.clientX, startY = e.clientY
+                            const move = (ev: MouseEvent) => {
+                              if (!canvasRef.current) return
+                              const r = canvasRef.current.getBoundingClientRect()
+                              const dx = ((ev.clientX - startX) / r.width) * 100
+                              const dy = ((ev.clientY - startY) / r.height) * 100
+                              handleDistortPointDrag(layer.id, corner as 'tl'|'tr'|'bl'|'br', dx, dy)
+                            }
+                            const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up) }
+                            window.addEventListener('mousemove', move); window.addEventListener('mouseup', up)
+                          }}
+                        />
+                      ))
+                    })()}
                     {isSel && (<>
                       <div className="absolute inset-0 border-2 border-blue-500 border-dashed pointer-events-none rounded" />
                       {['tl', 'tr', 'bl', 'br'].map(h => (<div key={h} className="absolute w-2.5 h-2.5 bg-white border-2 border-blue-500 rounded-sm z-10" style={{ top: h.includes('t') ? -5 : undefined, bottom: h.includes('b') ? -5 : undefined, left: h.includes('l') ? -5 : undefined, right: h.includes('r') ? -5 : undefined, cursor: h === 'tl' || h === 'br' ? 'nwse-resize' : 'nesw-resize' }} onMouseDown={e => handleResizeMouseDown(e, layer.id, h)} />))}
