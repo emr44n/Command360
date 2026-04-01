@@ -751,8 +751,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                     {/* Image with feather */}
                     {layer.type === 'image' && (() => {
                       const fp = layer.feather || 0
-                      const fpPct = fp > 0 ? Math.max(5, 50 - fp * 0.5) : 0
-                      const fStyle: React.CSSProperties = fp > 0 ? { WebkitMaskImage: `radial-gradient(ellipse at center, black ${fpPct}%, transparent 100%)`, maskImage: `radial-gradient(ellipse at center, black ${fpPct}%, transparent 100%)` } : {}
+                      const fStyle: React.CSSProperties = fp > 0 ? { WebkitMaskImage: `radial-gradient(ellipse at center, black 0%, black calc(100% - ${fp * 2}px), transparent 100%)`, maskImage: `radial-gradient(ellipse at center, black 0%, black calc(100% - ${fp * 2}px), transparent 100%)` } : {}
                       return (
                         <div className="w-full h-full pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)`, ...fStyle }}>
                           <img src={src!} alt="" className="w-full h-full object-contain" />
@@ -776,10 +775,10 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                         ? `polygon(${dp.tl.x}% ${dp.tl.y}%, ${dp.tr.x}% ${dp.tr.y}%, ${dp.br.x}% ${dp.br.y}%, ${dp.bl.x}% ${dp.bl.y}%)`
                         : layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined
                       const featherPx = layer.feather || 0
-                      const featherPct = featherPx > 0 ? Math.max(5, 50 - featherPx * 0.5) : 0
+                      // Feather: solid center, fade only the outer edge by featherPx
                       const featherStyle: React.CSSProperties = featherPx > 0 ? {
-                        WebkitMaskImage: `radial-gradient(ellipse at center, black ${featherPct}%, transparent 100%)`,
-                        maskImage: `radial-gradient(ellipse at center, black ${featherPct}%, transparent 100%)`,
+                        WebkitMaskImage: `radial-gradient(ellipse at center, black 0%, black calc(100% - ${featherPx * 2}px), transparent 100%)`,
+                        maskImage: `radial-gradient(ellipse at center, black 0%, black calc(100% - ${featherPx * 2}px), transparent 100%)`,
                       } : {}
                       return <div className="w-full h-full pointer-events-none" style={{
                         backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#666'),

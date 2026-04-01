@@ -900,7 +900,10 @@ export function StudioGallery({
           <div className="mt-2 space-y-0.5">
             {layers.filter(l => l.type === 'shape').map(layer => (
               <div key={layer.id} className={`group flex items-center gap-1.5 px-1.5 py-1 rounded cursor-pointer text-xs transition-colors ${selectedLayerId === layer.id ? 'bg-red-500/20 border-l-2 border-red-500 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`} onClick={() => onSelectLayer(layer.id)}>
-                <div className="w-4 h-4 shrink-0" style={{ backgroundColor: layer.color || '#666', borderRadius: layer.name === 'Circle' ? '50%' : layer.name === 'Line' ? 0 : 2, clipPath: layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined, width: layer.name === 'Line' ? 16 : undefined, height: layer.name === 'Line' ? 2 : undefined }} />
+                {layer.name === 'Circle' ? <div className="w-4 h-4 rounded-full shrink-0" style={{ backgroundColor: layer.color || '#666' }} />
+                  : layer.name === 'Triangle' ? <div className="w-4 h-4 shrink-0" style={{ backgroundColor: layer.color || '#666', clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)' }} />
+                  : layer.name === 'Line' ? <div className="shrink-0" style={{ backgroundColor: layer.color || '#666', width: 16, height: 2 }} />
+                  : <div className="w-4 h-3 rounded-sm shrink-0" style={{ backgroundColor: layer.color || '#666' }} />}
                 <span className="flex-1 truncate text-zinc-300">{layer.name}{layer.maskMode && layer.maskMode !== 'none' ? ` (${layer.maskMode === 'mask' ? 'Mask' : 'Multi-Mask'})` : ''}</span>
                 <button onClick={e => { e.stopPropagation(); onDeleteLayer?.(layer.id) }} className="p-0.5 text-zinc-600 hover:text-red-400 transition-opacity opacity-0 group-hover:opacity-100"><Trash2Icon className="size-2.5" /></button>
               </div>

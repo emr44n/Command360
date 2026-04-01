@@ -408,8 +408,7 @@ function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerSta
   switch (layer.type) {
     case 'image': {
       const ifp = layer.feather || 0
-      const ifpPct = ifp > 0 ? Math.max(5, 50 - ifp * 0.5) : 0
-      const ifStyle = ifp > 0 ? { WebkitMaskImage: `radial-gradient(ellipse at center, black ${ifpPct}%, transparent 100%)`, maskImage: `radial-gradient(ellipse at center, black ${ifpPct}%, transparent 100%)` } : {}
+      const ifStyle = ifp > 0 ? { WebkitMaskImage: `radial-gradient(ellipse at center, black 0%, black calc(100% - ${ifp * 2}px), transparent 100%)`, maskImage: `radial-gradient(ellipse at center, black 0%, black calc(100% - ${ifp * 2}px), transparent 100%)` } : {}
       return (
         <div style={{ ...baseStyle, ...ifStyle } as React.CSSProperties}>
           {(state.src || layer.src) && (
@@ -477,7 +476,7 @@ function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerSta
             clipPath: shapeClip,
             border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
             display: layer.maskMode && layer.maskMode !== 'none' ? 'none' : undefined,
-            ...(layer.feather ? { WebkitMaskImage: `radial-gradient(ellipse at center, black ${Math.max(5, 50 - layer.feather * 0.5)}%, transparent 100%)`, maskImage: `radial-gradient(ellipse at center, black ${Math.max(5, 50 - layer.feather * 0.5)}%, transparent 100%)` } : {}),
+            ...(layer.feather ? { WebkitMaskImage: `radial-gradient(ellipse at center, black 0%, black calc(100% - ${layer.feather * 2}px), transparent 100%)`, maskImage: `radial-gradient(ellipse at center, black 0%, black calc(100% - ${layer.feather * 2}px), transparent 100%)` } : {}),
           }}
         />
       )

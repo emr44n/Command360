@@ -488,22 +488,18 @@ function ShapeLayerNode({
     )
   }
 
-  if (layer.name === 'Circle') {
-    return (
-      <Ellipse
-        ref={shapeRef as unknown as React.RefObject<Konva.Ellipse>}
-        x={x + w / 2} y={y + h / 2}
-        radiusX={w / 2} radiusY={h / 2}
-        {...commonProps}
-      />
-    )
-  }
+  // For Circle: force equal pixel dimensions (use the smaller of w/h)
+  const isCircle = layer.name === 'Circle'
+  const circleSize = isCircle ? Math.min(w, h) : 0
+  const rw = isCircle ? circleSize : w
+  const rh = isCircle ? circleSize : h
 
   return (
     <Rect
       ref={shapeRef}
-      x={x + w / 2} y={y + h / 2} offsetX={w / 2} offsetY={h / 2}
-      width={w} height={h}
+      x={x + rw / 2} y={y + rh / 2} offsetX={rw / 2} offsetY={rh / 2}
+      width={rw} height={rh}
+      cornerRadius={isCircle ? circleSize / 2 : 0}
       {...commonProps}
     />
   )
