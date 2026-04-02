@@ -320,6 +320,17 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
         }} />
       </div>
 
+      {/* SVG feather filter definitions */}
+      <svg style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
+        <defs>
+          {layers.filter(l => l.feather && l.feather > 0).map(l => (
+            <filter key={l.id} id={`pf-${l.id}`} x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation={l.feather!} />
+            </filter>
+          ))}
+        </defs>
+      </svg>
+
       {/* Large scene canvas */}
       <div
         ref={canvasRef}
@@ -407,10 +418,8 @@ function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerSta
 
   switch (layer.type) {
     case 'image': {
-      const ifp = layer.feather || 0
-      const ifStyle = ifp > 0 ? { WebkitMaskImage: `linear-gradient(to right, transparent 0px, black ${ifp}px, black calc(100% - ${ifp}px), transparent 100%), linear-gradient(to bottom, transparent 0px, black ${ifp}px, black calc(100% - ${ifp}px), transparent 100%)`, maskImage: `linear-gradient(to right, transparent 0px, black ${ifp}px, black calc(100% - ${ifp}px), transparent 100%), linear-gradient(to bottom, transparent 0px, black ${ifp}px, black calc(100% - ${ifp}px), transparent 100%)`, WebkitMaskComposite: 'source-in', maskComposite: 'intersect' } as React.CSSProperties : {}
       return (
-        <div style={{ ...baseStyle, ...ifStyle } as React.CSSProperties}>
+        <div style={{ ...baseStyle, filter: layer.feather ? `url(#pf-${layer.id})` : undefined } as React.CSSProperties}>
           {(state.src || layer.src) && (
             <img
               src={state.src || layer.src}
@@ -476,7 +485,7 @@ function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerSta
             clipPath: shapeClip,
             border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
             display: layer.maskMode && layer.maskMode !== 'none' ? 'none' : undefined,
-            ...(layer.feather ? { WebkitMaskImage: `linear-gradient(to right, transparent 0px, black ${layer.feather}px, black calc(100% - ${layer.feather}px), transparent 100%), linear-gradient(to bottom, transparent 0px, black ${layer.feather}px, black calc(100% - ${layer.feather}px), transparent 100%)`, maskImage: `linear-gradient(to right, transparent 0px, black ${layer.feather}px, black calc(100% - ${layer.feather}px), transparent 100%), linear-gradient(to bottom, transparent 0px, black ${layer.feather}px, black calc(100% - ${layer.feather}px), transparent 100%)`, WebkitMaskComposite: 'source-in', maskComposite: 'intersect' } as React.CSSProperties : {}),
+            filter: layer.feather ? `url(#pf-${layer.id})` : undefined,
           }}
         />
       )

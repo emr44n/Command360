@@ -723,6 +723,10 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                           className="p-0.5 text-zinc-600 hover:text-white transition-colors">
                           {state?.visible ? <Eye className="w-2.5 h-2.5" /> : <EyeOff className="w-2.5 h-2.5" />}
                         </button>
+                        <button onClick={e => { e.stopPropagation(); deleteLayer(layer.id) }}
+                          className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors">
+                          <Trash2 className="w-2.5 h-2.5" />
+                        </button>
                       </div>
                     )
                   })}
@@ -735,6 +739,16 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
         {/* ═══ CENTER: CANVAS ═══ */}
         <div className="flex-1 flex flex-col min-w-0">
           <div ref={canvasWrapperRef} className="flex-1 flex items-center justify-center bg-[#111113] min-w-0 p-2 overflow-auto relative">
+            {/* SVG feather filter definitions */}
+            <svg style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
+              <defs>
+                {layers.filter(l => l.feather && l.feather > 0).map(l => (
+                  <filter key={l.id} id={`feather-${l.id}`} x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation={l.feather!} />
+                  </filter>
+                ))}
+              </defs>
+            </svg>
             <div ref={canvasRef}
               className={`relative overflow-hidden rounded-lg ${isDragOver ? 'ring-2 ring-red-500 ring-offset-2 ring-offset-[#111113]' : ''}`}
               style={{ width: 'min(72rem, calc((100vh - 8rem) * 16 / 9))', aspectRatio: '16/9', backgroundColor: canvas.backgroundColor, transform: `scale(${canvasZoom / 100})`, transformOrigin: 'center center', transition: 'transform 0.15s ease-out' }}
@@ -749,15 +763,11 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                     onMouseDown={e => handleLayerMouseDown(e, layer.id)} onClick={e => { e.stopPropagation(); setSelectedLayerId(layer.id) }}
                     onDoubleClick={e => { e.stopPropagation(); if (layer.type === 'shape' && (layer.name === 'Rectangle' || layer.name === 'Triangle')) setDistortMode(layer.id) }}>
                     {/* Image with feather */}
-                    {layer.type === 'image' && (() => {
-                      const fp = layer.feather || 0
-                      const fStyle: React.CSSProperties = fp > 0 ? { WebkitMaskImage: `linear-gradient(to right, transparent 0px, black ${fp}px, black calc(100% - ${fp}px), transparent 100%), linear-gradient(to bottom, transparent 0px, black ${fp}px, black calc(100% - ${fp}px), transparent 100%)`, maskImage: `linear-gradient(to right, transparent 0px, black ${fp}px, black calc(100% - ${fp}px), transparent 100%), linear-gradient(to bottom, transparent 0px, black ${fp}px, black calc(100% - ${fp}px), transparent 100%)`, WebkitMaskComposite: 'source-in', maskComposite: 'intersect' } as React.CSSProperties : {}
-                      return (
-                        <div className="w-full h-full pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)`, ...fStyle }}>
-                          <img src={src!} alt="" className="w-full h-full object-contain" />
-                        </div>
-                      )
-                    })()}
+                    {layer.type === 'image' && (
+                      <div className="w-full h-full pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)`, filter: layer.feather ? `url(#feather-${layer.id})` : undefined }}>
+                        <img src={src!} alt="" className="w-full h-full object-contain" />
+                      </div>
+                    )}
                     {/* Video — YouTube iframe or native */}
                     {layer.type === 'video' && (
                       layer.youtubeUrl ? (
@@ -775,14 +785,6 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                         ? `polygon(${dp.tl.x}% ${dp.tl.y}%, ${dp.tr.x}% ${dp.tr.y}%, ${dp.br.x}% ${dp.br.y}%, ${dp.bl.x}% ${dp.bl.y}%)`
                         : layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined
                       const featherPx = layer.feather || 0
-                      // Feather: 4-edge linear gradients with mask-composite intersect
-                      // Each gradient: transparent at edge → black after Npx → stays black → fades back at other edge
-                      const featherStyle: React.CSSProperties = featherPx > 0 ? {
-                        WebkitMaskImage: `linear-gradient(to right, transparent 0px, black ${featherPx}px, black calc(100% - ${featherPx}px), transparent 100%), linear-gradient(to bottom, transparent 0px, black ${featherPx}px, black calc(100% - ${featherPx}px), transparent 100%)`,
-                        maskImage: `linear-gradient(to right, transparent 0px, black ${featherPx}px, black calc(100% - ${featherPx}px), transparent 100%), linear-gradient(to bottom, transparent 0px, black ${featherPx}px, black calc(100% - ${featherPx}px), transparent 100%)`,
-                        WebkitMaskComposite: 'source-in',
-                        maskComposite: 'intersect',
-                      } as React.CSSProperties : {}
                       return <div className="w-full h-full pointer-events-none" style={{
                         backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#4a5568'),
                         borderRadius: layer.name === 'Circle' && !dp ? '50%' : undefined,
@@ -790,7 +792,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                         border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
                         transform: `rotate(${state.rotation}deg)`,
                         display: layer.maskMode && layer.maskMode !== 'none' ? 'none' : undefined,
-                        ...featherStyle,
+                        filter: featherPx > 0 ? `url(#feather-${layer.id})` : undefined,
                       }} />
                     })()}
                     {/* Distort mode corner handles */}
