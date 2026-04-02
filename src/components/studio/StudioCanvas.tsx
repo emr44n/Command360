@@ -18,6 +18,11 @@ interface StudioCanvasProps {
   onUpdateLayer?: (id: string, updates: Partial<StudioLayer>) => void
   onDropAsset?: (type: 'image' | 'video', src: string, x: number, y: number) => void
   eventOverrides?: Record<string, Partial<StudioLayerState>>
+  polygonDrawMode?: boolean
+  polygonDrawPoints?: { x: number; y: number }[]
+  onPolygonDrawClick?: (x: number, y: number) => void
+  onPolygonDrawComplete?: (points: { x: number; y: number }[]) => void
+  onPolygonDrawCancel?: () => void
 }
 
 const ASPECT_RATIO = 16 / 9
@@ -581,6 +586,11 @@ export function StudioCanvas({
   onUpdateLayer,
   onDropAsset,
   eventOverrides,
+  polygonDrawMode,
+  polygonDrawPoints,
+  onPolygonDrawClick,
+  onPolygonDrawComplete,
+  onPolygonDrawCancel,
 }: StudioCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [stageSize, setStageSize] = useState({ width: 960, height: 540 })
@@ -628,6 +638,14 @@ export function StudioCanvas({
     setStageSize({ width: Math.round(width), height: Math.round(height) })
   }, [])
 
+  // Escape cancels polygon draw
+  useEffect(() => {
+    if (!polygonDrawMode) return
+    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onPolygonDrawCancel?.() }
+    window.addEventListener('keydown', h)
+    return () => window.removeEventListener('keydown', h)
+  }, [polygonDrawMode, onPolygonDrawCancel])
+
   useEffect(() => {
     updateSize()
     window.addEventListener('resize', updateSize)
@@ -671,12 +689,32 @@ export function StudioCanvas({
         }
         return
       }
+      // Polygon draw mode: add point on canvas click
+      if (polygonDrawMode && e.target === e.target.getStage()) {
+        const stage = e.target.getStage()
+        const pointer = stage?.getPointerPosition()
+        if (pointer && stage) {
+          const xPct = (pointer.x / stageSize.width) * 100
+          const yPct = (pointer.y / stageSize.height) * 100
+          // Check if close to first point (close polygon)
+          if (polygonDrawPoints && polygonDrawPoints.length >= 3) {
+            const first = polygonDrawPoints[0]
+            const dist = Math.sqrt((xPct - first.x) ** 2 + (yPct - first.y) ** 2)
+            if (dist < 3) {
+              onPolygonDrawComplete?.(polygonDrawPoints)
+              return
+            }
+          }
+          onPolygonDrawClick?.(xPct, yPct)
+        }
+        return
+      }
       // Normal: clicked on empty area
       if (e.target === e.target.getStage()) {
         onSelectLayer?.(null)
       }
     },
-    [onSelectLayer, objectSelectionMode, lockObjectSelection, layers]
+    [onSelectLayer, objectSelectionMode, lockObjectSelection, layers, polygonDrawMode, polygonDrawPoints, stageSize, onPolygonDrawClick, onPolygonDrawComplete]
   )
 
   const handleDragEnd = useCallback(
@@ -950,6 +988,26 @@ export function StudioCanvas({
             })()}
           </Layer>
         </Stage>
+
+        {/* Polygon draw mode overlay */}
+        {polygonDrawMode && polygonDrawPoints && (
+          <>
+            <svg className="absolute inset-0 w-full h-full pointer-events-none z-40">
+              {polygonDrawPoints.map((p, i) => {
+                const px = (p.x / 100) * stageSize.width
+                const py = (p.y / 100) * stageSize.height
+                const prevP = i > 0 ? polygonDrawPoints[i - 1] : null
+                return (
+                  <React.Fragment key={i}>
+                    {prevP && <line x1={(prevP.x / 100) * stageSize.width} y1={(prevP.y / 100) * stageSize.height} x2={px} y2={py} stroke="#ef4444" strokeWidth="2" strokeDasharray="6 3" />}
+                    <circle cx={px} cy={py} r={i === 0 && polygonDrawPoints.length >= 3 ? 8 : 5} fill={i === 0 && polygonDrawPoints.length >= 3 ? '#ef4444' : '#ffffff'} stroke="#ef4444" strokeWidth="2" />
+                  </React.Fragment>
+                )
+              })}
+            </svg>
+            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-50 px-4 py-1.5 bg-red-600 rounded-full text-[11px] text-white font-bold shadow-lg">Click to add points • Click first point to close • Escape to cancel</div>
+          </>
+        )}
 
         {/* Video layers rendered as HTML overlays on top of the Konva stage */}
         {videoLayers.map((layer) => {

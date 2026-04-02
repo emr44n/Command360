@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import {
   FolderOpen, Type, Shapes, Film, Sparkles, Settings2,
   Play, Square, SkipBack, Layers, Plus, Trash2 as Trash2Icon, Copy, Monitor,
-  Pencil, Image, Undo2, Redo2, Layout, Save,
+  Pencil, Image, Undo2, Redo2, Layout, Save, LayoutList,
 } from 'lucide-react'
 import type {
   Slide,
@@ -17,6 +17,7 @@ import type {
   StudioLayerState,
 } from '@/types/slide'
 import { StudioGallery } from '@/components/studio/StudioGallery'
+import { StudioLayers } from '@/components/studio/StudioLayers'
 import { StudioCanvas } from '@/components/studio/StudioCanvas'
 import { StudioProperties } from '@/components/studio/StudioProperties'
 import { StudioTimeline } from '@/components/studio/StudioTimeline'
@@ -616,6 +617,10 @@ export function StudioEditor({
   const [templateNameInput, setTemplateNameInput] = useState('')
   const [showTimeline, setShowTimeline] = useState(true)
 
+  // Polygon draw mode
+  const [polygonDrawMode, setPolygonDrawMode] = useState(false)
+  const [polygonDrawPoints, setPolygonDrawPoints] = useState<{ x: number; y: number }[]>([])
+
   // Resizable panel widths
   const [leftPanelWidth, setLeftPanelWidth] = useState(220)
   const [propertiesWidth, setPropertiesWidth] = useState(240)
@@ -666,6 +671,7 @@ export function StudioEditor({
   // Icon sidebar items — each has its own accent color
   const SIDEBAR_ICONS = [
     ...(hasSlides ? [{ icon: Layers, label: 'Scenes', panel: 'slides' as const, activeClass: 'bg-violet-600/20 text-violet-400' }] : []),
+    { icon: LayoutList, label: 'Layers', panel: 'layers' as const, activeClass: 'bg-cyan-600/20 text-cyan-400' },
     { icon: FolderOpen, label: 'Assets', panel: 'gallery' as const, activeClass: 'bg-red-600/20 text-red-400' },
     { icon: Type, label: 'Text', panel: 'text' as const, activeClass: 'bg-sky-600/20 text-sky-400' },
     { icon: Shapes, label: 'Shapes', panel: 'shapes' as const, activeClass: 'bg-emerald-600/20 text-emerald-400' },
@@ -673,7 +679,7 @@ export function StudioEditor({
     { icon: Layout, label: 'Templates', panel: 'templates' as const, activeClass: 'bg-pink-600/20 text-pink-400' },
   ]
 
-  const [activePanel, setActivePanel] = useState<'slides' | 'gallery' | 'events' | 'text' | 'shapes' | 'templates'>(hasSlides ? 'slides' : 'gallery')
+  const [activePanel, setActivePanel] = useState<'slides' | 'layers' | 'gallery' | 'events' | 'text' | 'shapes' | 'templates'>(hasSlides ? 'slides' : 'gallery')
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-[#1e1f22]" style={{ minHeight: 0 }}>
@@ -756,7 +762,7 @@ export function StudioEditor({
               <div className="shrink-0 bg-[#2b2d31] overflow-hidden overflow-x-hidden flex flex-col border-r border-[#1e1f22]" style={{ width: leftPanelWidth }}>
                 {/* Active panel accent strip */}
                 <div className="h-[2px] shrink-0" style={{
-                  backgroundColor: activePanel === 'slides' ? '#7c3aed' : activePanel === 'gallery' ? '#ef4444' : activePanel === 'text' ? '#0ea5e9' : activePanel === 'shapes' ? '#10b981' : activePanel === 'templates' ? '#ec4899' : '#f59e0b'
+                  backgroundColor: activePanel === 'slides' ? '#7c3aed' : activePanel === 'layers' ? '#06b6d4' : activePanel === 'gallery' ? '#ef4444' : activePanel === 'text' ? '#0ea5e9' : activePanel === 'shapes' ? '#10b981' : activePanel === 'templates' ? '#ec4899' : '#f59e0b'
                 }} />
                 {activePanel === 'slides' && hasSlides ? (
                   <SlidesPanel
@@ -769,6 +775,25 @@ export function StudioEditor({
                     onDeleteSlide={onDeleteSlide}
                     onDuplicateSlide={onDuplicateSlide}
                     onReorderSlides={onReorderSlides}
+                  />
+                ) : activePanel === 'layers' ? (
+                  <StudioLayers
+                    layers={layers}
+                    selectedLayerId={selectedLayerId}
+                    onSelect={(id) => setSelectedLayerId(id)}
+                    onReorder={(from, to) => {
+                      const reordered = [...layers]
+                      const [moved] = reordered.splice(from, 1)
+                      reordered.splice(to, 0, moved)
+                      const newLayers = reordered.map((l, i) => ({ ...l, zIndex: i }))
+                      const reorderedTracks = newLayers.map(l => tracks.find(t => t.layerId === l.id)).filter(Boolean)
+                      const unmatchedTracks = tracks.filter(t => !newLayers.some(l => l.id === t.layerId))
+                      updateContent({ layers: newLayers, tracks: [...reorderedTracks, ...unmatchedTracks] as typeof tracks })
+                    }}
+                    onToggleVisibility={(id) => handleUpdateLayer(id, { visible: !layers.find(l => l.id === id)?.visible })}
+                    onToggleLock={(id) => handleUpdateLayer(id, { locked: !layers.find(l => l.id === id)?.locked })}
+                    onToggleMaskImmune={(id) => handleUpdateLayer(id, { maskImmune: !layers.find(l => l.id === id)?.maskImmune })}
+                    onDelete={handleDeleteLayer}
                   />
                 ) : activePanel === 'text' ? (
                   <TextPanel
@@ -814,6 +839,7 @@ export function StudioEditor({
                     onUpdateEvents={handleUpdateEvents}
                     onUpdateCategories={handleUpdateCategories}
                     onTriggerEvent={handleTriggerEvent}
+                    onStartPolygonDraw={() => { setPolygonDrawMode(true); setPolygonDrawPoints([]) }}
                     initialTab="events"
                   />
                 ) : (
@@ -837,6 +863,7 @@ export function StudioEditor({
                     onUpdateEvents={handleUpdateEvents}
                     onUpdateCategories={handleUpdateCategories}
                     onTriggerEvent={handleTriggerEvent}
+                    onStartPolygonDraw={() => { setPolygonDrawMode(true); setPolygonDrawPoints([]) }}
                   />
                 )}
               </div>
@@ -872,6 +899,21 @@ export function StudioEditor({
                     onUpdateLayer={handleUpdateLayer}
                     onDropAsset={handleDropAsset}
                     eventOverrides={eventOverrides}
+                    polygonDrawMode={polygonDrawMode}
+                    polygonDrawPoints={polygonDrawPoints}
+                    onPolygonDrawClick={(x, y) => setPolygonDrawPoints(prev => [...prev, { x, y }])}
+                    onPolygonDrawComplete={(pts) => {
+                      const minX = Math.min(...pts.map(p => p.x)), minY = Math.min(...pts.map(p => p.y))
+                      const maxX = Math.max(...pts.map(p => p.x)), maxY = Math.max(...pts.map(p => p.y))
+                      handleAddLayer({
+                        type: 'shape', name: 'Polygon', color: '#4a5568',
+                        x: minX, y: minY, width: maxX - minX, height: maxY - minY,
+                        rotation: 0, opacity: 1, blendMode: 'normal', visible: true, locked: false,
+                        polygonPoints: pts.map(p => ({ x: ((p.x - minX) / (maxX - minX || 1)) * 100, y: ((p.y - minY) / (maxY - minY || 1)) * 100 })),
+                      })
+                      setPolygonDrawMode(false); setPolygonDrawPoints([])
+                    }}
+                    onPolygonDrawCancel={() => { setPolygonDrawMode(false); setPolygonDrawPoints([]) }}
                   />
                 </div>
                 {/* Transport bar */}

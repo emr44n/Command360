@@ -12,6 +12,8 @@ import {
   VideoIcon,
   TypeIcon,
   SquareIcon,
+  ShieldIcon,
+  ShieldOffIcon,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { StudioLayer } from '@/types/slide'
@@ -23,6 +25,7 @@ interface StudioLayersProps {
   onReorder: (fromIndex: number, toIndex: number) => void
   onToggleVisibility: (id: string) => void
   onToggleLock: (id: string) => void
+  onToggleMaskImmune?: (id: string) => void
   onDelete: (id: string) => void
 }
 
@@ -46,6 +49,7 @@ export function StudioLayers({
   onReorder,
   onToggleVisibility,
   onToggleLock,
+  onToggleMaskImmune,
   onDelete,
 }: StudioLayersProps) {
   // Display in reverse z-index order (top layer first)
@@ -156,6 +160,27 @@ export function StudioLayers({
                   <UnlockIcon className="size-3" />
                 )}
               </Button>
+
+              {/* Mask Immune */}
+              {onToggleMaskImmune && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0 text-zinc-400 opacity-0 transition-opacity hover:text-zinc-100 group-hover:opacity-100 data-[immune]:opacity-100"
+                  data-immune={layer.maskImmune || undefined}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onToggleMaskImmune(layer.id)
+                  }}
+                  title={layer.maskImmune ? 'Remove mask immunity' : 'Make mask immune'}
+                >
+                  {layer.maskImmune ? (
+                    <ShieldIcon className="size-3 text-blue-400" />
+                  ) : (
+                    <ShieldOffIcon className="size-3" />
+                  )}
+                </Button>
+              )}
 
               {/* Delete */}
               <Button

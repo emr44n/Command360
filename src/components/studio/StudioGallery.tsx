@@ -39,6 +39,7 @@ interface StudioGalleryProps {
   onReorderLayers?: (fromIndex: number, toIndex: number) => void
   onUpdateCategories?: (categories: StudioEventCategory[]) => void
   onTriggerEvent?: (eventId: string) => void
+  onStartPolygonDraw?: () => void
   initialTab?: 'images' | 'videos' | 'placed' | 'events' | 'audio' | 'text' | 'shapes'
 }
 
@@ -170,6 +171,7 @@ export function StudioGallery({
   onReorderLayers,
   onUpdateCategories,
   onTriggerEvent,
+  onStartPolygonDraw,
   initialTab = 'images',
 }: StudioGalleryProps) {
   const [images, setImages] = useState<AssetItem[]>([])
@@ -890,7 +892,7 @@ export function StudioGallery({
         <TabsContent value="shapes" className="flex-1 overflow-y-auto px-2 pb-2 animate-[fadeIn_0.2s_ease-out]">
           <div className="mt-2 grid grid-cols-2 gap-1.5">
             {[{ name: 'Rectangle', w: 20, h: 12, color: '#4a5568' }, { name: 'Circle', w: 15, h: 15, color: '#4a5568' }, { name: 'Triangle', w: 15, h: 15, color: '#4a5568' }, { name: 'Line', w: 30, h: 0.5, color: '#4a5568' }, { name: 'Polygon', w: 15, h: 15, color: '#4a5568' }].map(p => (
-              <button key={p.name} onClick={() => onAddLayer({ type: 'shape', name: p.name, color: p.color, x: 10, y: 10, width: p.w, height: p.h, rotation: 0, opacity: 1, blendMode: 'normal', visible: true, locked: false })}
+              <button key={p.name} onClick={() => { if (p.name === 'Polygon' && onStartPolygonDraw) { onStartPolygonDraw() } else { onAddLayer({ type: 'shape', name: p.name, color: p.color, x: 10, y: 10, width: p.w, height: p.h, rotation: 0, opacity: 1, blendMode: 'normal', visible: true, locked: false }) } }}
                 className="flex flex-col items-center gap-1 py-2.5 rounded-lg border border-[#3f4147] bg-[#383a40] hover:bg-[#35363c] hover:border-zinc-500 transition-colors">
                 <div className="w-5 h-5 bg-zinc-500" style={{ borderRadius: p.name === 'Circle' ? '50%' : 2, width: p.name === 'Line' ? 20 : p.name === 'Rectangle' ? 24 : undefined, height: p.name === 'Line' ? 2 : p.name === 'Rectangle' ? 14 : undefined, clipPath: p.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : p.name === 'Polygon' ? 'polygon(30% 0%, 70% 0%, 100% 40%, 80% 100%, 20% 100%, 0% 40%)' : undefined }} />
                 <span className="text-[8px] text-zinc-400">{p.name}</span>
