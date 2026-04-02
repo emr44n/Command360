@@ -461,16 +461,16 @@ function ShapeLayerNode({
   const isFeathered = (layer.feather ?? 0) > 0
 
   const commonProps = {
-    fill: isFeathered ? 'rgba(0,0,0,0.03)' : (layer.fillTransparent ? 'transparent' : (layer.color ?? '#4a5568')),
+    fill: (layer.maskMode && layer.maskMode !== 'none') ? '#000000' : isFeathered ? 'rgba(0,0,0,0.03)' : (layer.fillTransparent ? 'transparent' : (layer.color ?? '#4a5568')),
     stroke: isFeathered ? undefined : (layer.borderWidth ? (layer.borderColor || '#ffffff') : undefined),
     strokeWidth: isFeathered ? 0 : (layer.borderWidth || 0),
     dash: layer.borderStyle === 'dashed' ? [8, 4] : layer.borderStyle === 'dotted' ? [2, 2] : undefined,
     rotation: state.rotation,
-    opacity: isFeathered ? 0.01 : state.opacity,
+    opacity: (layer.maskMode && layer.maskMode !== 'none') ? 1 : isFeathered ? 0.01 : state.opacity,
     draggable: interactive && !layer.locked,
     onClick: onSelect,
     onTap: onSelect,
-    globalCompositeOperation: (layer.blendMode === 'normal' ? 'source-over' : layer.blendMode) as GlobalCompositeOperation,
+    globalCompositeOperation: (layer.maskMode && layer.maskMode !== 'none' ? 'destination-out' : layer.blendMode === 'normal' ? 'source-over' : layer.blendMode) as GlobalCompositeOperation,
     onDragMove: isFeathered ? (e: Konva.KonvaEventObject<DragEvent>) => {
       onDragMove?.(layer.id, px2pct(e.target.x() - w / 2, stageWidth), px2pct(e.target.y() - h / 2, stageHeight))
     } : undefined,
@@ -1334,7 +1334,7 @@ export function StudioCanvas({
             ))}
           </defs>
         </svg>
-        {layers.filter(l => l.feather && l.feather > 0 && (l.type === 'shape' || l.type === 'image')).map(layer => {
+        {layers.filter(l => l.feather && l.feather > 0 && (l.type === 'shape' || l.type === 'image') && !(l.maskMode && l.maskMode !== 'none')).map(layer => {
           const state = getState(layer)
           if (!state.visible) return null
           const livePos = liveDragPos[layer.id]
