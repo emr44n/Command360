@@ -460,17 +460,21 @@ function ShapeLayerNode({
 
   const isFeathered = (layer.feather ?? 0) > 0
 
+  const isMask = layer.maskMode && layer.maskMode !== 'none'
+
   const commonProps = {
-    fill: (layer.maskMode && layer.maskMode !== 'none') ? '#000000' : isFeathered ? 'rgba(0,0,0,0.03)' : (layer.fillTransparent ? 'transparent' : (layer.color ?? '#4a5568')),
-    stroke: isFeathered ? undefined : (layer.borderWidth ? (layer.borderColor || '#ffffff') : undefined),
-    strokeWidth: isFeathered ? 0 : (layer.borderWidth || 0),
-    dash: layer.borderStyle === 'dashed' ? [8, 4] : layer.borderStyle === 'dotted' ? [2, 2] : undefined,
+    // Mask shapes: show with semi-transparent fill + dashed border indicator in editor
+    // Actual mask effect is applied in preview/participant view
+    fill: isMask ? 'rgba(255,0,0,0.15)' : isFeathered ? 'rgba(0,0,0,0.03)' : (layer.fillTransparent ? 'transparent' : (layer.color ?? '#4a5568')),
+    stroke: isMask ? '#ef4444' : isFeathered ? undefined : (layer.borderWidth ? (layer.borderColor || '#ffffff') : undefined),
+    strokeWidth: isMask ? 2 : isFeathered ? 0 : (layer.borderWidth || 0),
+    dash: isMask ? [6, 3] : layer.borderStyle === 'dashed' ? [8, 4] : layer.borderStyle === 'dotted' ? [2, 2] : undefined,
     rotation: state.rotation,
-    opacity: (layer.maskMode && layer.maskMode !== 'none') ? 1 : isFeathered ? 0.01 : state.opacity,
+    opacity: isFeathered && !isMask ? 0.01 : state.opacity,
     draggable: interactive && !layer.locked,
     onClick: onSelect,
     onTap: onSelect,
-    globalCompositeOperation: (layer.maskMode && layer.maskMode !== 'none' ? 'destination-out' : layer.blendMode === 'normal' ? 'source-over' : layer.blendMode) as GlobalCompositeOperation,
+    globalCompositeOperation: (layer.blendMode === 'normal' ? 'source-over' : layer.blendMode) as GlobalCompositeOperation,
     onDragMove: isFeathered ? (e: Konva.KonvaEventObject<DragEvent>) => {
       onDragMove?.(layer.id, px2pct(e.target.x() - w / 2, stageWidth), px2pct(e.target.y() - h / 2, stageHeight))
     } : undefined,
@@ -693,8 +697,8 @@ export function StudioCanvas({
         }
         return
       }
-      // Polygon draw mode: add point on canvas click
-      if (polygonDrawMode && e.target === e.target.getStage()) {
+      // Polygon draw mode: ALL clicks add points (not just empty stage)
+      if (polygonDrawMode) {
         const stage = e.target.getStage()
         const pointer = stage?.getPointerPosition()
         if (pointer && stage) {
