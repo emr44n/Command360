@@ -1223,7 +1223,7 @@ function SlidesPanel({
                                     if (layer.type === 'shape') {
                                       return (
                                         <div key={layer.id} className="absolute pointer-events-none"
-                                          style={{ left: `${layer.x}%`, top: `${layer.y}%`, width: `${layer.width}%`, height: `${layer.height}%`, backgroundColor: layer.color || '#666', opacity: layer.opacity }} />
+                                          style={{ left: `${layer.x}%`, top: `${layer.y}%`, width: `${layer.width}%`, height: `${layer.height}%`, backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#4a5568'), opacity: layer.opacity, borderRadius: layer.name === 'Circle' ? '50%' : undefined, clipPath: layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined }} />
                                       )
                                     }
                                     return null
@@ -1266,7 +1266,7 @@ function SlidesPanel({
                           if (layer.visible && layer.type === 'shape') {
                             return (
                               <div key={layer.id} className="absolute pointer-events-none"
-                                style={{ left: `${layer.x}%`, top: `${layer.y}%`, width: `${layer.width}%`, height: `${layer.height}%`, backgroundColor: layer.color || '#666', opacity: layer.opacity }} />
+                                style={{ left: `${layer.x}%`, top: `${layer.y}%`, width: `${layer.width}%`, height: `${layer.height}%`, backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#4a5568'), opacity: layer.opacity, borderRadius: layer.name === 'Circle' ? '50%' : undefined, clipPath: layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined, border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined }} />
                             )
                           }
                           return null
