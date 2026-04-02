@@ -79,6 +79,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null)
   const [isDragOver, setIsDragOver] = useState(false)
   const [canvasZoom, setCanvasZoom] = useState(125)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [distortMode, setDistortMode] = useState<string | null>(null) // layer ID in distort mode
   const [showYoutubeInput, setShowYoutubeInput] = useState(false)
   const [youtubeUrl, setYoutubeUrl] = useState('')
@@ -194,7 +195,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     const h = (e: KeyboardEvent) => {
       if ((e.key === 'Delete' || e.key === 'Backspace') && selectedLayerId) {
         if ((e.target as HTMLElement)?.tagName === 'INPUT' || (e.target as HTMLElement)?.tagName === 'TEXTAREA') return
-        e.preventDefault(); deleteLayer(selectedLayerId)
+        e.preventDefault(); setConfirmDeleteId(selectedLayerId)
       }
     }
     window.addEventListener('keydown', h); return () => window.removeEventListener('keydown', h)
@@ -883,6 +884,20 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
             <div className="flex gap-2 justify-end">
               <button onClick={() => setShowEndConfirm(false)} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
               <button onClick={handleEndExercise} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors">End Exercise</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete layer confirmation */}
+      {confirmDeleteId && (
+        <div className="fixed inset-0 z-[200] bg-black/70 backdrop-blur-sm flex items-center justify-center" onClick={() => setConfirmDeleteId(null)}>
+          <div className="bg-[#1e1f22] border border-[#3f4147] rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-sm font-semibold text-white mb-2">Delete this layer?</h3>
+            <p className="text-[11px] text-zinc-400 mb-4">This will remove the layer from the canvas. This cannot be undone.</p>
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => setConfirmDeleteId(null)} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
+              <button onClick={() => { deleteLayer(confirmDeleteId); setConfirmDeleteId(null) }} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors">Delete</button>
             </div>
           </div>
         </div>
