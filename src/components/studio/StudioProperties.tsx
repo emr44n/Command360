@@ -30,6 +30,7 @@ import {
 import type { StudioLayer, StudioClip, StudioKeyframe } from '@/types/slide'
 import { FontPicker } from '@/components/studio/FontPicker'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { ColorPickerPopover } from '@/components/ui/color-picker'
 
 interface StudioPropertiesProps {
   layer: StudioLayer | null
@@ -389,19 +390,7 @@ export function StudioProperties({
             </div>
             <div>
               <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Color</Label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={layer.color ?? '#ffffff'}
-                  onChange={(e) => onUpdate({ color: e.target.value })}
-                  className="h-6 w-8 cursor-pointer rounded border border-[#3f4147] bg-[#1e1f22]"
-                />
-                <Input
-                  value={layer.color ?? '#ffffff'}
-                  onChange={(e) => onUpdate({ color: e.target.value })}
-                  className="h-6 flex-1 border-[#3f4147] bg-[#1e1f22] text-[10px] text-zinc-100"
-                />
-              </div>
+              <ColorPickerPopover value={layer.color ?? '#ffffff'} onChange={(c) => onUpdate({ color: c })} />
             </div>
             <div>
               <label className="text-[9px] text-zinc-500 font-medium mb-1 block">Font</label>
@@ -466,10 +455,7 @@ export function StudioProperties({
             {layer.name === 'Line' ? (<>
               <div>
                 <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Color</Label>
-                <div className="flex items-center gap-2">
-                  <input type="color" value={layer.color ?? '#666666'} onChange={(e) => onUpdate({ color: e.target.value })} className="h-6 w-8 cursor-pointer rounded border border-[#3f4147] bg-[#1e1f22]" />
-                  <Input value={layer.color ?? '#666666'} onChange={(e) => onUpdate({ color: e.target.value })} className="h-6 flex-1 border-[#3f4147] bg-[#1e1f22] text-[10px] text-zinc-100" />
-                </div>
+                <ColorPickerPopover value={layer.color ?? '#4a5568'} onChange={(c) => onUpdate({ color: c })} />
               </div>
               <div>
                 <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Thickness ({layer.borderWidth ?? 2}px)</Label>
@@ -491,10 +477,7 @@ export function StudioProperties({
               {/* Fill Color */}
               <div>
                 <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Fill Color</Label>
-                <div className="flex items-center gap-2">
-                  <input type="color" value={layer.color ?? '#666666'} onChange={(e) => onUpdate({ color: e.target.value })} className="h-6 w-8 cursor-pointer rounded border border-[#3f4147] bg-[#1e1f22]" />
-                  <Input value={layer.color ?? '#666666'} onChange={(e) => onUpdate({ color: e.target.value })} className="h-6 flex-1 border-[#3f4147] bg-[#1e1f22] text-[10px] text-zinc-100" />
-                </div>
+                <ColorPickerPopover value={layer.color ?? '#4a5568'} onChange={(c) => onUpdate({ color: c })} />
               </div>
               {/* Transparent Fill */}
               <div className="flex items-center gap-2">
@@ -511,10 +494,7 @@ export function StudioProperties({
                   <div className="space-y-2 pl-2 border-l-2 border-[#3f4147] ml-1">
                     <div>
                       <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Border Color</Label>
-                      <div className="flex items-center gap-2">
-                        <input type="color" value={layer.borderColor ?? '#ffffff'} onChange={(e) => onUpdate({ borderColor: e.target.value })} className="h-6 w-8 cursor-pointer rounded border border-[#3f4147] bg-[#1e1f22]" />
-                        <Input value={layer.borderColor ?? '#ffffff'} onChange={(e) => onUpdate({ borderColor: e.target.value })} className="h-6 flex-1 border-[#3f4147] bg-[#1e1f22] text-[10px] text-zinc-100" />
-                      </div>
+                      <ColorPickerPopover value={layer.borderColor ?? '#ffffff'} onChange={(c) => onUpdate({ borderColor: c })} />
                     </div>
                     <div>
                       <Label className="mb-1 text-[9px] text-zinc-500 font-medium">Width ({layer.borderWidth ?? 2}px)</Label>

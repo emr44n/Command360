@@ -55,10 +55,10 @@ function buildInitialStates(layers: StudioLayer[]): Record<string, StudioLayerSt
 
 /* ─── Shape presets ─── */
 const SHAPE_PRESETS = [
-  { name: 'Rectangle', w: 20, h: 12, color: '#666666' },
-  { name: 'Circle', w: 15, h: 15, color: '#666666' },
-  { name: 'Triangle', w: 15, h: 15, color: '#666666' },
-  { name: 'Line', w: 30, h: 0.5, color: '#666666' },
+  { name: 'Rectangle', w: 20, h: 12, color: '#4a5568' },
+  { name: 'Circle', w: 15, h: 15, color: '#4a5568' },
+  { name: 'Triangle', w: 15, h: 15, color: '#4a5568' },
+  { name: 'Line', w: 30, h: 0.5, color: '#4a5568' },
 ]
 
 export function LiveDirectorView({ slide, session, channelRef, presenterName, onEndExercise }: Props) {
@@ -327,7 +327,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
       blendMode: 'normal', visible: true, locked: false,
       ...(type === 'video' ? { loop: true, autoplay: true, muted: true } : {}),
       ...(type === 'text' ? { text: 'Text', fontSize: 24, color: '#ffffff' } : {}),
-      ...(type === 'shape' ? { color: '#666666' } : {}),
+      ...(type === 'shape' ? { color: '#4a5568' } : {}),
       ...(type === 'audio' ? { volume: 1, audioLoop: false } : {}),
     }
     addLayerToCanvasAndQueue(layer)
@@ -751,7 +751,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                     {/* Image with feather */}
                     {layer.type === 'image' && (() => {
                       const fp = layer.feather || 0
-                      const fStyle: React.CSSProperties = fp > 0 ? { WebkitMaskImage: `radial-gradient(ellipse at center, black 0%, black calc(100% - ${fp * 2}px), transparent 100%)`, maskImage: `radial-gradient(ellipse at center, black 0%, black calc(100% - ${fp * 2}px), transparent 100%)` } : {}
+                      const fStyle: React.CSSProperties = fp > 0 ? { WebkitMaskImage: `linear-gradient(to right, transparent 0px, black ${fp}px, black calc(100% - ${fp}px), transparent 100%), linear-gradient(to bottom, transparent 0px, black ${fp}px, black calc(100% - ${fp}px), transparent 100%)`, maskImage: `linear-gradient(to right, transparent 0px, black ${fp}px, black calc(100% - ${fp}px), transparent 100%), linear-gradient(to bottom, transparent 0px, black ${fp}px, black calc(100% - ${fp}px), transparent 100%)`, WebkitMaskComposite: 'source-in', maskComposite: 'intersect' } as React.CSSProperties : {}
                       return (
                         <div className="w-full h-full pointer-events-none" style={{ transform: `rotate(${state.rotation}deg)`, ...fStyle }}>
                           <img src={src!} alt="" className="w-full h-full object-contain" />
@@ -775,13 +775,16 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                         ? `polygon(${dp.tl.x}% ${dp.tl.y}%, ${dp.tr.x}% ${dp.tr.y}%, ${dp.br.x}% ${dp.br.y}%, ${dp.bl.x}% ${dp.bl.y}%)`
                         : layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined
                       const featherPx = layer.feather || 0
-                      // Feather: solid center, fade only the outer edge by featherPx
+                      // Feather: 4-edge linear gradients with mask-composite intersect
+                      // Each gradient: transparent at edge → black after Npx → stays black → fades back at other edge
                       const featherStyle: React.CSSProperties = featherPx > 0 ? {
-                        WebkitMaskImage: `radial-gradient(ellipse at center, black 0%, black calc(100% - ${featherPx * 2}px), transparent 100%)`,
-                        maskImage: `radial-gradient(ellipse at center, black 0%, black calc(100% - ${featherPx * 2}px), transparent 100%)`,
-                      } : {}
+                        WebkitMaskImage: `linear-gradient(to right, transparent 0px, black ${featherPx}px, black calc(100% - ${featherPx}px), transparent 100%), linear-gradient(to bottom, transparent 0px, black ${featherPx}px, black calc(100% - ${featherPx}px), transparent 100%)`,
+                        maskImage: `linear-gradient(to right, transparent 0px, black ${featherPx}px, black calc(100% - ${featherPx}px), transparent 100%), linear-gradient(to bottom, transparent 0px, black ${featherPx}px, black calc(100% - ${featherPx}px), transparent 100%)`,
+                        WebkitMaskComposite: 'source-in',
+                        maskComposite: 'intersect',
+                      } as React.CSSProperties : {}
                       return <div className="w-full h-full pointer-events-none" style={{
-                        backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#666'),
+                        backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#4a5568'),
                         borderRadius: layer.name === 'Circle' && !dp ? '50%' : undefined,
                         clipPath: shapeClip,
                         border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
