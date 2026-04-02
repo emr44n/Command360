@@ -427,6 +427,7 @@ function ShapeLayerNode({
   onSelect,
   onTransformEnd,
   onDragEnd,
+  onDragMove,
   shapeRef,
 }: {
   layer: StudioLayer
@@ -438,6 +439,7 @@ function ShapeLayerNode({
   onSelect: () => void
   onTransformEnd: (attrs: Partial<StudioLayer>) => void
   onDragEnd: (x: number, y: number) => void
+  onDragMove?: (id: string, x: number, y: number) => void
   shapeRef: React.RefObject<Konva.Rect | null>
 }) {
   // Konva filters require caching
@@ -456,19 +458,22 @@ function ShapeLayerNode({
   const w = pct2px(state.width, stageWidth)
   const h = pct2px(state.height, stageHeight)
 
+  const isFeathered = (layer.feather ?? 0) > 0
+
   const commonProps = {
-    fill: layer.fillTransparent ? 'transparent' : (layer.color ?? '#4a5568'),
-    stroke: layer.borderWidth ? (layer.borderColor || '#ffffff') : undefined,
-    strokeWidth: layer.borderWidth || 0,
+    fill: isFeathered ? 'rgba(0,0,0,0.03)' : (layer.fillTransparent ? 'transparent' : (layer.color ?? '#4a5568')),
+    stroke: isFeathered ? undefined : (layer.borderWidth ? (layer.borderColor || '#ffffff') : undefined),
+    strokeWidth: isFeathered ? 0 : (layer.borderWidth || 0),
     dash: layer.borderStyle === 'dashed' ? [8, 4] : layer.borderStyle === 'dotted' ? [2, 2] : undefined,
     rotation: state.rotation,
-    opacity: state.opacity,
-    filters: layer.feather ? [Konva.Filters.Blur] : undefined,
-    blurRadius: layer.feather || 0,
+    opacity: isFeathered ? 0.01 : state.opacity,
     draggable: interactive && !layer.locked,
     onClick: onSelect,
     onTap: onSelect,
     globalCompositeOperation: (layer.blendMode === 'normal' ? 'source-over' : layer.blendMode) as GlobalCompositeOperation,
+    onDragMove: isFeathered ? (e: Konva.KonvaEventObject<DragEvent>) => {
+      onDragMove?.(layer.id, px2pct(e.target.x() - w / 2, stageWidth), px2pct(e.target.y() - h / 2, stageHeight))
+    } : undefined,
     onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => {
       onDragEnd(px2pct(e.target.x() - w / 2, stageWidth), px2pct(e.target.y() - h / 2, stageHeight))
     },
@@ -716,9 +721,13 @@ export function StudioCanvas({
     [onSelectLayer, objectSelectionMode, lockObjectSelection, layers, polygonDrawMode, polygonDrawPoints, stageSize, onPolygonDrawClick, onPolygonDrawComplete]
   )
 
+  // Track live drag position for feathered overlays
+  const [liveDragPos, setLiveDragPos] = useState<Record<string, { x: number; y: number }>>({})
+
   const handleDragEnd = useCallback(
     (id: string, x: number, y: number) => {
       onUpdateLayer?.(id, { x, y })
+      setLiveDragPos(prev => { const n = { ...prev }; delete n[id]; return n })
     },
     [onUpdateLayer]
   )
@@ -963,6 +972,7 @@ export function StudioCanvas({
                     }}
                     onTransformEnd={(attrs) => handleTransformEnd(layer.id, attrs)}
                     onDragEnd={(x, y) => handleDragEnd(layer.id, x, y)}
+                    onDragMove={(id, x, y) => setLiveDragPos(prev => ({ ...prev, [id]: { x, y } }))}
                   />
                 )
               }
@@ -1314,7 +1324,43 @@ export function StudioCanvas({
           )
         })}
 
-        {/* Feather in Build Mode uses Konva Blur filter (cached) — no HTML overlay needed */}
+        {/* Feathered shape overlays — tracks live drag position */}
+        <svg style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
+          <defs>
+            {layers.filter(l => l.feather && l.feather > 0 && (l.type === 'shape' || l.type === 'image')).map(l => (
+              <filter key={l.id} id={`kf-${l.id}`} x="-200%" y="-200%" width="500%" height="500%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation={l.feather!} />
+              </filter>
+            ))}
+          </defs>
+        </svg>
+        {layers.filter(l => l.feather && l.feather > 0 && (l.type === 'shape' || l.type === 'image')).map(layer => {
+          const state = getState(layer)
+          if (!state.visible) return null
+          const livePos = liveDragPos[layer.id]
+          const posX = livePos ? livePos.x : state.x
+          const posY = livePos ? livePos.y : state.y
+          return (
+            <div key={`feather-${layer.id}`} className="absolute pointer-events-none" style={{
+              left: pct2px(posX, stageSize.width), top: pct2px(posY, stageSize.height),
+              width: pct2px(state.width, stageSize.width), height: pct2px(state.height, stageSize.height),
+              opacity: state.opacity, transform: `rotate(${state.rotation}deg)`, transformOrigin: 'center center',
+              zIndex: layer.zIndex + 200, filter: `url(#kf-${layer.id})`,
+            }}>
+              {layer.type === 'shape' && (
+                <div className="w-full h-full" style={{
+                  backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#4a5568'),
+                  borderRadius: layer.name === 'Circle' ? '50%' : undefined,
+                  clipPath: layer.polygonPoints ? `polygon(${layer.polygonPoints.map(p => `${p.x}% ${p.y}%`).join(', ')})` : layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined,
+                  border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
+                }} />
+              )}
+              {layer.type === 'image' && (state.src || layer.src) && (
+                <img src={state.src || layer.src} alt="" className="w-full h-full object-contain" />
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
   )
