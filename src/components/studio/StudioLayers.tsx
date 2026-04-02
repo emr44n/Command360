@@ -127,7 +127,7 @@ export function StudioLayers({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0 text-zinc-400 opacity-0 transition-opacity hover:text-zinc-100 group-hover:opacity-100 data-[visible]:opacity-100"
+                className="h-6 w-6 p-0 text-zinc-400 transition-colors hover:text-zinc-100 data-[visible]:opacity-100"
                 data-visible={!layer.visible || undefined}
                 onClick={(e) => {
                   e.stopPropagation()
@@ -146,7 +146,7 @@ export function StudioLayers({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0 text-zinc-400 opacity-0 transition-opacity hover:text-zinc-100 group-hover:opacity-100 data-[locked]:opacity-100"
+                className="h-6 w-6 p-0 text-zinc-400 transition-colors hover:text-zinc-100 data-[locked]:opacity-100"
                 data-locked={layer.locked || undefined}
                 onClick={(e) => {
                   e.stopPropagation()
@@ -166,7 +166,7 @@ export function StudioLayers({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 w-6 p-0 text-zinc-400 opacity-0 transition-opacity hover:text-zinc-100 group-hover:opacity-100 data-[immune]:opacity-100"
+                  className="h-6 w-6 p-0 text-zinc-400 transition-colors hover:text-zinc-100 data-[immune]:opacity-100"
                   data-immune={layer.maskImmune || undefined}
                   onClick={(e) => {
                     e.stopPropagation()
@@ -186,7 +186,7 @@ export function StudioLayers({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0 text-zinc-400 opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100"
+                className="h-6 w-6 p-0 text-zinc-400 transition-colors hover:text-red-400"
                 onClick={(e) => {
                   e.stopPropagation()
                   onDelete(layer.id)
