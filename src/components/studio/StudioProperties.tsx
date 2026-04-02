@@ -467,7 +467,7 @@ export function StudioProperties({
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <Label className="text-[9px] text-zinc-500 font-medium">Feather ({layer.feather ?? 0}px)</Label>
+                  <Label className="text-[9px] text-zinc-500 font-medium">Feather ({layer.feather ?? 0}%)</Label>
                   {(layer.feather ?? 0) > 0 && <button onClick={() => onUpdate({ feather: 0 })} className="text-[7px] text-zinc-600 hover:text-zinc-300 transition-colors">Reset</button>}
                 </div>
                 <Slider value={[layer.feather ?? 0]} min={0} max={100} step={1} onValueChange={([v]) => onUpdate({ feather: v })} className="py-1" />
@@ -536,7 +536,7 @@ export function StudioProperties({
             {/* Feather Edge */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <Label className="text-[9px] text-zinc-500 font-medium">Feather ({layer.feather ?? 0}px)</Label>
+                <Label className="text-[9px] text-zinc-500 font-medium">Feather ({layer.feather ?? 0}%)</Label>
                 {(layer.feather ?? 0) > 0 && <button onClick={() => onUpdate({ feather: 0 })} className="text-[7px] text-zinc-600 hover:text-zinc-300 transition-colors">Reset</button>}
               </div>
               <Slider value={[layer.feather ?? 0]} min={0} max={100} step={1} onValueChange={([v]) => onUpdate({ feather: v })} className="py-1" />
@@ -550,7 +550,7 @@ export function StudioProperties({
           <div className="space-y-2 border-t border-[#1e1f22] pt-2">
             <div>
               <div className="flex items-center justify-between mb-1">
-                <Label className="text-[9px] text-zinc-500 font-medium">Feather ({layer.feather ?? 0}px)</Label>
+                <Label className="text-[9px] text-zinc-500 font-medium">Feather ({layer.feather ?? 0}%)</Label>
                 {(layer.feather ?? 0) > 0 && <button onClick={() => onUpdate({ feather: 0 })} className="text-[7px] text-zinc-600 hover:text-zinc-300 transition-colors">Reset</button>}
               </div>
               <Slider value={[layer.feather ?? 0]} min={0} max={100} step={1} onValueChange={([v]) => onUpdate({ feather: v })} className="py-1" />

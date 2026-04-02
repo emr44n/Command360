@@ -798,15 +798,16 @@ export function StudioGallery({
                   setDragLayerIdx(null)
                 }}
                 onDragEnd={() => setDragLayerIdx(null)}
-                className={`flex w-full items-center gap-1.5 rounded px-1.5 py-1.5 text-left text-xs hover:bg-zinc-800 cursor-pointer transition-colors ${
-                  dragLayerIdx === idx ? 'opacity-50' : ''
-                }`}
+                className={`flex w-full items-center gap-1.5 rounded px-1.5 py-1.5 text-left text-xs cursor-pointer transition-colors ${
+                  selectedLayerId === layer.id ? 'bg-red-500/20 border-l-2 border-red-500 text-white' : 'text-zinc-300 hover:bg-zinc-800'
+                } ${dragLayerIdx === idx ? 'opacity-50' : ''}`}
                 onClick={() => onSelectLayer(layer.id)}
               >
                 <GripVertical className="size-3 text-zinc-600 shrink-0 cursor-grab active:cursor-grabbing" />
                 {typeIcon(layer.type)}
                 <span className="flex-1 truncate">{layer.name}</span>
                 {!layer.visible && <span className="text-[10px] text-zinc-500">hidden</span>}
+                <button onClick={e => { e.stopPropagation(); onDeleteLayer?.(layer.id) }} className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors shrink-0"><Trash2Icon className="size-2.5" /></button>
               </div>
             ))}
           </div>

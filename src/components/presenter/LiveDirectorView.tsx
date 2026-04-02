@@ -269,21 +269,33 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   }, [sessionSeconds, triggeredEvents, assetsAdded, presenterName, slide, session, channelRef, onEndExercise])
 
   // ─── Canvas mouse: move ───
+  // Use ref for layerStates to avoid stale closures during drag
+  const layerStatesRef = useRef(layerStates)
+  layerStatesRef.current = layerStates
+
   const handleLayerMouseDown = useCallback((e: React.MouseEvent, layerId: string) => {
-    e.stopPropagation(); e.preventDefault(); setSelectedLayerId(layerId)
-    const state = layerStates[layerId]; if (!state) return
+    e.stopPropagation(); e.preventDefault()
+    const state = layerStatesRef.current[layerId]; if (!state) return
     dragRef.current = { layerId, startMX: e.clientX, startMY: e.clientY, startX: state.x, startY: state.y }
+    // Set selection AFTER capturing drag start state
+    setSelectedLayerId(layerId)
     const move = (ev: MouseEvent) => {
       if (!dragRef.current || !canvasRef.current) return
       const r = canvasRef.current.getBoundingClientRect()
       const dx = ((ev.clientX - dragRef.current.startMX) / r.width) * 100
       const dy = ((ev.clientY - dragRef.current.startMY) / r.height) * 100
-      setLayerStates(prev => ({ ...prev, [dragRef.current!.layerId]: { ...prev[dragRef.current!.layerId], x: dragRef.current!.startX + dx, y: dragRef.current!.startY + dy } }))
-      broadcastLayerStates({ [dragRef.current.layerId]: { x: dragRef.current.startX + dx, y: dragRef.current.startY + dy } })
+      const newX = dragRef.current.startX + dx, newY = dragRef.current.startY + dy
+      setLayerStates(prev => ({ ...prev, [dragRef.current!.layerId]: { ...prev[dragRef.current!.layerId], x: newX, y: newY } }))
+      broadcastLayerStates({ [dragRef.current.layerId]: { x: newX, y: newY } })
     }
-    const up = () => { dragRef.current = null; window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); if (pendingBroadcastRef.current) { clearTimeout(pendingBroadcastRef.current); pendingBroadcastRef.current = null }; broadcastLayerStates(layerStates) }
+    const up = () => {
+      dragRef.current = null
+      window.removeEventListener('mousemove', move)
+      window.removeEventListener('mouseup', up)
+      if (pendingBroadcastRef.current) { clearTimeout(pendingBroadcastRef.current); pendingBroadcastRef.current = null }
+    }
     window.addEventListener('mousemove', move); window.addEventListener('mouseup', up)
-  }, [layerStates, broadcastLayerStates])
+  }, [broadcastLayerStates])
 
   // ─── Canvas mouse: resize ───
   const handleResizeMouseDown = useCallback((e: React.MouseEvent, layerId: string, handle: string) => {
@@ -744,7 +756,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
             <svg style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
               <defs>
                 {layers.filter(l => l.feather && l.feather > 0).map(l => (
-                  <filter key={l.id} id={`feather-${l.id}`} x="-50%" y="-50%" width="200%" height="200%">
+                  <filter key={l.id} id={`feather-${l.id}`} x="-200%" y="-200%" width="500%" height="500%">
                     <feGaussianBlur in="SourceGraphic" stdDeviation={l.feather!} />
                   </filter>
                 ))}
