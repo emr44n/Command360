@@ -489,6 +489,20 @@ function ShapeLayerNode({
     )
   }
 
+  // Polygon shape — use KonvaLine with stored points
+  if (layer.polygonPoints && layer.polygonPoints.length >= 3) {
+    const pts = layer.polygonPoints.flatMap(p => [(p.x / 100) * w, (p.y / 100) * h])
+    return (
+      <KonvaLine
+        ref={shapeRef as unknown as React.RefObject<Konva.Line>}
+        points={pts}
+        closed
+        x={x + w / 2} y={y + h / 2} offsetX={w / 2} offsetY={h / 2}
+        {...commonProps}
+      />
+    )
+  }
+
   // For Circle: force equal pixel dimensions (use the smaller of w/h)
   const isCircle = layer.name === 'Circle'
   const circleSize = isCircle ? Math.min(w, h) : 0
@@ -1272,7 +1286,7 @@ export function StudioCanvas({
                 <div className="w-full h-full" style={{
                   backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#4a5568'),
                   borderRadius: layer.name === 'Circle' ? '50%' : undefined,
-                  clipPath: layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined,
+                  clipPath: layer.polygonPoints ? `polygon(${layer.polygonPoints.map(p => `${p.x}% ${p.y}%`).join(', ')})` : layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined,
                   border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
                 }} />
               )}

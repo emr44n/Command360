@@ -474,8 +474,10 @@ function MiniLayer({ layer, state }: { layer: StudioLayer; state: StudioLayerSta
       )
     case 'shape': {
       const dp = layer.distortPoints
-      const shapeClip = dp
-        ? `polygon(${dp.tl.x}% ${dp.tl.y}%, ${dp.tr.x}% ${dp.tr.y}%, ${dp.br.x}% ${dp.br.y}%, ${dp.bl.x}% ${dp.bl.y}%)`
+      const pp = layer.polygonPoints
+      const shapeClip = pp
+        ? `polygon(${pp.map(p => `${p.x}% ${p.y}%`).join(', ')})`
+        : dp ? `polygon(${dp.tl.x}% ${dp.tl.y}%, ${dp.tr.x}% ${dp.tr.y}%, ${dp.br.x}% ${dp.br.y}%, ${dp.bl.x}% ${dp.bl.y}%)`
         : layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined
       return (
         <div
