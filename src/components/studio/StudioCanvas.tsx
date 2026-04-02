@@ -305,7 +305,7 @@ function ImageLayerNode({
         listening={true}
       />
       {/* Image rendered on top when loaded */}
-      {image && !(layer.feather && layer.feather > 0) && (
+      {image && (
         <KonvaImage
           ref={imageNodeRef}
           image={image}
@@ -313,6 +313,8 @@ function ImageLayerNode({
           height={h}
           listening={false}
           globalCompositeOperation={layer.blendMode === 'normal' ? 'source-over' : layer.blendMode}
+          filters={layer.feather ? [Konva.Filters.Blur] : undefined}
+          blurRadius={layer.feather || 0}
         />
       )}
     </Group>
@@ -454,13 +456,10 @@ function ShapeLayerNode({
   const w = pct2px(state.width, stageWidth)
   const h = pct2px(state.height, stageHeight)
 
-  // If feathered, hide Konva visual (HTML overlay handles it) but keep node for Transformer
-  const isFeathered = (layer.feather ?? 0) > 0
-
   const commonProps = {
-    fill: isFeathered ? 'transparent' : (layer.fillTransparent ? 'transparent' : (layer.color ?? '#666666')),
-    stroke: isFeathered ? 'transparent' : (layer.borderWidth ? (layer.borderColor || '#ffffff') : undefined),
-    strokeWidth: isFeathered ? 0 : (layer.borderWidth || 0),
+    fill: layer.fillTransparent ? 'transparent' : (layer.color ?? '#4a5568'),
+    stroke: layer.borderWidth ? (layer.borderColor || '#ffffff') : undefined,
+    strokeWidth: layer.borderWidth || 0,
     dash: layer.borderStyle === 'dashed' ? [8, 4] : layer.borderStyle === 'dotted' ? [2, 2] : undefined,
     rotation: state.rotation,
     opacity: state.opacity,
@@ -1315,45 +1314,7 @@ export function StudioCanvas({
           )
         })}
 
-        {/* Feathered shape/image overlays — rendered as HTML with SVG filter for proper edge feathering */}
-        <svg style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
-          <defs>
-            {layers.filter(l => l.feather && l.feather > 0 && (l.type === 'shape' || l.type === 'image')).map(l => (
-              <filter key={l.id} id={`kf-${l.id}`} x="-200%" y="-200%" width="500%" height="500%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation={l.feather! * 0.5} />
-              </filter>
-            ))}
-          </defs>
-        </svg>
-        {layers.filter(l => l.feather && l.feather > 0 && (l.type === 'shape' || l.type === 'image')).map(layer => {
-          const state = getState(layer)
-          if (!state.visible) return null
-          return (
-            <div key={`feather-${layer.id}`} className="absolute pointer-events-none" style={{
-              left: pct2px(state.x, stageSize.width),
-              top: pct2px(state.y, stageSize.height),
-              width: pct2px(state.width, stageSize.width),
-              height: pct2px(state.height, stageSize.height),
-              opacity: state.opacity,
-              transform: `rotate(${state.rotation}deg)`,
-              transformOrigin: 'center center',
-              zIndex: layer.zIndex + 200,
-              filter: `url(#kf-${layer.id})`,
-            }}>
-              {layer.type === 'shape' && (
-                <div className="w-full h-full" style={{
-                  backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#4a5568'),
-                  borderRadius: layer.name === 'Circle' ? '50%' : undefined,
-                  clipPath: layer.polygonPoints ? `polygon(${layer.polygonPoints.map(p => `${p.x}% ${p.y}%`).join(', ')})` : layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined,
-                  border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
-                }} />
-              )}
-              {layer.type === 'image' && (state.src || layer.src) && (
-                <img src={state.src || layer.src} alt="" className="w-full h-full object-contain" />
-              )}
-            </div>
-          )
-        })}
+        {/* Feather in Build Mode uses Konva Blur filter (cached) — no HTML overlay needed */}
       </div>
     </div>
   )
