@@ -229,7 +229,7 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
           <svg viewBox="0 0 24 24" className="w-7 h-7 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
         </div>
         <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-medium">Command 360</p>
-        <h2 className="text-xl font-bold">Exercise Complete</h2>
+        <h2 className="text-xl font-bold">Exercise Ended</h2>
         {exerciseStats && (
           <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
             <span>Duration: {formatDuration(exerciseStats.duration)}</span>
@@ -237,6 +237,7 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
           </div>
         )}
         <p className="text-sm text-muted-foreground">The presenter has ended this exercise session.</p>
+        <button onClick={() => { try { window.close() } catch { /* can't close */ } }} className="mt-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition-colors">Close Window</button>
       </div>
     )
   }

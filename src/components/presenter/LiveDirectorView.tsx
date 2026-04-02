@@ -6,7 +6,7 @@ import type { RealtimeChannel } from '@supabase/supabase-js'
 import {
   Play, RotateCcw, ChevronRight, ChevronDown, Square, Clock, Radio, Trash2,
   ImageIcon, VideoIcon, Upload, Loader2, Plus, Maximize2, ZoomIn, ZoomOut, Type,
-  Volume2, GripVertical, Eye, EyeOff, Zap,
+  Volume2, GripVertical, Eye, EyeOff, Zap, Lock, Unlock, Shield, ShieldOff,
 } from 'lucide-react'
 import { playEvent, type EventPlaybackController } from '@/lib/studio/event-playback'
 import { PushPanel, type PushQueueItem } from '@/components/studio/PushPanel'
@@ -59,6 +59,7 @@ const SHAPE_PRESETS = [
   { name: 'Circle', w: 15, h: 15, color: '#4a5568' },
   { name: 'Triangle', w: 15, h: 15, color: '#4a5568' },
   { name: 'Line', w: 30, h: 0.5, color: '#4a5568' },
+  { name: 'Polygon', w: 15, h: 15, color: '#4a5568' },
 ]
 
 export function LiveDirectorView({ slide, session, channelRef, presenterName, onEndExercise }: Props) {
@@ -81,6 +82,8 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   const [canvasZoom, setCanvasZoom] = useState(125)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [distortMode, setDistortMode] = useState<string | null>(null) // layer ID in distort mode
+  const [polygonDrawing, setPolygonDrawing] = useState(false)
+  const [polygonPoints, setPolygonPoints] = useState<{ x: number; y: number }[]>([])
   const [showYoutubeInput, setShowYoutubeInput] = useState(false)
   const [youtubeUrl, setYoutubeUrl] = useState('')
 
@@ -346,7 +349,40 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     addLayerToCanvasAndQueue(layer)
   }, [layers, addLayerToCanvasAndQueue])
 
-  const handleCanvasClick = useCallback((e: React.MouseEvent) => { if (e.target === canvasRef.current) { setSelectedLayerId(null); setRightTab('push'); setDistortMode(null) } }, [])
+  const handleCanvasClick = useCallback((e: React.MouseEvent) => {
+    if (e.target !== canvasRef.current) return
+    // Polygon drawing mode: add point on canvas click
+    if (polygonDrawing && canvasRef.current) {
+      const rect = canvasRef.current.getBoundingClientRect()
+      const xPct = ((e.clientX - rect.left) / rect.width) * 100
+      const yPct = ((e.clientY - rect.top) / rect.height) * 100
+      // Check if clicking near the first point to close
+      if (polygonPoints.length >= 3) {
+        const first = polygonPoints[0]
+        const dist = Math.sqrt((xPct - first.x) ** 2 + (yPct - first.y) ** 2)
+        if (dist < 3) {
+          // Close polygon — create shape layer
+          const minX = Math.min(...polygonPoints.map(p => p.x))
+          const minY = Math.min(...polygonPoints.map(p => p.y))
+          const maxX = Math.max(...polygonPoints.map(p => p.x))
+          const maxY = Math.max(...polygonPoints.map(p => p.y))
+          const layer: StudioLayer = {
+            id: generateLayerId(), name: 'Polygon', type: 'shape',
+            x: minX, y: minY, width: maxX - minX, height: maxY - minY,
+            rotation: 0, zIndex: layers.length + 1, opacity: 1,
+            blendMode: 'normal', visible: true, locked: false, color: '#4a5568',
+            polygonPoints: polygonPoints.map(p => ({ x: ((p.x - minX) / (maxX - minX)) * 100, y: ((p.y - minY) / (maxY - minY)) * 100 })),
+          }
+          addLayerToCanvasAndQueue(layer)
+          setPolygonDrawing(false); setPolygonPoints([])
+          return
+        }
+      }
+      setPolygonPoints(prev => [...prev, { x: xPct, y: yPct }])
+      return
+    }
+    setSelectedLayerId(null); setRightTab('push'); setDistortMode(null)
+  }, [polygonDrawing, polygonPoints, layers, addLayerToCanvasAndQueue])
   const toggleFullscreen = useCallback(() => { if (document.fullscreenElement) document.exitFullscreen(); else canvasWrapperRef.current?.requestFullscreen() }, [])
 
   // ─── Asset handlers ───
@@ -472,6 +508,8 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   }, [distortMode])
 
   // ─── Mask clip computation ───
+  // Mask computation: creates INVERTED clip-paths (cut holes through target layers)
+  // Uses polygon evenodd trick: outer rect + inner shape = hole
   const maskClips = useMemo(() => {
     const clips: Record<string, string> = {}
     const sortedLayers = [...layers].sort((a, b) => (b.zIndex || 0) - (a.zIndex || 0))
@@ -480,34 +518,36 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
       if (ml.type !== 'shape' || !ml.maskMode || ml.maskMode === 'none') continue
       const ms = layerStates[ml.id]
       if (!ms) continue
-      // Compute an invert clip — show everything EXCEPT the mask shape area
-      // The mask "cuts a hole" so we use polygon-based invert
-      let clip = ''
+
+      // Build INVERTED polygon: full area → inner shape reversed (evenodd cuts the hole)
+      // All values as percentages of the TARGET layer (so mask position is relative)
+      const mx = ms.x, my = ms.y, mw = ms.width, mh = ms.height
+      let invertedClip = ''
+
       if (ml.name === 'Circle') {
-        clip = `circle(${Math.min(ms.width, ms.height) / 2}% at ${ms.x + ms.width / 2}% ${ms.y + ms.height / 2}%)`
+        // Approximate circle with 24-point polygon for inversion
+        const cx = mx + mw / 2, cy = my + mh / 2, rx = mw / 2, ry = mh / 2
+        const circlePoints = Array.from({ length: 24 }, (_, k) => {
+          const angle = (k / 24) * Math.PI * 2
+          return `${cx + rx * Math.cos(angle)}% ${cy + ry * Math.sin(angle)}%`
+        }).join(', ')
+        invertedClip = `polygon(evenodd, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${circlePoints})`
       } else if (ml.name === 'Triangle') {
-        const cx = ms.x, cy = ms.y, w = ms.width, h = ms.height
-        clip = `polygon(${cx + w / 2}% ${cy}%, ${cx}% ${cy + h}%, ${cx + w}% ${cy + h}%)`
+        const tx1 = mx + mw / 2, ty1 = my, tx2 = mx, ty2 = my + mh, tx3 = mx + mw, ty3 = my + mh
+        invertedClip = `polygon(evenodd, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${tx1}% ${ty1}%, ${tx3}% ${ty3}%, ${tx2}% ${ty2}%)`
       } else {
-        clip = `inset(${ms.y}% ${100 - ms.x - ms.width}% ${100 - ms.y - ms.height}% ${ms.x}%)`
+        // Rectangle
+        invertedClip = `polygon(evenodd, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${mx}% ${my}%, ${mx}% ${my + mh}%, ${mx + mw}% ${my + mh}%, ${mx + mw}% ${my}%)`
       }
-      if (!clip) continue
-      // Apply to layers below
-      if (ml.maskMode === 'mask') {
-        // Only the next visible non-mask layer below
-        for (let j = i + 1; j < sortedLayers.length; j++) {
-          const target = sortedLayers[j]
-          if (target.type === 'shape' && target.maskMode && target.maskMode !== 'none') continue
-          clips[target.id] = clip
-          break
-        }
-      } else {
-        // Multi-layer: all layers below
-        for (let j = i + 1; j < sortedLayers.length; j++) {
-          const target = sortedLayers[j]
-          if (target.type === 'shape' && target.maskMode && target.maskMode !== 'none') continue
-          clips[target.id] = clip
-        }
+
+      if (!invertedClip) continue
+
+      // Apply to layers below (skip mask-immune layers)
+      const targets = ml.maskMode === 'mask' ? [sortedLayers.slice(i + 1).find(t => t.type !== 'shape' || !t.maskMode || t.maskMode === 'none')].filter(Boolean) : sortedLayers.slice(i + 1).filter(t => t.type !== 'shape' || !t.maskMode || t.maskMode === 'none')
+
+      for (const target of targets) {
+        if (!target || target.maskImmune) continue
+        clips[target.id] = invertedClip
       }
     }
     return clips
@@ -679,11 +719,11 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                   <div>
                     <div className="grid grid-cols-2 gap-1.5">
                       {SHAPE_PRESETS.map(p => (
-                        <button key={p.name} onClick={() => addShapeLayer(p)}
+                        <button key={p.name} onClick={() => { if (p.name === 'Polygon') { setPolygonDrawing(true); setPolygonPoints([]) } else addShapeLayer(p) }}
                           className="flex flex-col items-center gap-1.5 py-3 rounded-lg border border-[#3f4147] bg-[#2b2d31] hover:bg-[#35363c] hover:border-zinc-500 transition-colors"
                           draggable onDragStart={e => { e.dataTransfer.setData('studio/asset-type', 'shape'); e.dataTransfer.setData('studio/asset-name', p.name); e.dataTransfer.effectAllowed = 'copy' }}
                         >
-                          <div className="w-6 h-6 bg-zinc-500" style={{ borderRadius: p.name === 'Circle' ? '50%' : 2, width: p.name === 'Line' ? 24 : p.name === 'Rectangle' ? 28 : undefined, height: p.name === 'Line' ? 2 : p.name === 'Rectangle' ? 16 : undefined, clipPath: p.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined }} />
+                          <div className="w-6 h-6 bg-zinc-500" style={{ borderRadius: p.name === 'Circle' ? '50%' : 2, width: p.name === 'Line' ? 24 : p.name === 'Rectangle' ? 28 : undefined, height: p.name === 'Line' ? 2 : p.name === 'Rectangle' ? 16 : undefined, clipPath: p.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : p.name === 'Polygon' ? 'polygon(30% 0%, 70% 0%, 100% 40%, 80% 100%, 20% 100%, 0% 40%)' : undefined }} />
                           <span className="text-[8px] text-zinc-400">{p.name}</span>
                         </button>
                       ))}
@@ -733,11 +773,19 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                         {layer.type === 'audio' && <Volume2 className="w-3 h-3 text-emerald-400 shrink-0" />}
                         <span className="flex-1 truncate">{layer.name}</span>
                         <button onClick={e => { e.stopPropagation(); updateLayer(layer.id, { visible: !state?.visible }) }}
-                          className="p-0.5 text-zinc-600 hover:text-white transition-colors">
+                          className="p-0.5 text-zinc-600 hover:text-white transition-colors" title="Toggle visibility">
                           {state?.visible ? <Eye className="w-2.5 h-2.5" /> : <EyeOff className="w-2.5 h-2.5" />}
                         </button>
+                        <button onClick={e => { e.stopPropagation(); updateLayer(layer.id, { locked: !layer.locked }) }}
+                          className={`p-0.5 transition-colors ${layer.locked ? 'text-amber-400' : 'text-zinc-600 hover:text-white'}`} title="Lock/unlock">
+                          {layer.locked ? <Lock className="w-2.5 h-2.5" /> : <Unlock className="w-2.5 h-2.5" />}
+                        </button>
+                        <button onClick={e => { e.stopPropagation(); updateLayer(layer.id, { maskImmune: !layer.maskImmune }) }}
+                          className={`p-0.5 transition-colors ${layer.maskImmune ? 'text-blue-400' : 'text-zinc-600 hover:text-white'}`} title="Mask immune">
+                          {layer.maskImmune ? <Shield className="w-2.5 h-2.5" /> : <ShieldOff className="w-2.5 h-2.5" />}
+                        </button>
                         <button onClick={e => { e.stopPropagation(); deleteLayer(layer.id) }}
-                          className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors">
+                          className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors" title="Delete">
                           <Trash2 className="w-2.5 h-2.5" />
                         </button>
                       </div>
@@ -794,8 +842,10 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                     {/* Shape with feather + distort + border */}
                     {layer.type === 'shape' && (() => {
                       const dp = layer.distortPoints
-                      const shapeClip = dp
-                        ? `polygon(${dp.tl.x}% ${dp.tl.y}%, ${dp.tr.x}% ${dp.tr.y}%, ${dp.br.x}% ${dp.br.y}%, ${dp.bl.x}% ${dp.bl.y}%)`
+                      const pp = layer.polygonPoints
+                      const shapeClip = pp
+                        ? `polygon(${pp.map(p => `${p.x}% ${p.y}%`).join(', ')})`
+                        : dp ? `polygon(${dp.tl.x}% ${dp.tl.y}%, ${dp.tr.x}% ${dp.tr.y}%, ${dp.br.x}% ${dp.br.y}%, ${dp.bl.x}% ${dp.bl.y}%)`
                         : layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined
                       const featherPx = layer.feather || 0
                       return <div className="w-full h-full pointer-events-none" style={{
@@ -839,6 +889,18 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                 )
               })}
               {isDragOver && <div className="absolute inset-0 flex items-center justify-center bg-red-500/10 pointer-events-none z-50"><div className="px-4 py-2 bg-red-600 rounded-lg text-white text-xs font-bold uppercase tracking-wider">Drop to add</div></div>}
+              {/* Polygon drawing mode */}
+              {polygonDrawing && (
+                <svg className="absolute inset-0 w-full h-full pointer-events-none z-40">
+                  {polygonPoints.map((p, i) => (
+                    <React.Fragment key={i}>
+                      {i > 0 && <line x1={`${polygonPoints[i - 1].x}%`} y1={`${polygonPoints[i - 1].y}%`} x2={`${p.x}%`} y2={`${p.y}%`} stroke="#ef4444" strokeWidth="2" strokeDasharray="4" />}
+                      <circle cx={`${p.x}%`} cy={`${p.y}%`} r={i === 0 && polygonPoints.length >= 3 ? '6' : '4'} fill={i === 0 && polygonPoints.length >= 3 ? '#ef4444' : '#ffffff'} stroke="#ef4444" strokeWidth="2" />
+                    </React.Fragment>
+                  ))}
+                </svg>
+              )}
+              {polygonDrawing && <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 px-3 py-1 bg-red-600 rounded-full text-[10px] text-white font-bold">Click to add points • Click first point to close</div>}
             </div>
             {/* Zoom controls */}
             <div className="absolute bottom-4 right-4 flex items-center gap-1 bg-[#1e1f22] border border-[#3f4147] rounded-lg px-1.5 py-1 shadow-xl z-10">

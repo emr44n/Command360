@@ -1256,13 +1256,12 @@ export function StudioCanvas({
         {layers.filter(l => l.feather && l.feather > 0 && (l.type === 'shape' || l.type === 'image')).map(layer => {
           const state = getState(layer)
           if (!state.visible) return null
-          const left = `${(state.x / 100) * stageSize.width + (stageSize.width > 0 ? (containerRef.current ? (containerRef.current.clientWidth - stageSize.width) / 2 : 20) : 20)}px`
-          const top = `${(state.y / 100) * stageSize.height + (stageSize.height > 0 ? (containerRef.current ? (containerRef.current.clientHeight - stageSize.height) / 2 : 20) : 20)}px`
-          const width = `${(state.width / 100) * stageSize.width}px`
-          const height = `${(state.height / 100) * stageSize.height}px`
           return (
             <div key={`feather-${layer.id}`} className="absolute pointer-events-none" style={{
-              left, top, width, height,
+              left: pct2px(state.x, stageSize.width),
+              top: pct2px(state.y, stageSize.height),
+              width: pct2px(state.width, stageSize.width),
+              height: pct2px(state.height, stageSize.height),
               opacity: state.opacity,
               transform: `rotate(${state.rotation}deg)`,
               transformOrigin: 'center center',

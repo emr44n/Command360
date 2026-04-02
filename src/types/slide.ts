@@ -134,8 +134,10 @@ export interface StudioLayer {
   fillTransparent?: boolean
   maskMode?: 'none' | 'mask' | 'multi-layer-mask'
   distortPoints?: { tl: { x: number; y: number }; tr: { x: number; y: number }; bl: { x: number; y: number }; br: { x: number; y: number } }
+  maskImmune?: boolean  // when true, masks above this layer don't affect it
+  polygonPoints?: { x: number; y: number }[]  // freeform polygon vertices (percentage)
   // Universal
-  feather?: number  // 0-100, blur radius in px for feathered/soft edge
+  feather?: number  // 0-100, blur stdDeviation for feathered/soft edge
   youtubeUrl?: string
 }
 

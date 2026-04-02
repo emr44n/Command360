@@ -98,7 +98,8 @@
       "Bash(grep -rn \"owner\\\\|admin\\\\|editor\\\\|presenter\\\\|viewer\" 'D:\\\\My Products\\\\Command360/src' --include=*.tsx --include=*.ts)",
       "Bash(claude mcp:*)",
       "Bash(tasklist)",
-      "mcp__magic__21st_magic_component_inspiration"
+      "mcp__magic__21st_magic_component_inspiration",
+      "Bash(npx next:*)"
     ]
   }
 }
