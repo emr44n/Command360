@@ -811,6 +811,7 @@ export function StudioEditor({
                     onDeleteLayer={handleDeleteLayer}
                     onUpdateLayer={handleUpdateLayer}
                     selectedLayerId={selectedLayerId}
+                    onStartPolygonDraw={() => { setPolygonDrawMode(true); setPolygonDrawPoints([]) }}
                   />
                 ) : activePanel === 'templates' ? (
                   <TemplateGallery
@@ -1501,6 +1502,7 @@ function ShapesPanel({
   onDeleteLayer,
   onUpdateLayer,
   selectedLayerId,
+  onStartPolygonDraw,
 }: {
   layers: StudioLayer[]
   onAddLayer: (partial: Partial<StudioLayer>) => void
@@ -1508,13 +1510,15 @@ function ShapesPanel({
   onDeleteLayer: (id: string) => void
   onUpdateLayer: (id: string, updates: Partial<StudioLayer>) => void
   selectedLayerId: string | null
+  onStartPolygonDraw?: () => void
 }) {
   const shapeLayers = layers.filter((l) => l.type === 'shape')
   const shapePresets = [
-    { label: 'Rectangle', icon: '▬', shape: 'rectangle' },
-    { label: 'Circle', icon: '●', shape: 'circle' },
-    { label: 'Triangle', icon: '▲', shape: 'triangle' },
-    { label: 'Line', icon: '━', shape: 'line' },
+    { label: 'Rectangle', icon: '▬', shape: 'rectangle', w: 20, h: 12 },
+    { label: 'Circle', icon: '●', shape: 'circle', w: 15, h: 15 },
+    { label: 'Triangle', icon: '▲', shape: 'triangle', w: 15, h: 15 },
+    { label: 'Line', icon: '━', shape: 'line', w: 30, h: 0.5 },
+    { label: 'Polygon', icon: '⬡', shape: 'polygon', w: 15, h: 15 },
   ]
   return (
     <div className="flex flex-col h-full">
@@ -1525,13 +1529,19 @@ function ShapesPanel({
         {shapePresets.map((preset) => (
           <button
             key={preset.shape}
-            onClick={() => onAddLayer({
-              type: 'shape',
-              name: preset.label,
-              width: preset.shape === 'line' ? 30 : 15,
-              height: preset.shape === 'line' ? 1 : 15,
-              color: '#666666',
-            })}
+            onClick={() => {
+              if (preset.shape === 'polygon' && onStartPolygonDraw) {
+                onStartPolygonDraw()
+              } else {
+                onAddLayer({
+                  type: 'shape',
+                  name: preset.label,
+                  width: preset.w,
+                  height: preset.h,
+                  color: '#4a5568',
+                })
+              }
+            }}
             className="h-10 rounded-lg border border-[#2a2a2a] hover:border-red-500/50 text-zinc-400 hover:text-red-400 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer"
           >
             <span className="text-base">{preset.icon}</span>

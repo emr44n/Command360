@@ -508,50 +508,52 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   }, [distortMode])
 
   // ─── Mask clip computation ───
-  // Mask computation: creates INVERTED clip-paths (cut holes through target layers)
-  // Uses polygon evenodd trick: outer rect + inner shape = hole
-  const maskClips = useMemo(() => {
-    const clips: Record<string, string> = {}
+  // Mask computation: creates SVG clipPath IDs for inverted masking
+  // CSS clip-path: polygon() doesn't support evenodd fill rule
+  // Instead we generate SVG <clipPath> elements with clip-rule="evenodd" and reference them via url()
+  const maskSvgDefs = useMemo(() => {
+    const defs: { id: string; path: string }[] = []
+    const assignments: Record<string, string> = {}
     const sortedLayers = [...layers].sort((a, b) => (b.zIndex || 0) - (a.zIndex || 0))
+
     for (let i = 0; i < sortedLayers.length; i++) {
       const ml = sortedLayers[i]
       if (ml.type !== 'shape' || !ml.maskMode || ml.maskMode === 'none') continue
       const ms = layerStates[ml.id]
       if (!ms) continue
 
-      // Build INVERTED polygon: full area → inner shape reversed (evenodd cuts the hole)
-      // All values as percentages of the TARGET layer (so mask position is relative)
-      const mx = ms.x, my = ms.y, mw = ms.width, mh = ms.height
-      let invertedClip = ''
+      // Build SVG path: outer rect (clockwise) + inner shape (counterclockwise) = hole with evenodd
+      const mx = ms.x / 100, my = ms.y / 100, mw = ms.width / 100, mh = ms.height / 100
+      let innerPath = ''
 
       if (ml.name === 'Circle') {
-        // Approximate circle with 24-point polygon for inversion
+        // SVG ellipse approximation using 4 arcs
         const cx = mx + mw / 2, cy = my + mh / 2, rx = mw / 2, ry = mh / 2
-        const circlePoints = Array.from({ length: 24 }, (_, k) => {
-          const angle = (k / 24) * Math.PI * 2
-          return `${cx + rx * Math.cos(angle)}% ${cy + ry * Math.sin(angle)}%`
-        }).join(', ')
-        invertedClip = `polygon(evenodd, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${circlePoints})`
+        innerPath = `M${cx + rx},${cy} A${rx},${ry} 0 1,0 ${cx - rx},${cy} A${rx},${ry} 0 1,0 ${cx + rx},${cy}Z`
       } else if (ml.name === 'Triangle') {
-        const tx1 = mx + mw / 2, ty1 = my, tx2 = mx, ty2 = my + mh, tx3 = mx + mw, ty3 = my + mh
-        invertedClip = `polygon(evenodd, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${tx1}% ${ty1}%, ${tx3}% ${ty3}%, ${tx2}% ${ty2}%)`
+        innerPath = `M${mx + mw / 2},${my} L${mx + mw},${my + mh} L${mx},${my + mh}Z`
       } else {
-        // Rectangle
-        invertedClip = `polygon(evenodd, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${mx}% ${my}%, ${mx}% ${my + mh}%, ${mx + mw}% ${my + mh}%, ${mx + mw}% ${my}%)`
+        innerPath = `M${mx},${my} L${mx + mw},${my} L${mx + mw},${my + mh} L${mx},${my + mh}Z`
       }
 
-      if (!invertedClip) continue
+      const clipId = `mask-clip-${ml.id}`
+      const fullPath = `M0,0 L1,0 L1,1 L0,1Z ${innerPath}`
+      defs.push({ id: clipId, path: fullPath })
 
-      // Apply to layers below (skip mask-immune layers)
-      const targets = ml.maskMode === 'mask' ? [sortedLayers.slice(i + 1).find(t => t.type !== 'shape' || !t.maskMode || t.maskMode === 'none')].filter(Boolean) : sortedLayers.slice(i + 1).filter(t => t.type !== 'shape' || !t.maskMode || t.maskMode === 'none')
+      // Apply to layers below
+      const targets = ml.maskMode === 'mask'
+        ? [sortedLayers.slice(i + 1).find(t => t.type !== 'shape' || !t.maskMode || t.maskMode === 'none')].filter(Boolean)
+        : sortedLayers.slice(i + 1).filter(t => t.type !== 'shape' || !t.maskMode || t.maskMode === 'none')
 
       for (const target of targets) {
         if (!target || target.maskImmune) continue
-        clips[target.id] = invertedClip
+        assignments[target.id] = `url(#${clipId})`
       }
     }
-    return clips
+    return { defs, assignments }
   }, [layers, layerStates])
+
+  const maskClips = maskSvgDefs.assignments
 
   const grouped = useMemo(() => {
     const uncategorized: StudioEvent[] = [], byCategory = new Map<string, StudioEvent[]>()
@@ -800,13 +802,18 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
         {/* ═══ CENTER: CANVAS ═══ */}
         <div className="flex-1 flex flex-col min-w-0">
           <div ref={canvasWrapperRef} className="flex-1 flex items-center justify-center bg-[#111113] min-w-0 p-2 overflow-auto relative">
-            {/* SVG feather filter definitions */}
+            {/* SVG feather + mask definitions */}
             <svg style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
               <defs>
                 {layers.filter(l => l.feather && l.feather > 0).map(l => (
                   <filter key={l.id} id={`feather-${l.id}`} x="-200%" y="-200%" width="500%" height="500%">
                     <feGaussianBlur in="SourceGraphic" stdDeviation={l.feather!} />
                   </filter>
+                ))}
+                {maskSvgDefs.defs.map(d => (
+                  <clipPath key={d.id} id={d.id} clipPathUnits="objectBoundingBox">
+                    <path d={d.path} clipRule="evenodd" />
+                  </clipPath>
                 ))}
               </defs>
             </svg>
