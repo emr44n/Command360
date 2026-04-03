@@ -512,7 +512,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   // CSS clip-path: polygon() doesn't support evenodd fill rule
   // Instead we generate SVG <clipPath> elements with clip-rule="evenodd" and reference them via url()
   const maskSvgDefs = useMemo(() => {
-    const defs: { id: string; path: string }[] = []
+    const defs: { id: string; path: string; innerPath: string; feather: number }[] = []
     const assignments: Record<string, string> = {}
     const sortedLayers = [...layers].sort((a, b) => (b.zIndex || 0) - (a.zIndex || 0))
 
@@ -561,7 +561,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
         }
         const targetClipId = `mask-clip-${ml.id}-${target.id}`
         const targetPath = `M0,0 L1,0 L1,1 L0,1Z ${localInnerPath}`
-        defs.push({ id: targetClipId, path: targetPath })
+        defs.push({ id: targetClipId, path: targetPath, innerPath: localInnerPath, feather: ml.feather || 0 })
         assignments[target.id] = `url(#${targetClipId})`
       }
     }
@@ -826,9 +826,19 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                   </filter>
                 ))}
                 {maskSvgDefs.defs.map(d => (
-                  <clipPath key={d.id} id={d.id} clipPathUnits="objectBoundingBox">
-                    <path d={d.path} clipRule="evenodd" />
-                  </clipPath>
+                  <React.Fragment key={d.id}>
+                    {/* Blur filter for feathered masks */}
+                    {d.feather > 0 && (
+                      <filter id={`mask-blur-${d.id}`} x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation={d.feather * 0.01} />
+                      </filter>
+                    )}
+                    {/* SVG mask: white background (visible) with black shape (hole) + optional blur */}
+                    <mask id={d.id} maskContentUnits="objectBoundingBox">
+                      <rect x="0" y="0" width="1" height="1" fill="white" />
+                      <path d={d.innerPath} fill="black" filter={d.feather > 0 ? `url(#mask-blur-${d.id})` : undefined} />
+                    </mask>
+                  </React.Fragment>
                 ))}
               </defs>
             </svg>
@@ -842,7 +852,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                 const src = state.src ?? layer.src; if (!src && layer.type !== 'text' && layer.type !== 'shape') return null
                 const isSel = selectedLayerId === layer.id
                 return (
-                  <div key={layer.id} style={{ position: 'absolute', left: `${state.x}%`, top: `${state.y}%`, width: `${state.width}%`, height: `${state.height}%`, opacity: state.opacity, zIndex: layer.zIndex, transition: dragRef.current?.layerId === layer.id || resizeRef.current?.layerId === layer.id ? 'none' : 'all 0.6s ease-out', cursor: 'move', clipPath: maskClips[layer.id] || undefined }}
+                  <div key={layer.id} style={{ position: 'absolute', left: `${state.x}%`, top: `${state.y}%`, width: `${state.width}%`, height: `${state.height}%`, opacity: state.opacity, zIndex: layer.zIndex, transition: dragRef.current?.layerId === layer.id || resizeRef.current?.layerId === layer.id ? 'none' : 'all 0.6s ease-out', cursor: 'move', WebkitMask: maskClips[layer.id] || undefined, mask: maskClips[layer.id] || undefined } as React.CSSProperties}
                     onMouseDown={e => handleLayerMouseDown(e, layer.id)} onClick={e => { e.stopPropagation(); setSelectedLayerId(layer.id) }}
                     onDoubleClick={e => { e.stopPropagation(); if (layer.type === 'shape' && (layer.name === 'Rectangle' || layer.name === 'Triangle')) setDistortMode(layer.id) }}>
                     {/* Image with feather */}
