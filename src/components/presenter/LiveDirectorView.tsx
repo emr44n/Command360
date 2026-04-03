@@ -855,13 +855,13 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                         : dp ? `polygon(${dp.tl.x}% ${dp.tl.y}%, ${dp.tr.x}% ${dp.tr.y}%, ${dp.br.x}% ${dp.br.y}%, ${dp.bl.x}% ${dp.bl.y}%)`
                         : layer.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : undefined
                       const featherPx = layer.feather || 0
+                      const isMaskShape = layer.maskMode && layer.maskMode !== 'none'
                       return <div className="w-full h-full pointer-events-none" style={{
-                        backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#4a5568'),
+                        backgroundColor: isMaskShape ? 'rgba(255,0,0,0.15)' : (layer.fillTransparent ? 'transparent' : (layer.color || '#4a5568')),
                         borderRadius: layer.name === 'Circle' && !dp ? '50%' : undefined,
                         clipPath: shapeClip,
-                        border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
+                        border: isMaskShape ? '2px dashed #ef4444' : (layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined),
                         transform: `rotate(${state.rotation}deg)`,
-                        display: layer.maskMode && layer.maskMode !== 'none' ? 'none' : undefined,
                         filter: featherPx > 0 ? `url(#feather-${layer.id})` : undefined,
                       }} />
                     })()}
