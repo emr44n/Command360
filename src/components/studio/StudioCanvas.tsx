@@ -470,6 +470,9 @@ function ShapeLayerNode({
     dash: layer.borderStyle === 'dashed' ? [8, 4] : layer.borderStyle === 'dotted' ? [2, 2] : undefined,
     rotation: state.rotation,
     opacity: isMask ? 1 : isFeathered ? 0.01 : state.opacity,
+    // Feathered mask: blur + destination-out = soft-edged hole
+    filters: (isMask && isFeathered) ? [Konva.Filters.Blur] : undefined,
+    blurRadius: (isMask && isFeathered) ? (layer.feather || 0) : 0,
     globalCompositeOperation: (isMask ? 'destination-out' : layer.blendMode === 'normal' ? 'source-over' : layer.blendMode) as GlobalCompositeOperation,
     // Mask shapes: custom hit function so they're always clickable even though destination-out makes them invisible
     hitFunc: isMask ? (context: Konva.Context, shape: Konva.Shape) => { context.beginPath(); context.rect(0, 0, shape.width(), shape.height()); context.closePath(); context.fillStrokeShape(shape) } : undefined,
@@ -802,6 +805,7 @@ export function StudioCanvas({
         backgroundSize: '16px 16px',
         cursor: objectSelectionMode === 'waiting' ? 'crosshair' : undefined,
       }}
+      onClick={(e) => { if (e.target === containerRef.current) onSelectLayer?.(null) }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       onWheel={(e) => {

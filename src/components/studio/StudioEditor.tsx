@@ -391,10 +391,16 @@ export function StudioEditor({
         e.preventDefault()
         handleRedo()
       }
+      // Delete selected layer with confirmation
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedLayerId) {
+        if ((e.target as HTMLElement)?.tagName === 'INPUT' || (e.target as HTMLElement)?.tagName === 'TEXTAREA') return
+        e.preventDefault()
+        setConfirmDeleteLayerId(selectedLayerId)
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [handleUndo, handleRedo])
+  }, [handleUndo, handleRedo, selectedLayerId])
 
   // Content mutation helpers
   const updateContent = useCallback(
@@ -614,6 +620,7 @@ export function StudioEditor({
   const [showLeftPanel, setShowLeftPanel] = useState(true)
   const [showProperties, setShowProperties] = useState(true)
   const [showTemplateName, setShowTemplateName] = useState(false)
+  const [confirmDeleteLayerId, setConfirmDeleteLayerId] = useState<string | null>(null)
   const [templateNameInput, setTemplateNameInput] = useState('')
   const [showTimeline, setShowTimeline] = useState(true)
 
@@ -1057,6 +1064,20 @@ export function StudioEditor({
             <div className="flex gap-2 justify-end">
               <button onClick={() => { setShowTemplateName(false); setTemplateNameInput('') }} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
               <button onClick={async () => { if (!templateNameInput.trim()) return; saveAsTemplate(content, templateNameInput.trim()); const { toast } = await import('sonner'); toast.success('Saved as template', { duration: 2000 }); setShowTemplateName(false); setTemplateNameInput('') }} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors">Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete layer confirmation */}
+      {confirmDeleteLayerId && (
+        <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setConfirmDeleteLayerId(null)}>
+          <div className="bg-[#1e1f22] border border-[#3f4147] rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-sm font-semibold text-white mb-2">Delete this layer?</h3>
+            <p className="text-[11px] text-zinc-400 mb-4">This will remove the layer from the canvas and timeline. This cannot be undone.</p>
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => setConfirmDeleteLayerId(null)} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
+              <button onClick={() => { handleDeleteLayer(confirmDeleteLayerId); setConfirmDeleteLayerId(null) }} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors">Delete</button>
             </div>
           </div>
         </div>
