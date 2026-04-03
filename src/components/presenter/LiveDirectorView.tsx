@@ -536,18 +536,33 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
         innerPath = `M${mx},${my} L${mx + mw},${my} L${mx + mw},${my + mh} L${mx},${my + mh}Z`
       }
 
-      const clipId = `mask-clip-${ml.id}`
-      const fullPath = `M0,0 L1,0 L1,1 L0,1Z ${innerPath}`
-      defs.push({ id: clipId, path: fullPath })
-
-      // Apply to layers below
+      // Apply to layers below — convert mask coords to each target's local space
       const targets = ml.maskMode === 'mask'
         ? [sortedLayers.slice(i + 1).find(t => t.type !== 'shape' || !t.maskMode || t.maskMode === 'none')].filter(Boolean)
         : sortedLayers.slice(i + 1).filter(t => t.type !== 'shape' || !t.maskMode || t.maskMode === 'none')
 
       for (const target of targets) {
         if (!target || target.maskImmune) continue
-        assignments[target.id] = `url(#${clipId})`
+        const ts = layerStates[target.id]
+        if (!ts) continue
+        // Convert mask position from canvas space to target's local bounding box space
+        const tx = ts.x / 100, ty = ts.y / 100, tw = ts.width / 100, th = ts.height / 100
+        const localMx = (mx - tx) / tw, localMy = (my - ty) / th
+        const localMw = mw / tw, localMh = mh / th
+
+        let localInnerPath = ''
+        if (ml.name === 'Circle') {
+          const lcx = localMx + localMw / 2, lcy = localMy + localMh / 2, lrx = localMw / 2, lry = localMh / 2
+          localInnerPath = `M${lcx + lrx},${lcy} A${lrx},${lry} 0 1,0 ${lcx - lrx},${lcy} A${lrx},${lry} 0 1,0 ${lcx + lrx},${lcy}Z`
+        } else if (ml.name === 'Triangle') {
+          localInnerPath = `M${localMx + localMw / 2},${localMy} L${localMx + localMw},${localMy + localMh} L${localMx},${localMy + localMh}Z`
+        } else {
+          localInnerPath = `M${localMx},${localMy} L${localMx + localMw},${localMy} L${localMx + localMw},${localMy + localMh} L${localMx},${localMy + localMh}Z`
+        }
+        const targetClipId = `mask-clip-${ml.id}-${target.id}`
+        const targetPath = `M0,0 L1,0 L1,1 L0,1Z ${localInnerPath}`
+        defs.push({ id: targetClipId, path: targetPath })
+        assignments[target.id] = `url(#${targetClipId})`
       }
     }
     return { defs, assignments }
@@ -857,10 +872,12 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                       const featherPx = layer.feather || 0
                       const isMaskShape = layer.maskMode && layer.maskMode !== 'none'
                       return <div className="w-full h-full pointer-events-none" style={{
-                        backgroundColor: isMaskShape ? 'rgba(255,0,0,0.15)' : (layer.fillTransparent ? 'transparent' : (layer.color || '#4a5568')),
+                        // Mask shapes: hidden in Active Mode (the SVG clipPath on targets creates the hole)
+                        display: isMaskShape ? 'none' : undefined,
+                        backgroundColor: layer.fillTransparent ? 'transparent' : (layer.color || '#4a5568'),
                         borderRadius: layer.name === 'Circle' && !dp ? '50%' : undefined,
                         clipPath: shapeClip,
-                        border: isMaskShape ? '2px dashed #ef4444' : (layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined),
+                        border: layer.borderWidth ? `${layer.borderWidth}px ${layer.borderStyle || 'solid'} ${layer.borderColor || '#fff'}` : undefined,
                         transform: `rotate(${state.rotation}deg)`,
                         filter: featherPx > 0 ? `url(#feather-${layer.id})` : undefined,
                       }} />
