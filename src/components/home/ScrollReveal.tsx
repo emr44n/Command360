@@ -19,9 +19,11 @@ export function ScrollReveal({ children, className = '', stagger = false, delay 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       el.style.opacity = '1'
       el.style.transform = 'none'
+      el.style.filter = 'none'
       el.querySelectorAll('.sr, .stagger-children > *').forEach((child) => {
         ;(child as HTMLElement).style.opacity = '1'
         ;(child as HTMLElement).style.transform = 'none'
+        ;(child as HTMLElement).style.filter = 'none'
       })
       return
     }

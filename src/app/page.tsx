@@ -6,6 +6,8 @@ import {
   Heart, Quote, Target, ShieldCheck, Eye, EyeOff, Brain, Monitor, Layers, MousePointerClick,
 } from 'lucide-react'
 import { ScrollReveal } from '@/components/home/ScrollReveal'
+import { SpotlightCard } from '@/components/home/SpotlightCard'
+import { CountUp } from '@/components/home/CountUp'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 import { HomepageClient } from '@/components/home/HomepageClient'
 import { AuthCTAButton } from '@/components/home/AuthCTAButton'
@@ -14,6 +16,20 @@ import { FloatingJoinDock } from '@/components/join/FloatingJoinDock'
 import { HeroMockup } from '@/components/home/HeroMockup'
 import { TestimonialMarquee } from '@/components/home/TestimonialMarquee'
 import { FaqAccordion } from '@/components/home/FaqAccordion'
+
+/* ── HELPERS ── */
+
+// Maps a tailwind text-color class to an rgba glow for the spotlight effect.
+function glowFor(colorClass: string): string {
+  if (colorClass.includes('red')) return 'rgba(239,68,68,0.14)'
+  if (colorClass.includes('emerald')) return 'rgba(16,185,129,0.14)'
+  if (colorClass.includes('violet')) return 'rgba(139,92,246,0.14)'
+  if (colorClass.includes('blue')) return 'rgba(59,130,246,0.14)'
+  if (colorClass.includes('amber')) return 'rgba(245,158,11,0.14)'
+  if (colorClass.includes('sky')) return 'rgba(14,165,233,0.14)'
+  if (colorClass.includes('rose')) return 'rgba(244,63,94,0.14)'
+  return 'rgba(239,68,68,0.12)'
+}
 
 /* ── DATA ── */
 
@@ -179,8 +195,8 @@ export default function LandingPage() {
         <div className="absolute inset-0 pointer-events-none">
           {/* Main red aurora glow — prominent and wide */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_140%_70%_at_50%_-20%,rgba(220,38,38,0.3),transparent_65%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_60%_at_30%_10%,rgba(220,38,38,0.15),transparent_55%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_75%_15%,rgba(249,115,22,0.1),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_60%_at_30%_10%,rgba(220,38,38,0.15),transparent_55%)] float-glow" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_75%_15%,rgba(249,115,22,0.1),transparent_50%)] float-glow" style={{ animationDelay: '-6s' }} />
           {/* Secondary cool accent at bottom */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_70%_80%,rgba(59,130,246,0.05),transparent_50%)]" />
           {/* Grid — prominent, red-tinted, full coverage */}
@@ -209,7 +225,7 @@ export default function LandingPage() {
           <h1 className="hero-fade-up hero-fade-up-2 text-[clamp(2.2rem,6.5vw,4.2rem)] font-bold tracking-tight leading-[1.08] text-white mb-6">
             Where emergency teams{' '}
             <br className="hidden sm:block" />
-            <span className="bg-gradient-to-r from-red-400 via-red-500 to-orange-500 gradient-text">learn, grow, and lead.</span>
+            <span className="bg-[linear-gradient(90deg,#f87171,#ef4444,#f97316,#ef4444,#f87171)] gradient-text gradient-text-flow">learn, grow, and lead.</span>
           </h1>
 
           {/* Subtitle */}
@@ -298,9 +314,10 @@ export default function LandingPage() {
           <ScrollReveal stagger>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {BENTO_FEATURES.map((f) => (
-                <div
+                <SpotlightCard
                   key={f.title}
-                  className={`group relative flex flex-col overflow-hidden rounded-2xl p-5 border border-white/[0.06] bg-white/[0.02] ${f.borderHover} hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-0.5 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]`}
+                  glow={glowFor(f.color)}
+                  className={`group relative flex flex-col overflow-hidden rounded-2xl p-5 border border-white/[0.06] bg-white/[0.02] ${f.borderHover} hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-1 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]`}
                 >
                   {/* Color accent line at top */}
                   <div className="absolute top-0 left-0 right-0 h-px opacity-40" style={{ background: `linear-gradient(90deg, transparent 10%, var(--accent-color, rgba(255,255,255,0.1)) 50%, transparent 90%)` }} />
@@ -322,7 +339,7 @@ export default function LandingPage() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </SpotlightCard>
               ))}
             </div>
           </ScrollReveal>
@@ -483,7 +500,7 @@ export default function LandingPage() {
           <ScrollReveal stagger>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {SLIDE_TYPES.map((s) => (
-                <div key={s.label} className={`group p-5 rounded-2xl border border-border/60 bg-card/50 ${s.borderColor} hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] relative overflow-hidden`}>
+                <SpotlightCard key={s.label} glow={glowFor(s.color)} className={`group p-5 rounded-2xl border border-border/60 bg-card/50 ${s.borderColor} hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] relative overflow-hidden`}>
                   {/* Color accent line at top */}
                   <div className={`absolute top-0 left-0 right-0 h-px ${s.bg.replace('/10', '/30')}`} style={{ background: `linear-gradient(90deg, transparent, ${s.color === 'text-red-500' ? '#dc2626' : s.color === 'text-sky-500' ? '#0ea5e9' : s.color === 'text-emerald-500' ? '#10b981' : s.color === 'text-amber-500' ? '#f59e0b' : s.color === 'text-rose-500' ? '#f43f5e' : '#8b5cf6'}40, transparent)` }} />
                   <div className="flex items-center gap-3 mb-3">
@@ -496,7 +513,7 @@ export default function LandingPage() {
                     </div>
                   </div>
                   <p className="text-muted-foreground text-xs leading-relaxed">{s.description}</p>
-                </div>
+                </SpotlightCard>
               ))}
             </div>
           </ScrollReveal>
@@ -521,7 +538,7 @@ export default function LandingPage() {
               {/* Connecting line on desktop */}
               <div className="hidden md:block absolute top-[60px] left-[16.67%] right-[16.67%] h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
               {STEPS.map((step, i) => (
-                <div key={step.n} className="relative bg-card/50 rounded-2xl border border-border/60 p-8 text-center [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] hover:-translate-y-0.5 transition-all duration-300 group">
+                <SpotlightCard key={step.n} className="relative bg-card/50 rounded-2xl border border-border/60 p-8 text-center [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] hover:-translate-y-1 transition-all duration-300 group">
                   {/* Numbered circle */}
                   <div className="relative mx-auto mb-5">
                     <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
@@ -532,7 +549,7 @@ export default function LandingPage() {
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[9px] uppercase tracking-[0.15em] font-semibold border border-primary/15 mb-3">Step {step.n}</span>
                   <h3 className="text-base font-bold mt-2 mb-3">{step.title}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">{step.desc}</p>
-                </div>
+                </SpotlightCard>
               ))}
             </div>
           </ScrollReveal>
@@ -557,7 +574,7 @@ export default function LandingPage() {
           <ScrollReveal stagger>
             <div className="flex flex-wrap justify-center gap-3">
               {USE_CASES.map((uc) => (
-                <Link key={uc.slug} href={`/solutions/${uc.slug}`}
+                <SpotlightCard key={uc.slug} href={`/solutions/${uc.slug}`} glow={`${uc.color}26`}
                   className="group p-5 rounded-2xl border border-border/60 bg-card/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] relative overflow-hidden w-full sm:w-[calc(50%-6px)] lg:w-[calc(25%-9px)]"
                 >
                   {/* Background glow on hover — uses the service's color */}
@@ -571,7 +588,7 @@ export default function LandingPage() {
                     <h3 className="text-sm font-bold transition-colors">{uc.label}</h3>
                   </div>
                   <p className="text-muted-foreground text-xs leading-relaxed">{uc.desc}</p>
-                </Link>
+                </SpotlightCard>
               ))}
             </div>
           </ScrollReveal>
@@ -596,15 +613,15 @@ export default function LandingPage() {
           <ScrollReveal stagger>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { stat: '3x', label: 'More participation than hand-raising', desc: 'Everyone contributes, not just the loudest voices.', color: 'from-red-400 to-orange-500' },
-                { stat: '90%', label: 'Of crews prefer interactive briefings', desc: 'Engagement that keeps your team focused and alert.', color: 'from-blue-400 to-cyan-400' },
-                { stat: '60%', label: 'Faster feedback vs paper forms', desc: 'Results ready instantly, not after hours of data entry.', color: 'from-emerald-400 to-green-400' },
+                { value: 3, suffix: 'x', label: 'More participation than hand-raising', desc: 'Everyone contributes, not just the loudest voices.', color: 'from-red-400 to-orange-500', glow: 'rgba(239,68,68,0.14)' },
+                { value: 90, suffix: '%', label: 'Of crews prefer interactive briefings', desc: 'Engagement that keeps your team focused and alert.', color: 'from-blue-400 to-cyan-400', glow: 'rgba(59,130,246,0.14)' },
+                { value: 60, suffix: '%', label: 'Faster feedback vs paper forms', desc: 'Results ready instantly, not after hours of data entry.', color: 'from-emerald-400 to-green-400', glow: 'rgba(16,185,129,0.14)' },
               ].map((s) => (
-                <div key={s.label} className="text-center rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 transition-all duration-300">
-                  <p className={`text-3xl sm:text-5xl font-bold bg-gradient-to-r ${s.color} gradient-text mb-3`}>{s.stat}</p>
+                <SpotlightCard key={s.label} glow={s.glow} className="text-center rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-1 transition-all duration-300">
+                  <CountUp value={s.value} suffix={s.suffix} className={`block text-3xl sm:text-5xl font-bold bg-gradient-to-r ${s.color} gradient-text mb-3`} />
                   <p className="font-semibold text-sm text-white/80 mb-2">{s.label}</p>
                   <p className="text-white/35 text-xs">{s.desc}</p>
-                </div>
+                </SpotlightCard>
               ))}
             </div>
           </ScrollReveal>
@@ -720,7 +737,7 @@ export default function LandingPage() {
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight text-white mb-6">
               Ready to transform{' '}
-              <span className="bg-gradient-to-r from-red-400 to-orange-500 gradient-text">your training?</span>
+              <span className="bg-[linear-gradient(90deg,#f87171,#ef4444,#f97316,#ef4444,#f87171)] gradient-text gradient-text-flow">your training?</span>
             </h2>
             <p className="text-white/35 text-base md:text-lg mb-10 max-w-lg mx-auto">
               Free for 30 days. No credit card required. Built for those who serve.
