@@ -18,22 +18,24 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
         return (
           <div
             key={item.q}
-            className="rounded-xl border border-border/60 bg-card/50 overflow-hidden [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] transition-all duration-200"
+            className={`rounded-xl border overflow-hidden [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] transition-all duration-300 ${
+              isOpen ? 'border-red-500/20 bg-white/[0.04]' : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]'
+            }`}
           >
             <button
               onClick={() => setOpenIndex(isOpen ? null : i)}
               className="w-full flex items-center justify-between gap-4 p-5 text-left cursor-pointer group"
             >
-              <h4 className="font-semibold text-sm group-hover:text-primary transition-colors">{item.q}</h4>
+              <h4 className={`font-semibold text-sm transition-colors ${isOpen ? 'text-white' : 'text-white/80 group-hover:text-red-400'}`}>{item.q}</h4>
               <ChevronDown
-                className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+                className={`w-4 h-4 shrink-0 transition-all duration-300 ${isOpen ? 'rotate-180 text-red-400' : 'text-white/30'}`}
               />
             </button>
             <div
               className={`grid transition-all duration-300 ease-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
             >
               <div className="overflow-hidden">
-                <p className="text-muted-foreground text-sm leading-relaxed px-5 pb-5">
+                <p className="text-white/45 text-sm leading-relaxed px-5 pb-5">
                   {item.a}
                 </p>
               </div>

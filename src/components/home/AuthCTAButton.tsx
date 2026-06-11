@@ -24,7 +24,7 @@ export function AuthCTAButton({ variant = 'primary', tab = 'register', label, cl
   return (
     <button
       onClick={() => openAuth(tab)}
-      className={`group inline-flex items-center gap-2 px-7 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 cursor-pointer ${className}`}
+      className={`group btn-shine inline-flex items-center gap-2 px-7 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 cursor-pointer ${className}`}
     >
       {label || 'Start free trial'} <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
     </button>

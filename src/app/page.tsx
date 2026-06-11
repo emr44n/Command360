@@ -3,7 +3,7 @@ import {
   BarChart2, Cloud, HelpCircle, MessageCircle, ClipboardList, Sparkles,
   ArrowRight, Users, CheckCircle2, Flame, Siren,
   Radio, Shield, Anchor, Search, Building2, Lock, FileText, Check, Zap,
-  Heart, Quote, Target, ShieldCheck, Eye, EyeOff, Brain, Monitor, Layers, MousePointerClick,
+  Heart, Target, ShieldCheck, Eye, Brain, Monitor, Layers, MousePointerClick,
 } from 'lucide-react'
 import { ScrollReveal } from '@/components/home/ScrollReveal'
 import { SpotlightCard } from '@/components/home/SpotlightCard'
@@ -86,7 +86,7 @@ const BENTO_FEATURES = [
     description: 'Export session data as CSV or PDF for training records, compliance documentation, and evaluation logs.',
     color: 'text-sky-400',
     borderHover: 'hover:border-sky-500/20',
-    span: 'md:col-span-2 md:row-span-1',
+    span: 'md:col-span-1',
   },
 ]
 
@@ -124,36 +124,7 @@ const TEMPLATE_EXAMPLES = [
   'Welfare & fatigue checks', 'Risk assessments', 'New joiner onboarding', 'Skills & knowledge checks',
 ]
 
-const TESTIMONIALS = [
-  {
-    quote: 'Command 360 completely changed how we run our debrief sessions. Every firefighter now has a voice, not just the loudest in the room. The AI summaries save us hours of write-up time after every exercise.',
-    name: 'James Thornton',
-    role: 'Station Officer',
-    org: 'West Midlands Fire Service',
-    icon: Flame,
-  },
-  {
-    quote: 'We use it for CPD days and knowledge checks across three divisions. The quiz leaderboards bring genuine energy to sessions that used to feel flat. Our pass rates on competency assessments are up significantly.',
-    name: 'Sarah Mitchell',
-    role: 'Training & Development Lead',
-    org: 'Metropolitan Police',
-    icon: Shield,
-  },
-  {
-    quote: 'The anonymous Q&A feature has been a game-changer for clinical governance meetings. Paramedics raise issues they never would face-to-face. We get honest feedback and can act on it immediately.',
-    name: 'Dr Priya Sharma',
-    role: 'Clinical Lead',
-    org: 'East Midlands Ambulance Service',
-    icon: Siren,
-  },
-  {
-    quote: 'Rolling it out across our volunteer teams was painless. No accounts, no app installs — just a code on the screen and everyone is connected. We were up and running in our first session within minutes.',
-    name: 'Mark Evans',
-    role: 'Operations Manager',
-    org: 'Lowland Rescue',
-    icon: Search,
-  },
-]
+// Testimonial content lives in TestimonialMarquee.
 
 const FAQ_ITEMS = [
   {
@@ -263,7 +234,9 @@ export default function LandingPage() {
             <div className="absolute inset-0 bg-red-500/[0.12] blur-[100px] rounded-full glow-sweep" />
             <div className="absolute inset-0 bg-orange-500/[0.06] blur-[80px] rounded-full float-glow" style={{ animationDelay: '-4s' }} />
           </div>
-          <HeroMockup />
+          <div className="border-beam">
+            <HeroMockup />
+          </div>
         </div>
       </section>
 
@@ -286,7 +259,7 @@ export default function LandingPage() {
                 { icon: Radio, label: 'Resilience' },
                 { icon: Building2, label: 'Local Authority' },
               ].map((item) => (
-                <span key={item.label} className="flex items-center gap-2 text-xs text-white/25">
+                <span key={item.label} className="flex items-center gap-2 text-xs text-white/25 hover:text-white/60 transition-colors duration-300 cursor-default">
                   <item.icon className="w-3.5 h-3.5" />
                   {item.label}
                 </span>
@@ -313,34 +286,37 @@ export default function LandingPage() {
 
           <ScrollReveal stagger>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              {BENTO_FEATURES.map((f) => (
-                <SpotlightCard
-                  key={f.title}
-                  glow={glowFor(f.color)}
-                  className={`group relative flex flex-col overflow-hidden rounded-2xl p-5 border border-white/[0.06] bg-white/[0.02] ${f.borderHover} hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-1 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]`}
-                >
-                  {/* Color accent line at top */}
-                  <div className="absolute top-0 left-0 right-0 h-px opacity-40" style={{ background: `linear-gradient(90deg, transparent 10%, var(--accent-color, rgba(255,255,255,0.1)) 50%, transparent 90%)` }} />
-                  {/* Corner glow on hover */}
-                  <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-3xl pointer-events-none" style={{ backgroundColor: f.color.includes('red') ? 'rgba(220,38,38,0.06)' : f.color.includes('emerald') ? 'rgba(16,185,129,0.06)' : f.color.includes('violet') ? 'rgba(139,92,246,0.06)' : f.color.includes('blue') ? 'rgba(59,130,246,0.06)' : f.color.includes('amber') ? 'rgba(245,158,11,0.06)' : 'rgba(14,165,233,0.06)' }} />
-                  <div className="flex items-center gap-2.5 mb-3">
-                    <div className="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
-                      <f.icon className={`w-3.5 h-3.5 ${f.color}`} />
-                    </div>
-                    <span className={`text-[9px] uppercase tracking-[0.15em] font-semibold ${f.color}`}>{f.label}</span>
-                  </div>
-                  <h3 className="text-sm font-semibold text-white mb-1.5">{f.title}</h3>
-                  <p className="text-xs text-white/35 leading-relaxed mb-3">{f.description}</p>
-                  {/* Mini visual bar */}
-                  <div className="mt-auto flex items-center gap-1.5">
-                    {[40, 65, 25, 80, 50].map((w, i) => (
-                      <div key={i} className="h-1 rounded-full bg-white/[0.06] flex-1">
-                        <div className="h-full rounded-full transition-all duration-700 group-hover:opacity-100 opacity-40" style={{ width: `${w}%`, backgroundColor: f.color.includes('red') ? '#dc2626' : f.color.includes('emerald') ? '#10b981' : f.color.includes('violet') ? '#8b5cf6' : f.color.includes('blue') ? '#3b82f6' : f.color.includes('amber') ? '#f59e0b' : '#0ea5e9' }} />
+              {BENTO_FEATURES.map((f) => {
+                const isLarge = f.span.includes('row-span-2')
+                return (
+                  <SpotlightCard
+                    key={f.title}
+                    glow={glowFor(f.color)}
+                    className={`group relative flex flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] ${f.borderHover} hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-1 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] ${f.span} ${isLarge ? 'p-7' : 'p-5'}`}
+                  >
+                    {/* Color accent line at top */}
+                    <div className="absolute top-0 left-0 right-0 h-px opacity-40" style={{ background: `linear-gradient(90deg, transparent 10%, var(--accent-color, rgba(255,255,255,0.1)) 50%, transparent 90%)` }} />
+                    {/* Corner glow on hover */}
+                    <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-3xl pointer-events-none" style={{ backgroundColor: f.color.includes('red') ? 'rgba(220,38,38,0.06)' : f.color.includes('emerald') ? 'rgba(16,185,129,0.06)' : f.color.includes('violet') ? 'rgba(139,92,246,0.06)' : f.color.includes('blue') ? 'rgba(59,130,246,0.06)' : f.color.includes('amber') ? 'rgba(245,158,11,0.06)' : 'rgba(14,165,233,0.06)' }} />
+                    <div className="flex items-center gap-2.5 mb-3">
+                      <div className={`rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300 ${isLarge ? 'w-10 h-10' : 'w-8 h-8'}`}>
+                        <f.icon className={`${isLarge ? 'w-4.5 h-4.5' : 'w-3.5 h-3.5'} ${f.color}`} />
                       </div>
-                    ))}
-                  </div>
-                </SpotlightCard>
-              ))}
+                      <span className={`text-[9px] uppercase tracking-[0.15em] font-semibold ${f.color}`}>{f.label}</span>
+                    </div>
+                    <h3 className={`font-semibold text-white mb-1.5 ${isLarge ? 'text-xl md:text-2xl' : 'text-sm'}`}>{f.title}</h3>
+                    <p className={`text-white/35 leading-relaxed mb-3 ${isLarge ? 'text-sm max-w-md' : 'text-xs'}`}>{f.description}</p>
+                    {/* Mini visual bar */}
+                    <div className="mt-auto flex items-center gap-1.5">
+                      {[40, 65, 25, 80, 50].map((w, i) => (
+                        <div key={i} className={`rounded-full bg-white/[0.06] flex-1 ${isLarge ? 'h-1.5' : 'h-1'}`}>
+                          <div className="h-full rounded-full transition-all duration-700 group-hover:opacity-100 opacity-40" style={{ width: `${w}%`, backgroundColor: f.color.includes('red') ? '#dc2626' : f.color.includes('emerald') ? '#10b981' : f.color.includes('violet') ? '#8b5cf6' : f.color.includes('blue') ? '#3b82f6' : f.color.includes('amber') ? '#f59e0b' : '#0ea5e9' }} />
+                        </div>
+                      ))}
+                    </div>
+                  </SpotlightCard>
+                )
+              })}
             </div>
           </ScrollReveal>
         </div>
@@ -364,7 +340,7 @@ export default function LandingPage() {
           <ScrollReveal>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Command Classroom */}
-              <div className="group rounded-2xl border border-blue-500/10 bg-blue-500/[0.02] p-6 md:p-8 hover:border-blue-500/20 transition-all duration-300 relative overflow-hidden">
+              <SpotlightCard glow="rgba(59,130,246,0.10)" className="group rounded-2xl border border-blue-500/10 bg-blue-500/[0.02] p-6 md:p-8 hover:border-blue-500/20 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_20%_20%,rgba(59,130,246,0.08),transparent)] pointer-events-none" />
                 <div className="relative">
                   <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-semibold text-blue-400 uppercase tracking-[0.15em] mb-5">
@@ -390,10 +366,10 @@ export default function LandingPage() {
                     Explore services <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
                   </Link>
                 </div>
-              </div>
+              </SpotlightCard>
 
               {/* Command Studio */}
-              <div className="group rounded-2xl border border-red-500/10 bg-red-500/[0.02] p-6 md:p-8 hover:border-red-500/20 transition-all duration-300 relative overflow-hidden">
+              <SpotlightCard glow="rgba(239,68,68,0.10)" className="group rounded-2xl border border-red-500/10 bg-red-500/[0.02] p-6 md:p-8 hover:border-red-500/20 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_20%,rgba(220,38,38,0.08),transparent)] pointer-events-none" />
                 <div className="relative">
                   <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-[10px] font-semibold text-red-400 uppercase tracking-[0.15em] mb-5">
@@ -419,7 +395,7 @@ export default function LandingPage() {
                     Learn more <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
                   </Link>
                 </div>
-              </div>
+              </SpotlightCard>
             </div>
           </ScrollReveal>
         </div>
@@ -433,6 +409,7 @@ export default function LandingPage() {
           {
             badge: 'Live Interaction',
             badgeClass: 'bg-red-500/10 text-red-400',
+            glow: 'rgba(220,38,38,0.05)',
             title: 'Every voice heard, every time',
             description: 'Run live polls, word clouds, and Q&A sessions that engage your entire team. Responses appear instantly on the presenter screen with animated visualisations.',
             bullets: ['Live polling with animated bar charts', 'Word clouds that grow in real-time', 'Anonymous Q&A with upvoting', 'Multi-question surveys'],
@@ -441,6 +418,7 @@ export default function LandingPage() {
           {
             badge: 'Knowledge Testing',
             badgeClass: 'bg-blue-500/10 text-blue-400',
+            glow: 'rgba(59,130,246,0.05)',
             title: 'Test understanding instantly',
             description: 'Create timed quizzes with leaderboards and scoring. Perfect for competency checks, CPD assessments, and post-incident learning verification.',
             bullets: ['Scored quizzes with countdown timers', 'Leaderboard rankings after each round', 'Instant correct/wrong feedback', 'Export results for training records'],
@@ -449,6 +427,7 @@ export default function LandingPage() {
           {
             badge: 'AI-Powered',
             badgeClass: 'bg-violet-500/10 text-violet-400',
+            glow: 'rgba(139,92,246,0.05)',
             title: 'AI analysis of every session',
             description: 'Get instant AI-generated summaries, key themes, and sentiment analysis. Understand what your team thinks without reading every individual response.',
             bullets: ['Automatic session summaries', 'Key theme extraction', 'Quiz question generation from any topic', 'Actionable recommendations'],
@@ -457,17 +436,23 @@ export default function LandingPage() {
         ].map((feature, idx) => {
           const isReversed = idx % 2 !== 0
           return (
-            <section key={feature.title} className={`${idx % 2 === 0 ? 'bg-background' : 'bg-muted/30 dark:bg-muted/10'} border-t border-border/50 relative overflow-hidden`}>
-              <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
+            <section key={feature.title} className="bg-[#07070a] border-t border-white/[0.04] relative overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none">
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 w-[500px] h-[400px] blur-[130px] rounded-full section-glow-drift"
+                  style={{ backgroundColor: feature.glow, [isReversed ? 'left' : 'right']: '5%' }}
+                />
+              </div>
+              <div className="relative max-w-5xl mx-auto px-5 py-20 md:py-28">
                 <div className={`flex flex-col gap-12 md:gap-16 items-center ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'}`}>
                   <ScrollReveal direction={isReversed ? 'right' : 'left'} className="flex-1 space-y-5">
                     <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.15em] font-medium border border-white/[0.06] ${feature.badgeClass}`}>{feature.badge}</span>
-                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight leading-tight">{feature.title}</h2>
-                    <p className="text-muted-foreground leading-relaxed text-sm">{feature.description}</p>
+                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight leading-tight text-white">{feature.title}</h2>
+                    <p className="text-white/40 leading-relaxed text-sm">{feature.description}</p>
                     <ul className="space-y-2.5 pt-2">
                       {feature.bullets.map((pt) => (
-                        <li key={pt} className="flex items-start gap-3 text-sm text-muted-foreground">
-                          <Check className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />{pt}
+                        <li key={pt} className="flex items-start gap-3 text-sm text-white/45">
+                          <Check className="w-3.5 h-3.5 text-red-500 mt-0.5 shrink-0" />{pt}
                         </li>
                       ))}
                     </ul>
@@ -485,22 +470,22 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           SLIDE TYPES
           ═══════════════════════════════════════════ */}
-      <section id="slide-types" className="bg-background border-t border-border/50 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none dark:block hidden">
+      <section id="slide-types" className="bg-[#07070a] border-t border-white/[0.04] relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-1/4 w-[500px] h-[400px] bg-red-500/[0.05] blur-[120px] rounded-full section-glow-drift" />
           <div className="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-blue-500/[0.04] blur-[100px] rounded-full section-glow-drift" style={{ animationDelay: '-8s' }} />
         </div>
-        <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
+        <div className="relative max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-14">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Interactive Tools</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Six ways to engage your team</h2>
-            <p className="text-muted-foreground mt-4 max-w-lg mx-auto text-sm">Mix and match any combination in a single training session.</p>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 text-red-400 text-[10px] uppercase tracking-[0.15em] font-medium border border-red-500/20">Interactive Tools</span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5 text-white">Six ways to engage your team</h2>
+            <p className="text-white/40 mt-4 max-w-lg mx-auto text-sm">Mix and match any combination in a single training session.</p>
           </ScrollReveal>
 
           <ScrollReveal stagger>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {SLIDE_TYPES.map((s) => (
-                <SpotlightCard key={s.label} glow={glowFor(s.color)} className={`group p-5 rounded-2xl border border-border/60 bg-card/50 ${s.borderColor} hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] relative overflow-hidden`}>
+                <SpotlightCard key={s.label} glow={glowFor(s.color)} className={`group p-5 rounded-2xl border border-white/[0.06] bg-white/[0.02] ${s.borderColor} hover:bg-white/[0.04] hover:-translate-y-1 transition-all duration-300 cursor-default [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] relative overflow-hidden`}>
                   {/* Color accent line at top */}
                   <div className={`absolute top-0 left-0 right-0 h-px ${s.bg.replace('/10', '/30')}`} style={{ background: `linear-gradient(90deg, transparent, ${s.color === 'text-red-500' ? '#dc2626' : s.color === 'text-sky-500' ? '#0ea5e9' : s.color === 'text-emerald-500' ? '#10b981' : s.color === 'text-amber-500' ? '#f59e0b' : s.color === 'text-rose-500' ? '#f43f5e' : '#8b5cf6'}40, transparent)` }} />
                   <div className="flex items-center gap-3 mb-3">
@@ -508,11 +493,11 @@ export default function LandingPage() {
                       <s.icon className={`w-4 h-4 ${s.color}`} />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-sm">{s.label}</h3>
+                      <h3 className="font-semibold text-sm text-white">{s.label}</h3>
                       <span className={`text-[9px] uppercase tracking-[0.12em] font-medium ${s.color} opacity-60`}>Interactive</span>
                     </div>
                   </div>
-                  <p className="text-muted-foreground text-xs leading-relaxed">{s.description}</p>
+                  <p className="text-white/40 text-xs leading-relaxed">{s.description}</p>
                 </SpotlightCard>
               ))}
             </div>
@@ -523,32 +508,32 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           HOW IT WORKS
           ═══════════════════════════════════════════ */}
-      <section id="how-it-works" className="bg-muted/30 border-t border-border/50 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none dark:block hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[300px] bg-primary/[0.04] blur-[120px] rounded-full" />
+      <section id="how-it-works" className="bg-[#0a0a0f] border-t border-white/[0.04] relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[300px] bg-red-500/[0.04] blur-[120px] rounded-full" />
         </div>
-        <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
+        <div className="relative max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-14">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">How It Works</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Up and running in minutes</h2>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 text-red-400 text-[10px] uppercase tracking-[0.15em] font-medium border border-red-500/20">How It Works</span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5 text-white">Up and running in minutes</h2>
           </ScrollReveal>
 
           <ScrollReveal stagger>
             <div className="relative grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Connecting line on desktop */}
-              <div className="hidden md:block absolute top-[60px] left-[16.67%] right-[16.67%] h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+              <div className="hidden md:block absolute top-[60px] left-[16.67%] right-[16.67%] h-px bg-gradient-to-r from-transparent via-red-500/20 to-transparent" />
               {STEPS.map((step, i) => (
-                <SpotlightCard key={step.n} className="relative bg-card/50 rounded-2xl border border-border/60 p-8 text-center [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] hover:-translate-y-1 transition-all duration-300 group">
+                <SpotlightCard key={step.n} className="relative bg-white/[0.02] rounded-2xl border border-white/[0.06] p-8 text-center [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:border-red-500/20 hover:-translate-y-1 transition-all duration-300 group">
                   {/* Numbered circle */}
                   <div className="relative mx-auto mb-5">
-                    <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-                      <step.icon className="w-5 h-5 text-primary" />
+                    <div className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
+                      <step.icon className="w-5 h-5 text-red-400" />
                     </div>
-                    <div className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">{i + 1}</div>
+                    <div className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-red-600 text-white text-[10px] font-bold flex items-center justify-center">{i + 1}</div>
                   </div>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[9px] uppercase tracking-[0.15em] font-semibold border border-primary/15 mb-3">Step {step.n}</span>
-                  <h3 className="text-base font-bold mt-2 mb-3">{step.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{step.desc}</p>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/10 text-red-400 text-[9px] uppercase tracking-[0.15em] font-semibold border border-red-500/15 mb-3">Step {step.n}</span>
+                  <h3 className="text-base font-bold mt-2 mb-3 text-white">{step.title}</h3>
+                  <p className="text-white/40 text-sm leading-relaxed">{step.desc}</p>
                 </SpotlightCard>
               ))}
             </div>
@@ -559,23 +544,23 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           SERVICES
           ═══════════════════════════════════════════ */}
-      <section id="services" className="bg-background border-t border-border/50 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none dark:block hidden">
+      <section id="services" className="bg-[#07070a] border-t border-white/[0.04] relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/3 right-0 w-[500px] h-[500px] bg-orange-500/[0.03] blur-[150px] rounded-full" />
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/[0.02] blur-[120px] rounded-full" />
         </div>
-        <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
+        <div className="relative max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-14">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Solutions</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Purpose-built for every service</h2>
-            <p className="text-muted-foreground mt-4 max-w-lg mx-auto text-sm">Tailored templates, language, and workflows for operational training.</p>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 text-red-400 text-[10px] uppercase tracking-[0.15em] font-medium border border-red-500/20">Solutions</span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5 text-white">Purpose-built for every service</h2>
+            <p className="text-white/40 mt-4 max-w-lg mx-auto text-sm">Tailored templates, language, and workflows for operational training.</p>
           </ScrollReveal>
 
           <ScrollReveal stagger>
             <div className="flex flex-wrap justify-center gap-3">
               {USE_CASES.map((uc) => (
                 <SpotlightCard key={uc.slug} href={`/solutions/${uc.slug}`} glow={`${uc.color}26`}
-                  className="group p-5 rounded-2xl border border-border/60 bg-card/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.02)_inset] relative overflow-hidden w-full sm:w-[calc(50%-6px)] lg:w-[calc(25%-9px)]"
+                  className="group p-5 rounded-2xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] hover:-translate-y-1 transition-all duration-300 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] relative overflow-hidden w-full sm:w-[calc(50%-6px)] lg:w-[calc(25%-9px)]"
                 >
                   {/* Background glow on hover — uses the service's color */}
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl" style={{ background: `radial-gradient(ellipse at center, ${uc.color}15, transparent 70%)` }} />
@@ -585,9 +570,9 @@ export default function LandingPage() {
                     <div className={`w-8 h-8 rounded-lg ${uc.bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
                       <uc.icon className={`w-3.5 h-3.5 ${uc.text}`} />
                     </div>
-                    <h3 className="text-sm font-bold transition-colors">{uc.label}</h3>
+                    <h3 className="text-sm font-bold text-white transition-colors">{uc.label}</h3>
                   </div>
-                  <p className="text-muted-foreground text-xs leading-relaxed">{uc.desc}</p>
+                  <p className="text-white/40 text-xs leading-relaxed">{uc.desc}</p>
                 </SpotlightCard>
               ))}
             </div>
@@ -631,33 +616,33 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           TEMPLATES
           ═══════════════════════════════════════════ */}
-      <section id="templates" className="bg-background border-t border-border/50 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none dark:block hidden">
+      <section id="templates" className="bg-[#07070a] border-t border-white/[0.04] relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-violet-500/[0.04] blur-[120px] rounded-full" />
         </div>
-        <div className="max-w-5xl mx-auto px-5 py-20 md:py-28">
+        <div className="relative max-w-5xl mx-auto px-5 py-20 md:py-28">
           <ScrollReveal className="text-center mb-10">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase tracking-[0.15em] font-medium border border-primary/20">Templates</span>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5">Start with a ready-made template</h2>
-            <p className="text-muted-foreground mt-4 max-w-lg mx-auto text-sm">Purpose-built templates for operational training, debriefs, and learning capture.</p>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 text-red-400 text-[10px] uppercase tracking-[0.15em] font-medium border border-red-500/20">Templates</span>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mt-5 text-white">Start with a ready-made template</h2>
+            <p className="text-white/40 mt-4 max-w-lg mx-auto text-sm">Purpose-built templates for operational training, debriefs, and learning capture.</p>
           </ScrollReveal>
 
           <div className="relative overflow-hidden">
             <div className="flex gap-3 animate-[marqueeLeft_30s_linear_infinite] hover:[animation-play-state:paused]">
               {[...TEMPLATE_EXAMPLES, ...TEMPLATE_EXAMPLES, ...TEMPLATE_EXAMPLES, ...TEMPLATE_EXAMPLES].map((t, i) => (
-                <span key={`${t}-${i}`} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border/60 bg-card/50 text-sm font-medium whitespace-nowrap shrink-0 hover:border-primary/20 hover:bg-card transition-all duration-200 cursor-default">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+                <span key={`${t}-${i}`} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/[0.06] bg-white/[0.02] text-sm font-medium text-white/70 whitespace-nowrap shrink-0 hover:border-red-500/20 hover:bg-white/[0.05] hover:text-white transition-all duration-200 cursor-default">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-red-500" />
                   {t}
                 </span>
               ))}
             </div>
             {/* Fade edges */}
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-background to-transparent" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-background to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-[#07070a] to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-[#07070a] to-transparent" />
           </div>
           <div className="text-center mt-8">
-            <Link href="/templates" className="inline-flex items-center gap-2 text-sm text-primary font-medium hover:underline transition-all">
-              View all templates <ArrowRight className="w-4 h-4" />
+            <Link href="/templates" className="group inline-flex items-center gap-2 text-sm text-red-400 font-medium hover:text-red-300 transition-colors">
+              View all templates <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
         </div>
@@ -682,7 +667,7 @@ export default function LandingPage() {
 
           <ScrollReveal>
             <div className="mt-10 text-center flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link href="/contact" className="group inline-flex items-center gap-2 px-7 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-500/25 cursor-pointer">
+              <Link href="/contact" className="group btn-shine inline-flex items-center gap-2 px-7 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-500/25 cursor-pointer">
                 Book a demo <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
             </div>
@@ -755,68 +740,68 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           FOOTER
           ═══════════════════════════════════════════ */}
-      <footer className="border-t border-border/50 relative bg-gradient-to-b from-background via-background to-muted/30 dark:from-[#0a0a0e] dark:via-[#0c0c12] dark:to-[#111118]">
+      <footer className="border-t border-white/[0.06] relative bg-gradient-to-b from-[#0a0a0e] via-[#0c0c12] to-[#111118]">
         {/* Grid texture + top glow */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.04]" style={{ backgroundImage: 'linear-gradient(rgba(128,128,128,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(128,128,128,0.4) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-primary/[0.03] blur-[100px] rounded-full hidden dark:block" />
+          <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'linear-gradient(rgba(128,128,128,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(128,128,128,0.4) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-red-500/[0.03] blur-[100px] rounded-full" />
         </div>
-        <div className="max-w-6xl mx-auto px-5 py-12">
+        <div className="relative max-w-6xl mx-auto px-5 py-12">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-10">
             {/* Brand */}
             <div className="col-span-2 md:col-span-1">
-              <div className="flex items-center gap-2 font-semibold text-sm text-foreground mb-4">
-                <div className="w-6 h-6 bg-primary rounded-lg flex items-center justify-center">
-                  <svg viewBox="0 0 24 24" className="w-3 h-3 text-primary-foreground" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <div className="flex items-center gap-2 font-semibold text-sm text-white mb-4">
+                <div className="w-6 h-6 bg-red-600 rounded-lg flex items-center justify-center">
+                  <svg viewBox="0 0 24 24" className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                   </svg>
                 </div>
                 Command 360
               </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">Interactive training platform for emergency services.</p>
-              <p className="text-xs text-muted-foreground mt-2">command360.co.uk</p>
+              <p className="text-xs text-white/35 leading-relaxed">Interactive training platform for emergency services.</p>
+              <p className="text-xs text-white/35 mt-2">command360.co.uk</p>
             </div>
 
             {/* Services */}
             <div>
-              <h4 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-4">Services</h4>
-              <ul className="space-y-2 text-xs text-muted-foreground">
+              <h4 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/40 mb-4">Services</h4>
+              <ul className="space-y-2 text-xs text-white/35">
                 {USE_CASES.map((uc) => (
-                  <li key={uc.slug}><Link href={`/solutions/${uc.slug}`} className="hover:text-foreground transition-colors">{uc.label}</Link></li>
+                  <li key={uc.slug}><Link href={`/solutions/${uc.slug}`} className="hover:text-white transition-colors">{uc.label}</Link></li>
                 ))}
               </ul>
             </div>
 
             {/* Platform */}
             <div>
-              <h4 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-4">Platform</h4>
-              <ul className="space-y-2.5 text-xs text-muted-foreground">
-                <li><a href="#features" className="hover:text-foreground transition-colors">Features</a></li>
-                <li><Link href="/command-studio" className="hover:text-foreground transition-colors">Command Studio</Link></li>
-                <li><Link href="/contact" className="hover:text-foreground transition-colors">Book a Demo</Link></li>
-                <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
+              <h4 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/40 mb-4">Platform</h4>
+              <ul className="space-y-2.5 text-xs text-white/35">
+                <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
+                <li><Link href="/command-studio" className="hover:text-white transition-colors">Command Studio</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition-colors">Book a Demo</Link></li>
+                <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
               </ul>
             </div>
 
             {/* Company */}
             <div>
-              <h4 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-4">Company</h4>
-              <ul className="space-y-2.5 text-xs text-muted-foreground">
-                <li><Link href="/about" className="hover:text-foreground transition-colors">About</Link></li>
-                <li><Link href="/contact" className="hover:text-foreground transition-colors">Contact</Link></li>
-                <li><Link href="/help" className="hover:text-foreground transition-colors">Help</Link></li>
+              <h4 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/40 mb-4">Company</h4>
+              <ul className="space-y-2.5 text-xs text-white/35">
+                <li><Link href="/about" className="hover:text-white transition-colors">About</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+                <li><Link href="/help" className="hover:text-white transition-colors">Help</Link></li>
               </ul>
             </div>
 
             {/* Legal */}
             <div>
-              <h4 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-4">Legal</h4>
-              <ul className="space-y-2.5 text-xs text-muted-foreground">
-                <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link></li>
-                <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link></li>
-                <li><Link href="/cookies" className="hover:text-foreground transition-colors">Cookies</Link></li>
-                <li><Link href="/accessibility" className="hover:text-foreground transition-colors">Accessibility</Link></li>
-                <li><Link href="/dpa" className="hover:text-foreground transition-colors">DPA</Link></li>
+              <h4 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/40 mb-4">Legal</h4>
+              <ul className="space-y-2.5 text-xs text-white/35">
+                <li><Link href="/terms" className="hover:text-white transition-colors">Terms</Link></li>
+                <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
+                <li><Link href="/cookies" className="hover:text-white transition-colors">Cookies</Link></li>
+                <li><Link href="/accessibility" className="hover:text-white transition-colors">Accessibility</Link></li>
+                <li><Link href="/dpa" className="hover:text-white transition-colors">DPA</Link></li>
               </ul>
             </div>
           </div>
@@ -825,10 +810,10 @@ export default function LandingPage() {
               <div className="w-5 h-5 bg-red-600/80 rounded-md flex items-center justify-center">
                 <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
               </div>
-              <span className="text-[11px] text-muted-foreground/60">&copy; 2026 Command 360. All rights reserved.</span>
+              <span className="text-[11px] text-white/30">&copy; 2026 Command 360. All rights reserved.</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-muted-foreground/30 font-mono tracking-wide">command360.co.uk</span>
+              <span className="text-[10px] text-white/20 font-mono tracking-wide">command360.co.uk</span>
             </div>
           </div>
         </div>
@@ -843,38 +828,38 @@ export default function LandingPage() {
 
 function PollingMockup() {
   return (
-    <div className="relative">
-      <div className="absolute inset-0 -m-4 bg-red-500/5 dark:bg-red-500/10 blur-2xl rounded-3xl pointer-events-none" />
-      <div className="relative rounded-2xl border border-border/60 bg-card/80 overflow-hidden shadow-xl dark:shadow-black/20 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
-        <div className="px-5 py-3 border-b border-border/50 flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-red-500" />
-          <span className="text-[11px] font-semibold text-foreground">Live Poll Results</span>
-          <span className="ml-auto text-[10px] text-muted-foreground">24 responses</span>
+    <div className="relative group">
+      <div className="absolute inset-0 -m-4 bg-red-500/10 blur-2xl rounded-3xl pointer-events-none" />
+      <div className="relative rounded-2xl border border-white/[0.08] bg-[#0c0c10] overflow-hidden shadow-xl shadow-black/40 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.04)_inset] transition-transform duration-300 group-hover:-translate-y-1">
+        <div className="px-5 py-3 border-b border-white/[0.06] flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-red-500 pulse-dot" />
+          <span className="text-[11px] font-semibold text-white/80">Live Poll Results</span>
+          <span className="ml-auto text-[10px] text-white/30">24 responses</span>
         </div>
         <div className="p-5 space-y-4">
-          <p className="text-sm font-semibold">Which protocol applies to this scenario?</p>
+          <p className="text-sm font-semibold text-white/90">Which protocol applies to this scenario?</p>
           {[
             { label: 'Protocol Alpha', pct: 65, barColor: 'bg-red-500' },
             { label: 'Protocol Bravo', pct: 22, barColor: 'bg-red-400' },
             { label: 'Protocol Charlie', pct: 13, barColor: 'bg-red-300' },
           ].map((bar) => (
             <div key={bar.label}>
-              <div className="flex justify-between text-[11px] text-muted-foreground mb-1.5">
+              <div className="flex justify-between text-[11px] text-white/40 mb-1.5">
                 <span>{bar.label}</span>
-                <span className="font-semibold">{bar.pct}%</span>
+                <span className="font-semibold text-white/60">{bar.pct}%</span>
               </div>
-              <div className="h-2 rounded-full bg-muted overflow-hidden">
-                <div className={`h-full rounded-full ${bar.barColor} transition-all duration-1000`} style={{ width: `${bar.pct}%` }} />
+              <div className="h-2 rounded-full bg-white/[0.06] overflow-hidden relative">
+                <div className={`h-full rounded-full ${bar.barColor} transition-all duration-1000 relative shimmer-bar overflow-hidden`} style={{ width: `${bar.pct}%` }} />
               </div>
             </div>
           ))}
           <div className="flex items-center gap-2 pt-2">
-            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            <div className="flex items-center gap-1.5 text-[10px] text-white/30">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
               Live
             </div>
-            <span className="text-[10px] text-muted-foreground">&middot;</span>
-            <span className="text-[10px] text-muted-foreground">Updated just now</span>
+            <span className="text-[10px] text-white/30">&middot;</span>
+            <span className="text-[10px] text-white/30">Updated just now</span>
           </div>
         </div>
       </div>
@@ -884,16 +869,16 @@ function PollingMockup() {
 
 function QuizMockup() {
   return (
-    <div className="relative">
-      <div className="absolute inset-0 -m-4 bg-blue-500/5 dark:bg-blue-500/10 blur-2xl rounded-3xl pointer-events-none" />
-      <div className="relative rounded-2xl border border-border/60 bg-card/80 overflow-hidden shadow-xl dark:shadow-black/20 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
-        <div className="px-5 py-3 border-b border-border/50 flex items-center gap-2">
+    <div className="relative group">
+      <div className="absolute inset-0 -m-4 bg-blue-500/10 blur-2xl rounded-3xl pointer-events-none" />
+      <div className="relative rounded-2xl border border-white/[0.08] bg-[#0c0c10] overflow-hidden shadow-xl shadow-black/40 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.04)_inset] transition-transform duration-300 group-hover:-translate-y-1">
+        <div className="px-5 py-3 border-b border-white/[0.06] flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-blue-500" />
-          <span className="text-[11px] font-semibold text-foreground">Knowledge Check</span>
-          <span className="ml-auto text-[10px] text-muted-foreground">&#9201; 0:28</span>
+          <span className="text-[11px] font-semibold text-white/80">Knowledge Check</span>
+          <span className="ml-auto text-[10px] text-white/30">&#9201; 0:28</span>
         </div>
         <div className="p-5">
-          <p className="text-sm font-semibold mb-4">What is the maximum safe working height without a harness?</p>
+          <p className="text-sm font-semibold text-white/90 mb-4">What is the maximum safe working height without a harness?</p>
           <div className="space-y-2.5">
             {[
               { label: 'A. 1.8 metres', correct: false, selected: false },
@@ -903,19 +888,19 @@ function QuizMockup() {
             ].map((opt) => (
               <div key={opt.label} className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm border transition-all ${
                 opt.correct && opt.selected
-                  ? 'border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-400'
-                  : 'border-border/60 text-muted-foreground'
+                  ? 'border-green-500/30 bg-green-500/10 text-green-400'
+                  : 'border-white/[0.06] text-white/40'
               }`}>
                 {opt.correct && opt.selected ? (
                   <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
                 ) : (
-                  <div className="w-4 h-4 rounded-full border border-border/60 shrink-0" />
+                  <div className="w-4 h-4 rounded-full border border-white/[0.1] shrink-0" />
                 )}
                 <span>{opt.label}</span>
               </div>
             ))}
           </div>
-          <div className="mt-4 flex items-center justify-between text-[10px] text-muted-foreground">
+          <div className="mt-4 flex items-center justify-between text-[10px] text-white/30">
             <span>Question 4 of 10</span>
             <span className="text-green-500 font-semibold">+100 pts</span>
           </div>
@@ -927,35 +912,35 @@ function QuizMockup() {
 
 function AIMockup() {
   return (
-    <div className="relative">
-      <div className="absolute inset-0 -m-4 bg-violet-500/5 dark:bg-violet-500/10 blur-2xl rounded-3xl pointer-events-none" />
-      <div className="relative rounded-2xl border border-border/60 bg-card/80 overflow-hidden shadow-xl dark:shadow-black/20 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
-        <div className="px-5 py-3 border-b border-border/50 flex items-center gap-2">
-          <Sparkles className="w-3.5 h-3.5 text-violet-500" />
-          <span className="text-[11px] font-semibold text-foreground">AI Session Summary</span>
-          <span className="ml-auto text-[10px] text-muted-foreground">Generated in 3s</span>
+    <div className="relative group">
+      <div className="absolute inset-0 -m-4 bg-violet-500/10 blur-2xl rounded-3xl pointer-events-none" />
+      <div className="relative rounded-2xl border border-white/[0.08] bg-[#0c0c10] overflow-hidden shadow-xl shadow-black/40 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.04)_inset] transition-transform duration-300 group-hover:-translate-y-1">
+        <div className="px-5 py-3 border-b border-white/[0.06] flex items-center gap-2">
+          <Sparkles className="w-3.5 h-3.5 text-violet-400" />
+          <span className="text-[11px] font-semibold text-white/80">AI Session Summary</span>
+          <span className="ml-auto text-[10px] text-white/30">Generated in 3s</span>
         </div>
         <div className="p-5 space-y-4">
           <div>
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.15em] mb-2">Key Themes</h4>
+            <h4 className="text-[10px] font-bold text-white/40 uppercase tracking-[0.15em] mb-2">Key Themes</h4>
             <div className="flex flex-wrap gap-1.5">
               {['Equipment readiness', 'Communication gaps', 'Protocol adherence', 'Team morale'].map((tag) => (
-                <span key={tag} className="px-2.5 py-1 rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400 text-[10px] font-medium border border-violet-500/10">{tag}</span>
+                <span key={tag} className="px-2.5 py-1 rounded-lg bg-violet-500/10 text-violet-400 text-[10px] font-medium border border-violet-500/10">{tag}</span>
               ))}
             </div>
           </div>
           <div>
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.15em] mb-2">Summary</h4>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <h4 className="text-[10px] font-bold text-white/40 uppercase tracking-[0.15em] mb-2">Summary</h4>
+            <p className="text-xs text-white/40 leading-relaxed">
               The team demonstrated strong awareness of evacuation procedures. Key areas for improvement include radio communication during multi-floor operations and equipment inventory checks.
             </p>
           </div>
           <div>
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.15em] mb-2">Recommendations</h4>
+            <h4 className="text-[10px] font-bold text-white/40 uppercase tracking-[0.15em] mb-2">Recommendations</h4>
             <ul className="space-y-1.5">
               {['Schedule radio protocol refresher', 'Update equipment checklist', 'Run scenario drill next watch'].map((rec) => (
-                <li key={rec} className="flex items-start gap-2 text-xs text-muted-foreground">
-                  <Sparkles className="w-3 h-3 text-violet-500 mt-0.5 shrink-0" />{rec}
+                <li key={rec} className="flex items-start gap-2 text-xs text-white/40">
+                  <Sparkles className="w-3 h-3 text-violet-400 mt-0.5 shrink-0" />{rec}
                 </li>
               ))}
             </ul>
