@@ -230,21 +230,17 @@ html, body {
 /* ── SCROLL REVEAL (directional) ── */
 .sr {
   opacity: 0;
-  filter: blur(8px);
   transition:
-    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-    filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform, filter;
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.sr-up { transform: translateY(40px); }
-.sr-left { transform: translateX(-50px); }
-.sr-right { transform: translateX(50px); }
-.sr-scale { transform: scale(0.92); }
+.sr-up { transform: translateY(32px); }
+.sr-left { transform: translateX(-40px); }
+.sr-right { transform: translateX(40px); }
+.sr-scale { transform: scale(0.94); }
 .sr-fade { transform: none; }
 .sr.revealed {
   opacity: 1;
-  filter: blur(0);
   transform: translateY(0) translateX(0) scale(1);
 }
 
@@ -374,6 +370,44 @@ html, body {
 }
 .btn-shine:hover::before { left: 120%; }
 
+/* ── FILM GRAIN — subtle texture across the whole page ── */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+}
+
+/* ── FLOATING ACCENT — gentle vertical bob for hero chips ── */
+@keyframes float-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.float-bob { animation: float-bob 5s ease-in-out infinite; }
+
+/* ── SCROLL PROGRESS BAR ── */
+.scroll-progress {
+  transform-origin: 0 50%;
+  transition: transform 0.1s linear;
+}
+
+/* ── LIGHT CARD — consistent card surface for light sections ── */
+.card-light {
+  background: #ffffff;
+  border: 1px solid #e8e8ec;
+  box-shadow: 0 1px 2px rgba(15, 17, 21, 0.04);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+.card-light:hover {
+  border-color: #d4d4d8;
+  box-shadow: 0 10px 30px -12px rgba(15, 17, 21, 0.18);
+  transform: translateY(-4px);
+}
+
 /* ── PULSE DOT ── */
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(239,68,68,0.6); }
@@ -421,11 +455,13 @@ html, body {
   .hero-fade-up,
   .dock-glow-pulse,
   .border-beam,
+  .float-bob,
   .blob {
     animation: none !important;
   }
   .spotlight-card::after { display: none; }
   .btn-shine::before { display: none; }
+  .grain-overlay { display: none; }
   html { scroll-behavior: auto; }
 }
 
