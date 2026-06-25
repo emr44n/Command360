@@ -45,14 +45,14 @@ export function HomepageClient() {
     }
   }
 
-  // On the dark hero (not scrolled): white text
-  // After scrolling: normal theme-aware text
-  const onHero = !scrolled
+  // The landing page is a permanently dark canvas, so the nav always uses
+  // white-based text; only the background condenses to dark glass on scroll.
+  const onHero = true
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       scrolled
-        ? 'backdrop-blur-xl bg-background/80 border-b border-border shadow-sm'
+        ? 'backdrop-blur-xl bg-[#07070a]/80 border-b border-white/[0.08] shadow-sm shadow-black/30'
         : 'bg-transparent'
     }`}>
       <nav className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
@@ -158,23 +158,23 @@ export function HomepageClient() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-xl p-4 space-y-1 slide-down">
+        <div className="md:hidden border-t border-white/[0.08] bg-[#07070a]/95 backdrop-blur-xl p-4 space-y-1 slide-down">
           {NAV_LINKS.map((item) => item.href.startsWith('#') ? (
             <a key={item.href} href={item.href}
               onClick={(e) => handleNavClick(e, item.href)}
-              className="block px-3 py-2.5 rounded-lg text-base text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer">
+              className="block px-3 py-2.5 rounded-lg text-base text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer">
               {item.label}
             </a>
           ) : (
             <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
-              className="block px-3 py-2.5 rounded-lg text-base text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer">
+              className="block px-3 py-2.5 rounded-lg text-base text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer">
               {item.label}
             </Link>
           ))}
-          <div className="pt-3 border-t border-border mt-3 space-y-2">
-            <p className="text-xs text-muted-foreground px-3">Join a session</p>
+          <div className="pt-3 border-t border-white/[0.08] mt-3 space-y-2">
+            <p className="text-xs text-white/40 px-3">Join a session</p>
             <div className="px-3"><JoinCodeInput variant="compact" /></div>
-            <button onClick={() => { setMobileOpen(false); openAuth('login') }} className="block w-full text-center px-4 py-2.5 text-base text-muted-foreground hover:text-foreground transition-colors cursor-pointer">Sign in</button>
+            <button onClick={() => { setMobileOpen(false); openAuth('login') }} className="block w-full text-center px-4 py-2.5 text-base text-white/60 hover:text-white transition-colors cursor-pointer">Sign in</button>
             <button onClick={() => { setMobileOpen(false); openAuth('register') }} className="block w-full text-center px-4 py-2.5 text-base font-semibold bg-red-600 text-white rounded-lg cursor-pointer">Start free trial</button>
           </div>
         </div>
