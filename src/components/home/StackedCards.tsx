@@ -33,7 +33,7 @@ function PhaseCard({
 }) {
   return (
     <motion.div className="absolute inset-0" style={{ zIndex: z, y }}>
-      <div className="relative h-full w-full bg-[#16191E] text-white border border-white/10 overflow-hidden shadow-[0_40px_90px_-24px_rgba(0,0,0,0.92)]">
+      <div className="relative h-full w-full bg-[#16191E] text-white border border-white/12 overflow-hidden">
         <div className="absolute top-[-120px] left-[-80px] w-[480px] h-[400px] pointer-events-none" aria-hidden="true" style={{ background: `radial-gradient(50% 60% at 30% 30%,${item.c}33,transparent 72%)`, filter: 'blur(42px)' }} />
         <div className="absolute top-4 right-[18px] z-[2] ff-mono text-[10px] font-semibold tracking-[0.16em] text-[#6f757d]">PHASE {item.n} / 03</div>
         <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
@@ -66,9 +66,9 @@ export function StackedCards({ items }: { items: StackItem[] }) {
   const [c1, c2, c3] = items
 
   return (
-    <section ref={ref} className="relative" style={{ height: '340vh' }}>
-      <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center px-4 sm:px-6">
-        <div className="relative w-full max-w-[1040px] h-[78vh] max-h-[640px] sm:h-[440px] md:h-[400px]">
+    <section ref={ref} className="relative" style={{ height: '280vh' }}>
+      <div className="sticky top-0 h-screen overflow-hidden flex items-start justify-center px-4 sm:px-6 pt-[clamp(92px,13vh,150px)]">
+        <div className="relative w-full max-w-[1040px] h-[64vh] max-h-[540px] sm:h-[400px] md:h-[380px]">
           {c1 && <PhaseCard item={c1} z={1} />}
           {c2 && <PhaseCard item={c2} z={2} y={y2} />}
           {c3 && <PhaseCard item={c3} z={3} y={y3} />}

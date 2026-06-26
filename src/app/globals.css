@@ -723,6 +723,15 @@ html, body {
 
 /* Pinned scroll-stacking cards live in StackedCards.tsx (Framer Motion). */
 
+/* Live-demo: typewriter caret + word-cloud drift. */
+@keyframes v5caret { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.v5-caret { display: inline-block; width: 7px; height: 1.05em; background: currentColor; margin-left: 3px; vertical-align: -2px; animation: v5caret 1s step-end infinite; }
+@keyframes v5wfloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+.v5-wfloat { animation: v5wfloat ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .v5-caret, .v5-wfloat { animation: none !important; }
+}
+
 /* Cursor-follow spotlight wash for boxy cards (pairs with SpotlightCard). */
 .v5-card { position: relative; transition: background .25s ease; }
 .v5-card::before {

@@ -64,8 +64,8 @@ export function V5Nav() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-[60] transition-colors duration-300 ${
-        scrolled ? 'bg-[#0F1216]/92 backdrop-blur-md border-b border-white/10' : 'bg-transparent border-b border-transparent'
+      className={`fixed left-0 right-0 z-[60] transition-all duration-300 ${
+        scrolled ? 'top-0 bg-[#0F1216]/92 backdrop-blur-md border-b border-white/10' : 'top-9 bg-transparent border-b border-transparent'
       }`}
     >
       <nav className="max-w-[1280px] mx-auto px-5 sm:px-[30px] h-[66px] flex items-center gap-7">
@@ -91,10 +91,10 @@ export function V5Nav() {
         </div>
 
         <div className="ml-auto flex items-center gap-4">
-          <div className="relative hidden sm:block">
+          <div className="relative hidden sm:flex items-center">
             <button
               onClick={() => setJoinOpen((v) => !v)}
-              className="ff-mono text-[12.5px] font-medium tracking-[0.04em] uppercase text-[#9aa0a8] hover:text-white transition-colors cursor-pointer"
+              className="ff-mono leading-none text-[12.5px] font-medium tracking-[0.04em] uppercase text-[#9aa0a8] hover:text-white transition-colors cursor-pointer"
             >
               Join
             </button>
@@ -110,7 +110,7 @@ export function V5Nav() {
           </div>
           <button
             onClick={() => openAuth('login')}
-            className="ff-mono hidden sm:inline text-[12.5px] font-medium tracking-[0.04em] uppercase text-[#9aa0a8] hover:text-white transition-colors cursor-pointer"
+            className="ff-mono hidden sm:inline-flex items-center leading-none text-[12.5px] font-medium tracking-[0.04em] uppercase text-[#9aa0a8] hover:text-white transition-colors cursor-pointer"
           >
             Sign in
           </button>

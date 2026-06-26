@@ -67,7 +67,7 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
         <button
           type="submit"
           disabled={code.trim().length < 4 || joining}
-          className="ff-mono bg-white text-[#0F1216] font-semibold text-[12.5px] tracking-[0.06em] uppercase px-5 hover:bg-[#C9241A] hover:text-white transition-colors disabled:opacity-50 inline-flex items-center gap-1.5 shrink-0"
+          className="ff-mono bg-white text-[#0F1216] font-semibold text-[12.5px] tracking-[0.06em] uppercase px-5 hover:bg-[#C9241A] hover:text-white transition-colors disabled:hover:bg-white disabled:hover:text-[#0F1216] inline-flex items-center gap-1.5 shrink-0"
         >
           {joining ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Join <ArrowRight className="w-3.5 h-3.5" /></>}
         </button>

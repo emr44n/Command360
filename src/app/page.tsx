@@ -4,6 +4,9 @@ import { SpotlightCard } from '@/components/home/SpotlightCard'
 import { RevealManager } from '@/components/home/RevealManager'
 import { RotatingWord } from '@/components/home/RotatingWord'
 import { StackedCards } from '@/components/home/StackedCards'
+import { TopBar } from '@/components/home/TopBar'
+import { ScrollProgress } from '@/components/home/ScrollProgress'
+import { TestimonialColumns } from '@/components/home/TestimonialColumns'
 import { V5Nav, V5AuthButton } from '@/components/home/V5Chrome'
 import { V5Demo } from '@/components/home/V5Demo'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
@@ -64,11 +67,6 @@ const TEMPLATE_EXAMPLES = [
   'Welfare & fatigue checks', 'Risk assessments', 'New joiner onboarding', 'Skills & knowledge checks',
 ]
 
-const TESTIMONIALS = [
-  { quote: 'Command 360 changed how we run debriefs. Every firefighter now has a voice, not just the loudest in the room.', name: 'James Thornton', role: 'Station Officer · WM Fire', color: '#D94B3D' },
-  { quote: 'The quiz leaderboards bring real energy to sessions that used to feel flat. Pass rates on competency checks are up.', name: 'Sarah Mitchell', role: 'Training Lead · Met Police', color: '#3E6DC4' },
-  { quote: 'Anonymous Q&A has been a game-changer for governance meetings. Paramedics raise issues they never would face-to-face.', name: 'Dr Priya Sharma', role: 'Clinical Lead · EM Ambulance', color: '#2E9E63' },
-]
 
 const FAQ_ITEMS = [
   { q: 'Is Command 360 free to use?', a: 'Yes. Command 360 is completely free to get started with no credit card required. Simply create an account and start building sessions right away.' },
@@ -113,11 +111,16 @@ export default function LandingPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSONLD) }} />
 
       <RevealManager />
+      <ScrollProgress />
+      <TopBar />
       <V5Nav />
 
       <main>
         {/* ════════════ HERO ════════════ */}
         <header className="relative overflow-hidden bg-[#0F1216] text-white" aria-label="Introduction">
+          {/* pure-black fade from the very top down into the hero */}
+          <div className="absolute top-0 left-0 right-0 h-[60%] pointer-events-none" aria-hidden="true"
+            style={{ background: 'linear-gradient(180deg, #000 0%, rgba(0,0,0,0.45) 22%, rgba(0,0,0,0.12) 55%, transparent 100%)' }} />
           <div className="absolute bottom-[-180px] left-1/2 -translate-x-1/2 w-[1280px] h-[720px] pointer-events-none" aria-hidden="true"
             style={{ background: 'radial-gradient(60% 80% at 50% 100%,rgba(201,36,26,.22),rgba(201,36,26,.06) 48%,transparent 78%)', filter: 'blur(38px)' }} />
           <div className="absolute inset-0 v5-grain opacity-[0.16] mix-blend-overlay pointer-events-none" aria-hidden="true" />
@@ -133,10 +136,10 @@ export default function LandingPage() {
             <span className="w-[9px] h-[9px] bg-[#C9241A]" style={{ boxShadow: '0 0 0 6px rgba(201,36,26,.18)' }} />
           </div>
 
-          <div className="relative max-w-[1280px] mx-auto px-5 sm:px-[30px] pt-[78px]">
+          <div className="relative max-w-[1280px] mx-auto px-5 sm:px-[30px] pt-[104px]">
             <div className="grid lg:grid-cols-[1.05fr_0.95fr] border-x border-white/10">
               {/* Left */}
-              <div className="pt-10 pb-14 lg:py-[64px] lg:pr-12 lg:border-r border-white/10">
+              <div className="pb-14 lg:py-[56px] lg:pr-12 lg:border-r border-white/10">
                 <div className="flex items-center gap-3 ff-mono text-[12px] font-medium tracking-[0.14em] uppercase text-[#9aa0a8] mb-7" data-reveal>
                   <span className="w-[7px] h-[7px] bg-[#C9241A] v5-pulse" />
                   Interactive learning · UK emergency services
@@ -439,21 +442,7 @@ export default function LandingPage() {
           <div className="max-w-[1280px] mx-auto px-5 sm:px-[30px]">
             <Eyebrow n="08">Testimonials</Eyebrow>
             <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 mb-9" data-reveal>Trusted by those who serve</h2>
-            <div className="grid md:grid-cols-3 border-t border-l border-[rgba(20,25,30,0.16)]">
-              {TESTIMONIALS.map((t) => (
-                <div key={t.name} data-reveal className="p-[34px_30px] border-r border-b border-[rgba(20,25,30,0.16)]">
-                  <div className="ff-display font-black text-[40px] leading-[0.7] text-[#C9241A] mb-[18px]">&ldquo;</div>
-                  <p className="text-[15.5px] leading-[1.6] text-[#34383d] font-medium mb-[22px]">{t.quote}</p>
-                  <div className="flex items-center gap-3">
-                    <span className="w-2.5 h-2.5" style={{ background: t.color }} />
-                    <div>
-                      <div className="font-bold text-[13.5px] text-[#16191E]">{t.name}</div>
-                      <div className="ff-mono text-[11px] text-[#8a8579]">{t.role}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <TestimonialColumns />
           </div>
         </section>
 
@@ -488,11 +477,9 @@ export default function LandingPage() {
 
       {/* ════════════ FOOTER ════════════ */}
       <footer id="about" className="relative overflow-hidden bg-[#0A0C0F] text-[#8a9098] pt-20 pb-[188px]">
-        <div className="absolute bottom-[-300px] left-1/2 -translate-x-1/2 w-[1400px] h-[740px] rounded-full pointer-events-none" aria-hidden="true" style={{ background: 'radial-gradient(50% 50% at 50% 50%,rgba(201,36,26,.34),rgba(201,36,26,.1) 44%,transparent 70%)', filter: 'blur(48px)' }} />
-        <div aria-hidden="true" className="absolute left-0 right-0 bottom-0 translate-y-[44%] text-center ff-display font-black leading-[0.8] tracking-[-0.02em] whitespace-nowrap pointer-events-none text-[clamp(120px,27vw,372px)] flex items-end justify-center" style={{ color: 'rgba(255,255,255,.10)', textShadow: '0 0 70px rgba(201,36,26,.32)' }}>
-          {['C', '3', '6', '0'].map((ch, i) => (
-            <span key={i} className="v5-float-letter" style={{ animationDelay: `${i * -1.15}s` }}>{ch}</span>
-          ))}
+        {/* C360 wordmark — subtle gray, fades/eases in once on scroll, no glow, no float */}
+        <div aria-hidden="true" className="absolute left-0 right-0 bottom-0 translate-y-[42%] flex items-end justify-center pointer-events-none overflow-hidden">
+          <span data-reveal className="ff-display font-black leading-[0.8] tracking-[-0.02em] whitespace-nowrap text-[clamp(120px,27vw,360px)] text-white/[0.055] select-none">C360</span>
         </div>
         <div className="relative max-w-[1280px] mx-auto px-5 sm:px-[30px]">
           <div className="grid md:grid-cols-2 gap-10 items-end pb-11 border-b border-white/10">
@@ -506,36 +493,52 @@ export default function LandingPage() {
             </form>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-9 py-12 border-b border-white/10">
-            <div className="col-span-2">
+          <div className="grid grid-cols-2 md:grid-cols-12 gap-x-8 gap-y-10 py-12 border-b border-white/10">
+            <div className="col-span-2 md:col-span-3">
               <div className="flex items-center gap-3 mb-4">
                 <span className="ff-display w-[30px] h-[30px] bg-[#C9241A] flex items-center justify-center text-base font-black text-white">C</span>
                 <span className="ff-display font-extrabold text-[18px] text-white tracking-[0.01em]">COMMAND 360</span>
               </div>
-              <p className="text-[14px] leading-[1.6] mb-4 max-w-[300px]">Interactive training platform for UK emergency services. UK-hosted, GDPR ready, built for those who serve.</p>
-            </div>
-            <div>
-              <div className="ff-mono text-[11px] font-semibold tracking-[0.1em] uppercase text-white mb-[18px]">Services</div>
-              <div className="flex flex-col gap-2.5 text-[14px]">
-                {USE_CASES.slice(0, 5).map((uc) => <Link key={uc.slug} href={`/solutions/${uc.slug}`} className="hover:text-white transition-colors">{uc.label}</Link>)}
+              <p className="text-[14px] leading-[1.6] mb-5 max-w-[300px]">Interactive training platform for UK emergency services. UK-hosted, GDPR ready, built for those who serve.</p>
+              <div className="flex gap-2.5">
+                {['in', 'X', '@'].map((s) => <span key={s} className="w-9 h-9 border border-white/15 flex items-center justify-center ff-mono text-[12px] text-[#9aa0a8] hover:border-white/45 hover:text-white transition-colors cursor-pointer">{s}</span>)}
               </div>
             </div>
-            <div>
+            <div className="md:col-span-3">
+              <div className="ff-mono text-[11px] font-semibold tracking-[0.1em] uppercase text-white mb-[18px]">Solutions</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 text-[13.5px]">
+                {USE_CASES.map((uc) => <Link key={uc.slug} href={`/solutions/${uc.slug}`} className="hover:text-white transition-colors">{uc.label}</Link>)}
+              </div>
+            </div>
+            <div className="md:col-span-2">
               <div className="ff-mono text-[11px] font-semibold tracking-[0.1em] uppercase text-white mb-[18px]">Platform</div>
-              <div className="flex flex-col gap-2.5 text-[14px]">
+              <div className="flex flex-col gap-2.5 text-[13.5px]">
                 <a href="#capabilities" className="hover:text-white transition-colors">Capabilities</a>
-                <Link href="/command-studio" className="hover:text-white transition-colors">Command Studio</Link>
                 <a href="#demo" className="hover:text-white transition-colors">Live demo</a>
+                <Link href="/command-studio" className="hover:text-white transition-colors">Command Studio</Link>
                 <a href="#deploy" className="hover:text-white transition-colors">Deployment</a>
+                <Link href="/templates" className="hover:text-white transition-colors">Templates</Link>
+                <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
+                <Link href="/product" className="hover:text-white transition-colors">Product tour</Link>
               </div>
             </div>
-            <div>
+            <div className="md:col-span-2">
               <div className="ff-mono text-[11px] font-semibold tracking-[0.1em] uppercase text-white mb-[18px]">Company</div>
-              <div className="flex flex-col gap-2.5 text-[14px]">
+              <div className="flex flex-col gap-2.5 text-[13.5px]">
                 <Link href="/about" className="hover:text-white transition-colors">About</Link>
                 <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
                 <Link href="/help" className="hover:text-white transition-colors">Help centre</Link>
-                <Link href="/templates" className="hover:text-white transition-colors">Templates</Link>
+                <Link href="/contact" className="hover:text-white transition-colors">Book a demo</Link>
+              </div>
+            </div>
+            <div className="md:col-span-2">
+              <div className="ff-mono text-[11px] font-semibold tracking-[0.1em] uppercase text-white mb-[18px]">Legal</div>
+              <div className="flex flex-col gap-2.5 text-[13.5px]">
+                <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
+                <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+                <Link href="/cookies" className="hover:text-white transition-colors">Cookies</Link>
+                <Link href="/accessibility" className="hover:text-white transition-colors">Accessibility</Link>
+                <Link href="/dpa" className="hover:text-white transition-colors">DPA</Link>
               </div>
             </div>
           </div>
