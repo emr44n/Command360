@@ -9,6 +9,7 @@ import { ScrollProgress } from '@/components/home/ScrollProgress'
 import { TestimonialColumns } from '@/components/home/TestimonialColumns'
 import { V5Nav, V5AuthButton } from '@/components/home/V5Chrome'
 import { V5Demo } from '@/components/home/V5Demo'
+import { HeroShowcase } from '@/components/home/HeroShowcase'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 import { FaqAccordion } from '@/components/home/FaqAccordion'
 import { FloatingJoinDock } from '@/components/join/FloatingJoinDock'
@@ -30,9 +31,24 @@ const DOCTRINE_BOXES = [
 ]
 
 const LIFECYCLE = [
-  { n: '01', tag: 'Brief', title: 'Set the scene', desc: 'Build the session from a template, issue a join code, and bring every crew member onto the same page — on any device.', c: '#D94B3D' },
-  { n: '02', tag: 'Engage', title: 'Run it live', desc: 'Polls, quizzes, word clouds, and anonymous Q&A — responses land instantly on the presenter screen as the session unfolds.', c: '#3E6DC4' },
-  { n: '03', tag: 'Debrief', title: 'Record & act', desc: 'An AI summary, key themes, and recommendations — exported to your training records in seconds, ready for the next watch.', c: '#2E9E63' },
+  {
+    n: '01', tag: 'Brief', title: 'Set the scene', c: '#D94B3D',
+    desc: 'Build the session from a template, issue a join code, and bring every crew member onto the same page — on any device.',
+    points: ['Pick from 40+ ready templates', 'Issue a 6-digit join code or QR', 'Works on any device — no app', 'Brief the whole watch at once'],
+    meta: { k: 'Setup time', v: '< 2 min' },
+  },
+  {
+    n: '02', tag: 'Engage', title: 'Run it live', c: '#3E6DC4',
+    desc: 'Polls, quizzes, word clouds, and anonymous Q&A — responses land instantly on the presenter screen as the session unfolds.',
+    points: ['Live polls & scored quizzes', 'Word clouds & anonymous Q&A', 'Responses land in real time', 'Presenter stays fully in control'],
+    meta: { k: 'Avg participation', v: '94%' },
+  },
+  {
+    n: '03', tag: 'Debrief', title: 'Record & act', c: '#2E9E63',
+    desc: 'An AI summary, key themes, and recommendations — exported to your training records in seconds, ready for the next watch.',
+    points: ['AI summary & key themes', 'Sentiment read on the room', 'Actions flagged automatically', 'Export to CSV or PDF'],
+    meta: { k: 'Summary in', v: '3 sec' },
+  },
 ]
 
 const IMPACT = [
@@ -165,42 +181,9 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Right — live session panel */}
+              {/* Right — live session panel that cycles every feature */}
               <div className="relative" data-reveal>
-                <div className="flex items-center justify-between px-6 py-[18px] border-b border-white/10">
-                  <span className="ff-mono text-[11px] font-semibold tracking-[0.12em] uppercase text-[#9aa0a8]">Session · Live</span>
-                  <span className="ff-mono text-[11px] font-semibold tracking-[0.06em] text-[#C9241A] flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#C9241A] v5-pulse" />REC
-                  </span>
-                </div>
-                <div className="grid grid-cols-2">
-                  <div className="px-6 py-[22px] border-r border-b border-white/10">
-                    <div className="ff-mono text-[10.5px] tracking-[0.1em] uppercase text-[#7c828a] mb-2">Connected</div>
-                    <div className="ff-display font-extrabold text-[34px] leading-none">32<span className="text-[15px] text-[#7c828a]">/34</span></div>
-                  </div>
-                  <div className="px-6 py-[22px] border-b border-white/10">
-                    <div className="ff-mono text-[10.5px] tracking-[0.1em] uppercase text-[#7c828a] mb-2">Responded</div>
-                    <div className="ff-display font-extrabold text-[34px] leading-none">94<span className="text-[15px] text-[#7c828a]">%</span></div>
-                  </div>
-                </div>
-                <div className="px-6 py-[22px] border-b border-white/10">
-                  <div className="ff-mono text-[10.5px] tracking-[0.1em] uppercase text-[#7c828a] mb-3.5">Live poll · Protocol applied</div>
-                  <div className="flex flex-col gap-[11px]">
-                    {[['ALPHA', 65, true], ['BRAVO', 22, false], ['CHARLIE', 13, false]].map(([l, p, lead]) => (
-                      <div key={l as string}>
-                        <div className="flex justify-between ff-mono text-[12.5px] font-semibold mb-1.5">
-                          <span className={lead ? '' : 'text-[#aab0b8]'}>{l}</span>
-                          <span className={lead ? 'text-[#C9241A]' : 'text-[#7c828a]'}>{p}%</span>
-                        </div>
-                        <div className="h-2 bg-white/[0.08]"><div className="h-full" style={{ width: `${p}%`, background: lead ? '#C9241A' : '#6b7178' }} /></div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="px-6 py-[18px] flex items-center gap-3">
-                  <span className="w-[26px] h-[26px] bg-[#C9241A] flex items-center justify-center text-[13px] text-white shrink-0">✦</span>
-                  <span className="text-[12.5px] text-[#aab0b8] leading-snug">AI summary ready — <span className="text-white font-semibold">2 actions flagged</span></span>
-                </div>
+                <HeroShowcase />
               </div>
             </div>
           </div>
@@ -285,7 +268,7 @@ export default function LandingPage() {
               </h2>
               <div className="border-t border-l border-white/14">
                 {DOCTRINE_BOXES.map((b, i) => (
-                  <div key={b} data-reveal style={{ ['--rd' as string]: `${i * 50}ms` }} className="group v5-pop cursor-default flex items-center gap-3 px-[18px] py-3.5 border-r border-b border-white/14">
+                  <div key={b} data-reveal style={{ ['--rd' as string]: `${i * 110}ms` }} className="group v5-pop cursor-default flex items-center gap-3 px-[18px] py-3.5 border-r border-b border-white/14">
                     <span className="ff-display font-extrabold text-[13px] text-[#C9241A] w-6 transition-transform duration-300 group-hover:scale-[1.35] origin-left">{String(i + 1).padStart(2, '0')}</span>
                     <span className="ff-mono text-[12.5px] tracking-[0.03em] text-[#dfe2e6] transition-colors group-hover:text-white">{b}</span>
                   </div>
@@ -308,21 +291,23 @@ export default function LandingPage() {
                 {
                   ...LIFECYCLE[0],
                   preview: (
-                    <div className="w-full max-w-[300px] border border-white/12 p-5">
-                      <div className="ff-mono text-[10.5px] tracking-[0.1em] uppercase text-[#7c828a] mb-3.5">Join code</div>
-                      <div className="ff-display font-extrabold text-[40px] tracking-[0.12em]">418 207</div>
-                      <div className="mt-3.5 flex gap-1.5"><span className="flex-1 h-1.5" style={{ background: LIFECYCLE[0].c }} /><span className="flex-1 h-1.5 bg-white/12" /><span className="flex-1 h-1.5 bg-white/12" /></div>
+                    <div className="w-full border border-white/12 px-4 py-3 flex items-center justify-between gap-4">
+                      <div>
+                        <div className="ff-mono text-[9.5px] tracking-[0.1em] uppercase text-[#7c828a] mb-1">Join code</div>
+                        <div className="ff-display font-extrabold text-[24px] tracking-[0.12em] leading-none">418 207</div>
+                      </div>
+                      <div className="flex gap-1.5 w-[64px] shrink-0"><span className="flex-1 h-1.5" style={{ background: LIFECYCLE[0].c }} /><span className="flex-1 h-1.5 bg-white/12" /><span className="flex-1 h-1.5 bg-white/12" /></div>
                     </div>
                   ),
                 },
                 {
                   ...LIFECYCLE[1],
                   preview: (
-                    <div className="w-full max-w-[300px] flex flex-col gap-3">
+                    <div className="w-full flex flex-col gap-2">
                       {([['ALPHA', 65, true], ['BRAVO', 22, false], ['CHARLIE', 13, false]] as const).map(([l, p, lead]) => (
                         <div key={l}>
-                          <div className="flex justify-between ff-mono text-[11px] mb-1.5"><span className={lead ? '' : 'text-[#aab0b8]'}>{l}</span><span style={{ color: lead ? LIFECYCLE[1].c : '#7c828a' }}>{p}%</span></div>
-                          <div className="h-2 bg-white/[0.08]"><div className="h-full" style={{ width: `${p}%`, background: lead ? LIFECYCLE[1].c : '#6b7178' }} /></div>
+                          <div className="flex justify-between ff-mono text-[10.5px] mb-1"><span className={lead ? '' : 'text-[#aab0b8]'}>{l}</span><span style={{ color: lead ? LIFECYCLE[1].c : '#7c828a' }}>{p}%</span></div>
+                          <div className="h-1.5 bg-white/[0.08]"><div className="h-full" style={{ width: `${p}%`, background: lead ? LIFECYCLE[1].c : '#6b7178' }} /></div>
                         </div>
                       ))}
                     </div>
@@ -331,9 +316,9 @@ export default function LandingPage() {
                 {
                   ...LIFECYCLE[2],
                   preview: (
-                    <div className="w-full max-w-[300px] border border-white/12 p-5">
-                      <div className="flex items-center gap-2.5 mb-3.5"><span className="w-[22px] h-[22px] flex items-center justify-center text-[12px] text-white" style={{ background: LIFECYCLE[2].c }}>✦</span><span className="ff-mono text-[10.5px] tracking-[0.08em] uppercase text-[#7c828a]">Summary · 3s</span></div>
-                      <div className="flex flex-wrap gap-1.5">{['Comms gaps', 'Readiness', 'Morale'].map((t) => <span key={t} className="ff-mono text-[10.5px] text-[#cfd3d8] border border-white/14 px-2.5 py-1">{t}</span>)}</div>
+                    <div className="w-full border border-white/12 px-4 py-3">
+                      <div className="flex items-center gap-2.5 mb-2.5"><span className="w-[18px] h-[18px] flex items-center justify-center text-[10px] text-white" style={{ background: LIFECYCLE[2].c }}>✦</span><span className="ff-mono text-[9.5px] tracking-[0.08em] uppercase text-[#7c828a]">Summary · 3s</span></div>
+                      <div className="flex flex-wrap gap-1.5">{['Comms gaps', 'Readiness', 'Morale'].map((t) => <span key={t} className="ff-mono text-[10px] text-[#cfd3d8] border border-white/14 px-2 py-0.5">{t}</span>)}</div>
                     </div>
                   ),
                 },

@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ShieldCheck, Mail, LogIn } from 'lucide-react'
-import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
+import { ShieldCheck, Mail } from 'lucide-react'
 
 const TICKER = [
   'New — Scenario Studio: immersive incident simulation',
@@ -20,7 +19,6 @@ const TICKER = [
 export function TopBar() {
   const [hidden, setHidden] = useState(false)
   const [i, setI] = useState(0)
-  const { openAuth } = useAuthSlideOver()
 
   useEffect(() => {
     const onScroll = () => setHidden(window.scrollY > 36)
@@ -62,12 +60,6 @@ export function TopBar() {
               </motion.span>
             </AnimatePresence>
           </div>
-          <button
-            onClick={() => openAuth('login')}
-            className="ff-mono text-[11px] font-semibold tracking-[0.05em] uppercase text-[#cfd3d8] hover:text-white transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
-          >
-            <LogIn className="w-3.5 h-3.5" /> Client login
-          </button>
         </div>
       </div>
     </div>

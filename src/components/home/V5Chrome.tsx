@@ -33,12 +33,15 @@ export function V5AuthButton({
   )
 }
 
+// Mirrors the real site header (PublicHeader) so the v5 home links into the
+// rest of the live site. In-page sections use hash anchors; everything else
+// routes to the real pages.
 const NAV_LINKS = [
-  { href: '#capabilities', label: 'Capabilities' },
-  { href: '#demo', label: 'Live Demo' },
+  { href: '#capabilities', label: 'How It Works' },
   { href: '#services', label: 'Services' },
-  { href: '/command-studio', label: 'Studio', badge: 'NEW' },
-  { href: '#deploy', label: 'Deployment' },
+  { href: '/command-studio', label: 'Command Studio', badge: 'NEW' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
 ]
 
 export function V5Nav() {
