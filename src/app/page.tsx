@@ -3,6 +3,7 @@ import { CountUp } from '@/components/home/CountUp'
 import { SpotlightCard } from '@/components/home/SpotlightCard'
 import { RevealManager } from '@/components/home/RevealManager'
 import { RotatingWord } from '@/components/home/RotatingWord'
+import { StackedCards } from '@/components/home/StackedCards'
 import { V5Nav, V5AuthButton } from '@/components/home/V5Chrome'
 import { V5Demo } from '@/components/home/V5Demo'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
@@ -296,50 +297,42 @@ export default function LandingPage() {
           <div className="max-w-[1280px] mx-auto px-5 sm:px-[30px]">
             <Eyebrow n="03">Session lifecycle</Eyebrow>
             <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 mb-10 max-w-[680px]" data-reveal>Three phases, one continuous record</h2>
-            <div className="relative">
-              {LIFECYCLE.map((ph, i) => (
-                <div key={ph.n} className="sticky bg-[#16191E] text-white border border-white/10 overflow-hidden shadow-[0_-16px_50px_-18px_rgba(0,0,0,0.7)]" style={{ top: `${84 + i * 28}px` }}>
-                  <div className="absolute top-[-120px] left-[-80px] w-[480px] h-[400px] pointer-events-none" aria-hidden="true" style={{ background: `radial-gradient(50% 60% at 30% 30%,${ph.c}33,transparent 72%)`, filter: 'blur(42px)' }} />
-                  <div className="absolute top-4 right-[18px] z-[2] ff-mono text-[10px] font-semibold tracking-[0.16em] text-[#6f757d]">PHASE {ph.n} / 03</div>
-                  <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
-                  <div className="relative grid md:grid-cols-2 min-h-[320px]">
-                    <div className="p-11 md:border-r border-white/10">
-                      <div className="flex items-center gap-3 mb-6">
-                        <span data-reveal className="v5-num ff-display font-black text-[46px] leading-none" style={{ color: ph.c }}>{ph.n}</span>
-                        <span className="ff-mono text-[11px] tracking-[0.1em] uppercase text-[#9aa0a8]">{ph.tag}</span>
-                      </div>
-                      <h3 className="ff-display font-bold text-[25px] tracking-[-0.01em] mb-3">{ph.title}</h3>
-                      <p className="text-[15px] text-[#aab0b8] max-w-[380px]">{ph.desc}</p>
+            <StackedCards
+              items={[
+                {
+                  ...LIFECYCLE[0],
+                  preview: (
+                    <div className="w-full max-w-[300px] border border-white/12 p-5">
+                      <div className="ff-mono text-[10.5px] tracking-[0.1em] uppercase text-[#7c828a] mb-3.5">Join code</div>
+                      <div className="ff-display font-extrabold text-[40px] tracking-[0.12em]">418 207</div>
+                      <div className="mt-3.5 flex gap-1.5"><span className="flex-1 h-1.5" style={{ background: LIFECYCLE[0].c }} /><span className="flex-1 h-1.5 bg-white/12" /><span className="flex-1 h-1.5 bg-white/12" /></div>
                     </div>
-                    <div className="p-11 flex items-center justify-center">
-                      {i === 0 && (
-                        <div className="w-full max-w-[300px] border border-white/12 p-5">
-                          <div className="ff-mono text-[10.5px] tracking-[0.1em] uppercase text-[#7c828a] mb-3.5">Join code</div>
-                          <div className="ff-display font-extrabold text-[40px] tracking-[0.12em]">418 207</div>
-                          <div className="mt-3.5 flex gap-1.5"><span className="flex-1 h-1.5" style={{ background: ph.c }} /><span className="flex-1 h-1.5 bg-white/12" /><span className="flex-1 h-1.5 bg-white/12" /></div>
+                  ),
+                },
+                {
+                  ...LIFECYCLE[1],
+                  preview: (
+                    <div className="w-full max-w-[300px] flex flex-col gap-3">
+                      {([['ALPHA', 65, true], ['BRAVO', 22, false], ['CHARLIE', 13, false]] as const).map(([l, p, lead]) => (
+                        <div key={l}>
+                          <div className="flex justify-between ff-mono text-[11px] mb-1.5"><span className={lead ? '' : 'text-[#aab0b8]'}>{l}</span><span style={{ color: lead ? LIFECYCLE[1].c : '#7c828a' }}>{p}%</span></div>
+                          <div className="h-2 bg-white/[0.08]"><div className="h-full" style={{ width: `${p}%`, background: lead ? LIFECYCLE[1].c : '#6b7178' }} /></div>
                         </div>
-                      )}
-                      {i === 1 && (
-                        <div className="w-full max-w-[300px] flex flex-col gap-3">
-                          {[['ALPHA', 65, true], ['BRAVO', 22, false], ['CHARLIE', 13, false]].map(([l, p, lead]) => (
-                            <div key={l as string}>
-                              <div className="flex justify-between ff-mono text-[11px] mb-1.5"><span className={lead ? '' : 'text-[#aab0b8]'}>{l}</span><span style={{ color: lead ? ph.c : '#7c828a' }}>{p}%</span></div>
-                              <div className="h-2 bg-white/[0.08]"><div className="h-full" style={{ width: `${p}%`, background: lead ? ph.c : '#6b7178' }} /></div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      {i === 2 && (
-                        <div className="w-full max-w-[300px] border border-white/12 p-5">
-                          <div className="flex items-center gap-2.5 mb-3.5"><span className="w-[22px] h-[22px] flex items-center justify-center text-[12px] text-white" style={{ background: ph.c }}>✦</span><span className="ff-mono text-[10.5px] tracking-[0.08em] uppercase text-[#7c828a]">Summary · 3s</span></div>
-                          <div className="flex flex-wrap gap-1.5">{['Comms gaps', 'Readiness', 'Morale'].map((t) => <span key={t} className="ff-mono text-[10.5px] text-[#cfd3d8] border border-white/14 px-2.5 py-1">{t}</span>)}</div>
-                        </div>
-                      )}
+                      ))}
                     </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  ),
+                },
+                {
+                  ...LIFECYCLE[2],
+                  preview: (
+                    <div className="w-full max-w-[300px] border border-white/12 p-5">
+                      <div className="flex items-center gap-2.5 mb-3.5"><span className="w-[22px] h-[22px] flex items-center justify-center text-[12px] text-white" style={{ background: LIFECYCLE[2].c }}>✦</span><span className="ff-mono text-[10.5px] tracking-[0.08em] uppercase text-[#7c828a]">Summary · 3s</span></div>
+                      <div className="flex flex-wrap gap-1.5">{['Comms gaps', 'Readiness', 'Morale'].map((t) => <span key={t} className="ff-mono text-[10.5px] text-[#cfd3d8] border border-white/14 px-2.5 py-1">{t}</span>)}</div>
+                    </div>
+                  ),
+                },
+              ]}
+            />
           </div>
         </section>
 

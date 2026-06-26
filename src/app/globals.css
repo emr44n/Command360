@@ -718,6 +718,23 @@ html, body {
 @keyframes v5numpop { from { opacity: 0; transform: translateY(10px) scale(.9); } to { opacity: 1; transform: none; } }
 .is-in .v5-num, .v5-num.is-in { animation: v5numpop .6s cubic-bezier(.16,1,.3,1) both; }
 
+/* ── Scroll-driven sticky stacked cards ──
+   Pure-CSS sticky stacking + a tiny rAF driver (StackedCards.tsx) that
+   scales/dims each card as the next one stacks over it. The top offset is
+   stepped per card so a sliver of each peeks above the next. */
+.sc-stack { --sc-top: 96px; --sc-step: 26px; --sc-gap: 26vh; }
+@media (max-width: 768px) { .sc-stack { --sc-top: 80px; --sc-step: 16px; --sc-gap: 15vh; } }
+.sc-card { position: sticky; }
+.sc-inner { transform-origin: center top; will-change: transform; }
+.sc-dim {
+  position: absolute; inset: 0; background: #05070a;
+  opacity: 0; pointer-events: none; transition: opacity .05s linear;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc-inner { transform: none !important; }
+  .sc-dim { opacity: 0 !important; }
+}
+
 /* Cursor-follow spotlight wash for boxy cards (pairs with SpotlightCard). */
 .v5-card { position: relative; transition: background .25s ease; }
 .v5-card::before {
