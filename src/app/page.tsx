@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { CountUp } from '@/components/home/CountUp'
 import { SpotlightCard } from '@/components/home/SpotlightCard'
 import { RevealManager } from '@/components/home/RevealManager'
+import { RotatingWord } from '@/components/home/RotatingWord'
 import { V5Nav, V5AuthButton } from '@/components/home/V5Chrome'
 import { V5Demo } from '@/components/home/V5Demo'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
@@ -131,16 +132,17 @@ export default function LandingPage() {
             <span className="w-[9px] h-[9px] bg-[#C9241A]" style={{ boxShadow: '0 0 0 6px rgba(201,36,26,.18)' }} />
           </div>
 
-          <div className="relative max-w-[1280px] mx-auto px-5 sm:px-[30px]">
+          <div className="relative max-w-[1280px] mx-auto px-5 sm:px-[30px] pt-[78px]">
             <div className="grid lg:grid-cols-[1.05fr_0.95fr] border-x border-white/10">
               {/* Left */}
-              <div className="pt-[112px] pb-14 lg:py-[70px] lg:pr-12 lg:border-r border-white/10">
+              <div className="pt-10 pb-14 lg:py-[64px] lg:pr-12 lg:border-r border-white/10">
                 <div className="flex items-center gap-3 ff-mono text-[12px] font-medium tracking-[0.14em] uppercase text-[#9aa0a8] mb-7" data-reveal>
                   <span className="w-[7px] h-[7px] bg-[#C9241A] v5-pulse" />
                   Interactive learning · UK emergency services
                 </div>
-                <h1 className="ff-display font-extrabold text-white mb-7 leading-[0.98] tracking-[-0.02em] text-[clamp(42px,5.2vw,72px)]" data-reveal>
-                  Where emergency teams<br />learn, grow, and lead.
+                <h1 className="ff-display font-extrabold text-white mb-7 leading-[0.98] tracking-[-0.02em] text-[clamp(44px,5.4vw,74px)]" data-reveal>
+                  Where emergency<br />teams{' '}
+                  <RotatingWord words={['learn.', 'grow.', 'lead.']} className="text-[#C9241A]" />
                 </h1>
                 <p className="text-[18px] leading-[1.62] text-[#aab0b8] max-w-[500px] mb-9" data-reveal>
                   An interactive training environment that turns briefings, debriefs, and CPD into measured,
@@ -215,7 +217,7 @@ export default function LandingPage() {
         </header>
 
         {/* ════════════ 01 CAPABILITIES (light) ════════════ */}
-        <section id="capabilities" className="bg-[#EFECE4] text-[#16191E] pt-[90px]">
+        <section id="capabilities" className="bg-[#EFECE4] text-[#16191E] pt-[90px] pb-[100px]">
           <div className="max-w-[1280px] mx-auto px-5 sm:px-[30px]">
             <div className="flex items-end justify-between gap-8 flex-wrap mb-3.5">
               <div className="max-w-[620px]" data-reveal>
@@ -279,9 +281,9 @@ export default function LandingPage() {
               </h2>
               <div className="border-t border-l border-white/14">
                 {DOCTRINE_BOXES.map((b, i) => (
-                  <div key={b} data-reveal style={{ ['--rd' as string]: `${i * 50}ms` }} className="flex items-center gap-3 px-[18px] py-3.5 border-r border-b border-white/14">
-                    <span className="ff-display font-extrabold text-[13px] text-[#C9241A] w-6">{String(i + 1).padStart(2, '0')}</span>
-                    <span className="ff-mono text-[12.5px] tracking-[0.03em] text-[#dfe2e6]">{b}</span>
+                  <div key={b} data-reveal style={{ ['--rd' as string]: `${i * 50}ms` }} className="group v5-pop cursor-default flex items-center gap-3 px-[18px] py-3.5 border-r border-b border-white/14">
+                    <span className="ff-display font-extrabold text-[13px] text-[#C9241A] w-6 transition-transform duration-300 group-hover:scale-[1.35] origin-left">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="ff-mono text-[12.5px] tracking-[0.03em] text-[#dfe2e6] transition-colors group-hover:text-white">{b}</span>
                   </div>
                 ))}
               </div>
@@ -296,14 +298,14 @@ export default function LandingPage() {
             <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 mb-10 max-w-[680px]" data-reveal>Three phases, one continuous record</h2>
             <div className="relative">
               {LIFECYCLE.map((ph, i) => (
-                <div key={ph.n} className="sticky bg-[#16191E] text-white border border-white/10 overflow-hidden mb-[22px]" style={{ top: `${90 + i * 22}px` }}>
+                <div key={ph.n} className="sticky bg-[#16191E] text-white border border-white/10 overflow-hidden shadow-[0_-16px_50px_-18px_rgba(0,0,0,0.7)]" style={{ top: `${84 + i * 28}px` }}>
                   <div className="absolute top-[-120px] left-[-80px] w-[480px] h-[400px] pointer-events-none" aria-hidden="true" style={{ background: `radial-gradient(50% 60% at 30% 30%,${ph.c}33,transparent 72%)`, filter: 'blur(42px)' }} />
                   <div className="absolute top-4 right-[18px] z-[2] ff-mono text-[10px] font-semibold tracking-[0.16em] text-[#6f757d]">PHASE {ph.n} / 03</div>
                   <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
-                  <div className="relative grid md:grid-cols-2 min-h-[300px]">
+                  <div className="relative grid md:grid-cols-2 min-h-[320px]">
                     <div className="p-11 md:border-r border-white/10">
                       <div className="flex items-center gap-3 mb-6">
-                        <span className="ff-display font-black text-[46px] leading-none" style={{ color: ph.c }}>{ph.n}</span>
+                        <span data-reveal className="v5-num ff-display font-black text-[46px] leading-none" style={{ color: ph.c }}>{ph.n}</span>
                         <span className="ff-mono text-[11px] tracking-[0.1em] uppercase text-[#9aa0a8]">{ph.tag}</span>
                       </div>
                       <h3 className="ff-display font-bold text-[25px] tracking-[-0.01em] mb-3">{ph.title}</h3>
@@ -375,8 +377,9 @@ export default function LandingPage() {
             <div className="h-0.5 bg-[#16191E] origin-left" data-rule />
             <div className="grid md:grid-cols-3 border-l border-[rgba(20,25,30,0.16)]">
               {STEPS.map((s) => (
-                <div key={s.n} data-reveal className="p-[40px_30px] border-r border-b border-[rgba(20,25,30,0.16)]">
-                  <div className="ff-display font-black text-[46px] leading-none mb-5" style={{ color: s.accent ? '#C9241A' : '#16191E' }}>{s.n}</div>
+                <div key={s.n} data-reveal className="group relative p-[40px_30px] border-r border-b border-[rgba(20,25,30,0.16)] transition-[transform,background,box-shadow] duration-300 hover:bg-white hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(20,25,30,0.45)]">
+                  <span className="absolute top-0 left-0 right-0 h-0.5 bg-[#C9241A] scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" aria-hidden="true" />
+                  <div className="ff-display font-black text-[46px] leading-none mb-5 origin-left transition-transform duration-300 group-hover:scale-110" style={{ color: s.accent ? '#C9241A' : '#16191E' }}>{s.n}</div>
                   <h3 className="ff-display font-bold text-[20px] tracking-[-0.01em] mb-2.5 text-[#16191E]">{s.title}</h3>
                   <p className="text-[14.5px] text-[#5a5f66]">{s.desc}</p>
                 </div>
@@ -489,9 +492,13 @@ export default function LandingPage() {
       </main>
 
       {/* ════════════ FOOTER ════════════ */}
-      <footer id="about" className="relative overflow-hidden bg-[#0A0C0F] text-[#8a9098] pt-20 pb-[130px]">
-        <div className="absolute bottom-[-340px] left-1/2 -translate-x-1/2 w-[1400px] h-[740px] rounded-full pointer-events-none" aria-hidden="true" style={{ background: 'radial-gradient(50% 50% at 50% 50%,rgba(201,36,26,.32),rgba(201,36,26,.1) 44%,transparent 70%)', filter: 'blur(48px)' }} />
-        <div aria-hidden="true" className="absolute left-0 right-0 bottom-0 translate-y-[42%] text-center ff-display font-black leading-[0.8] tracking-[-0.02em] whitespace-nowrap pointer-events-none text-[clamp(120px,27vw,372px)]" style={{ color: 'rgba(255,255,255,.09)', textShadow: '0 0 60px rgba(201,36,26,.28)' }}>C360</div>
+      <footer id="about" className="relative overflow-hidden bg-[#0A0C0F] text-[#8a9098] pt-20 pb-[188px]">
+        <div className="absolute bottom-[-300px] left-1/2 -translate-x-1/2 w-[1400px] h-[740px] rounded-full pointer-events-none" aria-hidden="true" style={{ background: 'radial-gradient(50% 50% at 50% 50%,rgba(201,36,26,.34),rgba(201,36,26,.1) 44%,transparent 70%)', filter: 'blur(48px)' }} />
+        <div aria-hidden="true" className="absolute left-0 right-0 bottom-0 translate-y-[44%] text-center ff-display font-black leading-[0.8] tracking-[-0.02em] whitespace-nowrap pointer-events-none text-[clamp(120px,27vw,372px)] flex items-end justify-center" style={{ color: 'rgba(255,255,255,.10)', textShadow: '0 0 70px rgba(201,36,26,.32)' }}>
+          {['C', '3', '6', '0'].map((ch, i) => (
+            <span key={i} className="v5-float-letter" style={{ animationDelay: `${i * -1.15}s` }}>{ch}</span>
+          ))}
+        </div>
         <div className="relative max-w-[1280px] mx-auto px-5 sm:px-[30px]">
           <div className="grid md:grid-cols-2 gap-10 items-end pb-11 border-b border-white/10">
             <div>

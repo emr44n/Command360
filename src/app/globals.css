@@ -690,6 +690,34 @@ html, body {
 .v5-marquee { animation: v5marquee 46s linear infinite; }
 .v5-marquee-wrap:hover .v5-marquee { animation-play-state: paused; }
 
+/* Gentle floating letters (footer C360 wordmark). */
+@keyframes v5float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+.v5-float-letter {
+  display: inline-block;
+  animation: v5float 4.6s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Hover "pop" for the doctrine spec boxes + deployment cards. */
+.v5-pop {
+  transition: transform .28s cubic-bezier(.16,1,.3,1), background .28s ease, border-color .28s ease;
+}
+.v5-pop:hover {
+  transform: translateY(-3px);
+  background: rgba(255,255,255,.05);
+}
+
+/* Animated bar fill for the live demo (re-keys to replay). */
+@keyframes v5barfill { from { width: 0; } }
+.v5-bar { animation: v5barfill .9s cubic-bezier(.16,1,.3,1) both; }
+
+/* Lifecycle phase-number entrance. */
+@keyframes v5numpop { from { opacity: 0; transform: translateY(10px) scale(.9); } to { opacity: 1; transform: none; } }
+.is-in .v5-num, .v5-num.is-in { animation: v5numpop .6s cubic-bezier(.16,1,.3,1) both; }
+
 /* Cursor-follow spotlight wash for boxy cards (pairs with SpotlightCard). */
 .v5-card { position: relative; transition: background .25s ease; }
 .v5-card::before {
@@ -719,7 +747,9 @@ html, body {
     transform: none !important;
     transition: none !important;
   }
-  .v5-glow:hover, .v5-pulse, .v5-seal, .v5-marquee { animation: none !important; }
+  .v5-glow:hover, .v5-pulse, .v5-seal, .v5-marquee, .v5-float-letter, .v5-bar { animation: none !important; }
+  .v5-float-letter { transform: none !important; }
+  .v5-pop:hover { transform: none !important; }
 }
 
 /* ═══════════════════════════════════════════

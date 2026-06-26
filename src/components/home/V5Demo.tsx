@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const TABS = [
   { key: 'poll', label: 'Live Poll', color: '#C9241A' },
@@ -13,10 +13,28 @@ type TabKey = (typeof TABS)[number]['key']
 
 export function V5Demo() {
   const [tab, setTab] = useState<TabKey>('poll')
+  const [paused, setPaused] = useState(false)
   const active = TABS.find((t) => t.key === tab)!
 
+  // Auto-advance through the tabs so the demo feels live; pause on hover or
+  // once the visitor takes manual control, and skip for reduced-motion.
+  useEffect(() => {
+    if (paused) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const id = setInterval(() => {
+      setTab((cur) => {
+        const idx = TABS.findIndex((t) => t.key === cur)
+        return TABS[(idx + 1) % TABS.length].key
+      })
+    }, 4200)
+    return () => clearInterval(id)
+  }, [paused, tab])
+
   return (
-    <div>
+    <div
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
       {/* Tab bar */}
       <div className="flex flex-wrap gap-x-7 gap-y-2 border-b border-[rgba(20,25,30,0.16)] mb-0">
         {TABS.map((t) => (
@@ -50,7 +68,7 @@ export function V5Demo() {
           <span className="ff-mono text-[11px] font-semibold tracking-[0.06em]" style={{ color: active.color }}>● LIVE · 32</span>
         </div>
 
-        <div className="relative p-5 sm:p-8 min-h-[300px]">
+        <div key={tab} className="relative p-5 sm:p-8 min-h-[300px]">
           {tab === 'poll' && <PollPanel color={active.color} />}
           {tab === 'quiz' && <QuizPanel color={active.color} />}
           {tab === 'cloud' && <CloudPanel />}
@@ -79,7 +97,7 @@ function PollPanel({ color }: { color: string }) {
               <span style={{ color: b.lead ? color : '#7c828a' }}>{b.pct}%</span>
             </div>
             <div className="h-2 bg-white/[0.08]">
-              <div className="h-full transition-[width] duration-700" style={{ width: `${b.pct}%`, background: b.lead ? color : '#6b7178' }} />
+              <div className="h-full v5-bar" style={{ width: `${b.pct}%`, background: b.lead ? color : '#6b7178' }} />
             </div>
           </div>
         ))}
