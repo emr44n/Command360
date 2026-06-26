@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
+import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
 
 export interface StackItem {
   n: string
@@ -12,96 +13,67 @@ export interface StackItem {
 }
 
 /**
- * Scroll-driven sticky stacked cards. Each card is `position: sticky` with
- * a stepped top offset, so card 2 scrolls up and stacks over card 1, then
- * card 3 over card 2; after the last card the page scrolls on normally.
- * A lightweight rAF scroll driver scales + dims each card as the next one
- * covers it, for a premium recede effect. Reduced-motion-safe; no deps.
+ * Pinned scroll-stacking cards.
+ *
+ * A tall (340vh) section pins a 100vh stage. All cards are absolutely
+ * positioned in the SAME centre slot. Card 1 stays put; card 2 then card 3
+ * slide up from below the viewport (translateY 100vh → 0) as scroll
+ * progress advances, landing exactly on top of the card before them — same
+ * size, same position, no scale. Scrolling back up reverses it (card 3
+ * leaves first, then card 2). Framer Motion useScroll/useTransform drives it.
  */
+function PhaseCard({
+  item,
+  z,
+  y,
+}: {
+  item: StackItem
+  z: number
+  y?: MotionValue<string>
+}) {
+  return (
+    <motion.div className="absolute inset-0" style={{ zIndex: z, y }}>
+      <div className="relative h-full w-full bg-[#16191E] text-white border border-white/10 overflow-hidden shadow-[0_40px_90px_-24px_rgba(0,0,0,0.92)]">
+        <div className="absolute top-[-120px] left-[-80px] w-[480px] h-[400px] pointer-events-none" aria-hidden="true" style={{ background: `radial-gradient(50% 60% at 30% 30%,${item.c}33,transparent 72%)`, filter: 'blur(42px)' }} />
+        <div className="absolute top-4 right-[18px] z-[2] ff-mono text-[10px] font-semibold tracking-[0.16em] text-[#6f757d]">PHASE {item.n} / 03</div>
+        <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
+        <div className="relative h-full grid grid-rows-2 md:grid-rows-1 md:grid-cols-2">
+          <div className="p-7 sm:p-10 flex flex-col justify-center md:border-r border-b md:border-b-0 border-white/10">
+            <div className="flex items-center gap-3 mb-4 sm:mb-5">
+              <span className="ff-display font-black text-[clamp(38px,5vw,52px)] leading-none" style={{ color: item.c }}>{item.n}</span>
+              <span className="ff-mono text-[11px] tracking-[0.1em] uppercase text-[#9aa0a8]">{item.tag}</span>
+            </div>
+            <h3 className="ff-display font-bold text-[clamp(20px,2.4vw,26px)] tracking-[-0.01em] mb-2.5">{item.title}</h3>
+            <p className="text-[14px] sm:text-[15px] text-[#aab0b8] max-w-[400px] leading-relaxed">{item.desc}</p>
+          </div>
+          <div className="p-7 sm:p-10 flex items-center justify-center">{item.preview}</div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
 export function StackedCards({ items }: { items: StackItem[] }) {
-  const cardRefs = useRef<Array<HTMLDivElement | null>>([])
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
 
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  // Card 2 rises through the first half of the pinned scroll, card 3 through
+  // the second half. Small buffers keep card 1 alone at the start and the
+  // full stack settled before the section unpins.
+  const y2 = useTransform(scrollYProgress, [0.08, 0.46], ['100vh', '0vh'])
+  const y3 = useTransform(scrollYProgress, [0.54, 0.92], ['100vh', '0vh'])
 
-    let raf = 0
-    const smoothstep = (p: number) => p * p * (3 - 2 * p)
-
-    const apply = () => {
-      raf = 0
-      const vh = window.innerHeight || 1
-      const cards = cardRefs.current
-      for (let i = 0; i < cards.length; i++) {
-        const card = cards[i]
-        if (!card) continue
-        const inner = card.querySelector<HTMLElement>('.sc-inner')
-        const dim = card.querySelector<HTMLElement>('.sc-dim')
-        const next = cards[i + 1]
-        if (!inner) continue
-        if (!next) {
-          // top-most card never recedes
-          inner.style.transform = ''
-          if (dim) dim.style.opacity = '0'
-          continue
-        }
-        const nextTop = next.getBoundingClientRect().top
-        const stickyTopNext = parseFloat(getComputedStyle(next).top) || 0
-        // 0 when the next card is at the bottom of the viewport, 1 when it
-        // has risen to its sticky position (fully stacked over this one).
-        let p = (vh - nextTop) / (vh - stickyTopNext)
-        p = Math.max(0, Math.min(1, p))
-        const e = smoothstep(p)
-        inner.style.transform = `translateY(${(-12 * e).toFixed(2)}px) scale(${(1 - 0.06 * e).toFixed(4)})`
-        if (dim) dim.style.opacity = (0.24 * e).toFixed(3)
-      }
-    }
-
-    const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(apply)
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll, { passive: true })
-    apply()
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-      if (raf) cancelAnimationFrame(raf)
-    }
-  }, [items.length])
+  const [c1, c2, c3] = items
 
   return (
-    <div className="sc-stack relative">
-      {items.map((ph, i) => (
-        <div
-          key={ph.n}
-          ref={(el) => { cardRefs.current[i] = el }}
-          className="sc-card"
-          style={{
-            top: `calc(var(--sc-top) + ${i} * var(--sc-step))`,
-            zIndex: i + 1,
-            marginBottom: i < items.length - 1 ? 'var(--sc-gap)' : 0,
-          }}
-        >
-          <div className="sc-inner relative bg-[#16191E] text-white border border-white/10 overflow-hidden shadow-[0_18px_60px_-20px_rgba(0,0,0,0.85)]">
-            <div className="absolute top-[-120px] left-[-80px] w-[480px] h-[400px] pointer-events-none" aria-hidden="true" style={{ background: `radial-gradient(50% 60% at 30% 30%,${ph.c}33,transparent 72%)`, filter: 'blur(42px)' }} />
-            <div className="absolute top-4 right-[18px] z-[2] ff-mono text-[10px] font-semibold tracking-[0.16em] text-[#6f757d]">PHASE {ph.n} / 03</div>
-            <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
-            <div className="relative grid md:grid-cols-2 min-h-[320px]">
-              <div className="p-9 sm:p-11 md:border-r border-white/10">
-                <div className="flex items-center gap-3 mb-6">
-                  <span data-reveal className="v5-num ff-display font-black text-[46px] leading-none" style={{ color: ph.c }}>{ph.n}</span>
-                  <span className="ff-mono text-[11px] tracking-[0.1em] uppercase text-[#9aa0a8]">{ph.tag}</span>
-                </div>
-                <h3 className="ff-display font-bold text-[25px] tracking-[-0.01em] mb-3">{ph.title}</h3>
-                <p className="text-[15px] text-[#aab0b8] max-w-[380px]">{ph.desc}</p>
-              </div>
-              <div className="p-9 sm:p-11 flex items-center justify-center">{ph.preview}</div>
-            </div>
-            {/* receding overlay — opacity driven by scroll */}
-            <div className="sc-dim" aria-hidden="true" />
-          </div>
+    <section ref={ref} className="relative" style={{ height: '340vh' }}>
+      <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center px-4 sm:px-6">
+        <div className="relative w-full max-w-[1040px] h-[78vh] max-h-[640px] sm:h-[440px] md:h-[400px]">
+          {c1 && <PhaseCard item={c1} z={1} />}
+          {c2 && <PhaseCard item={c2} z={2} y={y2} />}
+          {c3 && <PhaseCard item={c3} z={3} y={y3} />}
         </div>
-      ))}
-    </div>
+      </div>
+    </section>
   )
 }

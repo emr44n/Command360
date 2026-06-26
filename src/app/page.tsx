@@ -107,7 +107,7 @@ function Eyebrow({ children, n }: { children: React.ReactNode; n?: string }) {
 /* ── PAGE ── */
 export default function LandingPage() {
   return (
-    <div className="v5 relative min-h-screen overflow-x-hidden" id="top">
+    <div className="v5 relative min-h-screen" id="top">
       <div className="fixed inset-0 -z-10 bg-[#0F1216]" aria-hidden="true" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SOFTWARE_JSONLD) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSONLD) }} />
@@ -292,13 +292,16 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ════════════ 03 SESSION LIFECYCLE — sticky stack (light) ════════════ */}
-        <section className="bg-[#EFECE4] text-[#16191E] pt-[90px] pb-[60px]">
+        {/* ════════════ 03 SESSION LIFECYCLE — pinned scroll-stack ════════════ */}
+        <section className="bg-[#EFECE4] text-[#16191E] pt-[90px] pb-12">
           <div className="max-w-[1280px] mx-auto px-5 sm:px-[30px]">
             <Eyebrow n="03">Session lifecycle</Eyebrow>
-            <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 mb-10 max-w-[680px]" data-reveal>Three phases, one continuous record</h2>
-            <StackedCards
-              items={[
+            <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 max-w-[680px]" data-reveal>Three phases, one continuous record</h2>
+          </div>
+        </section>
+        <div className="bg-[#EFECE4] text-[#16191E]">
+          <StackedCards
+            items={[
                 {
                   ...LIFECYCLE[0],
                   preview: (
@@ -331,10 +334,9 @@ export default function LandingPage() {
                     </div>
                   ),
                 },
-              ]}
-            />
-          </div>
-        </section>
+            ]}
+          />
+        </div>
 
         {/* ════════════ FIELD RESULTS — stat band (dark) ════════════ */}
         <section className="relative overflow-hidden bg-[#16191E] text-white py-[72px]">
