@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowRight, Loader2, ClipboardPaste } from 'lucide-react'
 
 interface Props {
-  variant?: 'hero' | 'page' | 'compact'
+  variant?: 'hero' | 'page' | 'compact' | 'v5'
   className?: string
 }
 
@@ -45,6 +45,31 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
           className="h-10 w-10 flex items-center justify-center rounded-xl bg-primary text-primary-foreground disabled:opacity-40 transition-all hover:bg-primary/90 btn-animated shrink-0"
         >
           {joining ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
+        </button>
+      </form>
+    )
+  }
+
+  if (variant === 'v5') {
+    // Hard-edged "regimental" join input for the v5 dark surfaces.
+    return (
+      <form onSubmit={handleSubmit} className={`flex items-stretch border border-white/20 ${className}`}>
+        <input
+          ref={inputRef}
+          value={code}
+          onChange={handleChange}
+          placeholder="ENTER CODE"
+          maxLength={6}
+          autoCapitalize="characters"
+          aria-label="Session join code"
+          className="ff-mono flex-1 min-w-0 bg-transparent border-none text-white text-[15px] font-semibold tracking-[0.22em] px-4 py-3 outline-none placeholder:text-white/35 placeholder:tracking-[0.18em]"
+        />
+        <button
+          type="submit"
+          disabled={code.trim().length < 4 || joining}
+          className="ff-mono bg-white text-[#0F1216] font-semibold text-[12.5px] tracking-[0.06em] uppercase px-5 hover:bg-[#C9241A] hover:text-white transition-colors disabled:opacity-50 inline-flex items-center gap-1.5 shrink-0"
+        >
+          {joining ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Join <ArrowRight className="w-3.5 h-3.5" /></>}
         </button>
       </form>
     )

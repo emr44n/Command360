@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
 interface Props {
   value: number
@@ -10,13 +10,14 @@ interface Props {
   duration?: number
   decimals?: number
   className?: string
+  style?: CSSProperties
 }
 
 /**
  * Counts up from 0 to `value` the first time it scrolls into view.
  * Respects prefers-reduced-motion by rendering the final value immediately.
  */
-export function CountUp({ value, prefix = '', suffix = '', duration = 1600, decimals = 0, className = '' }: Props) {
+export function CountUp({ value, prefix = '', suffix = '', duration = 1600, decimals = 0, className = '', style }: Props) {
   const ref = useRef<HTMLSpanElement>(null)
   const [display, setDisplay] = useState(0)
 
@@ -63,7 +64,7 @@ export function CountUp({ value, prefix = '', suffix = '', duration = 1600, deci
   }, [value, duration])
 
   return (
-    <span ref={ref} className={className}>
+    <span ref={ref} className={className} style={style}>
       {prefix}
       {display.toFixed(decimals)}
       {suffix}

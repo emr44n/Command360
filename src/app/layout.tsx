@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Geist_Mono } from 'next/font/google'
+import { Inter, Geist_Mono, Archivo, IBM_Plex_Sans, IBM_Plex_Mono } from 'next/font/google'
 import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -14,6 +14,28 @@ const inter = Inter({
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+  display: 'swap',
+})
+
+// ── v5 "regimental" type system ──
+const archivo = Archivo({
+  variable: '--font-archivo',
+  subsets: ['latin'],
+  weight: ['500', '600', '700', '800', '900'],
+  display: 'swap',
+})
+
+const plexSans = IBM_Plex_Sans({
+  variable: '--font-plex-sans',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+})
+
+const plexMono = IBM_Plex_Mono({
+  variable: '--font-plex-mono',
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
   display: 'swap',
 })
 
@@ -66,7 +88,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
+      <body className={`${inter.variable} ${geistMono.variable} ${archivo.variable} ${plexSans.variable} ${plexMono.variable} antialiased overflow-x-hidden`}>
         <TooltipProvider>
           <AuthSlideOverProvider>
             {children}

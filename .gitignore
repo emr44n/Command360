@@ -44,3 +44,6 @@ nul
 # python (skill script caches)
 __pycache__/
 *.pyc
+
+# local dev server log
+dev.log

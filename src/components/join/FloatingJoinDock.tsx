@@ -2,11 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import { JoinCodeInput } from './JoinCodeInput'
-import { ShieldAlert } from 'lucide-react'
+import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
 
+/**
+ * v5 "regimental" sticky command bar. Slides up once the hero join block
+ * has scrolled away, hides again over the footer. Keeps the real join +
+ * auth functionality.
+ */
 export function FloatingJoinDock() {
   const [visible, setVisible] = useState(false)
   const [atFooter, setAtFooter] = useState(false)
+  const { openAuth } = useAuthSlideOver()
 
   useEffect(() => {
     const heroJoin = document.getElementById('hero-join')
@@ -14,10 +20,7 @@ export function FloatingJoinDock() {
     const observers: IntersectionObserver[] = []
 
     if (heroJoin) {
-      const heroObs = new IntersectionObserver(
-        ([entry]) => setVisible(!entry.isIntersecting),
-        { threshold: 0 }
-      )
+      const heroObs = new IntersectionObserver(([entry]) => setVisible(!entry.isIntersecting), { threshold: 0 })
       heroObs.observe(heroJoin)
       observers.push(heroObs)
     } else {
@@ -27,10 +30,7 @@ export function FloatingJoinDock() {
     }
 
     if (footer) {
-      const footerObs = new IntersectionObserver(
-        ([entry]) => setAtFooter(entry.isIntersecting),
-        { threshold: 0 }
-      )
+      const footerObs = new IntersectionObserver(([entry]) => setAtFooter(entry.isIntersecting), { threshold: 0 })
       footerObs.observe(footer)
       observers.push(footerObs)
     }
@@ -42,21 +42,30 @@ export function FloatingJoinDock() {
 
   return (
     <div
-      className={`fixed bottom-4 left-0 right-0 z-40 transition-all duration-300 ease-out ${
-        shouldShow
-          ? 'translate-y-0 opacity-100'
-          : 'translate-y-full opacity-0 pointer-events-none'
+      className={`fixed left-0 right-0 bottom-0 z-[55] bg-[#16191E] border-t border-white/14 transition-transform duration-500 ease-out ${
+        shouldShow ? 'translate-y-0' : 'translate-y-full'
       }`}
+      style={{ willChange: 'transform' }}
     >
-      <div className="mx-auto w-fit px-4 max-w-[calc(100vw-2rem)]">
-        <div className="relative">
-          <div className="absolute -inset-2 rounded-2xl bg-primary/20 blur-xl dock-glow-pulse" />
-
-          <div className="relative flex items-center gap-2.5 rounded-2xl border border-primary/30 bg-card/95 backdrop-blur-xl px-3 py-2.5 shadow-xl shadow-primary/10">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shrink-0">
-              <ShieldAlert className="w-5 h-5 text-primary-foreground" />
+      <div className="max-w-[1280px] mx-auto px-5 sm:px-[30px]">
+        <div className="flex items-center gap-5 py-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="w-2 h-2 bg-[#C9241A] v5-pulse shrink-0" aria-hidden="true" />
+            <div className="min-w-0">
+              <div className="ff-display font-bold text-[14.5px] text-white leading-tight">Join a live session or start your own</div>
+              <div className="ff-mono hidden md:block text-[11.5px] text-white/55">No app · no account for crew · free for 30 days</div>
             </div>
-            <JoinCodeInput variant="compact" />
+          </div>
+          <div className="ml-auto flex items-stretch gap-2.5 shrink-0">
+            <div className="hidden sm:block">
+              <JoinCodeInput variant="v5" />
+            </div>
+            <button
+              onClick={() => openAuth('register')}
+              className="ff-mono inline-flex items-center text-[11.5px] font-semibold uppercase tracking-[0.05em] text-white bg-[#C9241A] hover:bg-[#a91d14] v5-glow px-5 whitespace-nowrap transition-colors cursor-pointer"
+            >
+              Start trial
+            </button>
           </div>
         </div>
       </div>
