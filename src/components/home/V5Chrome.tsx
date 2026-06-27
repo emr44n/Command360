@@ -94,21 +94,27 @@ export function V5Nav() {
         </div>
 
         <div className="ml-auto flex items-center gap-4">
-          <div className="relative hidden sm:flex items-center">
+          <div
+            className="relative hidden sm:flex items-center"
+            onMouseEnter={() => setJoinOpen(true)}
+            onMouseLeave={() => setJoinOpen(false)}
+          >
             <button
               onClick={() => setJoinOpen((v) => !v)}
+              aria-expanded={joinOpen}
               className="ff-mono leading-none text-[12.5px] font-medium tracking-[0.04em] uppercase text-[#9aa0a8] hover:text-white transition-colors cursor-pointer"
             >
               Join
             </button>
             {joinOpen && (
-              <>
-                <div className="fixed inset-0 z-[70]" onClick={() => setJoinOpen(false)} />
-                <div className="absolute right-0 top-[calc(100%+14px)] z-[80] w-[300px] bg-[#0F1216] border border-white/12 p-4 shadow-2xl shadow-black/50">
+              // top-full + pt bridges the gap so moving the cursor from the
+              // button down into the panel keeps it open (hover-intent).
+              <div className="absolute right-0 top-full pt-[14px] z-[80]">
+                <div className="w-[300px] bg-[#0F1216] border border-white/12 p-4 shadow-2xl shadow-black/50">
                   <div className="ff-mono text-[10px] tracking-[0.1em] uppercase text-white/45 mb-2.5">Joining a session?</div>
                   <JoinCodeInput variant="v5" />
                 </div>
-              </>
+              </div>
             )}
           </div>
           <button

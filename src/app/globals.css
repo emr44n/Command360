@@ -646,10 +646,6 @@ html, body {
 
 /* ── Keyframes ── */
 @keyframes v5rise { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: none; } }
-@keyframes v5btnglow {
-  0%, 100% { box-shadow: 0 0 0 1px rgba(255,255,255,.5), 0 0 16px rgba(255,255,255,.16); }
-  50% { box-shadow: 0 0 0 1px rgba(255,255,255,.92), 0 0 32px rgba(255,255,255,.4); }
-}
 @keyframes v5spin { to { transform: rotate(360deg); } }
 @keyframes v5pulse { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
 @keyframes v5marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
@@ -680,8 +676,34 @@ html, body {
 }
 [data-word].is-in { opacity: 1; }
 
-/* Animated box-glow on hover for primary CTAs (kept from current site). */
-.v5-glow:hover { animation: v5btnglow 1.5s ease-in-out infinite; }
+/* Primary CTA hover: a bright light traces around the button border
+   (Google-style "border beam"), replacing the old pulsing box glow. */
+@property --v5trace {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes v5trace { to { --v5trace: 360deg; } }
+.v5-glow { position: relative; }
+.v5-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(from var(--v5trace),
+    transparent 0deg, transparent 210deg,
+    rgba(255,255,255,.35) 255deg, rgba(255,255,255,.95) 300deg, #fff 326deg,
+    rgba(255,255,255,.95) 344deg, rgba(255,255,255,.35) 352deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  filter: drop-shadow(0 0 4px rgba(255,255,255,.65));
+  opacity: 0;
+  transition: opacity .25s ease;
+  pointer-events: none;
+}
+.v5-glow:hover::before { opacity: 1; animation: v5trace 1.7s linear infinite; }
 
 /* Pulsing status dot. */
 .v5-pulse { animation: v5pulse 2s ease-in-out infinite; }
@@ -761,7 +783,8 @@ html, body {
     transform: none !important;
     transition: none !important;
   }
-  .v5-glow:hover, .v5-pulse, .v5-seal, .v5-marquee, .v5-float-letter, .v5-bar { animation: none !important; }
+  .v5-glow:hover::before, .v5-pulse, .v5-seal, .v5-marquee, .v5-float-letter, .v5-bar { animation: none !important; }
+  .v5-glow:hover::before { opacity: 1; }
   .v5-float-letter { transform: none !important; }
   .v5-pop:hover { transform: none !important; }
 }
