@@ -595,11 +595,11 @@ function EventButton({
       <button
         onClick={onTrigger}
         disabled={disabled}
-        className={`w-full flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all text-left ${
+        className={`w-full flex items-center gap-1.5 px-2.5 py-2 rounded-none text-xs font-medium transition-all text-left ${
           animating
-            ? 'bg-amber-500/15 text-amber-600 border border-amber-500/40 animate-pulse'
+            ? 'bg-[#c98a2a]/15 text-[#c98a2a] border border-[#c98a2a]/40 animate-pulse'
             : triggered
-              ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/30'
+              ? 'bg-[#2E9E63]/15 text-[#2E9E63] border border-[#2E9E63]/30'
               : 'bg-muted hover:bg-muted/80 text-foreground border border-border hover:border-primary/30'
         } disabled:opacity-40 disabled:cursor-not-allowed`}
         style={event.color && !triggered && !animating ? { borderColor: `${event.color}40`, color: event.color } : undefined}
@@ -608,10 +608,10 @@ function EventButton({
         {isVote ? <Vote className="w-3 h-3 shrink-0" /> : <Zap className="w-3 h-3 shrink-0" />}
         <span className="truncate">{event.name}</span>
         {hasActions && (
-          <span className="text-[9px] bg-foreground/10 px-1 py-0.5 rounded-full leading-none">{actionCount}</span>
+          <span className="text-[9px] bg-foreground/10 px-1 py-0.5 rounded-none leading-none">{actionCount}</span>
         )}
         {animating ? (
-          <span className="w-2.5 h-2.5 ml-auto shrink-0 rounded-full bg-amber-500 animate-ping" />
+          <span className="w-2.5 h-2.5 ml-auto shrink-0 rounded-full bg-[#c98a2a] animate-ping" />
         ) : (
           <Play className="w-2.5 h-2.5 ml-auto shrink-0 opacity-40" />
         )}
@@ -633,7 +633,7 @@ function EventButton({
                 const layerName = layers?.find(l => l.id === action.layerId)?.name || action.layerId.slice(0, 6)
                 return (
                   <div key={action.id} className="flex items-start gap-1 text-[9px] text-muted-foreground leading-tight">
-                    <Check className="w-2.5 h-2.5 text-emerald-500 shrink-0 mt-px" />
+                    <Check className="w-2.5 h-2.5 text-[#2E9E63] shrink-0 mt-px" />
                     <span>
                       <span className="font-medium text-foreground/70">{layerName}</span>
                       {' '}
@@ -726,9 +726,9 @@ function CctvDisplayView({
             )}
           </>
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900">
-            <Monitor className="w-6 h-6 text-zinc-700 mb-1" />
-            <span className="text-[11px] font-mono text-zinc-600 uppercase tracking-wider">No Signal</span>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#16191E]">
+            <Monitor className="w-6 h-6 text-white/30 mb-1" />
+            <span className="text-[11px] font-mono text-[#9aa0a8] uppercase tracking-wider">No Signal</span>
           </div>
         )}
       </div>
@@ -805,15 +805,15 @@ function CctvDisplayView({
                         })}
                       </div>
                       {label && (
-                        <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 bg-black/70 rounded text-[10px] font-semibold text-white/80 backdrop-blur-sm">{label}</div>
+                        <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 bg-black/70 rounded-none text-[10px] font-semibold text-white/80 backdrop-blur-sm">{label}</div>
                       )}
                     </>
                   )
                 }
                 return (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900">
-                    <Monitor className="w-6 h-6 text-zinc-700 mb-1" />
-                    <span className="text-[11px] font-mono text-zinc-600 uppercase tracking-wider">No Signal</span>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#16191E]">
+                    <Monitor className="w-6 h-6 text-white/30 mb-1" />
+                    <span className="text-[11px] font-mono text-[#9aa0a8] uppercase tracking-wider">No Signal</span>
                   </div>
                 )
               })()}
