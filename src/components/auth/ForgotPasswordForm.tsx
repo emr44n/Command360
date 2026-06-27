@@ -33,7 +33,7 @@ export function ForgotPasswordForm() {
   if (sent) {
     return (
       <div className="text-center py-4 space-y-4">
-        <div className="w-14 h-14 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto">
+        <div className="w-14 h-14 bg-emerald-500/10 flex items-center justify-center mx-auto border border-emerald-500/20">
           <Mail className="w-6 h-6 text-emerald-400" />
         </div>
         <div>
@@ -49,7 +49,7 @@ export function ForgotPasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-1.5">
-        <Label htmlFor="reset-email" className="text-sm font-medium text-white/60">Email</Label>
+        <Label htmlFor="reset-email" className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#7c828a]">Email</Label>
         <Input
           id="reset-email"
           type="email"
@@ -58,10 +58,10 @@ export function ForgotPasswordForm() {
           placeholder="you@example.com"
           required
           disabled={loading}
-          className="h-11 rounded-xl border-white/[0.08] bg-white/[0.04] text-white placeholder:text-white/25 focus-visible:ring-red-500/40 focus-visible:border-white/[0.12]"
+          className="h-11 rounded-none shadow-none border border-white/15 bg-white/[0.03] text-white placeholder:text-white/25 focus:border-[#C9241A] focus:outline-none focus-visible:ring-0"
         />
       </div>
-      <Button type="submit" disabled={loading} className="w-full h-11 rounded-full bg-red-600 hover:bg-red-500 text-white font-semibold transition-all hover:shadow-lg hover:shadow-red-500/25 cursor-pointer">
+      <Button type="submit" disabled={loading} className="v5-glow w-full h-11 rounded-none bg-[#C9241A] hover:bg-[#a91d14] text-white ff-mono uppercase tracking-[0.05em] font-semibold transition-colors cursor-pointer">
         {loading ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Sending...</> : 'Send reset link'}
       </Button>
     </form>

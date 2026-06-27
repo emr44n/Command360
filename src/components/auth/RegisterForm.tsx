@@ -41,8 +41,8 @@ export function RegisterForm() {
   if (emailSent) {
     return (
       <div className="text-center space-y-4 py-4">
-        <div className="w-16 h-16 bg-red-600/10 rounded-full flex items-center justify-center mx-auto ring-1 ring-red-500/20">
-          <Mail className="w-8 h-8 text-red-400" />
+        <div className="w-16 h-16 bg-[#C9241A]/10 flex items-center justify-center mx-auto border border-[#C9241A]/20">
+          <Mail className="w-8 h-8 text-[#e0564d]" />
         </div>
         <div className="space-y-2">
           <h3 className="font-semibold text-white text-lg">Check your email</h3>
@@ -61,31 +61,31 @@ export function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-1.5">
-        <Label htmlFor="name" className="text-sm font-medium text-white/60">Full name</Label>
+        <Label htmlFor="name" className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#7c828a]">Full name</Label>
         <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)}
           placeholder="Jane Smith" required disabled={loading}
-          className="h-11 rounded-xl border-white/[0.08] bg-white/[0.04] text-white placeholder:text-white/25 focus-visible:ring-red-500/40 focus-visible:border-white/[0.12]" />
+          className="h-11 rounded-none shadow-none border border-white/15 bg-white/[0.03] text-white placeholder:text-white/25 focus:border-[#C9241A] focus:outline-none focus-visible:ring-0" />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="email" className="text-sm font-medium text-white/60">Email</Label>
+        <Label htmlFor="email" className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#7c828a]">Email</Label>
         <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com" required disabled={loading}
-          className="h-11 rounded-xl border-white/[0.08] bg-white/[0.04] text-white placeholder:text-white/25 focus-visible:ring-red-500/40 focus-visible:border-white/[0.12]" />
+          className="h-11 rounded-none shadow-none border border-white/15 bg-white/[0.03] text-white placeholder:text-white/25 focus:border-[#C9241A] focus:outline-none focus-visible:ring-0" />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="password" className="text-sm font-medium text-white/60">Password</Label>
+        <Label htmlFor="password" className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#7c828a]">Password</Label>
         <div className="relative">
           <Input id="password" type={showPassword ? 'text' : 'password'} value={password}
             onChange={(e) => setPassword(e.target.value)} placeholder="Min. 6 characters"
             required minLength={6} disabled={loading}
-            className="h-11 rounded-xl border-white/[0.08] bg-white/[0.04] text-white placeholder:text-white/25 pr-10 focus-visible:ring-red-500/40 focus-visible:border-white/[0.12]" />
+            className="h-11 rounded-none shadow-none border border-white/15 bg-white/[0.03] text-white placeholder:text-white/25 pr-10 focus:border-[#C9241A] focus:outline-none focus-visible:ring-0" />
           <button type="button" onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors">
             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         </div>
       </div>
-      <Button type="submit" disabled={loading} className="w-full h-11 rounded-full bg-red-600 hover:bg-red-500 text-white font-semibold transition-all hover:shadow-lg hover:shadow-red-500/25 cursor-pointer">
+      <Button type="submit" disabled={loading} className="v5-glow w-full h-11 rounded-none bg-[#C9241A] hover:bg-[#a91d14] text-white ff-mono uppercase tracking-[0.05em] font-semibold transition-colors cursor-pointer">
         {loading ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Creating account...</> : 'Start free trial'}
       </Button>
     </form>
