@@ -114,12 +114,12 @@ export function SessionsList({ sessions }: Props) {
     <div className="space-y-4">
       {/* Filters, Search, Sort & View toggle */}
       <div className="flex items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-1 bg-muted rounded-full p-0.5">
+        <div className="flex items-center gap-1 bg-muted rounded-none p-0.5">
           {FILTERS.map((f) => (
             <button
               key={f.value}
               onClick={() => setFilter(f.value)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-none text-xs font-medium transition-colors ${
                 filter === f.value
                   ? 'bg-background text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
@@ -138,14 +138,14 @@ export function SessionsList({ sessions }: Props) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search sessions..."
-            className="pl-9 h-8 text-xs rounded-xl"
+            className="pl-9 h-8 text-xs rounded-none"
           />
         </div>
 
         {/* Sort dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 gap-2 text-muted-foreground hover:text-foreground rounded-xl border-border">
+            <Button variant="outline" size="sm" className="h-8 gap-2 text-muted-foreground hover:text-foreground rounded-none border-border">
               <ArrowUpDown className="w-3.5 h-3.5" />
               <span className="text-xs">
                 {SORT_OPTIONS.find((o) => o.value === sortBy)?.label}
@@ -166,7 +166,7 @@ export function SessionsList({ sessions }: Props) {
         </DropdownMenu>
 
         {/* View toggle */}
-        <div className="flex items-center rounded-xl border border-border overflow-hidden">
+        <div className="flex items-center rounded-none border border-border overflow-hidden">
           <button
             onClick={() => { setView('grid'); localStorage.setItem('c360-view-mode', 'grid') }}
             className={`p-2 transition-all duration-200 ${
@@ -206,7 +206,7 @@ export function SessionsList({ sessions }: Props) {
             return (
               <div
                 key={session.id}
-                className="group bg-card border border-border rounded-2xl p-4 hover:border-primary/20 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 cursor-pointer dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] overflow-hidden relative"
+                className="group bg-card border border-border rounded-none p-4 hover:border-primary/20 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 cursor-pointer dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] overflow-hidden relative"
                 onClick={() => {
                   if (isLive) {
                     router.push(`/present/${session.id}`)
@@ -231,7 +231,7 @@ export function SessionsList({ sessions }: Props) {
                         {session.presentation_title}
                       </p>
                       {isLive && (
-                        <span className="shrink-0 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-semibold uppercase tracking-wider">
+                        <span className="shrink-0 px-2 py-0.5 rounded-none bg-emerald-500/10 text-emerald-600 text-[10px] font-semibold uppercase tracking-wider">
                           Live
                         </span>
                       )}
@@ -286,7 +286,7 @@ export function SessionsList({ sessions }: Props) {
             return (
               <div
                 key={session.id}
-                className="group relative bg-card border border-border rounded-2xl p-5 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer overflow-hidden dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]"
+                className="group relative bg-card border border-border rounded-none p-5 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer overflow-hidden dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]"
                 onClick={() => {
                   if (isLive) {
                     router.push(`/present/${session.id}`)
@@ -299,11 +299,11 @@ export function SessionsList({ sessions }: Props) {
                 <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent ${isLive ? 'via-emerald-500/40' : 'via-border'} to-transparent group-hover:via-primary/30 transition-colors`} />
 
                 <div className="flex items-start justify-between gap-3 mb-3">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isLive ? 'bg-emerald-500/10' : 'bg-muted'}`}>
+                  <div className={`w-9 h-9 rounded-none flex items-center justify-center shrink-0 ${isLive ? 'bg-emerald-500/10' : 'bg-muted'}`}>
                     <Radio className={`w-4 h-4 ${isLive ? 'text-emerald-500' : 'text-muted-foreground'}`} />
                   </div>
                   {isLive && (
-                    <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                    <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-none bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                       <span className="relative flex h-1.5 w-1.5">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                         <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />

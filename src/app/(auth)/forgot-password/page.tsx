@@ -34,7 +34,7 @@ export default function ForgotPasswordPage() {
   if (sent) {
     return (
       <div className="text-center space-y-4">
-        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+        <div className="w-16 h-16 bg-primary/10 rounded-none flex items-center justify-center mx-auto">
           <Mail className="w-8 h-8 text-primary" />
         </div>
         <h1 className="text-2xl font-semibold tracking-tight">Check your email</h1>
@@ -64,10 +64,10 @@ export default function ForgotPasswordPage() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             required
-            className="h-11 rounded-xl border-border bg-background focus-visible:ring-primary"
+            className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
           />
         </div>
-        <Button type="submit" disabled={loading} className="w-full h-11 rounded-full bg-red-600 hover:bg-red-500 text-white font-semibold transition-all hover:shadow-lg hover:shadow-red-500/25">
+        <Button type="submit" disabled={loading} className="w-full h-11 rounded-none bg-[#C9241A] hover:bg-[#C9241A]/90 text-white font-semibold transition-all">
           {loading ? 'Sending...' : 'Send reset link'}
         </Button>
       </form>

@@ -114,12 +114,12 @@ export function ParticipantView({ session: initialSession, slides, participantId
   // Session ended screen
   if (sessionEnded) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center relative">
+      <div className="min-h-screen bg-[#0F1216] flex items-center justify-center relative">
         {/* Red gradient glow background */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_30%,rgba(220,38,38,0.12),transparent)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_30%,rgba(201,36,26,0.12),transparent)]" />
           <div className="absolute inset-0 opacity-[0.04]" style={{
-            backgroundImage: 'linear-gradient(rgba(220,38,38,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(220,38,38,0.3) 1px, transparent 1px)',
+            backgroundImage: 'linear-gradient(rgba(201,36,26,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(201,36,26,0.3) 1px, transparent 1px)',
             backgroundSize: '48px 48px',
           }} />
         </div>

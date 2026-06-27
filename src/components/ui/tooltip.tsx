@@ -46,7 +46,7 @@ function TooltipContent({
         className={cn(
           "z-[9999] w-fit origin-(--radix-tooltip-content-transform-origin)",
           "bg-[#1a1a1c] border border-red-500/40 text-white/90 text-[10px] font-medium leading-none",
-          "rounded-md px-2 py-1 shadow-lg",
+          "rounded-none px-2 py-1 shadow-lg",
           "animate-in fade-in-0 duration-100",
           "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-75",
           "data-[side=bottom]:slide-in-from-top-1",

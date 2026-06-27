@@ -79,7 +79,7 @@ export default async function PresentationsPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5 mb-1">
-            <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-none bg-primary/15 flex items-center justify-center">
               <FileText className="w-5 h-5 text-primary" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight">Command Classroom</h1>
@@ -93,36 +93,36 @@ export default async function PresentationsPage() {
 
       {/* Summary stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="relative bg-card border border-border rounded-2xl p-5 dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
+        <div className="relative bg-card border border-border rounded-none p-5 hover:border-border/80 transition-all duration-300 overflow-hidden">
           <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
-          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium">Total</p>
+          <p className="text-[10px] ff-mono uppercase tracking-[0.1em] text-muted-foreground/60 font-medium">Total</p>
           <p className="text-2xl font-bold text-foreground mt-1.5">{enrichedPresentations.length}</p>
         </div>
-        <div className="relative bg-card border border-border rounded-2xl p-5 dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
-          <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+        <div className="relative bg-card border border-border rounded-none p-5 hover:border-border/80 transition-all duration-300 overflow-hidden">
+          <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#2E9E63]/40 to-transparent" />
           <div className="flex items-center gap-2">
-            <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium">Live now</p>
+            <p className="text-[10px] ff-mono uppercase tracking-[0.1em] text-muted-foreground/60 font-medium">Live now</p>
             {Object.keys(activeSessionMap).length > 0 && (
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2E9E63] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#2E9E63]" />
               </span>
             )}
           </div>
-          <p className={`text-2xl font-bold mt-1.5 ${Object.keys(activeSessionMap).length > 0 ? 'text-emerald-500' : 'text-foreground'}`}>
+          <p className={`text-2xl font-bold mt-1.5 ${Object.keys(activeSessionMap).length > 0 ? 'text-[#2E9E63]' : 'text-foreground'}`}>
             {Object.keys(activeSessionMap).length}
           </p>
         </div>
-        <div className="relative bg-card border border-border rounded-2xl p-5 dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
-          <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
-          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium">Total sessions</p>
+        <div className="relative bg-card border border-border rounded-none p-5 hover:border-border/80 transition-all duration-300 overflow-hidden">
+          <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#6a5ea8]/40 to-transparent" />
+          <p className="text-[10px] ff-mono uppercase tracking-[0.1em] text-muted-foreground/60 font-medium">Total sessions</p>
           <p className="text-2xl font-bold text-foreground mt-1.5">
             {Object.values(sessionCountMap).reduce((a, b) => a + b, 0)}
           </p>
         </div>
-        <div className="relative bg-card border border-border rounded-2xl p-5 dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
-          <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-amber-500/40 to-transparent" />
-          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium">Participants</p>
+        <div className="relative bg-card border border-border rounded-none p-5 hover:border-border/80 transition-all duration-300 overflow-hidden">
+          <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#c98a2a]/40 to-transparent" />
+          <p className="text-[10px] ff-mono uppercase tracking-[0.1em] text-muted-foreground/60 font-medium">Participants</p>
           <p className="text-2xl font-bold text-foreground mt-1.5">
             {Object.values(participantCountMap).reduce((a, b) => a + b, 0)}
           </p>
@@ -131,7 +131,7 @@ export default async function PresentationsPage() {
 
       {/* Presentations grid with built-in search/sort/view toggle */}
       <div>
-        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-2.5">All Sessions</p>
+        <p className="text-[10px] ff-mono uppercase tracking-[0.1em] text-muted-foreground/60 font-medium mb-2.5">All Sessions</p>
         <PresentationGrid presentations={enrichedPresentations} />
       </div>
     </div>

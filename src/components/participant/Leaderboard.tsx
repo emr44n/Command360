@@ -13,7 +13,7 @@ interface LeaderboardProps {
   title?: string
 }
 
-const MEDAL_COLORS = ['text-yellow-500', 'text-gray-400', 'text-amber-600']
+const MEDAL_COLORS = ['text-[#c98a2a]', 'text-[#9aa0a8]', 'text-[#c98a2a]']
 
 export function Leaderboard({ participants, title = 'Leaderboard' }: LeaderboardProps) {
   const sorted = [...participants].sort((a, b) => b.score - a.score).slice(0, 5)
@@ -23,9 +23,9 @@ export function Leaderboard({ participants, title = 'Leaderboard' }: Leaderboard
   }
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-5">
+    <div className="bg-card border border-border rounded-none p-5">
       <div className="flex items-center gap-2 mb-4">
-        <Trophy className="w-5 h-5 text-yellow-500" />
+        <Trophy className="w-5 h-5 text-[#c98a2a]" />
         <h3 className="font-semibold text-foreground text-sm">{title}</h3>
       </div>
 
@@ -33,8 +33,8 @@ export function Leaderboard({ participants, title = 'Leaderboard' }: Leaderboard
         {sorted.map((entry, i) => (
           <div
             key={entry.id}
-            className={`flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors ${
-              i === 0 ? 'bg-yellow-500/5 border border-yellow-500/20' :
+            className={`flex items-center gap-3 rounded-none px-3 py-2.5 transition-colors ${
+              i === 0 ? 'bg-[#c98a2a]/5 border border-[#c98a2a]/20' :
               i < 3 ? 'bg-muted/50' : ''
             }`}
           >
@@ -49,14 +49,14 @@ export function Leaderboard({ participants, title = 'Leaderboard' }: Leaderboard
 
             {/* Name */}
             <div className="flex-1 min-w-0">
-              <p className={`text-sm font-medium truncate ${i === 0 ? 'text-yellow-700 dark:text-yellow-400' : 'text-foreground'}`}>
+              <p className={`text-sm font-medium truncate ${i === 0 ? 'text-[#c98a2a]' : 'text-foreground'}`}>
                 {entry.name || 'Anonymous'}
               </p>
             </div>
 
             {/* Score */}
             <div className={`text-sm font-bold tabular-nums ${
-              i === 0 ? 'text-yellow-600 dark:text-yellow-400' :
+              i === 0 ? 'text-[#c98a2a]' :
               i < 3 ? 'text-foreground' : 'text-muted-foreground'
             }`}>
               {entry.score.toLocaleString()} pts

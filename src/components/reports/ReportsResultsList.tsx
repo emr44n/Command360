@@ -34,12 +34,12 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 function getTypeInfo(title: string): { label: string; color: string; icon: React.ElementType } {
   const lower = title.toLowerCase()
   if (lower.includes('studio') || lower.includes('scene') || lower.includes('timeline')) {
-    return { label: 'Command Studio', color: 'bg-violet-500/15 text-violet-400 border-violet-500/20', icon: Monitor }
+    return { label: 'Command Studio', color: 'bg-[#6a5ea8]/15 text-[#6a5ea8] border-[#6a5ea8]/20', icon: Monitor }
   }
   if (lower.includes('cctv') || lower.includes('camera') || lower.includes('surveillance')) {
-    return { label: 'CCTV', color: 'bg-amber-500/15 text-amber-400 border-amber-500/20', icon: Video }
+    return { label: 'CCTV', color: 'bg-[#c98a2a]/15 text-[#c98a2a] border-[#c98a2a]/20', icon: Video }
   }
-  return { label: 'Classroom', color: 'bg-blue-500/15 text-blue-400 border-blue-500/20', icon: FileText }
+  return { label: 'Classroom', color: 'bg-[#3E6DC4]/15 text-[#3E6DC4] border-[#3E6DC4]/20', icon: FileText }
 }
 
 export function ReportsResultsList({ decks }: { decks: DeckResult[] }) {
@@ -79,7 +79,7 @@ export function ReportsResultsList({ decks }: { decks: DeckResult[] }) {
             <select
               value={sortKey}
               onChange={(e) => setSortKey(e.target.value as SortKey)}
-              className="appearance-none bg-card border border-border rounded-lg pl-7 pr-8 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-border/80 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all cursor-pointer"
+              className="appearance-none bg-card border border-border rounded-none pl-7 pr-8 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-border/80 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all cursor-pointer"
             >
               {SORT_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -89,7 +89,7 @@ export function ReportsResultsList({ decks }: { decks: DeckResult[] }) {
           </div>
 
           {/* View toggle */}
-          <div className="flex items-center bg-card border border-border rounded-lg overflow-hidden">
+          <div className="flex items-center bg-card border border-border rounded-none overflow-hidden">
             <button
               onClick={() => setViewMode('list')}
               className={`p-1.5 transition-colors ${viewMode === 'list' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'}`}
@@ -120,18 +120,18 @@ export function ReportsResultsList({ decks }: { decks: DeckResult[] }) {
               <Link
                 key={deck.id}
                 href={`/presentations/${deck.id}/results`}
-                className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-primary/20 transition-all duration-300 group overflow-hidden flex flex-col"
+                className="relative bg-card border border-border rounded-none p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-primary/20 transition-all duration-300 group overflow-hidden flex flex-col"
               >
                 <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
                 <div className="flex items-start gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/[0.08] flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-primary/15 transition-all duration-200">
+                  <div className="w-10 h-10 rounded-none bg-primary/10 border border-primary/[0.08] flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-primary/15 transition-all duration-200">
                     <BarChart2 className="w-5 h-5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors duration-200">
                       {deck.title}
                     </p>
-                    <span className={`inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium border ${typeInfo.color}`}>
+                    <span className={`inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded-none text-[10px] font-medium border ${typeInfo.color}`}>
                       <TypeIcon className="w-2.5 h-2.5" />
                       {typeInfo.label}
                     </span>
@@ -170,7 +170,7 @@ export function ReportsResultsList({ decks }: { decks: DeckResult[] }) {
             <Link
               key={deck.id}
               href={`/presentations/${deck.id}/results`}
-              className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-primary/20 transition-all duration-300 group overflow-hidden"
+              className="relative bg-card border border-border rounded-none p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-primary/20 transition-all duration-300 group overflow-hidden"
             >
               {/* Colored top accent */}
               <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
@@ -182,7 +182,7 @@ export function ReportsResultsList({ decks }: { decks: DeckResult[] }) {
               />
 
               <div className="relative flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/[0.08] flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-primary/15 transition-all duration-200">
+                <div className="w-10 h-10 rounded-none bg-primary/10 border border-primary/[0.08] flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-primary/15 transition-all duration-200">
                   <BarChart2 className="w-5 h-5 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -190,7 +190,7 @@ export function ReportsResultsList({ decks }: { decks: DeckResult[] }) {
                     <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors duration-200">
                       {deck.title}
                     </p>
-                    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium border shrink-0 ${typeInfo.color}`}>
+                    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-none text-[10px] font-medium border shrink-0 ${typeInfo.color}`}>
                       <TypeIcon className="w-2.5 h-2.5" />
                       {typeInfo.label}
                     </span>

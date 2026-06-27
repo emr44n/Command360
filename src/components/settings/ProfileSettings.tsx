@@ -107,7 +107,7 @@ export function ProfileSettings({ user }: Props) {
   return (
     <div className="space-y-8">
       {/* Profile Section */}
-      <div className="bg-card border border-border rounded-2xl p-6">
+      <div className="bg-card border border-border rounded-none p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
             <User className="w-5 h-5 text-primary" />
@@ -129,14 +129,14 @@ export function ProfileSettings({ user }: Props) {
               {user.email}
             </div>
           </div>
-          <Button onClick={handleSave} disabled={saving || !displayName.trim()} className="bg-red-600 hover:bg-red-500 text-white rounded-full transition-all hover:shadow-lg hover:shadow-red-500/25">
+          <Button onClick={handleSave} disabled={saving || !displayName.trim()} className="bg-[#C9241A] hover:bg-[#C9241A]/90 text-white rounded-none transition-all">
             {saving ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>
       </div>
 
       {/* Password Change Section */}
-      <div className="bg-card border border-border rounded-2xl p-6">
+      <div className="bg-card border border-border rounded-none p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
             <Lock className="w-5 h-5 text-primary" />
@@ -178,7 +178,7 @@ export function ProfileSettings({ user }: Props) {
       </div>
 
       {/* Appearance Section */}
-      <div className="bg-card border border-border rounded-2xl p-6">
+      <div className="bg-card border border-border rounded-none p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
             {theme === 'dark' ? <Moon className="w-5 h-5 text-primary" /> : <Sun className="w-5 h-5 text-primary" />}
@@ -188,7 +188,7 @@ export function ProfileSettings({ user }: Props) {
             <p className="text-xs text-muted-foreground">Customize how Command 360 looks</p>
           </div>
         </div>
-        <div className="flex items-center justify-between bg-muted/50 rounded-xl p-4">
+        <div className="flex items-center justify-between bg-muted/50 rounded-none p-4">
           <div>
             <p className="text-sm font-medium text-foreground">Dark Mode</p>
             <p className="text-xs text-muted-foreground">Toggle between light and dark theme</p>
@@ -201,7 +201,7 @@ export function ProfileSettings({ user }: Props) {
       </div>
 
       {/* Notifications Section */}
-      <div className="bg-card border border-border rounded-2xl p-6">
+      <div className="bg-card border border-border rounded-none p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
             <Bell className="w-5 h-5 text-primary" />
@@ -212,7 +212,7 @@ export function ProfileSettings({ user }: Props) {
           </div>
         </div>
         <div className="space-y-3">
-          <div className="flex items-center justify-between bg-muted/50 rounded-xl p-4">
+          <div className="flex items-center justify-between bg-muted/50 rounded-none p-4">
             <div>
               <p className="text-sm font-medium text-foreground">Email Updates</p>
               <p className="text-xs text-muted-foreground">Receive product updates via email</p>
@@ -222,7 +222,7 @@ export function ProfileSettings({ user }: Props) {
               onCheckedChange={v => updateNotification('emailUpdates', v)}
             />
           </div>
-          <div className="flex items-center justify-between bg-muted/50 rounded-xl p-4">
+          <div className="flex items-center justify-between bg-muted/50 rounded-none p-4">
             <div>
               <p className="text-sm font-medium text-foreground">Session Alerts</p>
               <p className="text-xs text-muted-foreground">Get notified when participants join</p>
@@ -232,7 +232,7 @@ export function ProfileSettings({ user }: Props) {
               onCheckedChange={v => updateNotification('sessionAlerts', v)}
             />
           </div>
-          <div className="flex items-center justify-between bg-muted/50 rounded-xl p-4">
+          <div className="flex items-center justify-between bg-muted/50 rounded-none p-4">
             <div>
               <p className="text-sm font-medium text-foreground">Weekly Digest</p>
               <p className="text-xs text-muted-foreground">Receive a weekly summary of activity</p>
@@ -246,7 +246,7 @@ export function ProfileSettings({ user }: Props) {
       </div>
 
       {/* Account Section */}
-      <div className="bg-card border border-border rounded-2xl p-6">
+      <div className="bg-card border border-border rounded-none p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
             <Shield className="w-5 h-5 text-primary" />
@@ -280,7 +280,7 @@ export function ProfileSettings({ user }: Props) {
                 Delete Account
               </Button>
             ) : (
-              <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-4 space-y-3">
+              <div className="bg-destructive/5 border border-destructive/20 rounded-none p-4 space-y-3">
                 <p className="text-sm text-destructive font-medium">
                   This action is irreversible. All your data will be permanently deleted.
                 </p>

@@ -49,8 +49,8 @@ export default function ResetPasswordPage() {
   if (done) {
     return (
       <div className="text-center space-y-4">
-        <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto">
-          <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+        <div className="w-16 h-16 bg-[#2E9E63]/10 rounded-none flex items-center justify-center mx-auto">
+          <CheckCircle2 className="w-8 h-8 text-[#2E9E63]" />
         </div>
         <h1 className="text-2xl font-semibold tracking-tight">Password updated</h1>
         <p className="text-muted-foreground text-sm">
@@ -78,7 +78,7 @@ export default function ResetPasswordPage() {
               placeholder="••••••••"
               required
               minLength={6}
-              className="h-11 rounded-xl border-border bg-background pr-10 focus-visible:ring-primary"
+              className="h-11 rounded-none border-border bg-background pr-10 focus-visible:ring-primary"
             />
             <button type="button" onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
@@ -96,10 +96,10 @@ export default function ResetPasswordPage() {
             placeholder="••••••••"
             required
             minLength={6}
-            className="h-11 rounded-xl border-border bg-background focus-visible:ring-primary"
+            className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
           />
         </div>
-        <Button type="submit" disabled={loading} className="w-full h-11 rounded-full bg-red-600 hover:bg-red-500 text-white font-semibold transition-all hover:shadow-lg hover:shadow-red-500/25">
+        <Button type="submit" disabled={loading} className="w-full h-11 rounded-none bg-[#C9241A] hover:bg-[#C9241A]/90 text-white font-semibold transition-all">
           {loading ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Updating...</> : 'Update password'}
         </Button>
       </form>

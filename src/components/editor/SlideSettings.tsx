@@ -137,7 +137,7 @@ function SlideMediaSection({ content, onChange }: {
               <Label className="text-muted-foreground text-xs">Image</Label>
             </div>
             {imageUrl ? (
-              <div className="relative group rounded-lg overflow-hidden border border-border">
+              <div className="relative group rounded-none overflow-hidden border border-border">
                 <img
                   src={imageUrl}
                   alt="Slide image"
@@ -146,14 +146,14 @@ function SlideMediaSection({ content, onChange }: {
                 />
                 <button
                   onClick={handleRemoveImage}
-                  className="absolute top-2 right-2 p-1 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+                  className="absolute top-2 right-2 p-1 rounded-none bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
                 >
                   <X className="w-3 h-3" />
                 </button>
               </div>
             ) : (
               <div className="space-y-2">
-                <div className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-default hover:border-primary/30 transition-colors">
+                <div className="border-2 border-dashed border-border rounded-none p-4 text-center cursor-default hover:border-primary/30 transition-colors">
                   <ImagePlus className="w-6 h-6 text-muted-foreground/30 mx-auto mb-1" />
                   <p className="text-[10px] text-muted-foreground">Paste an image URL below</p>
                 </div>
@@ -162,7 +162,7 @@ function SlideMediaSection({ content, onChange }: {
                   value={imageUrl}
                   onChange={(e) => handleImageUrlChange(e.target.value)}
                   placeholder="https://example.com/image.jpg"
-                  className="w-full px-3 py-1.5 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="w-full px-3 py-1.5 rounded-none border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
             )}

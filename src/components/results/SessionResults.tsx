@@ -24,8 +24,8 @@ const SLIDE_ICONS: Record<string, React.ElementType> = {
 }
 
 const BAR_COLORS = [
-  'bg-primary', 'bg-blue-500', 'bg-emerald-500', 'bg-amber-500',
-  'bg-pink-500', 'bg-violet-500', 'bg-cyan-500', 'bg-orange-500',
+  'bg-primary', 'bg-[#3E6DC4]', 'bg-[#2E9E63]', 'bg-[#c98a2a]',
+  'bg-[#C9241A]', 'bg-[#6a5ea8]', 'bg-[#3E6DC4]', 'bg-[#c98a2a]',
 ]
 
 export function SessionResults({ slides, responses, participantCount }: SessionResultsProps) {
@@ -48,7 +48,7 @@ export function SessionResults({ slides, responses, participantCount }: SessionR
         <span className="text-xs text-muted-foreground">Chart style:</span>
         <button
           onClick={() => setChartMode('horizontal')}
-          className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${
+          className={`px-2.5 py-1 text-xs rounded-none border transition-colors ${
             chartMode === 'horizontal' ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:text-foreground'
           }`}
         >
@@ -56,7 +56,7 @@ export function SessionResults({ slides, responses, participantCount }: SessionR
         </button>
         <button
           onClick={() => setChartMode('bar')}
-          className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${
+          className={`px-2.5 py-1 text-xs rounded-none border transition-colors ${
             chartMode === 'bar' ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:text-foreground'
           }`}
         >
@@ -75,10 +75,10 @@ export function SessionResults({ slides, responses, participantCount }: SessionR
           const Icon = SLIDE_ICONS[slide.slide_type] || FileText
 
           return (
-            <div key={slide.id} className="bg-card border border-border rounded-2xl overflow-hidden">
+            <div key={slide.id} className="bg-card border border-border rounded-none overflow-hidden">
               {/* Slide header */}
               <div className="px-5 py-4 border-b border-border flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-none bg-primary/10 flex items-center justify-center shrink-0">
                   <Icon className="w-4 h-4 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -87,7 +87,7 @@ export function SessionResults({ slides, responses, participantCount }: SessionR
                     {slideResponses.length} response{slideResponses.length !== 1 ? 's' : ''} &middot; Slide {idx + 1}
                   </p>
                 </div>
-                <span className="text-[10px] uppercase tracking-wide text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                <span className="text-[10px] uppercase tracking-wide text-muted-foreground bg-muted px-2 py-0.5 rounded-none">
                   {slide.slide_type.replace('_', ' ')}
                 </span>
               </div>
@@ -143,7 +143,7 @@ function PollResult({ slide, responses, chartMode }: { slide: Slide; responses: 
               <span className="text-xs font-mono font-bold text-foreground">{count}</span>
               <div className="w-full relative" style={{ height: '140px' }}>
                 <div
-                  className={`absolute bottom-0 w-full rounded-t-lg transition-all duration-500 ${BAR_COLORS[i % BAR_COLORS.length]}`}
+                  className={`absolute bottom-0 w-full rounded-none transition-all duration-500 ${BAR_COLORS[i % BAR_COLORS.length]}`}
                   style={{ height: `${height}%`, minHeight: count > 0 ? '4px' : '0' }}
                 />
               </div>
@@ -166,9 +166,9 @@ function PollResult({ slide, responses, chartMode }: { slide: Slide; responses: 
               <span className="text-sm text-foreground">{opt.text}</span>
               <span className="text-xs font-mono text-muted-foreground">{count} ({pct}%)</span>
             </div>
-            <div className="h-6 bg-muted rounded-lg overflow-hidden">
+            <div className="h-6 bg-muted rounded-none overflow-hidden">
               <div
-                className={`h-full rounded-lg transition-all duration-700 ease-out ${BAR_COLORS[i % BAR_COLORS.length]}`}
+                className={`h-full rounded-none transition-all duration-700 ease-out ${BAR_COLORS[i % BAR_COLORS.length]}`}
                 style={{ width: `${maxCount > 0 ? (count / maxCount) * 100 : 0}%`, minWidth: count > 0 ? '8px' : '0' }}
               />
             </div>
@@ -196,7 +196,7 @@ function QuizResult({ slide, responses, chartMode }: { slide: Slide; responses: 
   return (
     <div className="space-y-4">
       {/* Correct answer summary */}
-      <div className="flex items-center gap-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+      <div className="flex items-center gap-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-none">
         <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
           <span className="text-lg font-bold text-emerald-600">{correctPct}%</span>
         </div>
@@ -220,9 +220,9 @@ function QuizResult({ slide, responses, chartMode }: { slide: Slide; responses: 
                 </div>
                 <span className="text-xs font-mono text-muted-foreground">{count}</span>
               </div>
-              <div className="h-4 bg-muted rounded-lg overflow-hidden">
+              <div className="h-4 bg-muted rounded-none overflow-hidden">
                 <div
-                  className={`h-full rounded-lg transition-all duration-700 ease-out ${isCorrect ? 'bg-emerald-500' : BAR_COLORS[i % BAR_COLORS.length]}`}
+                  className={`h-full rounded-none transition-all duration-700 ease-out ${isCorrect ? 'bg-emerald-500' : BAR_COLORS[i % BAR_COLORS.length]}`}
                   style={{ width: `${maxCount > 0 ? (count / maxCount) * 100 : 0}%`, minWidth: count > 0 ? '4px' : '0' }}
                 />
               </div>
@@ -256,7 +256,7 @@ function WordCloudResult({ responses }: { responses: Response[] }) {
         return (
           <span
             key={word}
-            className="px-3 py-1 rounded-full bg-primary/10 text-primary font-medium transition-transform hover:scale-110"
+            className="px-3 py-1 rounded-none bg-primary/10 text-primary font-medium transition-transform hover:scale-110"
             style={{ fontSize: `${scale}rem`, opacity }}
             title={`${word}: ${count} time${count !== 1 ? 's' : ''}`}
           >
@@ -307,7 +307,7 @@ function RatingScaleResult({ slide, responses }: { slide: Slide; responses: Resp
               {count > 0 && <span className="text-[10px] font-mono text-muted-foreground">{count}</span>}
               <div className="w-full relative" style={{ height: '60px' }}>
                 <div
-                  className="absolute bottom-0 w-full rounded-t bg-primary/70 transition-all duration-500"
+                  className="absolute bottom-0 w-full rounded-none bg-primary/70 transition-all duration-500"
                   style={{ height: `${height}%`, minHeight: count > 0 ? '2px' : '0' }}
                 />
               </div>
@@ -332,7 +332,7 @@ function OpenTextResult({ responses }: { responses: Response[] }) {
   return (
     <div className="space-y-2 max-h-80 overflow-y-auto">
       {texts.map((t, i) => (
-        <div key={i} className="bg-muted/50 rounded-lg px-4 py-3">
+        <div key={i} className="bg-muted/50 rounded-none px-4 py-3">
           <p className="text-sm text-foreground whitespace-pre-wrap">{t.text}</p>
         </div>
       ))}

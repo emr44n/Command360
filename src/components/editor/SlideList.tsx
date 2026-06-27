@@ -99,7 +99,7 @@ function SortableSlideItem({ slide, index, isSelected, onSelect, onDelete, onDup
       {...attributes}
       {...listeners}
       className={cn(
-        'group rounded-xl transition-all duration-150 border-2 cursor-grab active:cursor-grabbing select-none',
+        'group rounded-none transition-all duration-150 border-2 cursor-grab active:cursor-grabbing select-none',
         isSelected
           ? 'border-primary shadow-md shadow-primary/10'
           : 'border-border shadow-sm hover:border-primary/40 hover:shadow-md',
@@ -111,7 +111,7 @@ function SortableSlideItem({ slide, index, isSelected, onSelect, onDelete, onDup
       <div
         style={{
           background: '#ffffff',
-          borderRadius: '10px 10px 0 0',
+          borderRadius: 0,
           aspectRatio: '16/9',
           padding: '8px 10px',
           display: 'flex',
@@ -144,7 +144,7 @@ function SortableSlideItem({ slide, index, isSelected, onSelect, onDelete, onDup
           <Tooltip><TooltipTrigger asChild>
           <button
             onClick={(e) => { e.stopPropagation(); onDuplicate() }}
-            className="p-0.5 rounded bg-white/80 hover:bg-blue-50 text-muted-foreground hover:text-blue-600 transition-colors"
+            className="p-0.5 rounded-none bg-white/80 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           >
             <Copy style={{ width: 10, height: 10 }} />
           </button>
@@ -152,7 +152,7 @@ function SortableSlideItem({ slide, index, isSelected, onSelect, onDelete, onDup
           <Tooltip><TooltipTrigger asChild>
           <button
             onClick={(e) => { e.stopPropagation(); onDelete() }}
-            className="p-0.5 rounded bg-white/80 hover:bg-red-50 text-muted-foreground hover:text-destructive transition-colors"
+            className="p-0.5 rounded-none bg-white/80 hover:bg-muted text-muted-foreground hover:text-destructive transition-colors"
           >
             <Trash2 style={{ width: 10, height: 10 }} />
           </button>
@@ -163,7 +163,7 @@ function SortableSlideItem({ slide, index, isSelected, onSelect, onDelete, onDup
       {/* Footer with number */}
       <div
         className={cn(
-          'flex items-center gap-1.5 px-2 py-1 rounded-b-xl',
+          'flex items-center gap-1.5 px-2 py-1 rounded-none',
           isSelected ? 'bg-primary/10' : 'bg-muted/50'
         )}
       >

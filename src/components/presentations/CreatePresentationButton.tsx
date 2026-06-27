@@ -31,7 +31,7 @@ export function CreatePresentationButton() {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className="rounded-full gap-2 bg-primary hover:bg-primary/90 text-primary-foreground">
+      <Button onClick={() => setOpen(true)} className="rounded-none gap-2 bg-primary hover:bg-primary/90 text-primary-foreground">
         <Plus className="w-4 h-4" /> New Session
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -41,17 +41,17 @@ export function CreatePresentationButton() {
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Title</Label>
               <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="My awesome session"
-                className="h-10 rounded-xl" onKeyDown={(e) => e.key === 'Enter' && handleCreate()} autoFocus />
+                className="h-10 rounded-none" onKeyDown={(e) => e.key === 'Enter' && handleCreate()} autoFocus />
             </div>
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Description <span className="text-muted-foreground font-normal">(optional)</span></Label>
               <Textarea value={description} onChange={(e) => setDescription(e.target.value)}
-                placeholder="What is this session about?" rows={3} className="rounded-xl resize-none" />
+                placeholder="What is this session about?" rows={3} className="rounded-none resize-none" />
             </div>
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setOpen(false)} className="text-muted-foreground">Cancel</Button>
-            <Button onClick={handleCreate} disabled={!title.trim() || loading} className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Button onClick={handleCreate} disabled={!title.trim() || loading} className="rounded-none bg-primary hover:bg-primary/90 text-primary-foreground">
               {loading ? 'Creating...' : 'Create'}
             </Button>
           </DialogFooter>

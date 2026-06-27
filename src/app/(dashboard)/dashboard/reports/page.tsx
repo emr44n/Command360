@@ -203,7 +203,7 @@ export default async function ReportsPage() {
     <div className="p-6 md:p-8 max-w-7xl mx-auto">
       <Script id="onboard-report" strategy="afterInteractive">{`localStorage.setItem('c360_onboard_report','true')`}</Script>
       <div className="mb-8">
-        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-1.5">Analytics</p>
+        <p className="text-[10px] ff-mono uppercase tracking-[0.1em] text-muted-foreground/60 font-medium mb-1.5">Analytics</p>
         <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
         <p className="text-muted-foreground text-sm mt-1">
           View results and analytics for your sessions
