@@ -1,9 +1,10 @@
 'use client'
 
-import { ScrollReveal } from '@/components/home/ScrollReveal'
-import { FAQAccordion } from '@/components/solutions/FAQAccordion'
+import { FaqAccordion } from '@/components/home/FaqAccordion'
 import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
-import { PublicLayout } from '@/components/layout/PublicLayout'
+import { SiteShell } from '@/components/site/SiteShell'
+import { PageHero, Eyebrow, LightSection, DarkSection, Container } from '@/components/site/primitives'
+import { SpotlightCard } from '@/components/home/SpotlightCard'
 import {
   Flame, Shield, Siren, Radio, Anchor, Search,
   Lock, Building2, AlertTriangle, Heart, Users,
@@ -12,6 +13,7 @@ import {
   Smartphone, Timer, TrendingUp, Award, BookOpen,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import type { CSSProperties } from 'react'
 
 /* ─── Types ─── */
 interface UseCase {
@@ -38,92 +40,6 @@ interface ServiceData {
   ctaHeadline: string
 }
 
-/* ─── ServiceMockup component ─── */
-function ServiceMockup({ name, color, bg }: { name: string; color: string; bg: string }) {
-  return (
-    <div className="relative w-full max-w-md mx-auto">
-      {/* Browser frame */}
-      <div className="rounded-2xl border border-border bg-card shadow-xl overflow-hidden">
-        {/* Title bar */}
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-muted/60">
-          <div className="flex gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-red-400/80" />
-            <span className="w-3 h-3 rounded-full bg-amber-400/80" />
-            <span className="w-3 h-3 rounded-full bg-green-400/80" />
-          </div>
-          <div className="flex-1 text-center">
-            <span className="text-xs text-muted-foreground font-medium">{name} — Command 360</span>
-          </div>
-        </div>
-
-        {/* Content area */}
-        <div className="p-6 space-y-5">
-          {/* Poll question */}
-          <div className="space-y-1">
-            <p className="text-sm font-semibold text-foreground">How confident are you with current procedures?</p>
-            <p className="text-xs text-muted-foreground">Live Poll &middot; 4 options</p>
-          </div>
-
-          {/* Animated bar chart */}
-          <div className="space-y-3">
-            {[
-              { label: 'Very confident', pct: 42 },
-              { label: 'Somewhat confident', pct: 31 },
-              { label: 'Needs review', pct: 19 },
-              { label: 'Not confident', pct: 8 },
-            ].map((bar) => (
-              <div key={bar.label} className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">{bar.label}</span>
-                  <span className="font-semibold">{bar.pct}%</span>
-                </div>
-                <div className="h-2.5 rounded-full bg-muted overflow-hidden">
-                  <div
-                    className={`h-full rounded-full ${bg.replace('/10', '/60')} animate-[grow_1.2s_ease-out_forwards]`}
-                    style={{
-                      width: `${bar.pct}%`,
-                      animation: `grow 1.2s ease-out forwards`,
-                      animationDelay: `${0.2 + Math.random() * 0.4}s`,
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Participant count */}
-          <div className="flex items-center justify-between pt-2 border-t border-border">
-            <div className="flex items-center gap-2">
-              <div className="flex -space-x-1.5">
-                {[0, 1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className={`w-6 h-6 rounded-full border-2 border-card ${bg} flex items-center justify-center`}
-                  >
-                    <Users className={`w-3 h-3 ${color}`} />
-                  </div>
-                ))}
-              </div>
-              <span className="text-xs text-muted-foreground font-medium">24 participants</span>
-            </div>
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* CSS keyframes for bar animation */}
-      <style>{`
-        @keyframes grow {
-          from { width: 0%; }
-        }
-      `}</style>
-    </div>
-  )
-}
-
 /* ─── Slide types (shared) ─── */
 const SLIDE_TYPES = [
   {
@@ -131,6 +47,7 @@ const SLIDE_TYPES = [
     label: 'Live Polling',
     color: 'text-blue-500',
     bg: 'bg-blue-500/10',
+    accent: '#3E6DC4',
     description: 'Gauge opinions and readiness in real time with animated bar charts.',
   },
   {
@@ -138,6 +55,7 @@ const SLIDE_TYPES = [
     label: 'Word Clouds',
     color: 'text-cyan-500',
     bg: 'bg-cyan-500/10',
+    accent: '#2592a3',
     description: 'Capture collective sentiment with beautiful, growing word clouds.',
   },
   {
@@ -145,6 +63,7 @@ const SLIDE_TYPES = [
     label: 'Quizzes',
     color: 'text-emerald-500',
     bg: 'bg-emerald-500/10',
+    accent: '#2E9E63',
     description: 'Scored, timed knowledge checks with leaderboards and instant results.',
   },
   {
@@ -152,6 +71,7 @@ const SLIDE_TYPES = [
     label: 'Q&A',
     color: 'text-amber-500',
     bg: 'bg-amber-500/10',
+    accent: '#c98a2a',
     description: 'Anonymous questions with upvoting so the most important rise to the top.',
   },
   {
@@ -159,6 +79,7 @@ const SLIDE_TYPES = [
     label: 'Surveys',
     color: 'text-pink-500',
     bg: 'bg-pink-500/10',
+    accent: '#D94B3D',
     description: 'Multi-question feedback forms for structured data collection after sessions.',
   },
 ]
@@ -608,444 +529,221 @@ export function SolutionPageClient({ slug }: { slug: string }) {
 
   if (!service) return null
 
-  const Icon = service.icon
+  // Solid service colour (full-opacity rgb) derived from the service heroGlow,
+  // used as the per-service v5 accent on the hero glow + square card accents.
+  const serviceColour = glowColor(service.heroGlow, 1)
+  const faqItems = service.faqs.map((f) => ({ q: f.question, a: f.answer }))
 
   return (
-    <PublicLayout>
+    <SiteShell faqCta={false}>
       {/* ── Hero ── */}
-      <section className="relative bg-[#07070a] overflow-hidden">
-        {/* Background effects */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 90% 60% at 50% -20%, ${service.heroGlow}, transparent)` }} />
-          {/* Animated glow orbs behind hero content */}
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] rounded-full blur-[150px] float-glow"
-            style={{ background: glowColor(service.heroGlow, 0.08) }}
-          />
-          <div
-            className="absolute top-1/3 left-1/4 w-[400px] h-[400px] rounded-full blur-[120px] float-glow"
-            style={{ background: glowColor(service.heroGlow, 0.06), animationDelay: '-4s' }}
-          />
-          <div
-            className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] rounded-full blur-[100px] float-glow"
-            style={{ background: glowColor(service.heroGlow, 0.05), animationDelay: '-8s' }}
-          />
-          {/* Enhanced grid texture using service accent color */}
-          <div
-            className="absolute inset-0 opacity-[0.10]"
-            style={{
-              backgroundImage: `linear-gradient(${glowColor(service.heroGlow, 0.4)} 1px, transparent 1px), linear-gradient(90deg, ${glowColor(service.heroGlow, 0.4)} 1px, transparent 1px)`,
-              backgroundSize: '64px 64px',
-              mask: 'radial-gradient(ellipse 80% 70% at 50% 40%, black, transparent)',
-              WebkitMask: 'radial-gradient(ellipse 80% 70% at 50% 40%, black, transparent)',
-            }}
-          />
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#07070a] to-transparent" />
-        </div>
+      <PageHero
+        accent={serviceColour}
+        eyebrow={<Eyebrow>{service.name}</Eyebrow>}
+        title={service.heroTitle}
+        lede={service.heroDescription}
+      >
+        <button
+          onClick={() => openAuth('register')}
+          className="ff-mono inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.05em] text-white bg-[#C9241A] hover:bg-[#a91d14] v5-glow px-7 py-4 transition-colors cursor-pointer"
+        >
+          Get started free <ArrowRight className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => openAuth('register')}
+          className="ff-mono inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.05em] text-white border border-white/22 hover:bg-white/[0.06] hover:border-white/40 px-6 py-4 transition-colors cursor-pointer"
+        >
+          Book a demo
+        </button>
+      </PageHero>
 
-        <div className="relative max-w-6xl mx-auto px-5 pt-32 pb-16">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left: hero text */}
-            <div className="text-center lg:text-left">
-              <ScrollReveal direction="up">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/8 bg-white/6 mb-6 mx-auto lg:mx-0">
-                  <Icon className={`w-4 h-4 ${service.color}`} />
-                  <span className="text-[10px] uppercase tracking-[0.15em] font-semibold text-white/60">{service.name}</span>
-                </div>
-              </ScrollReveal>
-
-              <ScrollReveal direction="up">
-                <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight mb-5 text-white">{service.heroTitle}</h1>
-              </ScrollReveal>
-
-              <ScrollReveal direction="up">
-                <p className="text-sm sm:text-base md:text-xl text-white/50 max-w-2xl mx-auto lg:mx-0 mb-8 leading-relaxed">
-                  {service.heroDescription}
-                </p>
-              </ScrollReveal>
-
-              <ScrollReveal direction="up">
-                <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 mb-12">
-                  <button
-                    onClick={() => openAuth('register')}
-                    className="group inline-flex items-center gap-2 px-8 h-12 rounded-full text-base font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors btn-animated cursor-pointer"
-                  >
-                    Get started free <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                  </button>
-                  <button
-                    onClick={() => openAuth('register')}
-                    className="inline-flex items-center gap-2 px-8 h-12 rounded-full text-base font-medium border border-white/10 text-white/70 hover:bg-white/5 transition-colors btn-animated cursor-pointer"
-                  >
-                    Book a demo
-                  </button>
-                </div>
-              </ScrollReveal>
-
-              {/* Stats bar */}
-              <ScrollReveal direction="up" stagger>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-lg mx-auto lg:mx-0">
-                  {service.heroStats.map((stat) => (
-                    <div key={stat.label} className="text-center lg:text-left">
-                      <p className={`text-xl sm:text-2xl md:text-3xl font-bold ${service.color}`}>{stat.value}</p>
-                      <p className="text-xs text-white/40 mt-1">{stat.label}</p>
-                    </div>
-                  ))}
-                </div>
-              </ScrollReveal>
-            </div>
-
-            {/* Right: mockup with animated glow */}
-            <ScrollReveal direction="up" delay={200}>
-              <div className="hidden lg:block relative">
-                {/* Animated glow behind mockup */}
-                <div
-                  className="absolute -inset-8 rounded-full blur-3xl opacity-30 animate-pulse"
-                  style={{ background: `radial-gradient(circle, ${service.heroGlow}, transparent 70%)` }}
-                />
-                <div className="relative">
-                  <ServiceMockup name={service.name} color={service.color} bg={service.bg} />
-                </div>
+      {/* ── Hero stats strip ── */}
+      <DarkSection className="!py-0">
+        <Container className="relative">
+          <div className="grid grid-cols-1 sm:grid-cols-3 border-l border-white/14">
+            {service.heroStats.map((stat) => (
+              <div key={stat.label} className="p-[28px_26px] border-r border-b border-t border-white/14">
+                <p className="ff-display font-extrabold text-[clamp(28px,3.4vw,40px)] leading-none tracking-[-0.02em]" style={{ color: serviceColour }}>{stat.value}</p>
+                <p className="text-[13px] text-[#9aa0a8] mt-2.5 leading-relaxed">{stat.label}</p>
               </div>
-            </ScrollReveal>
+            ))}
           </div>
-        </div>
-      </section>
+        </Container>
+      </DarkSection>
 
       {/* ── Use cases ── */}
-      <section className="relative py-20 px-5 overflow-hidden border-t border-border/50">
-        {/* Animated colored glow orbs */}
-        <div
-          className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none float-glow"
-          style={{ background: glowColor(service.heroGlow, 0.05) }}
-        />
-        <div
-          className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full blur-[100px] pointer-events-none float-glow"
-          style={{ background: glowColor(service.heroGlow, 0.03), animationDelay: '-6s' }}
-        />
-        <div className="relative max-w-5xl mx-auto">
-          <ScrollReveal direction="up">
-            <div className="text-center mb-14">
-              <span className="feature-badge bg-primary/10 text-primary">Use Cases</span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight mt-4">
-                How {service.name} teams use Command 360
-              </h2>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal direction="up" stagger>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {service.useCases.map((uc) => {
-                const UCIcon = uc.icon
-                return (
-                  <div
-                    key={uc.title}
-                    className="group relative p-5 rounded-2xl border border-border bg-card hover:border-primary/20 hover:-translate-y-0.5 transition-all duration-300"
-                    style={{ boxShadow: '0 -20px 80px -20px rgba(255,255,255,0.03) inset' }}
-                  >
-                    {/* Glow effect behind card on hover */}
-                    <div
-                      className="absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-xl"
-                      style={{ background: glowColor(service.heroGlow, 0.15) }}
-                    />
-                    {/* Colored top accent line on hover */}
-                    <div
-                      className="absolute top-0 left-4 right-4 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      style={{ background: `linear-gradient(90deg, transparent, ${glowColor(service.heroGlow, 0.6)}, transparent)` }}
-                    />
-                    <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-                      <UCIcon className="w-5 h-5 text-primary" />
+      <LightSection>
+        <Container>
+          <div className="max-w-[640px] mb-3.5">
+            <Eyebrow n="01">Use Cases</Eyebrow>
+            <h2 className="ff-display font-extrabold text-[clamp(30px,3.8vw,48px)] leading-none tracking-[-0.02em] mt-4 text-[#16191E]">How {service.name} teams use Command 360</h2>
+          </div>
+          <div className="h-0.5 bg-[#16191E] origin-left mt-7" data-rule />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 border-l border-[rgba(20,25,30,0.16)]">
+            {service.useCases.map((uc) => {
+              const UCIcon = uc.icon
+              return (
+                <SpotlightCard key={uc.title} glow={glowColor(service.heroGlow, 0.15)} className="v5-card group relative overflow-hidden p-[34px_30px] border-r border-b border-[rgba(20,25,30,0.16)] block cursor-default">
+                  <span className="absolute inset-0 pointer-events-none" style={{ '--v5-wash': glowColor(service.heroGlow, 0.14) } as CSSProperties} aria-hidden="true" />
+                  <div className="relative">
+                    <div className="w-[42px] h-[42px] flex items-center justify-center mb-5" style={{ background: glowColor(service.heroGlow, 0.12) }}>
+                      <UCIcon className="w-5 h-5" style={{ color: serviceColour }} />
                     </div>
-                    <h3 className="font-semibold text-sm mb-1.5">{uc.title}</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{uc.description}</p>
+                    <h3 className="ff-display font-bold text-[20px] tracking-[-0.01em] mb-2.5 text-[#16191E]">{uc.title}</h3>
+                    <p className="text-[14.5px] text-[#5a5f66] leading-relaxed">{uc.description}</p>
                   </div>
-                )
-              })}
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
+                </SpotlightCard>
+              )
+            })}
+          </div>
+        </Container>
+      </LightSection>
 
       {/* ── How It Works ── */}
-      <section className="relative py-20 px-5 overflow-hidden border-t border-border/50">
-        {/* Animated colored glow orbs */}
-        <div
-          className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full blur-[120px] pointer-events-none float-glow"
-          style={{ background: glowColor(service.heroGlow, 0.04), animationDelay: '-3s' }}
-        />
-        <div
-          className="absolute top-20 right-0 w-[300px] h-[300px] rounded-full blur-[100px] pointer-events-none float-glow"
-          style={{ background: glowColor(service.heroGlow, 0.03), animationDelay: '-9s' }}
-        />
-        <div className="relative max-w-4xl mx-auto">
-          <ScrollReveal direction="up">
-            <div className="text-center mb-14">
-              <span className="feature-badge bg-primary/10 text-primary">How It Works</span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight mt-4">
-                Three steps to better {service.name} training
-              </h2>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal direction="up" stagger>
-            <div className="relative grid md:grid-cols-3 gap-8">
-              {/* Connecting line between steps (desktop) */}
-              <div className="hidden md:block absolute top-10 left-[20%] right-[20%] h-px bg-gradient-to-r from-border via-primary/20 to-border" />
-
-              {HOW_IT_WORKS_STEPS.map((step) => (
-                <div key={step.number} className="group relative text-center hover:-translate-y-0.5 transition-transform duration-300">
-                  {/* Numbered circle badge */}
-                  <div className="relative mx-auto mb-4">
-                    <div className={`w-14 h-14 rounded-full ${service.bg} flex items-center justify-center mx-auto border-4 border-background relative z-10`}>
-                      <span className={`text-2xl font-bold ${service.color}`}>{step.number}</span>
-                    </div>
-                  </div>
-                  {/* Pill step label */}
-                  <span className="inline-flex items-center px-3 py-0.5 rounded-full bg-muted text-[10px] uppercase tracking-[0.12em] font-semibold text-muted-foreground mb-3">
-                    Step {step.number}
-                  </span>
-                  <h3 className="font-semibold text-base sm:text-lg mb-2">{step.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
+      <DarkSection>
+        <div className="absolute top-[-140px] right-[-100px] w-[780px] h-[560px] pointer-events-none" aria-hidden="true" style={{ background: `radial-gradient(55% 65% at 70% 30%, ${glowColor(service.heroGlow, 0.14)}, transparent 76%)`, filter: 'blur(46px)' }} />
+        <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
+        <Container className="relative">
+          <div className="max-w-[640px] mb-9">
+            <Eyebrow n="02">How It Works</Eyebrow>
+            <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 text-white">Three steps to better {service.name} training</h2>
+          </div>
+          <div className="grid sm:grid-cols-1 md:grid-cols-3 border-t border-l border-white/14">
+            {HOW_IT_WORKS_STEPS.map((step) => (
+              <div key={step.number} data-reveal className="group v5-pop cursor-default relative p-[30px_28px] border-r border-b border-white/14">
+                <div className="ff-mono text-[12px] font-semibold tracking-[0.1em] uppercase mb-5" style={{ color: serviceColour }}>Step {step.number}</div>
+                <div className="w-[42px] h-[42px] flex items-center justify-center mb-5 ff-display text-[20px] font-black text-white" style={{ background: glowColor(service.heroGlow, 0.14) }}>
+                  {step.number}
                 </div>
-              ))}
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
+                <h3 className="ff-display font-bold text-[19px] tracking-[-0.01em] mb-2 text-white">{step.title}</h3>
+                <p className="text-[14px] text-[#9aa0a8] leading-relaxed">{step.description}</p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </DarkSection>
 
       {/* ── Slide type showcase (Interactive Tools) ── */}
-      <section className="relative py-20 px-5 overflow-hidden border-t border-border/50">
-        {/* Animated colored glow orb */}
-        <div
-          className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full blur-[150px] pointer-events-none float-glow"
-          style={{ background: glowColor(service.heroGlow, 0.04) }}
-        />
-        <div
-          className="absolute bottom-0 right-1/4 w-[350px] h-[350px] rounded-full blur-[120px] pointer-events-none float-glow"
-          style={{ background: glowColor(service.heroGlow, 0.03), animationDelay: '-5s' }}
-        />
-        <div className="relative max-w-5xl mx-auto">
-          <ScrollReveal direction="left">
-            <div className="text-center mb-14">
-              <span className="feature-badge bg-blue-500/10 text-blue-500">Command Classroom</span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight mt-4 mb-4">
-                Five powerful question types at your fingertips
-              </h2>
-              <p className="text-muted-foreground text-sm sm:text-lg max-w-xl mx-auto">
-                Mix and match polls, quizzes, word clouds, Q&amp;A, and surveys in Command Classroom to create engaging {service.name} training sessions.
-              </p>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal direction="left" stagger>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {SLIDE_TYPES.map((s) => {
-                const SIcon = s.icon
-                return (
-                  <div
-                    key={s.label}
-                    className="group relative text-center p-5 rounded-2xl border border-border bg-card hover:border-primary/20 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden"
-                  >
-                    {/* Glow effect behind card on hover */}
-                    <div
-                      className="absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-xl"
-                      style={{ background: glowColor(service.heroGlow, 0.12) }}
-                    />
-                    {/* Color accent line at top */}
-                    <div className={`absolute top-0 left-0 right-0 h-0.5 ${s.bg.replace('/10', '/40')}`} />
-                    <div className={`w-12 h-12 rounded-xl ${s.bg} flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300`}>
-                      <SIcon className={`w-6 h-6 ${s.color}`} />
+      <LightSection>
+        <Container>
+          <div className="max-w-[680px] mb-3.5">
+            <Eyebrow n="03">Command Classroom</Eyebrow>
+            <h2 className="ff-display font-extrabold text-[clamp(30px,3.8vw,48px)] leading-none tracking-[-0.02em] mt-4 text-[#16191E]">Five powerful question types at your fingertips</h2>
+            <p className="text-[16px] text-[#5a5f66] mt-4">Mix and match polls, quizzes, word clouds, Q&amp;A, and surveys in Command Classroom to create engaging {service.name} training sessions.</p>
+          </div>
+          <div className="h-0.5 bg-[#16191E] origin-left mt-7" data-rule />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-5 border-l border-[rgba(20,25,30,0.16)]">
+            {SLIDE_TYPES.map((s) => {
+              const SIcon = s.icon
+              return (
+                <SpotlightCard key={s.label} glow={`${s.accent}26`} className="v5-card group relative overflow-hidden p-[30px_24px] border-r border-b border-[rgba(20,25,30,0.16)] block cursor-default">
+                  <span className="absolute inset-0 pointer-events-none" style={{ '--v5-wash': `${s.accent}24` } as CSSProperties} aria-hidden="true" />
+                  <div className="relative">
+                    <div className="w-[42px] h-[42px] flex items-center justify-center mb-5" style={{ background: `${s.accent}18` }}>
+                      <SIcon className="w-5 h-5" style={{ color: s.accent }} />
                     </div>
-                    <h3 className="font-semibold text-sm mb-0.5">{s.label}</h3>
-                    {/* "Interactive" sub-label in accent color */}
-                    <p className={`text-[10px] uppercase tracking-[0.1em] font-semibold ${s.color} mb-1.5`}>Interactive</p>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{s.description}</p>
+                    <h3 className="ff-display font-bold text-[18px] tracking-[-0.01em] mb-1.5 text-[#16191E]">{s.label}</h3>
+                    <p className="ff-mono text-[10px] font-semibold uppercase tracking-[0.1em] mb-2" style={{ color: s.accent }}>Interactive</p>
+                    <p className="text-[13.5px] text-[#5a5f66] leading-relaxed">{s.description}</p>
                   </div>
-                )
-              })}
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
+                </SpotlightCard>
+              )
+            })}
+          </div>
+        </Container>
+      </LightSection>
 
       {/* ── Benefits ── */}
-      <section className="relative py-20 px-5 overflow-hidden border-t border-border/50">
-        {/* Animated colored glow orbs */}
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[150px] pointer-events-none float-glow"
-          style={{ background: glowColor(service.heroGlow, 0.05) }}
-        />
-        <div
-          className="absolute top-0 right-0 w-[300px] h-[300px] rounded-full blur-[100px] pointer-events-none float-glow"
-          style={{ background: glowColor(service.heroGlow, 0.04), animationDelay: '-7s' }}
-        />
-        <div className="relative max-w-5xl mx-auto">
-          <ScrollReveal direction="right">
-            <div className="text-center mb-14">
-              <span className="feature-badge bg-primary/10 text-primary">Benefits</span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight mt-4">
-                Why {service.name} teams choose Command 360
-              </h2>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal direction="right" stagger>
-            <div className="grid md:grid-cols-3 gap-6">
-              {service.benefits.map((b) => {
-                const BIcon = b.icon
-                return (
-                  <div
-                    key={b.title}
-                    className="group relative p-6 rounded-2xl border border-border bg-card hover:border-primary/20 hover:-translate-y-0.5 transition-all duration-300"
-                  >
-                    {/* Glow effect behind card on hover */}
-                    <div
-                      className="absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-xl"
-                      style={{ background: glowColor(service.heroGlow, 0.15) }}
-                    />
-                    <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                      <BIcon className="w-5 h-5 text-primary" />
-                    </div>
-                    <h3 className="font-semibold mb-2">{b.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-4">{b.description}</p>
-                    {/* Mini visual bars */}
-                    <div className="flex items-center gap-1">
-                      {[60, 80, 45, 90, 70].map((w, j) => (
-                        <div
-                          key={j}
-                          className="h-1 rounded-full"
-                          style={{
-                            width: `${w * 0.3}px`,
-                            background: glowColor(service.heroGlow, 0.15 + (j * 0.08)),
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* ── Templates (scrolling marquee) ── */}
-      <section className="relative py-20 px-5 overflow-hidden border-t border-border/50">
-        <div
-          className="absolute -bottom-40 right-0 w-[400px] h-[400px] rounded-full blur-[120px] pointer-events-none float-glow"
-          style={{ background: glowColor(service.heroGlow, 0.04), animationDelay: '-2s' }}
-        />
-        <div className="relative max-w-4xl mx-auto text-center">
-          <ScrollReveal direction="up">
-            <span className="feature-badge bg-primary/10 text-primary">Ready-Made Presentations</span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight mt-4 mb-4">
-              Templates designed for {service.name}
-            </h2>
-            <p className="text-muted-foreground mb-8">
-              Start quickly with purpose-built templates — or create your own from scratch.
-            </p>
-          </ScrollReveal>
-
-          {/* Scrolling marquee */}
-          <div className="relative overflow-hidden py-4">
-            {/* Fade edges */}
-            <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
-            <div className="flex animate-[marquee_20s_linear_infinite] gap-3 w-max">
-              {/* Double the items for seamless loop */}
-              {[...service.templateSuggestions, ...service.templateSuggestions].map((t, i) => (
-                <span
-                  key={`${t}-${i}`}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border bg-card text-sm font-medium hover:border-primary/20 hover:shadow-sm transition-all cursor-default shrink-0"
-                >
-                  <CheckCircle className="w-3.5 h-3.5 text-primary shrink-0" />
-                  {t}
-                </span>
-              ))}
-            </div>
+      <DarkSection>
+        <div className="absolute top-[-140px] left-[-100px] w-[780px] h-[560px] pointer-events-none" aria-hidden="true" style={{ background: `radial-gradient(55% 65% at 30% 30%, ${glowColor(service.heroGlow, 0.13)}, transparent 76%)`, filter: 'blur(46px)' }} />
+        <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
+        <Container className="relative">
+          <div className="max-w-[640px] mb-9">
+            <Eyebrow n="04">Benefits</Eyebrow>
+            <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 text-white">Why {service.name} teams choose Command 360</h2>
           </div>
+          <div className="grid sm:grid-cols-1 md:grid-cols-3 border-t border-l border-white/14">
+            {service.benefits.map((b) => {
+              const BIcon = b.icon
+              return (
+                <div key={b.title} data-reveal className="group v5-pop cursor-default relative p-[30px_28px] border-r border-b border-white/14">
+                  <div className="w-[42px] h-[42px] flex items-center justify-center mb-5" style={{ background: glowColor(service.heroGlow, 0.14) }}>
+                    <BIcon className="w-5 h-5" style={{ color: serviceColour }} />
+                  </div>
+                  <h3 className="ff-display font-bold text-[18px] tracking-[-0.01em] mb-2 text-white">{b.title}</h3>
+                  <p className="text-[14px] text-[#9aa0a8] leading-relaxed">{b.description}</p>
+                </div>
+              )
+            })}
+          </div>
+        </Container>
+      </DarkSection>
 
-          {/* Marquee keyframes */}
-          <style>{`
-            @keyframes marquee {
-              from { transform: translateX(0); }
-              to { transform: translateX(-50%); }
-            }
-          `}</style>
-        </div>
-      </section>
+      {/* ── Templates ── */}
+      <LightSection>
+        <Container>
+          <div className="max-w-[640px] mb-3.5">
+            <Eyebrow n="05">Ready-Made Presentations</Eyebrow>
+            <h2 className="ff-display font-extrabold text-[clamp(30px,3.8vw,48px)] leading-none tracking-[-0.02em] mt-4 text-[#16191E]">Templates designed for {service.name}</h2>
+            <p className="text-[16px] text-[#5a5f66] mt-4">Start quickly with purpose-built templates — or create your own from scratch.</p>
+          </div>
+          <div className="h-0.5 bg-[#16191E] origin-left mt-7 mb-8" data-rule />
+          <div className="flex flex-wrap gap-3">
+            {service.templateSuggestions.map((t) => (
+              <span
+                key={t}
+                className="inline-flex items-center gap-2 px-5 py-3 border border-[rgba(20,25,30,0.16)] bg-white/40 text-[14px] font-medium text-[#16191E] cursor-default"
+              >
+                <CheckCircle className="w-3.5 h-3.5 shrink-0" style={{ color: serviceColour }} />
+                {t}
+              </span>
+            ))}
+          </div>
+        </Container>
+      </LightSection>
 
       {/* ── FAQ ── */}
-      <section className="relative py-20 px-5 overflow-hidden border-t border-border/50">
-        <div
-          className="absolute -top-40 -left-40 w-[400px] h-[400px] rounded-full blur-[120px] pointer-events-none float-glow"
-          style={{ background: glowColor(service.heroGlow, 0.03), animationDelay: '-4s' }}
-        />
-        <div className="relative max-w-2xl mx-auto">
-          <ScrollReveal direction="up">
-            <div className="text-center mb-10">
-              <span className="feature-badge bg-primary/10 text-primary">FAQ</span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight mt-4">
-                Common questions
-              </h2>
-            </div>
-          </ScrollReveal>
-          <ScrollReveal direction="up">
-            <FAQAccordion items={service.faqs} />
-          </ScrollReveal>
-        </div>
-      </section>
+      <DarkSection>
+        <div className="absolute top-[-140px] right-[-100px] w-[700px] h-[520px] pointer-events-none" aria-hidden="true" style={{ background: `radial-gradient(55% 65% at 70% 30%, ${glowColor(service.heroGlow, 0.1)}, transparent 76%)`, filter: 'blur(46px)' }} />
+        <Container className="relative">
+          <div className="max-w-[640px] mb-9">
+            <Eyebrow n="06">FAQ</Eyebrow>
+            <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 text-white">Common questions</h2>
+          </div>
+          <div className="max-w-[760px]">
+            <FaqAccordion items={faqItems} />
+          </div>
+        </Container>
+      </DarkSection>
 
-      {/* ── Bottom CTA (matches homepage dark CTA style) ── */}
-      <section className="relative bg-[#07070a] overflow-hidden border-t border-white/[0.04]">
-        {/* Background glow effects matching homepage CTA */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_100%,rgba(220,38,38,0.18),transparent)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(220,38,38,0.08),transparent)]" />
-          {/* Service-colored glow mixed in */}
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full blur-[150px] float-glow"
-            style={{ background: glowColor(service.heroGlow, 0.06) }}
-          />
-          {/* Grid texture */}
-          <div
-            className="absolute inset-0 opacity-[0.05]"
-            style={{
-              backgroundImage: 'linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)',
-              backgroundSize: '48px 48px',
-            }}
-          />
-        </div>
-        <div className="relative max-w-3xl mx-auto px-5 py-24 md:py-32 text-center">
-          <ScrollReveal>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[10px] uppercase tracking-[0.15em] text-white/40 font-medium mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 pulse-dot" />
-              Get started today
-            </div>
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight text-white mb-6">
-              <span className="bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text text-transparent">
-                {service.ctaHeadline}
-              </span>
-            </h2>
-            <p className="text-white/35 text-base md:text-lg mb-10 max-w-lg mx-auto">
-              Free to get started. No credit card required. Built for those who serve.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <button
-                onClick={() => openAuth('register')}
-                className="group inline-flex items-center gap-2 px-8 h-13 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 cursor-pointer"
-              >
-                Start free trial <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-              </button>
-              <button
-                onClick={() => openAuth('register')}
-                className="inline-flex items-center gap-2 px-8 h-13 rounded-xl text-sm font-medium border border-white/[0.1] text-white/60 hover:text-white hover:border-white/[0.2] transition-all duration-200 cursor-pointer"
-              >
-                Book a demo
-              </button>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-    </PublicLayout>
+      {/* ── CTA ── */}
+      <DarkSection>
+        <div className="absolute bottom-[-200px] left-1/2 -translate-x-1/2 w-[1080px] h-[560px] pointer-events-none" aria-hidden="true" style={{ background: `radial-gradient(60% 80% at 50% 100%, ${glowColor(service.heroGlow, 0.18)}, ${glowColor(service.heroGlow, 0.06)} 48%, transparent 78%)`, filter: 'blur(44px)' }} />
+        <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
+        <Container className="relative text-center">
+          <Eyebrow>Get started today</Eyebrow>
+          <h2 className="ff-display font-extrabold text-[clamp(28px,4vw,52px)] leading-[1.04] tracking-[-0.02em] mt-5 text-white max-w-[20ch] mx-auto" data-reveal>
+            {service.ctaHeadline}
+          </h2>
+          <p className="text-[16px] text-[#9aa0a8] mt-5 max-w-[520px] mx-auto" data-reveal>
+            Free to get started. No credit card required. Built for those who serve.
+          </p>
+          <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3" data-reveal>
+            <button
+              onClick={() => openAuth('register')}
+              className="ff-mono inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.05em] text-white bg-[#C9241A] hover:bg-[#a91d14] v5-glow px-7 py-4 transition-colors cursor-pointer"
+            >
+              Start free trial <ArrowRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => openAuth('register')}
+              className="ff-mono inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.05em] text-white border border-white/22 hover:bg-white/[0.06] hover:border-white/40 px-6 py-4 transition-colors cursor-pointer"
+            >
+              Book a demo
+            </button>
+          </div>
+        </Container>
+      </DarkSection>
+    </SiteShell>
   )
 }
