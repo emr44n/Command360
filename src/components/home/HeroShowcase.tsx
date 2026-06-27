@@ -99,20 +99,20 @@ function QuizContent() {
 
 /* ── CLOUD — sphere of words floating around a centre word ── */
 const CLOUD_RING: { w: string; left: string; top: string; s: number; c: string; d: number }[] = [
-  { w: 'Steady', left: '46%', top: '6%', s: 14, c: '#fff', d: 1.8 },
-  { w: 'Focused', left: '14%', top: '18%', s: 15, c: '#2E9E63', d: 0 },
-  { w: 'Alert', left: '78%', top: '14%', s: 17, c: '#fff', d: 0.3 },
-  { w: 'Calm', left: '7%', top: '56%', s: 13, c: '#aab0b8', d: 0.6 },
-  { w: 'Prepared', left: '80%', top: '60%', s: 14, c: '#8a9098', d: 0.9 },
-  { w: 'Sharp', left: '26%', top: '88%', s: 13, c: '#aab0b8', d: 1.2 },
-  { w: 'Confident', left: '64%', top: '90%', s: 15, c: '#2E9E63', d: 1.5 },
+  { w: 'Steady', left: '44%', top: '9%', s: 13, c: '#8a9098', d: 1.8 },
+  { w: 'Focused', left: '17%', top: '22%', s: 27, c: '#2E9E63', d: 0 },
+  { w: 'Alert', left: '79%', top: '15%', s: 18, c: '#fff', d: 0.3 },
+  { w: 'Calm', left: '9%', top: '60%', s: 15, c: '#aab0b8', d: 0.6 },
+  { w: 'Prepared', left: '82%', top: '58%', s: 22, c: '#fff', d: 0.9 },
+  { w: 'Sharp', left: '28%', top: '86%', s: 14, c: '#8a9098', d: 1.2 },
+  { w: 'Confident', left: '66%', top: '88%', s: 24, c: '#2E9E63', d: 1.5 },
 ]
 function CloudContent() {
   return (
-    <div className="relative w-full h-[150px] flex items-center justify-center">
+    <div className="relative w-full h-[156px] flex items-center justify-center">
       <motion.span
         className="ff-display font-black text-[#fff] leading-none relative z-[1]"
-        style={{ fontSize: 34 }}
+        style={{ fontSize: 46 }}
         initial={{ opacity: 0, scale: 0.7 }}
         animate={{ opacity: 1, scale: 1, y: [0, -3, 0] }}
         transition={{ opacity: { type: 'spring', stiffness: 200, damping: 16 }, scale: { type: 'spring', stiffness: 200, damping: 16 }, y: { duration: 3.6, ease: 'easeInOut', repeat: Infinity } }}
@@ -313,17 +313,17 @@ export function HeroShowcase() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Soft luminous glow in the active feature's colour; a rounded black
-          fade sits on top so the colour emerges from black; grain for polish.
+      {/* Transparent surface — the page's own top black-fade + grid show
+          straight through, so the panel header sits on the same black as the
+          rest of the hero. Just a soft feature-colour glow + grain on top.
           initial=false stops any first-load flash. */}
       <motion.div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
         initial={false}
-        animate={{ background: `radial-gradient(56% 46% at 80% 30%, ${f.accent}15, transparent 72%)` }}
+        animate={{ background: `radial-gradient(56% 46% at 80% 34%, ${f.accent}15, transparent 72%)` }}
         transition={{ duration: 0.8 }}
       />
-      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-[55%] pointer-events-none" style={{ background: 'radial-gradient(120% 90% at 50% 0%, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.34) 40%, transparent 78%)' }} />
       <div aria-hidden="true" className="absolute inset-0 v5-grain opacity-[0.12] mix-blend-overlay pointer-events-none" />
 
       {/* header — shows the active core area (pillar) */}

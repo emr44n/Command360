@@ -135,11 +135,12 @@ export default function LandingPage() {
       <main>
         {/* ════════════ HERO ════════════ */}
         <header className="relative overflow-hidden bg-[#0F1216] text-white" aria-label="Introduction">
-          {/* rounded black fade from the very top (under the black ticker bar)
-              easing down into the grid — radial so there's no harsh horizontal
-              line, semi-transparent so the grid shows through */}
-          <div className="absolute top-0 left-0 right-0 h-[78%] pointer-events-none" aria-hidden="true"
-            style={{ background: 'radial-gradient(135% 100% at 50% -8%, #000 0%, rgba(0,0,0,0.62) 26%, rgba(0,0,0,0.28) 48%, rgba(0,0,0,0.08) 66%, transparent 82%)' }} />
+          {/* uniform black fade from the very top (under the black ticker bar)
+              easing smoothly down into the grid — full width so the right-hand
+              panel header sits on the same black, no harsh line, semi-
+              transparent so the grid shows through lower down */}
+          <div className="absolute top-0 left-0 right-0 h-[82%] pointer-events-none" aria-hidden="true"
+            style={{ background: 'linear-gradient(180deg, #000 0%, rgba(0,0,0,0.70) 24%, rgba(0,0,0,0.34) 47%, rgba(0,0,0,0.10) 67%, transparent 86%)' }} />
           <div className="absolute bottom-[-180px] left-1/2 -translate-x-1/2 w-[1280px] h-[720px] pointer-events-none" aria-hidden="true"
             style={{ background: 'radial-gradient(60% 80% at 50% 100%,rgba(201,36,26,.22),rgba(201,36,26,.06) 48%,transparent 78%)', filter: 'blur(38px)' }} />
           <div className="absolute inset-0 v5-grain opacity-[0.16] mix-blend-overlay pointer-events-none" aria-hidden="true" />

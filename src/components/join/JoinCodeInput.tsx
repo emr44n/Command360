@@ -68,11 +68,12 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
             aria-label="Session join code"
             className="ff-mono w-full min-w-0 bg-transparent border-none text-white text-[15px] font-semibold tracking-[0.22em] px-4 py-3 outline-none"
           />
-          {/* Animated terminal-style placeholder — a blinking caret after the
-              prompt. Purely decorative; the field below is fully usable. */}
+          {/* Animated terminal-style placeholder — light weight (matching the
+              "Joining a session?" label) with a thin blinking caret. Purely
+              decorative; the field below is fully usable. */}
           {!code && !focused && (
-            <span aria-hidden="true" className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none ff-mono text-[15px] font-semibold tracking-[0.18em] text-white/35 flex items-center">
-              ENTER CODE<span className="v5-caret" />
+            <span aria-hidden="true" className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none ff-mono text-[12px] font-medium tracking-[0.14em] text-white/35 flex items-center gap-[3px]">
+              ENTER CODE<span className="inline-block w-[1.5px] h-[13px] bg-white/45" style={{ animation: 'v5caret 1s step-end infinite' }} />
             </span>
           )}
         </div>
