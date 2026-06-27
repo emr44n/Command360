@@ -47,90 +47,59 @@ html, body {
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  /* v5 is rigid — every token radius collapses to square. Explicit
+     rounded-full (dots, avatars, switches) is unaffected. */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
 }
 
 /* ──────────────────────────────────────────
-   LIGHT MODE
-   Clean white, warm neutral grays, red accent.
+   v5 "REGIMENTAL" PALETTE
+   The whole app is dark now — :root and .dark resolve to the same v5 dark
+   tokens, so token-based surfaces (dashboard, editor, studio, presenter,
+   participant, auth forms) match the marketing pages and a stray theme
+   toggle can never produce a broken light view. Marketing/home pages use
+   hardcoded hex and are unaffected by these tokens.
    ────────────────────────────────────────── */
-:root {
-  --radius: 0.625rem;
-  --background: #ffffff;
-  --foreground: #0f1115;
-  --card: #ffffff;
-  --card-foreground: #0f1115;
-  --popover: #ffffff;
-  --popover-foreground: #0f1115;
-  --primary: #dc2626;
-  --primary-foreground: #ffffff;
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-  --accent: #f4f4f5;
-  --accent-foreground: #18181b;
-  --destructive: #dc2626;
-  --border: #e4e4e7;
-  --input: #e4e4e7;
-  --ring: #dc2626;
-  --chart-1: #dc2626;
-  --chart-2: #2563eb;
-  --chart-3: #16a34a;
-  --chart-4: #d97706;
-  --chart-5: #7c3aed;
-  --sidebar: #fafafa;
-  --sidebar-foreground: #0f1115;
-  --sidebar-primary: #dc2626;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f4f4f5;
-  --sidebar-accent-foreground: #18181b;
-  --sidebar-border: #e4e4e7;
-  --sidebar-ring: #dc2626;
-}
-
-/* ──────────────────────────────────────────
-   DARK MODE
-   Near-black base, zinc grays, brighter red.
-   ────────────────────────────────────────── */
+:root,
 .dark {
-  --background: #09090b;
-  --foreground: #fafafa;
-  --card: #111113;
-  --card-foreground: #fafafa;
-  --popover: #111113;
-  --popover-foreground: #fafafa;
-  --primary: #ef4444;
+  --radius: 0px;
+  --background: #0F1216;
+  --foreground: #ececea;
+  --card: #16191E;
+  --card-foreground: #ececea;
+  --popover: #16191E;
+  --popover-foreground: #ececea;
+  --primary: #C9241A;
   --primary-foreground: #ffffff;
-  --secondary: #1a1a1e;
-  --secondary-foreground: #fafafa;
-  --muted: #1a1a1e;
-  --muted-foreground: #a1a1aa;
-  --accent: #1a1a1e;
-  --accent-foreground: #fafafa;
-  --destructive: #ef4444;
-  --border: #27272a;
-  --input: #27272a;
-  --ring: #ef4444;
-  --chart-1: #ef4444;
-  --chart-2: #3b82f6;
-  --chart-3: #22c55e;
-  --chart-4: #f59e0b;
-  --chart-5: #8b5cf6;
-  --sidebar: #0c0c0e;
-  --sidebar-foreground: #fafafa;
-  --sidebar-primary: #ef4444;
+  --secondary: #1b1f25;
+  --secondary-foreground: #ececea;
+  --muted: #1b1f25;
+  --muted-foreground: #9aa0a8;
+  --accent: #1b1f25;
+  --accent-foreground: #ffffff;
+  --destructive: #C9241A;
+  --border: #262b32;
+  --input: #262b32;
+  --ring: #C9241A;
+  --chart-1: #C9241A;
+  --chart-2: #3E6DC4;
+  --chart-3: #2E9E63;
+  --chart-4: #c98a2a;
+  --chart-5: #6a5ea8;
+  --sidebar: #0A0C0F;
+  --sidebar-foreground: #ececea;
+  --sidebar-primary: #C9241A;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1a1a1e;
-  --sidebar-accent-foreground: #fafafa;
-  --sidebar-border: #27272a;
-  --sidebar-ring: #ef4444;
+  --sidebar-accent: #1b1f25;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #262b32;
+  --sidebar-ring: #C9241A;
 }
 
 /* ── BASE ── */
