@@ -130,7 +130,7 @@ export function StudioCctvEditor({ content, onContentChange, slides, currentSlid
   }
 
   return (
-    <div className="flex flex-col min-w-0 bg-[#2b2d31] text-zinc-200">
+    <div className="flex flex-col min-w-0 bg-[#2b2d31] text-white">
       {/* Header */}
       <div className="px-2 py-1.5 border-b border-[#1e1f22] flex items-center gap-1.5">
         <Monitor className="w-3.5 h-3.5 text-[#6a5ea8]" />
@@ -346,24 +346,24 @@ function CctvGridPreview({
     return (
       <div
         key={i}
-        className={`rounded-md border flex flex-col items-center justify-center gap-2 p-3 transition-all ${
+        className={`rounded-none border flex flex-col items-center justify-center gap-2 p-3 transition-all ${
           isAssigned
-            ? 'border-indigo-500/40 bg-indigo-500/5'
+            ? 'border-[#6a5ea8]/40 bg-[#6a5ea8]/5'
             : 'border-[#3f4147] bg-[#2b2d31]'
         }`}
       >
-        <span className="text-[10px] font-bold text-zinc-500 uppercase">Slot {i + 1}</span>
+        <span className="text-[10px] font-bold text-[#9aa0a8] uppercase">Slot {i + 1}</span>
         {isAssigned ? (
-          <span className="text-xs font-medium text-zinc-200 truncate max-w-full px-1">
+          <span className="text-xs font-medium text-white truncate max-w-full px-1">
             {getSlideLabel(assignedId)}
           </span>
         ) : (
-          <span className="text-[11px] text-zinc-600 italic">Empty</span>
+          <span className="text-[11px] text-[#9aa0a8] italic">Empty</span>
         )}
         <select
           value={assignedId}
           onChange={(e) => onSlotChange(i, e.target.value)}
-          className="w-full h-6 text-[10px] bg-[#1e1f22] border border-[#3f4147] rounded px-1 text-zinc-300 outline-none focus:border-indigo-500 cursor-pointer"
+          className="w-full h-6 text-[10px] bg-[#1e1f22] border border-[#3f4147] rounded-none px-1 text-[#9aa0a8] outline-none focus:border-[#6a5ea8] cursor-pointer"
         >
           <option value="">-- None --</option>
           {availableSlides.map((s) => {

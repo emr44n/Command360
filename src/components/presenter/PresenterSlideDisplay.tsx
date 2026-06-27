@@ -25,16 +25,16 @@ export function PresenterSlideDisplay({ slide, session, responseCount, channelRe
 
   return (
     <div
-      className="bg-white rounded-2xl overflow-hidden shadow-2xl border border-border relative"
+      className="bg-white rounded-none overflow-hidden shadow-2xl border border-border relative"
       style={{ aspectRatio: '16/9' }}
     >
       <div className="absolute inset-0 flex flex-col px-8 pt-8 pb-6">
         <div className="shrink-0 mb-4">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-primary bg-primary/10 uppercase tracking-wide mb-3">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-none text-xs font-semibold text-primary bg-primary/10 uppercase tracking-wide mb-3">
             {slide.slide_type.replace('_', ' ')}
           </span>
-          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 tracking-tight">
-            {slide.title || <span className="text-gray-400 italic font-normal">Untitled slide</span>}
+          <h2 className="text-2xl md:text-4xl font-bold text-[#16191E] tracking-tight">
+            {slide.title || <span className="text-[#9aa0a8] italic font-normal">Untitled slide</span>}
           </h2>
         </div>
         <div className="flex-1 flex items-center justify-center overflow-hidden min-h-0">

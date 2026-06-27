@@ -47,17 +47,17 @@ export function FontPicker({ value, onChange }: FontPickerProps) {
   return (
     <div ref={ref} className="relative">
       <button onClick={() => setOpen(v => !v)}
-        className="w-full h-5 flex items-center justify-between px-1.5 text-[9px] bg-[#1e1f22] border border-[#3f4147] rounded-md text-zinc-300 cursor-pointer hover:border-red-500/50 transition-colors">
+        className="w-full h-5 flex items-center justify-between px-1.5 text-[9px] bg-[#1e1f22] border border-[#3f4147] rounded-none text-[#9aa0a8] cursor-pointer hover:border-red-500/50 transition-colors">
         <span className="truncate" style={{ fontFamily: value || 'inherit' }}>{value || 'Default'}</span>
-        <ChevronDown className="w-2.5 h-2.5 shrink-0 text-zinc-500" />
+        <ChevronDown className="w-2.5 h-2.5 shrink-0 text-[#9aa0a8]" />
       </button>
       {open && (
-        <div className="absolute top-full left-0 right-0 mt-0.5 z-[9999] bg-[#1e1f22] border border-[#3f4147] rounded-lg shadow-2xl max-h-48 overflow-hidden flex flex-col">
+        <div className="absolute top-full left-0 right-0 mt-0.5 z-[9999] bg-[#1e1f22] border border-[#3f4147] rounded-none shadow-2xl max-h-48 overflow-hidden flex flex-col">
           <div className="p-1 border-b border-[#2b2d31]">
-            <div className="flex items-center gap-1 px-1.5 h-5 bg-[#2b2d31] rounded-md">
-              <Search className="w-2.5 h-2.5 text-zinc-500" />
+            <div className="flex items-center gap-1 px-1.5 h-5 bg-[#2b2d31] rounded-none">
+              <Search className="w-2.5 h-2.5 text-[#9aa0a8]" />
               <input value={search} onChange={e => setSearch(e.target.value)}
-                className="flex-1 bg-transparent text-[8px] text-zinc-300 outline-none" placeholder="Search fonts..." autoFocus />
+                className="flex-1 bg-transparent text-[8px] text-[#9aa0a8] outline-none" placeholder="Search fonts..." autoFocus />
             </div>
           </div>
           <div className="overflow-y-auto flex-1">
@@ -65,7 +65,7 @@ export function FontPicker({ value, onChange }: FontPickerProps) {
               loadFont(font)
               return (
                 <button key={font} onClick={() => { onChange(font); setOpen(false); loadFont(font) }}
-                  className={`w-full text-left px-2 py-1 text-[9px] hover:bg-[#35363c] transition-colors ${value === font ? 'text-red-400 bg-red-500/10' : 'text-zinc-300'}`}
+                  className={`w-full text-left px-2 py-1 text-[9px] hover:bg-[#35363c] transition-colors ${value === font ? 'text-red-400 bg-red-500/10' : 'text-[#9aa0a8]'}`}
                   style={{ fontFamily: font }}>
                   {font}
                 </button>

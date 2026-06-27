@@ -262,7 +262,7 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
       <div className="h-10 bg-card flex items-center px-4 shrink-0 border-b border-border">
         {/* Logo left */}
         <div className="flex items-center gap-1.5 shrink-0">
-          <div className="w-5 h-5 rounded-md bg-primary flex items-center justify-center">
+          <div className="w-5 h-5 rounded-none bg-primary flex items-center justify-center">
             <svg viewBox="0 0 24 24" className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
           </div>
           <span className="text-xs font-semibold text-muted-foreground tracking-tight hidden md:inline">Command 360</span>
@@ -287,10 +287,10 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
           Join at <span className="text-foreground font-medium">{joinUrl.replace(/^https?:\/\//, '')}</span>
         </span>
         <span className="text-border">|</span>
-        <button onClick={copyCode} className="inline-flex items-center gap-1.5 text-sm hover:bg-muted px-2 py-0.5 rounded-lg transition-colors">
+        <button onClick={copyCode} className="inline-flex items-center gap-1.5 text-sm hover:bg-muted px-2 py-0.5 rounded-none transition-colors">
           <span className="text-muted-foreground">code</span>
           <span className="text-foreground font-mono font-bold tracking-wider">{formattedCode}</span>
-          {codeCopied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3 text-muted-foreground/50" />}
+          {codeCopied ? <Check className="w-3 h-3 text-[#2E9E63]" /> : <Copy className="w-3 h-3 text-muted-foreground/50" />}
         </button>
         <div className="flex items-center gap-1.5 ml-4 text-muted-foreground">
           <Users className="w-3.5 h-3.5" />
@@ -314,10 +314,10 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
             )}
           </div>
           {showNotes && currentSlide && (
-            <div className="w-full max-w-4xl mt-4 bg-muted/40 rounded-xl p-5 border border-border slide-in-up" style={{ minHeight: 100 }}>
+            <div className="w-full max-w-4xl mt-4 bg-muted/40 rounded-none p-5 border border-border slide-in-up" style={{ minHeight: 100 }}>
               <div className="flex items-center gap-2 mb-3">
-                <StickyNote className="w-4 h-4 text-amber-500" />
-                <span className="text-xs font-semibold text-amber-500 uppercase tracking-wider">Speaker Notes</span>
+                <StickyNote className="w-4 h-4 text-[#c98a2a]" />
+                <span className="text-xs font-semibold text-[#c98a2a] uppercase tracking-wider">Speaker Notes</span>
               </div>
               {currentSlide.speaker_notes ? (
                 <p className="text-foreground/80 text-sm leading-relaxed whitespace-pre-wrap">{currentSlide.speaker_notes}</p>
@@ -329,7 +329,7 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
         </div>
 
         {showQR && (
-          <div className={cn('w-72 bg-card border-l border-border flex flex-col items-center justify-center p-6 gap-4 shrink-0 rounded-2xl', closingQR ? 'panel-slide-out' : 'panel-slide-in')}>
+          <div className={cn('w-72 bg-card border-l border-border flex flex-col items-center justify-center p-6 gap-4 shrink-0 rounded-none', closingQR ? 'panel-slide-out' : 'panel-slide-in')}>
             <button onClick={handleCloseQR} className="self-end text-muted-foreground hover:text-foreground mb-2 transition-all duration-200 hover:rotate-90 transform">
               <X className="w-4 h-4" />
             </button>
@@ -339,20 +339,20 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
               <Tooltip><TooltipTrigger asChild>
               <button
                 onClick={copyUrl}
-                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted px-3 py-1.5 rounded-lg transition-colors font-mono"
+                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted px-3 py-1.5 rounded-none transition-colors font-mono"
               >
                 <span className="truncate">{joinUrl.replace(/^https?:\/\//, '')}</span>
-                {urlCopied ? <Check className="w-3 h-3 text-emerald-500 shrink-0" /> : <Copy className="w-3 h-3 shrink-0 opacity-50" />}
+                {urlCopied ? <Check className="w-3 h-3 text-[#2E9E63] shrink-0" /> : <Copy className="w-3 h-3 shrink-0 opacity-50" />}
               </button>
               </TooltipTrigger><TooltipContent>Copy join URL</TooltipContent></Tooltip>
               <Tooltip><TooltipTrigger asChild>
               <button
                 onClick={copyCode}
-                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted px-3 py-1.5 rounded-lg transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted px-3 py-1.5 rounded-none transition-colors"
               >
                 <span className="text-muted-foreground">Code:</span>
                 <span className="font-mono font-bold text-foreground tracking-wider">{formattedCode}</span>
-                {codeCopied ? <Check className="w-3 h-3 text-emerald-500 shrink-0" /> : <Copy className="w-3 h-3 shrink-0 opacity-50" />}
+                {codeCopied ? <Check className="w-3 h-3 text-[#2E9E63] shrink-0" /> : <Copy className="w-3 h-3 shrink-0 opacity-50" />}
               </button>
               </TooltipTrigger><TooltipContent>Copy room code</TooltipContent></Tooltip>
             </div>
@@ -363,7 +363,7 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
         )}
 
         {showSummary && (
-          <div className={cn('w-80 bg-card border-l border-border flex flex-col p-4 gap-3 shrink-0 rounded-2xl', closingSummary ? 'panel-slide-out' : 'panel-slide-in')}>
+          <div className={cn('w-80 bg-card border-l border-border flex flex-col p-4 gap-3 shrink-0 rounded-none', closingSummary ? 'panel-slide-out' : 'panel-slide-in')}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                 <Sparkles className="w-4 h-4 text-primary" />AI Summary

@@ -70,7 +70,7 @@ function NewStudioButton() {
     <form action={createStudioPresentation}>
       <button
         type="submit"
-        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-600 text-white text-[13px] font-semibold hover:bg-cyan-500 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/25 active:scale-[0.98]"
+        className="flex items-center gap-2 px-4 py-2.5 rounded-none bg-[#2592a3] text-white text-[13px] font-semibold hover:bg-[#2592a3]/90 transition-all duration-200 active:scale-[0.98]"
       >
         <Plus className="w-4 h-4" />
         New Scene

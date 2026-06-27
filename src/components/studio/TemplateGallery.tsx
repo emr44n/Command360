@@ -134,11 +134,11 @@ export function TemplateGallery({
 
                   {/* Info */}
                   <div className="px-2 py-1.5">
-                    <p className="text-[10px] font-medium text-zinc-200 truncate">
+                    <p className="text-[10px] font-medium text-white truncate">
                       {template.title}
                     </p>
                     {template.description && (
-                      <p className="text-[9px] text-zinc-500 truncate mt-0.5">
+                      <p className="text-[9px] text-[#9aa0a8] truncate mt-0.5">
                         {template.description}
                       </p>
                     )}
@@ -149,7 +149,7 @@ export function TemplateGallery({
                     <div className="flex items-center gap-1.5">
                       <Tooltip><TooltipTrigger asChild>
                       <button
-                        className="p-1.5 rounded-lg bg-amber-500/90 text-white hover:bg-amber-500 transition-colors"
+                        className="p-1.5 rounded-none bg-amber-500/90 text-white hover:bg-amber-500 transition-colors"
                         onClick={(e) => {
                           e.stopPropagation()
                           handleUse(template)
@@ -161,7 +161,7 @@ export function TemplateGallery({
                       {!isBuiltIn && (
                         <Tooltip><TooltipTrigger asChild>
                         <button
-                          className="p-1.5 rounded-lg bg-red-500/80 text-white hover:bg-red-500 transition-colors"
+                          className="p-1.5 rounded-none bg-red-500/80 text-white hover:bg-red-500 transition-colors"
                           onClick={(e) => {
                             e.stopPropagation()
                             handleDelete(template.id)
@@ -175,7 +175,7 @@ export function TemplateGallery({
                   </div>
 
                   {/* Category badge */}
-                  <span className="absolute top-1 right-1 px-1 py-0.5 rounded bg-black/60 text-[8px] text-zinc-400">
+                  <span className="absolute top-1 right-1 px-1 py-0.5 rounded-none bg-black/60 text-[8px] text-[#9aa0a8]">
                     {template.category}
                   </span>
                 </div>

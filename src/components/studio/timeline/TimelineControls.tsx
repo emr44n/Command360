@@ -56,7 +56,7 @@ export function TimelineControls({
           <Tooltip><TooltipTrigger asChild>
           <button
             onClick={onPlay}
-            className="flex items-center justify-center w-6 h-6 rounded-md bg-zinc-700 hover:bg-zinc-600 text-white transition-colors cursor-pointer"
+            className="flex items-center justify-center w-6 h-6 rounded-none bg-[#3f4147] hover:bg-[#3f4147] text-white transition-colors cursor-pointer"
           >
             <Play className="w-3.5 h-3.5 ml-0.5" />
           </button>
@@ -65,7 +65,7 @@ export function TimelineControls({
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={onStop}
-          className="flex items-center justify-center w-6 h-6 rounded-md bg-[#1e1f22] hover:bg-zinc-700 text-white transition-colors cursor-pointer"
+          className="flex items-center justify-center w-6 h-6 rounded-none bg-[#1e1f22] hover:bg-[#3f4147] text-white transition-colors cursor-pointer"
         >
           <Square className="w-3 h-3" />
         </button>
@@ -73,10 +73,10 @@ export function TimelineControls({
       </div>
 
       {/* Time display */}
-      <div className="flex items-center gap-1 px-2 py-1 rounded bg-zinc-950 border border-[#1e1f22] font-mono text-xs tabular-nums">
-        <span className="text-zinc-100">{formatTime(currentTime)}</span>
-        <span className="text-zinc-600">/</span>
-        <span className="text-zinc-400">{formatTime(totalDuration)}</span>
+      <div className="flex items-center gap-1 px-2 py-1 rounded-none bg-zinc-950 border border-[#1e1f22] font-mono text-xs tabular-nums">
+        <span className="text-white">{formatTime(currentTime)}</span>
+        <span className="text-[#9aa0a8]">/</span>
+        <span className="text-[#9aa0a8]">{formatTime(totalDuration)}</span>
       </div>
 
       {/* Spacer */}
@@ -87,7 +87,7 @@ export function TimelineControls({
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => onZoomChange(Math.max(MIN_ZOOM, zoomLevel - 25))}
-          className="flex items-center justify-center w-5 h-5 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-[#1e1f22] transition-colors cursor-pointer"
+          className="flex items-center justify-center w-5 h-5 rounded-none text-[#9aa0a8] hover:text-white hover:bg-[#1e1f22] transition-colors cursor-pointer"
         >
           <ZoomOut className="w-3.5 h-3.5" />
         </button>
@@ -98,17 +98,17 @@ export function TimelineControls({
           max={MAX_ZOOM}
           value={zoomLevel}
           onChange={handleZoomSlider}
-          className="w-24 h-1 accent-red-500 bg-zinc-700 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-red-500"
+          className="w-24 h-1 accent-red-500 bg-zinc-700 rounded-none appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-red-500"
         />
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => onZoomChange(Math.min(MAX_ZOOM, zoomLevel + 25))}
-          className="flex items-center justify-center w-5 h-5 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-[#1e1f22] transition-colors cursor-pointer"
+          className="flex items-center justify-center w-5 h-5 rounded-none text-[#9aa0a8] hover:text-white hover:bg-[#1e1f22] transition-colors cursor-pointer"
         >
           <ZoomIn className="w-3.5 h-3.5" />
         </button>
         </TooltipTrigger><TooltipContent>Zoom in</TooltipContent></Tooltip>
-        <span className="text-[10px] text-zinc-500 w-12 text-right tabular-nums">
+        <span className="text-[10px] text-[#9aa0a8] w-12 text-right tabular-nums">
           {zoomLevel}px/s
         </span>
       </div>

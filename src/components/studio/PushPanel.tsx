@@ -118,17 +118,17 @@ export function PushPanel({ queue, onUpdateTransition, onPushItem, onPushAll, on
 
       {/* Global transition + Push All — always visible */}
       <div className="p-2 border-t border-[#2b2d31] shrink-0 space-y-1.5">
-        <p className="text-[7px] text-zinc-600 uppercase tracking-wider">Default Transition</p>
+        <p className="text-[7px] text-[#9aa0a8] uppercase tracking-wider">Default Transition</p>
         <div className="flex gap-1">
-          <button onClick={() => onSetGlobalTransition('fade')} className={`flex-1 text-[8px] py-1 rounded-md transition-colors ${globalTransition === 'fade' ? 'bg-red-500/20 text-red-400' : 'bg-[#1e1f22] text-zinc-500 hover:text-zinc-300'}`}>Fade In</button>
-          <button onClick={() => onSetGlobalTransition('instant')} className={`flex-1 text-[8px] py-1 rounded-md transition-colors ${globalTransition === 'instant' ? 'bg-red-500/20 text-red-400' : 'bg-[#1e1f22] text-zinc-500 hover:text-zinc-300'}`}>Instant</button>
+          <button onClick={() => onSetGlobalTransition('fade')} className={`flex-1 text-[8px] py-1 rounded-none transition-colors ${globalTransition === 'fade' ? 'bg-red-500/20 text-red-400' : 'bg-[#1e1f22] text-[#9aa0a8] hover:text-white'}`}>Fade In</button>
+          <button onClick={() => onSetGlobalTransition('instant')} className={`flex-1 text-[8px] py-1 rounded-none transition-colors ${globalTransition === 'instant' ? 'bg-red-500/20 text-red-400' : 'bg-[#1e1f22] text-[#9aa0a8] hover:text-white'}`}>Instant</button>
         </div>
       </div>
       <div className="px-2 pb-2 shrink-0">
         <button
           onClick={onPushAll}
           disabled={queue.length === 0}
-          className="w-full py-2.5 rounded-lg bg-red-600 hover:bg-red-500 disabled:opacity-30 disabled:cursor-not-allowed text-white text-[10px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5"
+          className="w-full py-2.5 rounded-none bg-red-600 hover:bg-red-500 disabled:opacity-30 disabled:cursor-not-allowed text-white text-[10px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5"
         >
           <Zap className="w-3.5 h-3.5" /> Push All Live{queue.length > 0 ? ` (${queue.length})` : ''}
         </button>

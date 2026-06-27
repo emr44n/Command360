@@ -192,7 +192,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
             <button
               onClick={goPrev} disabled={current === 0}
               className={cn(
-                'absolute left-[-44px] top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-full transition-all',
+                'absolute left-[-44px] top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-none transition-all',
                 current === 0
                   ? 'text-muted-foreground/15 cursor-default'
                   : 'bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer'
@@ -205,7 +205,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
             <button
               onClick={goNext} disabled={current === slides.length - 1}
               className={cn(
-                'absolute right-[-44px] top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-full transition-all',
+                'absolute right-[-44px] top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-none transition-all',
                 current === slides.length - 1
                   ? 'text-muted-foreground/15 cursor-default'
                   : 'bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer'

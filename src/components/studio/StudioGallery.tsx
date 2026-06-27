@@ -644,7 +644,7 @@ export function StudioGallery({
                 draggable onDragStart={(e) => handleAssetDragStart(e, asset)}
               >
                 <img src={asset.url} alt={asset.name} className="w-8 h-6 object-cover rounded shrink-0" />
-                <span className="text-[9px] text-zinc-300 truncate flex-1">{asset.name}</span>
+                <span className="text-[9px] text-[#9aa0a8] truncate flex-1">{asset.name}</span>
                 <button
                   className="p-0.5 text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={(e) => { e.stopPropagation(); onDeleteLayer?.(asset.id); setImages(prev => prev.filter(a => a.id !== asset.id)) }}
@@ -673,7 +673,7 @@ export function StudioGallery({
                   <Trash2Icon className="size-2.5" />
                 </button>
                 </TooltipTrigger><TooltipContent>Remove from canvas</TooltipContent></Tooltip>
-                <span className="absolute bottom-0 left-0 right-0 truncate bg-black/60 px-1 py-0.5 text-[10px] text-zinc-300">{asset.name}</span>
+                <span className="absolute bottom-0 left-0 right-0 truncate bg-black/60 px-1 py-0.5 text-[10px] text-[#9aa0a8]">{asset.name}</span>
               </div>
             ))}
           </div>
@@ -716,7 +716,7 @@ export function StudioGallery({
                     }
                   }}
                   placeholder="Paste YouTube URL..."
-                  className="h-6 flex-1 border-zinc-600 bg-[#1e1f22] text-[9px] text-zinc-200 placeholder:text-zinc-600"
+                  className="h-6 flex-1 border-zinc-600 bg-[#1e1f22] text-[9px] text-white placeholder:text-[#9aa0a8]"
                 />
                 <Button size="sm" className="h-6 px-2 bg-red-600 hover:bg-red-500 text-white text-[8px] font-bold"
                   onClick={() => {
@@ -748,7 +748,7 @@ export function StudioGallery({
                 draggable onDragStart={(e) => handleAssetDragStart(e, asset)}
               >
                 <div className="w-8 h-6 shrink-0 rounded overflow-hidden"><VideoThumbnail src={asset.url} className="w-full h-full object-cover" /></div>
-                <span className="text-[9px] text-zinc-300 truncate flex-1">{asset.name}</span>
+                <span className="text-[9px] text-[#9aa0a8] truncate flex-1">{asset.name}</span>
                 <button
                   className="p-0.5 text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={(e) => { e.stopPropagation(); onDeleteLayer?.(asset.id); setVideos(prev => prev.filter(a => a.id !== asset.id)) }}
@@ -777,7 +777,7 @@ export function StudioGallery({
                   <Trash2Icon className="size-2.5" />
                 </button>
                 </TooltipTrigger><TooltipContent>Remove from canvas</TooltipContent></Tooltip>
-                <span className="absolute bottom-0 left-0 right-0 truncate bg-black/60 px-1 py-0.5 text-[10px] text-zinc-300">{asset.name}</span>
+                <span className="absolute bottom-0 left-0 right-0 truncate bg-black/60 px-1 py-0.5 text-[10px] text-[#9aa0a8]">{asset.name}</span>
               </div>
             ))}
           </div>
@@ -801,7 +801,7 @@ export function StudioGallery({
                 }}
                 onDragEnd={() => setDragLayerIdx(null)}
                 className={`flex w-full items-center gap-1.5 rounded px-1.5 py-1.5 text-left text-xs cursor-pointer transition-colors ${
-                  selectedLayerId === layer.id ? 'bg-red-500/20 border-l-2 border-red-500 text-white' : 'text-zinc-300 hover:bg-zinc-800'
+                  selectedLayerId === layer.id ? 'bg-red-500/20 border-l-2 border-red-500 text-white' : 'text-[#9aa0a8] hover:bg-zinc-800'
                 } ${dragLayerIdx === idx ? 'opacity-50' : ''}`}
                 onClick={() => onSelectLayer(layer.id)}
               >
@@ -848,11 +848,11 @@ export function StudioGallery({
                     <Play className="w-3 h-3 text-white ml-0.5" />
                   )}
                 </button>
-                <span className="text-[9px] text-zinc-300 truncate flex-1">{asset.name}</span>
+                <span className="text-[9px] text-[#9aa0a8] truncate flex-1">{asset.name}</span>
                 <Tooltip><TooltipTrigger asChild>
                 <button
                   onClick={() => addAudioToCanvas(asset)}
-                  className="text-zinc-600 hover:text-zinc-300 transition-colors"
+                  className="text-zinc-600 hover:text-white transition-colors"
                 >
                   <PlusIcon className="w-3 h-3" />
                 </button>
@@ -879,9 +879,9 @@ export function StudioGallery({
           {layers.filter(l => l.type === 'text').length === 0 && <p className="mt-4 text-center text-xs text-zinc-500">No text layers yet</p>}
           <div className="mt-2 space-y-0.5">
             {layers.filter(l => l.type === 'text').map(layer => (
-              <div key={layer.id} className={`group flex items-center gap-1.5 px-1.5 py-1 rounded cursor-pointer text-xs transition-colors ${selectedLayerId === layer.id ? 'bg-red-500/20 border-l-2 border-red-500 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`} onClick={() => onSelectLayer(layer.id)}>
+              <div key={layer.id} className={`group flex items-center gap-1.5 px-1.5 py-1 rounded cursor-pointer text-xs transition-colors ${selectedLayerId === layer.id ? 'bg-red-500/20 border-l-2 border-red-500 text-white' : 'text-[#9aa0a8] hover:bg-[#35363c]'}`} onClick={() => onSelectLayer(layer.id)}>
                 <span className="text-zinc-400 font-mono">T</span>
-                <span className="flex-1 truncate text-zinc-300">{layer.text || layer.name}</span>
+                <span className="flex-1 truncate text-[#9aa0a8]">{layer.text || layer.name}</span>
                 <button onClick={e => { e.stopPropagation(); onDeleteLayer?.(layer.id) }} className="p-0.5 text-zinc-600 hover:text-red-400 transition-opacity opacity-0 group-hover:opacity-100"><Trash2Icon className="size-2.5" /></button>
               </div>
             ))}
@@ -902,12 +902,12 @@ export function StudioGallery({
           {layers.filter(l => l.type === 'shape').length === 0 && <p className="mt-4 text-center text-xs text-zinc-500">No shapes placed yet</p>}
           <div className="mt-2 space-y-0.5">
             {layers.filter(l => l.type === 'shape').map(layer => (
-              <div key={layer.id} className={`group flex items-center gap-1.5 px-1.5 py-1 rounded cursor-pointer text-xs transition-colors ${selectedLayerId === layer.id ? 'bg-red-500/20 border-l-2 border-red-500 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`} onClick={() => onSelectLayer(layer.id)}>
+              <div key={layer.id} className={`group flex items-center gap-1.5 px-1.5 py-1 rounded cursor-pointer text-xs transition-colors ${selectedLayerId === layer.id ? 'bg-red-500/20 border-l-2 border-red-500 text-white' : 'text-[#9aa0a8] hover:bg-[#35363c]'}`} onClick={() => onSelectLayer(layer.id)}>
                 {layer.name === 'Circle' ? <div className="w-4 h-4 rounded-full shrink-0" style={{ backgroundColor: layer.color || '#666' }} />
                   : layer.name === 'Triangle' ? <div className="w-4 h-4 shrink-0" style={{ backgroundColor: layer.color || '#666', clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)' }} />
                   : layer.name === 'Line' ? <div className="shrink-0" style={{ backgroundColor: layer.color || '#666', width: 16, height: 2 }} />
                   : <div className="w-4 h-3 rounded-sm shrink-0" style={{ backgroundColor: layer.color || '#666' }} />}
-                <span className="flex-1 truncate text-zinc-300">{layer.name}</span>
+                <span className="flex-1 truncate text-[#9aa0a8]">{layer.name}</span>
                 {layer.maskMode === 'mask' && <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" title="Mask" />}
                 {layer.maskMode === 'multi-layer-mask' && <div className="w-2 h-2 rounded-full bg-amber-500 shrink-0" title="Multi-Mask" />}
                 <button onClick={e => { e.stopPropagation(); onDeleteLayer?.(layer.id) }} className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors"><Trash2Icon className="size-2.5" /></button>
@@ -926,7 +926,7 @@ export function StudioGallery({
                 onChange={(e) => setNewCategoryName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleAddCategory() }}
                 placeholder="New category..."
-                className="h-6 flex-1 border-[#3f4147] bg-[#383a40] text-xs text-zinc-100 placeholder:text-zinc-500"
+                className="h-6 flex-1 border-[#3f4147] bg-[#383a40] text-xs text-white placeholder:text-[#9aa0a8]"
               />
               <Button
                 variant="outline" size="sm"
@@ -944,11 +944,11 @@ export function StudioGallery({
                 onChange={(e) => setNewEventName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleAddEvent() }}
                 placeholder="New event..."
-                className="h-5 flex-1 border-zinc-700/50 bg-zinc-800/50 text-[10px] text-zinc-300 placeholder:text-zinc-600"
+                className="h-5 flex-1 border-zinc-700/50 bg-zinc-800/50 text-[10px] text-[#9aa0a8] placeholder:text-[#9aa0a8]"
               />
               <Button
                 variant="ghost" size="sm"
-                className="h-5 shrink-0 px-1.5 text-zinc-500 hover:text-zinc-300"
+                className="h-5 shrink-0 px-1.5 text-zinc-500 hover:text-white"
                 onClick={() => handleAddEvent()} disabled={!newEventName.trim()}
               >
                 <PlusIcon className="size-3" />
@@ -967,7 +967,7 @@ export function StudioGallery({
                   <div className="flex items-center gap-1.5 group">
                     <button
                       onClick={() => toggleCategory(category.id)}
-                      className="flex items-center gap-1 flex-1 py-1 text-[10px] font-semibold text-zinc-400 uppercase tracking-wider hover:text-zinc-200 transition-colors cursor-pointer"
+                      className="flex items-center gap-1 flex-1 py-1 text-[10px] font-semibold text-zinc-400 uppercase tracking-wider hover:text-white transition-colors cursor-pointer"
                     >
                       {isCollapsed ? <ChevronRight className="size-3" /> : <ChevronDown className="size-3" />}
                       <div className="size-1.5 rounded-full" style={{ backgroundColor: category.color || '#6366f1' }} />

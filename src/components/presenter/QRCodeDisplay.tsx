@@ -5,7 +5,7 @@ export function QRCodeDisplay({ roomCode }: { roomCode: string }) {
   const joinUrl = `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/join/${roomCode}`
   return (
     <div className="flex flex-col items-center gap-4 text-center">
-      <div className="bg-white p-4 rounded-2xl shadow-2xl">
+      <div className="bg-white p-4 rounded-none shadow-2xl">
         <QRCodeSVG value={joinUrl} size={160} />
       </div>
       <div>

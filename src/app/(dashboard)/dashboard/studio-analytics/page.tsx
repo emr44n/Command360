@@ -12,10 +12,10 @@ function StatCard({ icon: Icon, label, value, subtitle }: {
   subtitle?: string
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-5 flex flex-col gap-2">
+    <div className="rounded-none border border-border bg-card p-5 flex flex-col gap-2">
       <div className="flex items-center gap-2 text-muted-foreground">
         <Icon className="w-4 h-4" />
-        <span className="text-xs font-medium uppercase tracking-wider">{label}</span>
+        <span className="text-xs ff-mono font-medium uppercase tracking-[0.1em]">{label}</span>
       </div>
       <span className="text-2xl font-bold text-foreground">{value}</span>
       {subtitle && <span className="text-xs text-muted-foreground">{subtitle}</span>}
@@ -99,7 +99,7 @@ export default async function StudioAnalyticsPage() {
       </div>
 
       {/* Recent sessions table */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <div className="rounded-none border border-border bg-card overflow-hidden">
         <div className="px-5 py-3 border-b border-border">
           <h2 className="text-sm font-semibold text-foreground">Recent Sessions</h2>
         </div>
@@ -110,7 +110,7 @@ export default async function StudioAnalyticsPage() {
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs text-muted-foreground uppercase tracking-wider border-b border-border">
+              <tr className="text-left text-xs ff-mono text-muted-foreground uppercase tracking-[0.1em] border-b border-border">
                 <th className="px-5 py-2 font-medium">Presentation</th>
                 <th className="px-5 py-2 font-medium">Room Code</th>
                 <th className="px-5 py-2 font-medium">Status</th>
@@ -133,12 +133,12 @@ export default async function StudioAnalyticsPage() {
                     </td>
                     <td className="px-5 py-2.5 font-mono text-muted-foreground">{s.room_code}</td>
                     <td className="px-5 py-2.5">
-                      <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full ${
+                      <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-none ${
                         s.status === 'active'
-                          ? 'bg-emerald-500/10 text-emerald-500'
+                          ? 'bg-[#2E9E63]/10 text-[#2E9E63]'
                           : 'bg-muted text-muted-foreground'
                       }`}>
-                        {s.status === 'active' && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />}
+                        {s.status === 'active' && <span className="w-1.5 h-1.5 rounded-full bg-[#2E9E63] animate-pulse" />}
                         {s.status}
                       </span>
                     </td>

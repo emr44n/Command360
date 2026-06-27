@@ -181,11 +181,11 @@ export function ExportDialog({ isOpen, onClose, presentationId, presentationTitl
           </button>
 
           <button onClick={handleExportC360} disabled={!!exporting}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#2b2d31] hover:bg-[#35363c] transition-colors text-left disabled:opacity-50">
-            <FileJson className="w-5 h-5 text-blue-400" />
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-none bg-[#2b2d31] hover:bg-[#35363c] transition-colors text-left disabled:opacity-50">
+            <FileJson className="w-5 h-5 text-[#3E6DC4]" />
             <div className="flex-1">
-              <p className="text-[11px] font-medium text-zinc-200">Command 360 (.c360)</p>
-              <p className="text-[9px] text-zinc-500">Full project backup</p>
+              <p className="text-[11px] font-medium text-white">Command 360 (.c360)</p>
+              <p className="text-[9px] text-[#9aa0a8]">Full project backup</p>
             </div>
           </button>
         </div>

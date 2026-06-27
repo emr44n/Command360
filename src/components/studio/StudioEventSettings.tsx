@@ -417,26 +417,26 @@ export function StudioEventSettings({
         {/* Actions List */}
         {event.actions.length > 0 && (
           <section className="space-y-2">
-            <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">
+            <Label className="text-[9px] text-[#9aa0a8] uppercase tracking-wider">
               Actions ({event.actions.length})
             </Label>
             <div className="space-y-1">
               {event.actions.map((action) => (
                 <div
                   key={action.id}
-                  className="flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-[#1e1f22]/50 border border-[#3f4147]/50 text-[10px] group"
+                  className="flex items-center gap-1.5 px-2 py-1.5 rounded-none bg-[#1e1f22]/50 border border-[#3f4147]/50 text-[10px] group"
                 >
                   {layerIcon(getLayerType(action.layerId))}
-                  <span className="text-zinc-300 truncate">{getLayerName(action.layerId)}</span>
-                  <span className="text-zinc-500">·</span>
+                  <span className="text-[#9aa0a8] truncate">{getLayerName(action.layerId)}</span>
+                  <span className="text-[#9aa0a8]">·</span>
                   <span className="text-amber-400 font-medium">{action.property}</span>
-                  <span className="text-zinc-500 ml-auto whitespace-nowrap">
+                  <span className="text-[#9aa0a8] ml-auto whitespace-nowrap">
                     {String(action.fromValue ?? 'auto')} → {String(action.toValue)}
                   </span>
-                  <span className="text-zinc-600 whitespace-nowrap">{action.duration}ms</span>
+                  <span className="text-[#9aa0a8] whitespace-nowrap">{action.duration}ms</span>
                   <button
                     onClick={() => handleDeleteAction(action.id)}
-                    className="p-0.5 text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all cursor-pointer"
+                    className="p-0.5 text-[#9aa0a8] opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all cursor-pointer"
                   >
                     <Trash2 className="size-2.5" />
                   </button>
@@ -448,24 +448,24 @@ export function StudioEventSettings({
 
         {/* Trigger Type */}
         <section className="space-y-2">
-          <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">Trigger</Label>
+          <Label className="text-[9px] text-[#9aa0a8] uppercase tracking-wider">Trigger</Label>
           <div className="flex gap-1.5">
             <button
               onClick={() => handleTriggerChange('manual')}
-              className={`flex-1 h-6 rounded-md text-[10px] font-medium transition-colors cursor-pointer ${
+              className={`flex-1 h-6 rounded-none text-[10px] font-medium transition-colors cursor-pointer ${
                 event.trigger === 'manual'
-                  ? 'bg-zinc-700 text-white'
-                  : 'bg-[#1e1f22]/50 text-zinc-500 hover:text-zinc-300'
+                  ? 'bg-[#3f4147] text-white'
+                  : 'bg-[#1e1f22]/50 text-[#9aa0a8] hover:text-white'
               }`}
             >
               Manual
             </button>
             <button
               onClick={() => handleTriggerChange('vote')}
-              className={`flex-1 h-6 rounded-md text-[10px] font-medium transition-colors cursor-pointer ${
+              className={`flex-1 h-6 rounded-none text-[10px] font-medium transition-colors cursor-pointer ${
                 event.trigger === 'vote'
-                  ? 'bg-zinc-700 text-white'
-                  : 'bg-[#1e1f22]/50 text-zinc-500 hover:text-zinc-300'
+                  ? 'bg-[#3f4147] text-white'
+                  : 'bg-[#1e1f22]/50 text-[#9aa0a8] hover:text-white'
               }`}
             >
               Vote
@@ -477,7 +477,7 @@ export function StudioEventSettings({
                 value={event.voteQuestion || ''}
                 onChange={(e) => onUpdateEvent({ ...event, voteQuestion: e.target.value })}
                 placeholder="Vote question..."
-                className="h-6 text-xs border-[#3f4147] bg-[#1e1f22]/50 text-zinc-100"
+                className="h-6 text-xs border-[#3f4147] bg-[#1e1f22]/50 text-white"
               />
             </div>
           )}
