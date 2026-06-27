@@ -38,7 +38,11 @@ function PhaseCard({
   return (
     <motion.div className="absolute inset-0" style={{ zIndex: z, y }}>
       <div className="relative h-full w-full bg-[#16191E] text-white border border-white/12 overflow-hidden">
+        {/* very faint square grid in the card background */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px)', backgroundSize: '46px 46px', maskImage: 'radial-gradient(120% 120% at 20% 10%,#000,transparent 80%)', WebkitMaskImage: 'radial-gradient(120% 120% at 20% 10%,#000,transparent 80%)' }} />
         <div className="absolute top-[-120px] left-[-80px] w-[480px] h-[400px] pointer-events-none" aria-hidden="true" style={{ background: `radial-gradient(50% 60% at 30% 30%,${item.c}33,transparent 72%)`, filter: 'blur(42px)' }} />
+        {/* roundish dark glow easing in from the bottom-right corner, blurred */}
+        <div className="absolute bottom-[-160px] right-[-120px] w-[520px] h-[440px] pointer-events-none" aria-hidden="true" style={{ background: 'radial-gradient(50% 60% at 70% 70%, rgba(0,0,0,0.55), rgba(0,0,0,0.2) 46%, transparent 74%)', filter: 'blur(44px)' }} />
         <div className="absolute top-4 right-[18px] z-[2] ff-mono text-[10px] font-semibold tracking-[0.16em] text-[#6f757d]">PHASE {item.n} / 03</div>
         <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
         <div className="relative h-full grid grid-rows-[auto_1fr] md:grid-rows-1 md:grid-cols-[1.05fr_0.95fr]">

@@ -142,10 +142,15 @@ function QuizPanel({ color }: { color: string }) {
 /* ── Word cloud of what Command 360 offers — words drift gently ── */
 function CloudPanel() {
   const words: [string, number, string][] = [
-    ['Live Polls', 30, '#C9241A'], ['Quizzes', 22, '#3E6DC4'], ['Word Clouds', 20, '#2E9E63'],
-    ['Engaged', 38, '#fff'], ['Anonymous Q&A', 18, '#8a7d3a'], ['AI Insights', 24, '#6a5ea8'],
-    ['Debriefs', 17, '#aab0b8'], ['Readiness', 21, '#2592a3'], ['CPD', 16, '#9aa0a8'],
-    ['Briefings', 19, '#cfd3d8'], ['Recorded', 15, '#7c828a'], ['Trusted', 23, '#D94B3D'],
+    // top cluster — sits above the big centre word
+    ['Briefings', 19, '#cfd3d8'], ['Live Polls', 26, '#C9241A'], ['Readiness', 21, '#2592a3'],
+    ['Quizzes', 22, '#3E6DC4'], ['Recorded', 16, '#7c828a'], ['Confident', 18, '#2E9E63'],
+    // big centre word
+    ['Engaged', 40, '#fff'],
+    // lower cluster — left, right and underneath
+    ['Word Clouds', 20, '#2E9E63'], ['Anonymous Q&A', 18, '#8a7d3a'], ['AI Insights', 24, '#6a5ea8'],
+    ['Debriefs', 17, '#aab0b8'], ['CPD', 16, '#9aa0a8'], ['Trusted', 23, '#D94B3D'],
+    ['Prepared', 18, '#8a9098'], ['Alert', 20, '#fff'], ['Sharp', 15, '#aab0b8'], ['Focused', 17, '#2592a3'],
   ]
   return (
     <div>

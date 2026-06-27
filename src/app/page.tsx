@@ -135,10 +135,11 @@ export default function LandingPage() {
       <main>
         {/* ════════════ HERO ════════════ */}
         <header className="relative overflow-hidden bg-[#0F1216] text-white" aria-label="Introduction">
-          {/* pure-black fade from the very top (under the black ticker bar)
-              down into the hero, so it eases into the grid below */}
-          <div className="absolute top-0 left-0 right-0 h-[66%] pointer-events-none" aria-hidden="true"
-            style={{ background: 'linear-gradient(180deg, #000 0%, #000 6%, rgba(0,0,0,0.55) 28%, rgba(0,0,0,0.16) 60%, transparent 100%)' }} />
+          {/* rounded black fade from the very top (under the black ticker bar)
+              easing down into the grid — radial so there's no harsh horizontal
+              line, semi-transparent so the grid shows through */}
+          <div className="absolute top-0 left-0 right-0 h-[78%] pointer-events-none" aria-hidden="true"
+            style={{ background: 'radial-gradient(135% 100% at 50% -8%, #000 0%, rgba(0,0,0,0.62) 26%, rgba(0,0,0,0.28) 48%, rgba(0,0,0,0.08) 66%, transparent 82%)' }} />
           <div className="absolute bottom-[-180px] left-1/2 -translate-x-1/2 w-[1280px] h-[720px] pointer-events-none" aria-hidden="true"
             style={{ background: 'radial-gradient(60% 80% at 50% 100%,rgba(201,36,26,.22),rgba(201,36,26,.06) 48%,transparent 78%)', filter: 'blur(38px)' }} />
           <div className="absolute inset-0 v5-grain opacity-[0.16] mix-blend-overlay pointer-events-none" aria-hidden="true" />
@@ -158,7 +159,7 @@ export default function LandingPage() {
             <div className="grid lg:grid-cols-[1.05fr_0.95fr] border-x border-white/10">
               {/* Left */}
               <div className="pb-14 lg:py-[56px] lg:pr-12 lg:border-r border-white/10">
-                <div className="flex items-center gap-3 ff-mono text-[12px] font-medium tracking-[0.14em] uppercase text-[#9aa0a8] mb-7" data-reveal>
+                <div className="flex items-center gap-3 ff-mono text-[12px] font-medium tracking-[0.14em] uppercase text-[#9aa0a8] mb-7 lg:pl-9" data-reveal>
                   <span className="w-[7px] h-[7px] bg-[#C9241A] v5-pulse" />
                   Interactive learning · UK emergency services
                 </div>
@@ -435,8 +436,9 @@ export default function LandingPage() {
 
         {/* ════════════ FAQ (dark) ════════════ */}
         <section className="relative overflow-hidden bg-[#0F1216] text-white py-[90px]">
-          {/* black fade into the section from the top, easing to nothing */}
-          <div className="absolute inset-x-0 top-0 h-[180px] pointer-events-none" aria-hidden="true" style={{ background: 'linear-gradient(180deg, #000 0%, transparent 100%)' }} />
+          {/* circular black globe dipping down from the top — blurred, semi-
+              transparent, easing to nothing (mirrors the red globe under the CTA) */}
+          <div className="absolute left-1/2 top-[-260px] -translate-x-1/2 w-[1100px] h-[520px] pointer-events-none" aria-hidden="true" style={{ background: 'radial-gradient(50% 60% at 50% 100%, rgba(0,0,0,0.85), rgba(0,0,0,0.4) 45%, transparent 72%)', filter: 'blur(40px)' }} />
           <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
           <div className="relative max-w-[820px] mx-auto px-5 sm:px-[30px]">
             <div className="text-center mb-10" data-reveal>

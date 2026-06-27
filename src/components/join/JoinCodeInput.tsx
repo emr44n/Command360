@@ -11,6 +11,7 @@ interface Props {
 export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
   const [code, setCode] = useState('')
   const [joining, setJoining] = useState(false)
+  const [focused, setFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
@@ -54,16 +55,27 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
     // Hard-edged "regimental" join input for the v5 dark surfaces.
     return (
       <form onSubmit={handleSubmit} className={`flex items-stretch border border-white/20 ${className}`}>
-        <input
-          ref={inputRef}
-          value={code}
-          onChange={handleChange}
-          placeholder="ENTER CODE"
-          maxLength={6}
-          autoCapitalize="characters"
-          aria-label="Session join code"
-          className="ff-mono flex-1 min-w-0 bg-transparent border-none text-white text-[15px] font-semibold tracking-[0.22em] px-4 py-3 outline-none placeholder:text-white/35 placeholder:tracking-[0.18em]"
-        />
+        <div className="relative flex-1 min-w-0 flex">
+          <input
+            ref={inputRef}
+            value={code}
+            onChange={handleChange}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            placeholder=""
+            maxLength={6}
+            autoCapitalize="characters"
+            aria-label="Session join code"
+            className="ff-mono w-full min-w-0 bg-transparent border-none text-white text-[15px] font-semibold tracking-[0.22em] px-4 py-3 outline-none"
+          />
+          {/* Animated terminal-style placeholder — a blinking caret after the
+              prompt. Purely decorative; the field below is fully usable. */}
+          {!code && !focused && (
+            <span aria-hidden="true" className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none ff-mono text-[15px] font-semibold tracking-[0.18em] text-white/35 flex items-center">
+              ENTER CODE<span className="v5-caret" />
+            </span>
+          )}
+        </div>
         <button
           type="submit"
           disabled={code.trim().length < 4 || joining}
