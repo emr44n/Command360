@@ -5,7 +5,7 @@ import type { Slide, PollContent } from '@/types/slide'
 import { BarChart, Bar, XAxis, YAxis, Cell, ResponsiveContainer, LabelList } from 'recharts'
 
 interface PollResult { option_id: string; text: string; count: number; percentage: number }
-const COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#6366f1', '#ec4899', '#14b8a6']
+const COLORS = ['#C9241A', '#3E6DC4', '#2E9E63', '#c98a2a', '#6a5ea8', '#2592a3', '#D94B3D', '#8a7d3a']
 
 export function PollResultsDisplay({ slide, sessionId }: { slide: Slide; sessionId: string }) {
   const [results, setResults] = useState<PollResult[]>([])
@@ -50,10 +50,10 @@ export function PollResultsDisplay({ slide, sessionId }: { slide: Slide; session
         <ResponsiveContainer width="100%" height={Math.max(160, results.length * 52)}>
           <BarChart data={results} layout="vertical" margin={{ left: 8, right: 50, top: 4, bottom: 4 }}>
             <XAxis type="number" hide domain={[0, 'dataMax']} />
-            <YAxis type="category" dataKey="text" width={140} tick={{ fill: '#d1d5db', fontSize: 13 }} />
-            <Bar dataKey="count" radius={[0, 6, 6, 0]} maxBarSize={40} isAnimationActive={true} animationDuration={600}>
+            <YAxis type="category" dataKey="text" width={140} tick={{ fill: '#9aa0a8', fontSize: 13 }} />
+            <Bar dataKey="count" radius={[0, 0, 0, 0]} maxBarSize={40} isAnimationActive={true} animationDuration={600}>
               {results.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-              <LabelList dataKey="percentage" position="right" formatter={(v: unknown) => `${v}%`} style={{ fill: '#9ca3af', fontSize: 13 }} />
+              <LabelList dataKey="percentage" position="right" formatter={(v: unknown) => `${v}%`} style={{ fill: '#9aa0a8', fontSize: 13 }} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>

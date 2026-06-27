@@ -836,7 +836,7 @@ export function StudioGallery({
             {audios.map((asset) => (
               <div
                 key={asset.id}
-                className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-[#35363c] group"
+                className="flex items-center gap-2 px-2 py-1.5 rounded-none hover:bg-[#35363c] group"
               >
                 <button
                   onClick={() => toggleAudioPreview(asset)}
@@ -879,7 +879,7 @@ export function StudioGallery({
           {layers.filter(l => l.type === 'text').length === 0 && <p className="mt-4 text-center text-xs text-[#9aa0a8]">No text layers yet</p>}
           <div className="mt-2 space-y-0.5">
             {layers.filter(l => l.type === 'text').map(layer => (
-              <div key={layer.id} className={`group flex items-center gap-1.5 px-1.5 py-1 rounded cursor-pointer text-xs transition-colors ${selectedLayerId === layer.id ? 'bg-red-500/20 border-l-2 border-red-500 text-white' : 'text-[#9aa0a8] hover:bg-[#35363c]'}`} onClick={() => onSelectLayer(layer.id)}>
+              <div key={layer.id} className={`group flex items-center gap-1.5 px-1.5 py-1 rounded-none cursor-pointer text-xs transition-colors ${selectedLayerId === layer.id ? 'bg-red-500/20 border-l-2 border-red-500 text-white' : 'text-[#9aa0a8] hover:bg-[#35363c]'}`} onClick={() => onSelectLayer(layer.id)}>
                 <span className="text-[#9aa0a8] font-mono">T</span>
                 <span className="flex-1 truncate text-[#9aa0a8]">{layer.text || layer.name}</span>
                 <button onClick={e => { e.stopPropagation(); onDeleteLayer?.(layer.id) }} className="p-0.5 text-[#9aa0a8] hover:text-red-400 transition-opacity opacity-0 group-hover:opacity-100"><Trash2Icon className="size-2.5" /></button>
@@ -893,7 +893,7 @@ export function StudioGallery({
           <div className="mt-2 grid grid-cols-2 gap-1.5">
             {[{ name: 'Rectangle', w: 20, h: 12, color: '#4a5568' }, { name: 'Circle', w: 15, h: 15, color: '#4a5568' }, { name: 'Triangle', w: 15, h: 15, color: '#4a5568' }, { name: 'Line', w: 30, h: 0.5, color: '#4a5568' }, { name: 'Polygon', w: 15, h: 15, color: '#4a5568' }].map(p => (
               <button key={p.name} onClick={() => { if (p.name === 'Polygon' && onStartPolygonDraw) { onStartPolygonDraw() } else { onAddLayer({ type: 'shape', name: p.name, color: p.color, x: 10, y: 10, width: p.w, height: p.h, rotation: 0, opacity: 1, blendMode: 'normal', visible: true, locked: false }) } }}
-                className="flex flex-col items-center gap-1 py-2.5 rounded-lg border border-[#3f4147] bg-[#383a40] hover:bg-[#35363c] hover:border-zinc-500 transition-colors">
+                className="flex flex-col items-center gap-1 py-2.5 rounded-none border border-[#3f4147] bg-[#383a40] hover:bg-[#35363c] hover:border-zinc-500 transition-colors">
                 <div className="w-5 h-5 bg-zinc-500" style={{ borderRadius: p.name === 'Circle' ? '50%' : 2, width: p.name === 'Line' ? 20 : p.name === 'Rectangle' ? 24 : undefined, height: p.name === 'Line' ? 2 : p.name === 'Rectangle' ? 14 : undefined, clipPath: p.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : p.name === 'Polygon' ? 'polygon(30% 0%, 70% 0%, 100% 40%, 80% 100%, 20% 100%, 0% 40%)' : undefined }} />
                 <span className="text-[8px] text-[#9aa0a8]">{p.name}</span>
               </button>
@@ -902,7 +902,7 @@ export function StudioGallery({
           {layers.filter(l => l.type === 'shape').length === 0 && <p className="mt-4 text-center text-xs text-[#9aa0a8]">No shapes placed yet</p>}
           <div className="mt-2 space-y-0.5">
             {layers.filter(l => l.type === 'shape').map(layer => (
-              <div key={layer.id} className={`group flex items-center gap-1.5 px-1.5 py-1 rounded cursor-pointer text-xs transition-colors ${selectedLayerId === layer.id ? 'bg-red-500/20 border-l-2 border-red-500 text-white' : 'text-[#9aa0a8] hover:bg-[#35363c]'}`} onClick={() => onSelectLayer(layer.id)}>
+              <div key={layer.id} className={`group flex items-center gap-1.5 px-1.5 py-1 rounded-none cursor-pointer text-xs transition-colors ${selectedLayerId === layer.id ? 'bg-red-500/20 border-l-2 border-red-500 text-white' : 'text-[#9aa0a8] hover:bg-[#35363c]'}`} onClick={() => onSelectLayer(layer.id)}>
                 {layer.name === 'Circle' ? <div className="w-4 h-4 rounded-full shrink-0" style={{ backgroundColor: layer.color || '#666' }} />
                   : layer.name === 'Triangle' ? <div className="w-4 h-4 shrink-0" style={{ backgroundColor: layer.color || '#666', clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)' }} />
                   : layer.name === 'Line' ? <div className="shrink-0" style={{ backgroundColor: layer.color || '#666', width: 16, height: 2 }} />

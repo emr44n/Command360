@@ -7,7 +7,7 @@ import { Trophy } from 'lucide-react'
 
 interface QuizResult { option_id: string; text: string; count: number; is_correct: boolean }
 interface LeaderboardEntry { display_name: string; score: number }
-const COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#6366f1', '#ec4899', '#14b8a6']
+const COLORS = ['#C9241A', '#3E6DC4', '#2E9E63', '#c98a2a', '#6a5ea8', '#2592a3', '#D94B3D', '#8a7d3a']
 
 export function QuizDisplay({ slide, sessionId }: { slide: Slide; sessionId: string }) {
   const [results, setResults] = useState<QuizResult[]>([])
