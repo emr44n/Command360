@@ -45,12 +45,12 @@ export function StudioSlideForm({ slide, onChange }: Props) {
   return (
     <div className="space-y-4">
       {/* Tab bar */}
-      <div className="flex gap-1 bg-muted/50 rounded-lg p-1">
+      <div className="flex gap-1 bg-muted/50 rounded-none p-1">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md text-xs font-medium transition-colors ${
+            className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-none text-xs font-medium transition-colors ${
               activeTab === tab.id
                 ? 'bg-background text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
@@ -117,7 +117,7 @@ function ScenePanel({
             type="color"
             value={canvas.backgroundColor}
             onChange={(e) => onChange({ ...canvas, backgroundColor: e.target.value })}
-            className="w-10 h-10 rounded-lg border border-border cursor-pointer"
+            className="w-10 h-10 rounded-none border border-border cursor-pointer"
           />
           <Input
             value={canvas.backgroundColor}
@@ -242,7 +242,7 @@ function LayersPanel({
             <div
               key={layer.id}
               onClick={() => onSelectLayer(layer.id)}
-              className={`flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-colors group ${
+              className={`flex items-center gap-2 px-2 py-1.5 rounded-none cursor-pointer transition-colors group ${
                 isSelected ? 'bg-primary/10 text-foreground' : 'hover:bg-muted text-muted-foreground hover:text-foreground'
               }`}
             >
@@ -416,7 +416,7 @@ function EventsPanel({
         {events.map((evt) => {
           const isExpanded = expandedId === evt.id
           return (
-            <div key={evt.id} className="border border-border rounded-lg overflow-hidden">
+            <div key={evt.id} className="border border-border rounded-none overflow-hidden">
               <div
                 onClick={() => setExpandedId(isExpanded ? null : evt.id)}
                 className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-muted/50 transition-colors"
@@ -450,7 +450,7 @@ function EventsPanel({
                       <select
                         value={evt.trigger}
                         onChange={(e) => updateEvent(evt.id, { trigger: e.target.value as 'manual' | 'vote' })}
-                        className="flex-1 bg-background border border-border text-foreground text-xs rounded-md h-7 px-2"
+                        className="flex-1 bg-background border border-border text-foreground text-xs rounded-none h-7 px-2"
                       >
                         <option value="manual">Manual</option>
                         <option value="vote">Vote</option>
@@ -459,7 +459,7 @@ function EventsPanel({
                         <select
                           value={evt.categoryId || ''}
                           onChange={(e) => updateEvent(evt.id, { categoryId: e.target.value || undefined })}
-                          className="flex-1 bg-background border border-border text-foreground text-xs rounded-md h-7 px-2"
+                          className="flex-1 bg-background border border-border text-foreground text-xs rounded-none h-7 px-2"
                         >
                           <option value="">No category</option>
                           {categories.map((c) => (
@@ -664,7 +664,7 @@ function PropertiesPanel({
         <select
           value={layer.blendMode}
           onChange={(e) => update({ blendMode: e.target.value as StudioLayer['blendMode'] })}
-          className="w-full bg-background border border-border text-foreground text-xs rounded-md h-7 px-2"
+          className="w-full bg-background border border-border text-foreground text-xs rounded-none h-7 px-2"
         >
           {['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten'].map((m) => (
             <option key={m} value={m}>{m}</option>
@@ -710,7 +710,7 @@ function PropertiesPanel({
               <select
                 value={layer.fontWeight || '400'}
                 onChange={(e) => update({ fontWeight: e.target.value })}
-                className="w-full bg-background border border-border text-foreground text-xs rounded-md h-7 px-1"
+                className="w-full bg-background border border-border text-foreground text-xs rounded-none h-7 px-1"
               >
                 <option value="300">Light</option>
                 <option value="400">Normal</option>

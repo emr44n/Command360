@@ -45,8 +45,8 @@ export default async function StudioPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5 mb-1">
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/15 flex items-center justify-center">
-              <Monitor className="w-5 h-5 text-cyan-500" />
+            <div className="w-9 h-9 rounded-none bg-[#2592a3]/15 flex items-center justify-center">
+              <Monitor className="w-5 h-5 text-[#2592a3]" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight">Command Studio</h1>
           </div>

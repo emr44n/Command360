@@ -32,13 +32,13 @@ interface StudioLayersProps {
 function layerTypeIcon(type: StudioLayer['type']) {
   switch (type) {
     case 'image':
-      return <ImageIcon className="size-3.5 text-red-400" />
+      return <ImageIcon className="size-3.5 text-[#C9241A]" />
     case 'video':
-      return <VideoIcon className="size-3.5 text-purple-400" />
+      return <VideoIcon className="size-3.5 text-[#6a5ea8]" />
     case 'text':
-      return <TypeIcon className="size-3.5 text-amber-400" />
+      return <TypeIcon className="size-3.5 text-[#c98a2a]" />
     case 'shape':
-      return <SquareIcon className="size-3.5 text-emerald-400" />
+      return <SquareIcon className="size-3.5 text-[#2E9E63]" />
   }
 }
 
@@ -81,16 +81,16 @@ export function StudioLayers({
   }
 
   return (
-    <div className="flex h-full flex-col bg-zinc-900 text-zinc-100">
-      <div className="border-b border-zinc-800 px-3 py-2">
-        <span className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+    <div className="flex h-full flex-col bg-[#1e1f22] text-white">
+      <div className="border-b border-[#2b2d31] px-3 py-2">
+        <span className="text-xs font-medium uppercase tracking-wider text-[#9aa0a8]">
           Layers
         </span>
       </div>
 
       <div className="flex-1 overflow-y-auto">
         {sortedLayers.length === 0 && (
-          <p className="p-4 text-center text-xs text-zinc-500">
+          <p className="p-4 text-center text-xs text-[#9aa0a8]">
             No layers added yet
           </p>
         )}
@@ -105,15 +105,15 @@ export function StudioLayers({
               onDragStart={(e) => handleDragStart(e, displayIndex)}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, displayIndex)}
-              className={`group flex items-center gap-1 border-b border-zinc-800/50 px-1 py-1 transition-colors ${
+              className={`group flex items-center gap-1 border-b border-[#2b2d31]/50 px-1 py-1 transition-colors ${
                 isSelected
-                  ? 'bg-zinc-700/60'
-                  : 'hover:bg-zinc-800/60'
+                  ? 'bg-[#383a40]'
+                  : 'hover:bg-[#2b2d31]/60'
               } ${!layer.visible ? 'opacity-50' : ''}`}
               onClick={() => onSelect(layer.id)}
             >
               {/* Drag handle */}
-              <div className="cursor-grab px-0.5 text-zinc-500 active:cursor-grabbing">
+              <div className="cursor-grab px-0.5 text-[#9aa0a8] active:cursor-grabbing">
                 <GripVerticalIcon className="size-3" />
               </div>
 
@@ -127,7 +127,7 @@ export function StudioLayers({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0 text-zinc-400 transition-colors hover:text-zinc-100 data-[visible]:opacity-100"
+                className="h-6 w-6 p-0 text-[#9aa0a8] transition-colors hover:text-white data-[visible]:opacity-100"
                 data-visible={!layer.visible || undefined}
                 onClick={(e) => {
                   e.stopPropagation()
@@ -138,7 +138,7 @@ export function StudioLayers({
                 {layer.visible ? (
                   <EyeIcon className="size-3" />
                 ) : (
-                  <EyeOffIcon className="size-3 text-zinc-500" />
+                  <EyeOffIcon className="size-3 text-[#9aa0a8]" />
                 )}
               </Button>
 
@@ -146,7 +146,7 @@ export function StudioLayers({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0 text-zinc-400 transition-colors hover:text-zinc-100 data-[locked]:opacity-100"
+                className="h-6 w-6 p-0 text-[#9aa0a8] transition-colors hover:text-white data-[locked]:opacity-100"
                 data-locked={layer.locked || undefined}
                 onClick={(e) => {
                   e.stopPropagation()
@@ -155,7 +155,7 @@ export function StudioLayers({
                 title={layer.locked ? 'Unlock' : 'Lock'}
               >
                 {layer.locked ? (
-                  <LockIcon className="size-3 text-amber-400" />
+                  <LockIcon className="size-3 text-[#c98a2a]" />
                 ) : (
                   <UnlockIcon className="size-3" />
                 )}
@@ -166,7 +166,7 @@ export function StudioLayers({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 w-6 p-0 text-zinc-400 transition-colors hover:text-zinc-100 data-[immune]:opacity-100"
+                  className="h-6 w-6 p-0 text-[#9aa0a8] transition-colors hover:text-white data-[immune]:opacity-100"
                   data-immune={layer.maskImmune || undefined}
                   onClick={(e) => {
                     e.stopPropagation()
@@ -175,7 +175,7 @@ export function StudioLayers({
                   title={layer.maskImmune ? 'Remove mask immunity' : 'Make mask immune'}
                 >
                   {layer.maskImmune ? (
-                    <ShieldIcon className="size-3 text-blue-400" />
+                    <ShieldIcon className="size-3 text-[#3E6DC4]" />
                   ) : (
                     <ShieldOffIcon className="size-3" />
                   )}
@@ -186,7 +186,7 @@ export function StudioLayers({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0 text-zinc-400 transition-colors hover:text-red-400"
+                className="h-6 w-6 p-0 text-[#9aa0a8] transition-colors hover:text-[#C9241A]"
                 onClick={(e) => {
                   e.stopPropagation()
                   onDelete(layer.id)

@@ -27,11 +27,11 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
       {/* Element type header */}
       <div className="flex items-center gap-2">
         {isText ? (
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-none bg-primary/10 flex items-center justify-center">
             <Type className="w-4 h-4 text-primary" />
           </div>
         ) : (
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-none bg-primary/10 flex items-center justify-center">
             <Image className="w-4 h-4 text-primary" />
           </div>
         )}
@@ -118,7 +118,7 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
               key={deg}
               onClick={() => onUpdate({ rotation: deg })}
               className={cn(
-                'px-2 py-1 rounded-md text-[11px] font-medium transition-colors',
+                'px-2 py-1 rounded-none text-[11px] font-medium transition-colors',
                 element.rotation === deg
                   ? 'bg-primary/15 text-primary'
                   : 'bg-muted text-muted-foreground hover:text-foreground'
@@ -160,7 +160,7 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
             <select
               value={style.fontSize || 16}
               onChange={(e) => onUpdateStyle({ fontSize: Number(e.target.value) })}
-              className="w-full h-8 px-2 rounded-md bg-background border border-border text-foreground text-xs"
+              className="w-full h-8 px-2 rounded-none bg-background border border-border text-foreground text-xs"
             >
               {[10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 42, 48, 56, 64, 72].map(s => (
                 <option key={s} value={s}>{s}px</option>
@@ -172,13 +172,13 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => onUpdateStyle({ fontWeight: style.fontWeight === 'bold' ? 'normal' : 'bold' })}
-              className={cn('p-2 rounded-md transition-colors', style.fontWeight === 'bold' ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
+              className={cn('p-2 rounded-none transition-colors', style.fontWeight === 'bold' ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
             >
               <Bold className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => onUpdateStyle({ fontStyle: style.fontStyle === 'italic' ? 'normal' : 'italic' })}
-              className={cn('p-2 rounded-md transition-colors', style.fontStyle === 'italic' ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
+              className={cn('p-2 rounded-none transition-colors', style.fontStyle === 'italic' ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
             >
               <Italic className="w-3.5 h-3.5" />
             </button>
@@ -189,7 +189,7 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
                 <button
                   key={align}
                   onClick={() => onUpdateStyle({ textAlign: align })}
-                  className={cn('p-2 rounded-md transition-colors', style.textAlign === align ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
+                  className={cn('p-2 rounded-none transition-colors', style.textAlign === align ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
                 >
                   <AlignIcon className="w-3.5 h-3.5" />
                 </button>
@@ -205,7 +205,7 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
                 type="color"
                 value={style.color || '#374151'}
                 onChange={(e) => onUpdateStyle({ color: e.target.value })}
-                className="w-8 h-8 rounded-md cursor-pointer border border-border"
+                className="w-8 h-8 rounded-none cursor-pointer border border-border"
               />
               <Input
                 value={style.color || '#374151'}
@@ -223,7 +223,7 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
                 type="color"
                 value={style.backgroundColor || '#ffffff'}
                 onChange={(e) => onUpdateStyle({ backgroundColor: e.target.value })}
-                className="w-8 h-8 rounded-md cursor-pointer border border-border"
+                className="w-8 h-8 rounded-none cursor-pointer border border-border"
               />
               <Input
                 value={style.backgroundColor || ''}
@@ -235,7 +235,7 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
                 <Tooltip><TooltipTrigger asChild>
                 <button
                   onClick={() => onUpdateStyle({ backgroundColor: '' })}
-                  className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted text-xs"
+                  className="p-1.5 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted text-xs"
                 >
                   <Trash2 className="w-3 h-3" />
                 </button>
@@ -260,7 +260,7 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
                   key={fit}
                   onClick={() => onUpdateStyle({ objectFit: fit })}
                   className={cn(
-                    'flex-1 py-1.5 rounded-md text-xs font-medium transition-colors',
+                    'flex-1 py-1.5 rounded-none text-xs font-medium transition-colors',
                     style.objectFit === fit
                       ? 'bg-primary/15 text-primary'
                       : 'bg-muted text-muted-foreground hover:text-foreground'
@@ -290,7 +290,7 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
               <Tooltip><TooltipTrigger asChild>
               <button
                 onClick={() => onUpdateStyle({ borderRadius: 0 })}
-                className={cn('p-1.5 rounded-md transition-colors', (style.borderRadius || 0) === 0 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
+                className={cn('p-1.5 rounded-none transition-colors', (style.borderRadius || 0) === 0 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
               >
                 <Square className="w-3.5 h-3.5" />
               </button>
@@ -298,7 +298,7 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
               <Tooltip><TooltipTrigger asChild>
               <button
                 onClick={() => onUpdateStyle({ borderRadius: 8 })}
-                className={cn('p-1.5 rounded-md transition-colors', style.borderRadius === 8 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
+                className={cn('p-1.5 rounded-none transition-colors', style.borderRadius === 8 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
               >
                 <Square className="w-3.5 h-3.5" style={{ borderRadius: 3 }} />
               </button>
@@ -306,7 +306,7 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
               <Tooltip><TooltipTrigger asChild>
               <button
                 onClick={() => onUpdateStyle({ borderRadius: 50 })}
-                className={cn('p-1.5 rounded-md transition-colors', style.borderRadius === 50 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
+                className={cn('p-1.5 rounded-none transition-colors', style.borderRadius === 50 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
               >
                 <Circle className="w-3.5 h-3.5" />
               </button>
@@ -331,7 +331,7 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
       <div className="border-t border-border pt-5">
         <button
           onClick={onDelete}
-          className="w-full flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors border border-destructive/20"
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-none text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors border border-destructive/20"
         >
           <Trash2 className="w-3.5 h-3.5" />
           Delete element

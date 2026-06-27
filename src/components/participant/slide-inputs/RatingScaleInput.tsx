@@ -42,7 +42,7 @@ export function RatingScaleInput({ slide, onSubmit, disabled }: Props) {
             onClick={() => !disabled && setSelected(v)}
             disabled={disabled}
             className={`
-              w-12 h-12 rounded-xl text-lg font-bold transition-all duration-200 border-2
+              w-12 h-12 rounded-none text-lg font-bold transition-all duration-200 border-2
               ${selected === v
                 ? 'bg-primary text-primary-foreground border-primary scale-110 shadow-lg shadow-primary/25'
                 : selected !== null && v <= selected
@@ -67,7 +67,7 @@ export function RatingScaleInput({ slide, onSubmit, disabled }: Props) {
       <Button
         onClick={handleSubmit}
         disabled={selected === null || submitting || disabled}
-        className="w-full bg-red-600 hover:bg-red-500 text-white font-semibold py-6 rounded-xl text-lg transition-all hover:shadow-lg hover:shadow-red-500/25"
+        className="w-full bg-[#C9241A] hover:bg-[#a81d15] text-white font-semibold py-6 rounded-none text-lg transition-all hover:shadow-lg hover:shadow-[#C9241A]/25"
       >
         {submitting ? 'Submitting...' : 'Submit'}
       </Button>

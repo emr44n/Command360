@@ -35,9 +35,9 @@ const TYPE_ICON_MAP: Record<string, React.ElementType> = {
   survey: ClipboardList, content: FileText, rating_scale: Star, open_text: AlignLeft,
 }
 const TYPE_COLOR_MAP: Record<string, string> = {
-  poll: 'text-primary', word_cloud: 'text-blue-500', quiz: 'text-emerald-500',
-  qna: 'text-amber-500', survey: 'text-pink-500', content: 'text-muted-foreground',
-  rating_scale: 'text-orange-500', open_text: 'text-teal-500',
+  poll: 'text-primary', word_cloud: 'text-[#3E6DC4]', quiz: 'text-[#2E9E63]',
+  qna: 'text-[#c98a2a]', survey: 'text-[#C9241A]', content: 'text-muted-foreground',
+  rating_scale: 'text-[#c98a2a]', open_text: 'text-[#3E6DC4]',
 }
 const TYPE_LABEL_MAP: Record<string, string> = {
   poll: 'Poll', word_cloud: 'Word Cloud', quiz: 'Quiz', qna: 'Q&A',
@@ -94,7 +94,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
   if (presentations.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="w-20 h-20 rounded-2xl bg-muted/50 border border-border/50 flex items-center justify-center mb-5 animate-pulse">
+        <div className="w-20 h-20 rounded-none bg-muted/50 border border-border/50 flex items-center justify-center mb-5 animate-pulse">
           <Presentation className="w-10 h-10 text-muted-foreground/30" />
         </div>
         <h3 className="text-lg font-semibold mb-2">No sessions yet</h3>
@@ -210,14 +210,14 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search sessions..."
-            className="pl-9 h-9 rounded-xl bg-background border-border"
+            className="pl-9 h-9 rounded-none bg-background border-border"
           />
         </div>
 
         {/* Sort dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9 gap-2 text-muted-foreground hover:text-foreground rounded-xl border-border">
+            <Button variant="outline" size="sm" className="h-9 gap-2 text-muted-foreground hover:text-foreground rounded-none border-border">
               <ArrowUpDown className="w-3.5 h-3.5" />
               <span className="text-xs">
                 {sortBy === 'updated' ? 'Last modified' : sortBy === 'created' ? 'Date created' : sortBy === 'name' ? 'Name' : sortBy === 'accessed' ? 'Last opened' : 'Most sessions'}
@@ -244,7 +244,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
         </DropdownMenu>
 
         {/* View toggle */}
-        <div className="flex items-center rounded-xl border border-border overflow-hidden">
+        <div className="flex items-center rounded-none border border-border overflow-hidden">
           <button
             onClick={() => { setView('grid'); localStorage.setItem('c360-view-mode', 'grid') }}
             className={`p-2 transition-all duration-200 ${
@@ -271,7 +271,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
       {/* Empty search */}
       {filtered.length === 0 && search && (
         <div className="text-center py-16 text-muted-foreground">
-          <div className="w-16 h-16 rounded-2xl bg-muted/50 border border-border/50 flex items-center justify-center mx-auto mb-3">
+          <div className="w-16 h-16 rounded-none bg-muted/50 border border-border/50 flex items-center justify-center mx-auto mb-3">
             <Search className="w-8 h-8 opacity-20" />
           </div>
           <p className="text-sm">No sessions matching &quot;{search}&quot;</p>
@@ -297,7 +297,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
               <div
                 key={pres.id}
                 className={`
-                  group relative bg-card border border-border rounded-2xl overflow-hidden
+                  group relative bg-card border border-border rounded-none overflow-hidden
                   transition-all duration-300 ease-out
                   hover:shadow-lg hover:shadow-black/5 hover:-translate-y-0.5 hover:border-primary/20
                   dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]
@@ -324,7 +324,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
 
                     {/* Live indicator */}
                     {pres.has_active_session && (
-                      <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-emerald-500/10 backdrop-blur-sm border border-emerald-500/20 rounded-full px-2.5 py-1">
+                      <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-emerald-500/10 backdrop-blur-sm border border-emerald-500/20 rounded-none px-2.5 py-1">
                         <span className="relative flex h-2 w-2">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
@@ -337,21 +337,21 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
                     <div className="absolute top-3 right-3 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-1 group-hover:translate-y-0">
                       <Button
                         size="sm" variant="secondary"
-                        className="h-7 w-7 p-0 rounded-lg shadow-md bg-background/90 backdrop-blur-sm hover:bg-background"
+                        className="h-7 w-7 p-0 rounded-none shadow-md bg-background/90 backdrop-blur-sm hover:bg-background"
                         onClick={(e) => { e.preventDefault(); router.push(`/presentations/${pres.id}/edit`) }}
                       >
                         <Pencil className="w-3 h-3" />
                       </Button>
                       <Button
                         size="sm" variant="secondary"
-                        className="h-7 w-7 p-0 rounded-lg shadow-md bg-background/90 backdrop-blur-sm hover:bg-background"
+                        className="h-7 w-7 p-0 rounded-none shadow-md bg-background/90 backdrop-blur-sm hover:bg-background"
                         onClick={(e) => { e.preventDefault(); handleStart(pres.id) }}
                       >
                         <Play className="w-3 h-3" />
                       </Button>
                       <Button
                         size="sm" variant="secondary"
-                        className="h-7 w-7 p-0 rounded-lg shadow-md bg-background/90 backdrop-blur-sm hover:bg-background"
+                        className="h-7 w-7 p-0 rounded-none shadow-md bg-background/90 backdrop-blur-sm hover:bg-background"
                         onClick={(e) => { e.preventDefault(); handleDuplicate(pres.id) }}
                       >
                         <Copy className="w-3 h-3" />
@@ -360,7 +360,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
 
                     {/* Slide count badge */}
                     {slideCount > 0 && (
-                      <span className="absolute bottom-3 right-3 text-[11px] font-medium text-muted-foreground bg-background/80 backdrop-blur-sm rounded-md px-2 py-0.5 border border-border/50">
+                      <span className="absolute bottom-3 right-3 text-[11px] font-medium text-muted-foreground bg-background/80 backdrop-blur-sm rounded-none px-2 py-0.5 border border-border/50">
                         {slideCount} slide{slideCount !== 1 ? 's' : ''}
                       </span>
                     )}
@@ -374,7 +374,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
                           return (
                             <span
                               key={type}
-                              className="flex items-center gap-1 text-[10px] font-medium bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5 border border-border/50"
+                              className="flex items-center gap-1 text-[10px] font-medium bg-background/80 backdrop-blur-sm rounded-none px-1.5 py-0.5 border border-border/50"
                             >
                               <Icon className={`w-2.5 h-2.5 ${color}`} />
                               <span className="text-muted-foreground">{TYPE_LABEL_MAP[type] || type}</span>
@@ -382,7 +382,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
                           )
                         })}
                         {slideTypes.length > 3 && (
-                          <span className="text-[10px] text-muted-foreground bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5 border border-border/50">
+                          <span className="text-[10px] text-muted-foreground bg-background/80 backdrop-blur-sm rounded-none px-1.5 py-0.5 border border-border/50">
                             +{slideTypes.length - 3}
                           </span>
                         )}
@@ -460,8 +460,8 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
 
                 {/* Loading overlay */}
                 {isLoading && (
-                  <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center rounded-2xl">
-                    <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-xl shadow-lg border border-border">
+                  <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center rounded-none">
+                    <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-none shadow-lg border border-border">
                       <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                       <span className="text-sm text-muted-foreground capitalize">{loadAction}...</span>
                     </div>
@@ -485,7 +485,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
               <div
                 key={pres.id}
                 className={`
-                  group relative flex items-center gap-4 bg-card border border-border rounded-2xl p-4 overflow-hidden
+                  group relative flex items-center gap-4 bg-card border border-border rounded-none p-4 overflow-hidden
                   transition-all duration-300 ease-out
                   hover:shadow-md hover:shadow-black/5 hover:border-primary/20 hover:-translate-y-0.5
                   dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]
@@ -497,7 +497,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
                 {/* Top accent line */}
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent group-hover:via-primary/30 transition-colors duration-300" />
 
-                <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0 group-hover:bg-muted/70 transition-colors">
+                <div className="w-10 h-10 rounded-none bg-muted flex items-center justify-center shrink-0 group-hover:bg-muted/70 transition-colors">
                   <TypeIcon className={`w-5 h-5 opacity-60 group-hover:opacity-80 transition-opacity ${typeColor}`} />
                 </div>
 
@@ -509,7 +509,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
                       </h3>
                     </Link>
                     {pres.has_active_session && (
-                      <span className="flex items-center gap-1 bg-emerald-500/10 text-emerald-600 rounded-full px-2 py-0.5">
+                      <span className="flex items-center gap-1 bg-emerald-500/10 text-emerald-600 rounded-none px-2 py-0.5">
                         <span className="relative flex h-1.5 w-1.5">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                           <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
@@ -592,7 +592,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
 
                 {/* Loading overlay */}
                 {isLoading && (
-                  <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center rounded-xl">
+                  <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center rounded-none">
                     <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                   </div>
                 )}
@@ -604,12 +604,12 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
     </div>
     {deleteConfirm && (
       <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setDeleteConfirm(null)}>
-        <div className="bg-card border border-border rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="bg-card border border-border rounded-none p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
           <h3 className="text-sm font-semibold mb-2">Delete &ldquo;{deleteConfirm.title}&rdquo;?</h3>
           <p className="text-[11px] text-muted-foreground mb-4">This action cannot be undone.</p>
           <div className="flex gap-2 justify-end">
-            <button onClick={() => setDeleteConfirm(null)} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-muted text-muted-foreground hover:bg-muted/80 transition-colors">Cancel</button>
-            <button onClick={confirmDelete} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors">Delete</button>
+            <button onClick={() => setDeleteConfirm(null)} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-muted text-muted-foreground hover:bg-muted/80 transition-colors">Cancel</button>
+            <button onClick={confirmDelete} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#C9241A] text-white hover:bg-[#C9241A]/90 transition-colors">Delete</button>
           </div>
         </div>
       </div>

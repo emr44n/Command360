@@ -53,7 +53,7 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
   if (!editor) return null
 
   return (
-    <div className="tiptap-editor rounded-lg border border-border overflow-hidden bg-background">
+    <div className="tiptap-editor rounded-none border border-border overflow-hidden bg-background">
       {/* Toolbar */}
       <div className="flex items-center gap-0.5 flex-wrap px-2 py-1.5 border-b border-border bg-muted/30">
         {/* Text style group */}
@@ -220,7 +220,7 @@ function ToolbarButton({ children, onClick, active, disabled, title }: {
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'p-1.5 rounded-md transition-colors',
+        'p-1.5 rounded-none transition-colors',
         active
           ? 'bg-primary/15 text-primary'
           : 'text-muted-foreground hover:text-foreground hover:bg-muted',

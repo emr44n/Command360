@@ -100,10 +100,10 @@ function getPresets(): PresetDef[] {
 function layerIcon(type: StudioLayer['type']) {
   switch (type) {
     case 'image': return <ImageIcon className="size-3.5 text-red-400" />
-    case 'video': return <Video className="size-3.5 text-purple-400" />
+    case 'video': return <Video className="size-3.5 text-[#6a5ea8]" />
     case 'text': return <Type className="size-3.5 text-amber-400" />
-    case 'shape': return <Square className="size-3.5 text-emerald-400" />
-    case 'audio': return <Music className="size-3.5 text-sky-400" />
+    case 'shape': return <Square className="size-3.5 text-[#2E9E63]" />
+    case 'audio': return <Music className="size-3.5 text-[#3E6DC4]" />
     default: return null
   }
 }
@@ -205,18 +205,18 @@ export function StudioEventSettings({
   }
 
   return (
-    <div className="flex flex-col h-full text-zinc-100">
+    <div className="flex flex-col h-full text-white">
       {/* Header */}
       <div className="px-3 py-2 border-b border-[#1a1a1a] flex items-center gap-2">
         <div
           className="w-3 h-3 rounded-full shrink-0"
           style={{ backgroundColor: event.color || '#6366f1' }}
         />
-        <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex-1">Event Settings</span>
+        <span className="text-[11px] font-semibold text-[#9aa0a8] uppercase tracking-wider flex-1">Event Settings</span>
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => onTriggerEvent(event.id)}
-          className="p-1 rounded hover:bg-emerald-600/20 text-emerald-400 transition-colors cursor-pointer"
+          className="p-1 rounded-none hover:bg-[#2E9E63]/20 text-[#2E9E63] transition-colors cursor-pointer"
         >
           <Play className="size-3.5 fill-current" />
         </button>
@@ -224,7 +224,7 @@ export function StudioEventSettings({
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => onDeleteEvent(event.id)}
-          className="p-1 rounded hover:bg-red-600/20 text-zinc-500 hover:text-red-400 transition-colors cursor-pointer"
+          className="p-1 rounded-none hover:bg-red-600/20 text-[#9aa0a8] hover:text-red-400 transition-colors cursor-pointer"
         >
           <Trash2 className="size-3.5" />
         </button>
@@ -235,20 +235,20 @@ export function StudioEventSettings({
         {/* Event Info */}
         <section className="space-y-2">
           <div className="space-y-1">
-            <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">Name</Label>
+            <Label className="text-[9px] text-[#9aa0a8] uppercase tracking-wider">Name</Label>
             <Input
               value={event.name}
               onChange={(e) => handleNameChange(e.target.value)}
-              className="h-6 text-xs border-[#3f4147] bg-[#1e1f22]/50 text-zinc-100"
+              className="h-6 text-xs border-[#3f4147] bg-[#1e1f22]/50 text-white"
             />
           </div>
           <div className="flex gap-2">
             <div className="flex-1 space-y-1">
-              <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">Category</Label>
+              <Label className="text-[9px] text-[#9aa0a8] uppercase tracking-wider">Category</Label>
               <select
                 value={event.categoryId || ''}
                 onChange={(e) => handleCategoryChange(e.target.value)}
-                className="w-full h-6 text-xs rounded-md border border-[#3f4147] bg-[#1e1f22]/50 text-zinc-100 px-2"
+                className="w-full h-6 text-xs rounded-none border border-[#3f4147] bg-[#1e1f22]/50 text-white px-2"
               >
                 <option value="">Uncategorized</option>
                 {categories.map((cat) => (
@@ -257,12 +257,12 @@ export function StudioEventSettings({
               </select>
             </div>
             <div className="w-12 space-y-1">
-              <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">Color</Label>
+              <Label className="text-[9px] text-[#9aa0a8] uppercase tracking-wider">Color</Label>
               <input
                 type="color"
                 value={event.color || '#6366f1'}
                 onChange={(e) => handleColorChange(e.target.value)}
-                className="w-full h-6 rounded cursor-pointer border border-[#3f4147] bg-transparent p-0.5"
+                className="w-full h-6 rounded-none cursor-pointer border border-[#3f4147] bg-transparent p-0.5"
               />
             </div>
           </div>
@@ -270,23 +270,23 @@ export function StudioEventSettings({
 
         {/* Select Object Button */}
         <section className="space-y-2">
-          <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">Target Object</Label>
+          <Label className="text-[9px] text-[#9aa0a8] uppercase tracking-wider">Target Object</Label>
           {objectSelectionMode === 'waiting' ? (
             <button
               onClick={() => cancelObjectSelection()}
-              className="w-full h-10 rounded-lg bg-red-600 text-white text-xs font-medium flex items-center justify-center gap-2 transition-all cursor-pointer animate-pulse"
+              className="w-full h-10 rounded-none bg-red-600 text-white text-xs font-medium flex items-center justify-center gap-2 transition-all cursor-pointer animate-pulse"
             >
               <Target className="size-4" />
               Click an object on canvas…
               <X className="size-3.5 ml-1 opacity-60" />
             </button>
           ) : objectSelectionMode === 'locked' && lockedLayer ? (
-            <div className="w-full h-10 rounded-lg bg-emerald-600 text-white text-xs font-medium flex items-center justify-center gap-2">
+            <div className="w-full h-10 rounded-none bg-[#2E9E63] text-white text-xs font-medium flex items-center justify-center gap-2">
               {layerIcon(lockedLayer.type)}
               <span className="truncate">{lockedLayer.name}</span>
               <button
                 onClick={() => cancelObjectSelection()}
-                className="ml-1 p-0.5 rounded hover:bg-white/20 transition-colors cursor-pointer"
+                className="ml-1 p-0.5 rounded-none hover:bg-white/20 transition-colors cursor-pointer"
               >
                 <X className="size-3.5" />
               </button>
@@ -294,7 +294,7 @@ export function StudioEventSettings({
           ) : (
             <button
               onClick={() => startObjectSelection(event.id)}
-              className="w-full h-10 rounded-lg border border-dashed border-zinc-600 text-zinc-400 text-xs font-medium flex items-center justify-center gap-2 hover:border-zinc-400 hover:text-zinc-200 transition-all cursor-pointer"
+              className="w-full h-10 rounded-none border border-dashed border-[#3f4147] text-[#9aa0a8] text-xs font-medium flex items-center justify-center gap-2 hover:border-[#9aa0a8] hover:text-white transition-all cursor-pointer"
             >
               <Target className="size-4" />
               Select Object
@@ -305,13 +305,13 @@ export function StudioEventSettings({
         {/* Animation Presets (only when object is locked) */}
         {objectSelectionMode === 'locked' && objectSelectionTargetLayerId && (
           <section className="space-y-2">
-            <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">Quick Presets</Label>
+            <Label className="text-[9px] text-[#9aa0a8] uppercase tracking-wider">Quick Presets</Label>
             <div className="grid grid-cols-2 gap-1">
               {getPresets().map((preset) => (
                 <button
                   key={preset.label}
                   onClick={() => handleApplyPreset(preset)}
-                  className="h-6 rounded-md bg-[#1e1f22] hover:bg-zinc-700 text-[10px] text-zinc-300 font-medium transition-colors cursor-pointer"
+                  className="h-6 rounded-none bg-[#1e1f22] hover:bg-[#3f4147] text-[10px] text-[#9aa0a8] font-medium transition-colors cursor-pointer"
                 >
                   {preset.label}
                 </button>
@@ -323,15 +323,15 @@ export function StudioEventSettings({
         {/* Manual Action Builder (only when object is locked) */}
         {objectSelectionMode === 'locked' && objectSelectionTargetLayerId && (
           <section className="space-y-2">
-            <Label className="text-[9px] text-zinc-500 uppercase tracking-wider">Add Custom Action</Label>
-            <div className="space-y-1.5 p-2 rounded-lg bg-[#1e1f22]/50 border border-[#3f4147]/50">
+            <Label className="text-[9px] text-[#9aa0a8] uppercase tracking-wider">Add Custom Action</Label>
+            <div className="space-y-1.5 p-2 rounded-none bg-[#1e1f22]/50 border border-[#3f4147]/50">
               <div className="grid grid-cols-2 gap-1.5">
                 <div className="space-y-0.5">
-                  <span className="text-[9px] text-zinc-500">Property</span>
+                  <span className="text-[9px] text-[#9aa0a8]">Property</span>
                   <select
                     value={newProperty}
                     onChange={(e) => setNewProperty(e.target.value)}
-                    className="w-full h-5 text-[10px] rounded border border-[#3f4147] bg-[#1e1f22] text-zinc-200 px-1"
+                    className="w-full h-5 text-[10px] rounded-none border border-[#3f4147] bg-[#1e1f22] text-white px-1"
                   >
                     {PROPERTY_OPTIONS.map((p) => (
                       <option key={p.value} value={p.value}>{p.label}</option>
@@ -339,11 +339,11 @@ export function StudioEventSettings({
                   </select>
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-[9px] text-zinc-500">Easing</span>
+                  <span className="text-[9px] text-[#9aa0a8]">Easing</span>
                   <select
                     value={newEasing}
                     onChange={(e) => setNewEasing(e.target.value)}
-                    className="w-full h-5 text-[10px] rounded border border-[#3f4147] bg-[#1e1f22] text-zinc-200 px-1"
+                    className="w-full h-5 text-[10px] rounded-none border border-[#3f4147] bg-[#1e1f22] text-white px-1"
                   >
                     {EASING_OPTIONS.map((e) => (
                       <option key={e.value} value={e.value}>{e.label}</option>
@@ -353,48 +353,48 @@ export function StudioEventSettings({
               </div>
               <div className="grid grid-cols-2 gap-1.5">
                 <div className="space-y-0.5">
-                  <span className="text-[9px] text-zinc-500">From (optional)</span>
+                  <span className="text-[9px] text-[#9aa0a8]">From (optional)</span>
                   <Input
                     value={newFromValue}
                     onChange={(e) => setNewFromValue(e.target.value)}
                     placeholder="auto"
-                    className="h-5 text-[10px] border-[#3f4147] bg-[#1e1f22] text-zinc-200 px-1.5"
+                    className="h-5 text-[10px] border-[#3f4147] bg-[#1e1f22] text-white px-1.5"
                   />
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-[9px] text-zinc-500">To</span>
+                  <span className="text-[9px] text-[#9aa0a8]">To</span>
                   <Input
                     value={newToValue}
                     onChange={(e) => setNewToValue(e.target.value)}
-                    className="h-5 text-[10px] border-[#3f4147] bg-[#1e1f22] text-zinc-200 px-1.5"
+                    className="h-5 text-[10px] border-[#3f4147] bg-[#1e1f22] text-white px-1.5"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-1.5">
                 <div className="space-y-0.5">
-                  <span className="text-[9px] text-zinc-500">Duration (ms)</span>
+                  <span className="text-[9px] text-[#9aa0a8]">Duration (ms)</span>
                   <Input
                     type="number"
                     value={newDuration}
                     onChange={(e) => setNewDuration(parseInt(e.target.value) || 0)}
-                    className="h-5 text-[10px] border-[#3f4147] bg-[#1e1f22] text-zinc-200 px-1.5"
+                    className="h-5 text-[10px] border-[#3f4147] bg-[#1e1f22] text-white px-1.5"
                   />
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-[9px] text-zinc-500">Delay (ms)</span>
+                  <span className="text-[9px] text-[#9aa0a8]">Delay (ms)</span>
                   <Input
                     type="number"
                     value={newDelay}
                     onChange={(e) => setNewDelay(parseInt(e.target.value) || 0)}
-                    className="h-5 text-[10px] border-[#3f4147] bg-[#1e1f22] text-zinc-200 px-1.5"
+                    className="h-5 text-[10px] border-[#3f4147] bg-[#1e1f22] text-white px-1.5"
                   />
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-[9px] text-zinc-500">End</span>
+                  <span className="text-[9px] text-[#9aa0a8]">End</span>
                   <select
                     value={newEndBehaviour}
                     onChange={(e) => setNewEndBehaviour(e.target.value)}
-                    className="w-full h-5 text-[10px] rounded border border-[#3f4147] bg-[#1e1f22] text-zinc-200 px-1"
+                    className="w-full h-5 text-[10px] rounded-none border border-[#3f4147] bg-[#1e1f22] text-white px-1"
                   >
                     {END_BEHAVIOUR_OPTIONS.map((e) => (
                       <option key={e.value} value={e.value}>{e.label}</option>
@@ -406,7 +406,7 @@ export function StudioEventSettings({
                 variant="outline"
                 size="sm"
                 onClick={handleAddAction}
-                className="w-full h-5 text-[10px] border-zinc-600 bg-[#1e1f22] text-zinc-300 hover:bg-zinc-700 mt-1"
+                className="w-full h-5 text-[10px] border-[#3f4147] bg-[#1e1f22] text-[#9aa0a8] hover:bg-[#3f4147] mt-1"
               >
                 <Plus className="size-3 mr-1" /> Add Action
               </Button>

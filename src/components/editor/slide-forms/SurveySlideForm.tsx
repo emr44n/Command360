@@ -51,7 +51,7 @@ export function SurveySlideForm({ slide, onChange }: Props) {
     <div className="space-y-4">
       <Label className="text-muted-foreground text-xs uppercase tracking-wide">Questions</Label>
       {(content.questions || []).map((q, i) => (
-        <div key={q.id} className="bg-muted/50 rounded-xl p-3 space-y-3 border border-border">
+        <div key={q.id} className="bg-muted/50 rounded-none p-3 space-y-3 border border-border">
           <div className="flex gap-2 items-center">
             <span className="text-muted-foreground text-xs shrink-0">{i + 1}.</span>
             <Input

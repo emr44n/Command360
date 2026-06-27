@@ -40,10 +40,10 @@ export function SurveyInput({ slide, onSubmit, disabled }: SurveyInputProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {(content.questions || []).map((q, i) => (
-        <div key={q.id} className="bg-card rounded-2xl p-4 border border-border space-y-3">
+        <div key={q.id} className="bg-card rounded-none p-4 border border-border space-y-3">
           <label className="block text-foreground text-sm font-medium">
             {i + 1}. {q.text}
-            {q.required && <span className="text-red-500 ml-1">*</span>}
+            {q.required && <span className="text-[#C9241A] ml-1">*</span>}
           </label>
           {q.type === 'text' && (
             <Textarea
@@ -52,7 +52,7 @@ export function SurveyInput({ slide, onSubmit, disabled }: SurveyInputProps) {
               placeholder="Your answer..."
               disabled={disabled}
               rows={3}
-              className="bg-background border-border text-foreground placeholder:text-muted-foreground rounded-xl resize-none focus-visible:ring-primary"
+              className="bg-background border-border text-foreground placeholder:text-muted-foreground rounded-none resize-none focus-visible:ring-primary"
             />
           )}
           {q.type === 'rating' && (
@@ -93,7 +93,7 @@ export function SurveyInput({ slide, onSubmit, disabled }: SurveyInputProps) {
                     onClick={toggle}
                     disabled={disabled}
                     className={cn(
-                      'w-full text-left px-4 py-3 rounded-xl border-2 transition-all text-sm font-medium',
+                      'w-full text-left px-4 py-3 rounded-none border-2 transition-all text-sm font-medium',
                       isSelected
                         ? 'border-primary bg-primary/15 text-foreground'
                         : 'border-border bg-muted/30 text-foreground hover:border-primary/50'
@@ -110,7 +110,7 @@ export function SurveyInput({ slide, onSubmit, disabled }: SurveyInputProps) {
       <Button
         type="submit"
         disabled={!allRequired || submitting || disabled}
-        className="w-full bg-red-600 hover:bg-red-500 text-white font-semibold py-6 rounded-xl text-lg transition-all hover:shadow-lg hover:shadow-red-500/25"
+        className="w-full bg-[#C9241A] hover:bg-[#a81d15] text-white font-semibold py-6 rounded-none text-lg transition-all hover:shadow-lg hover:shadow-[#C9241A]/25"
       >
         {submitting ? 'Submitting...' : 'Submit Survey'}
       </Button>
@@ -128,7 +128,7 @@ function RatingInput({ value, max, onChange, disabled }: { value: number; max: n
           onClick={() => onChange(n)}
           disabled={disabled}
           className={cn(
-            'w-12 h-12 rounded-xl border-2 font-bold text-lg transition-all',
+            'w-12 h-12 rounded-none border-2 font-bold text-lg transition-all',
             value === n
               ? 'border-primary bg-primary/15 text-primary scale-110'
               : 'border-border bg-muted/30 text-muted-foreground hover:border-primary/50'

@@ -126,21 +126,21 @@ export function ParticipantView({ session: initialSession, slides, participantId
         <div className="text-center space-y-8 px-6 animate-in fade-in zoom-in-95 duration-500 relative z-10">
           {/* Branding */}
           <div className="flex flex-col items-center gap-3">
-            <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
+            <div className="w-16 h-16 bg-primary rounded-none flex items-center justify-center shadow-lg shadow-primary/20">
               <ShieldAlert className="w-8 h-8 text-primary-foreground" />
             </div>
-            <span className="text-sm font-bold text-zinc-400 tracking-widest uppercase">Command 360</span>
+            <span className="text-sm font-bold text-[#9aa0a8] tracking-widest uppercase">Command 360</span>
           </div>
 
           {/* Heading */}
           <div>
             <h1 className="text-3xl font-bold text-white">This session has ended</h1>
-            <p className="text-zinc-400 mt-2 text-base">Thank you for participating</p>
+            <p className="text-[#9aa0a8] mt-2 text-base">Thank you for participating</p>
           </div>
 
           {/* Score — only for non-studio sessions */}
           {!isStudioSession && score > 0 && (
-            <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-2xl px-8 py-6 inline-block animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+            <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-none px-8 py-6 inline-block animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Trophy className="w-5 h-5 text-primary" />
                 <span className="text-sm font-medium text-primary">Final score</span>
@@ -150,7 +150,7 @@ export function ParticipantView({ session: initialSession, slides, participantId
           )}
 
           <div className="pt-2">
-            <div className="w-12 h-px bg-zinc-800 mx-auto" />
+            <div className="w-12 h-px bg-white/14 mx-auto" />
           </div>
         </div>
       </div>
@@ -182,7 +182,7 @@ export function ParticipantView({ session: initialSession, slides, participantId
         /* Thin header for studio — scene title centered */
         <div className="bg-card/80 backdrop-blur-sm border-b border-border px-4 py-1.5 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 bg-primary rounded-md flex items-center justify-center">
+            <div className="w-5 h-5 bg-primary rounded-none flex items-center justify-center">
               <ShieldAlert className="w-3 h-3 text-primary-foreground" />
             </div>
           </div>
@@ -195,13 +195,13 @@ export function ParticipantView({ session: initialSession, slides, participantId
           {/* Top row: Logo */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
+              <div className="w-7 h-7 bg-primary rounded-none flex items-center justify-center">
                 <ShieldAlert className="w-4 h-4 text-primary-foreground" />
               </div>
               <span className="text-sm font-bold text-foreground tracking-tight">Command 360</span>
             </div>
             {score > 0 && (
-              <div className="flex items-center gap-1.5 text-primary font-mono font-bold text-sm bg-primary/10 px-3 py-1 rounded-full">
+              <div className="flex items-center gap-1.5 text-primary font-mono font-bold text-sm bg-primary/10 px-3 py-1 rounded-none">
                 <Trophy className="w-3.5 h-3.5" />
                 {score}
               </div>
@@ -211,11 +211,11 @@ export function ParticipantView({ session: initialSession, slides, participantId
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-[#2E9E63] animate-pulse" />
                 <span className="text-sm font-medium text-foreground">{displayName}</span>
               </div>
               {totalSlides > 0 && (
-                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-none">
                   {slideIndex + 1}/{totalSlides}
                 </span>
               )}
@@ -270,8 +270,8 @@ function RespondedScreen({ slideType }: { slideType: string }) {
   return (
     <div className="text-center py-12 space-y-4 animate-in fade-in zoom-in-95 duration-300">
       <div className="flex justify-center">
-        <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center animate-in zoom-in duration-300">
-          <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+        <div className="w-16 h-16 rounded-full bg-[#2E9E63]/10 flex items-center justify-center animate-in zoom-in duration-300">
+          <CheckCircle2 className="w-8 h-8 text-[#2E9E63]" />
         </div>
       </div>
       <h2 className="text-lg font-semibold">Response submitted!</h2>
@@ -307,7 +307,7 @@ function SlideInput({ slide, sessionId, onSubmit }: { slide: Slide; sessionId: s
 function ContentDisplay({ slide }: { slide: Slide }) {
   const content = slide.content as { body: string }
   return (
-    <div className="bg-card border border-border rounded-2xl p-6 transition-all duration-200">
+    <div className="bg-card border border-border rounded-none p-6 transition-all duration-200">
       <div className="text-foreground text-base leading-relaxed whitespace-pre-wrap">{content.body}</div>
     </div>
   )

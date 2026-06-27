@@ -221,45 +221,45 @@ export default async function ReportsPage() {
       ) : (
         <>
           {/* Summary stats */}
-          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-2.5">Overview</p>
+          <p className="text-[10px] ff-mono uppercase tracking-[0.1em] text-muted-foreground/60 font-medium mb-2.5">Overview</p>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
-            <div className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
-              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
+            <div className="relative bg-card border border-border rounded-none p-4 hover:border-border/80 transition-all duration-300 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#3E6DC4]/40 to-transparent" />
               <div className="flex items-center gap-2 text-muted-foreground/60 mb-1.5">
                 <FileText className="w-3.5 h-3.5" />
-                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Classrooms</span>
+                <span className="text-[10px] ff-mono uppercase tracking-[0.1em] font-medium">Classrooms</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{decksWithSessions.length}</p>
             </div>
-            <div className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
-              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+            <div className="relative bg-card border border-border rounded-none p-4 hover:border-border/80 transition-all duration-300 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#2E9E63]/40 to-transparent" />
               <div className="flex items-center gap-2 text-muted-foreground/60 mb-1.5">
                 <Clock className="w-3.5 h-3.5" />
-                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Sessions</span>
+                <span className="text-[10px] ff-mono uppercase tracking-[0.1em] font-medium">Sessions</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{totalSessions}</p>
             </div>
-            <div className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
-              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
+            <div className="relative bg-card border border-border rounded-none p-4 hover:border-border/80 transition-all duration-300 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#6a5ea8]/40 to-transparent" />
               <div className="flex items-center gap-2 text-muted-foreground/60 mb-1.5">
                 <Users className="w-3.5 h-3.5" />
-                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Participants</span>
+                <span className="text-[10px] ff-mono uppercase tracking-[0.1em] font-medium">Participants</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{totalParticipants}</p>
             </div>
-            <div className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
-              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-amber-500/40 to-transparent" />
+            <div className="relative bg-card border border-border rounded-none p-4 hover:border-border/80 transition-all duration-300 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#c98a2a]/40 to-transparent" />
               <div className="flex items-center gap-2 text-muted-foreground/60 mb-1.5">
                 <MessageSquare className="w-3.5 h-3.5" />
-                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Responses</span>
+                <span className="text-[10px] ff-mono uppercase tracking-[0.1em] font-medium">Responses</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{totalResponses}</p>
             </div>
-            <div className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
-              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-rose-500/40 to-transparent" />
+            <div className="relative bg-card border border-border rounded-none p-4 hover:border-border/80 transition-all duration-300 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#C9241A]/40 to-transparent" />
               <div className="flex items-center gap-2 text-muted-foreground/60 mb-1.5">
                 <TrendingUp className="w-3.5 h-3.5" />
-                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Avg per user</span>
+                <span className="text-[10px] ff-mono uppercase tracking-[0.1em] font-medium">Avg per user</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{avgResponsesPerParticipant}</p>
             </div>
@@ -269,49 +269,49 @@ export default async function ReportsPage() {
           <ReportsResultsList decks={decksWithSessions} />
 
           {/* Session Analytics Cards */}
-          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-2.5 mt-10">Session Analytics</p>
+          <p className="text-[10px] ff-mono uppercase tracking-[0.1em] text-muted-foreground/60 font-medium mb-2.5 mt-10">Session Analytics</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-            <div className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
-              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" />
+            <div className="relative bg-card border border-border rounded-none p-4 hover:border-border/80 transition-all duration-300 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#2592a3]/40 to-transparent" />
               <div className="flex items-center gap-2 text-muted-foreground/60 mb-1.5">
                 <Timer className="w-3.5 h-3.5" />
-                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Avg Duration</span>
+                <span className="text-[10px] ff-mono uppercase tracking-[0.1em] font-medium">Avg Duration</span>
               </div>
               <p className="text-2xl font-bold text-foreground">
                 {avgSessionDuration !== null ? `${avgSessionDuration}m` : '--'}
               </p>
             </div>
-            <div className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
-              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
+            <div className="relative bg-card border border-border rounded-none p-4 hover:border-border/80 transition-all duration-300 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#3E6DC4]/40 to-transparent" />
               <div className="flex items-center gap-2 text-muted-foreground/60 mb-1.5">
                 <Users className="w-3.5 h-3.5" />
-                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Avg Participants</span>
+                <span className="text-[10px] ff-mono uppercase tracking-[0.1em] font-medium">Avg Participants</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{avgParticipantsPerSession}</p>
             </div>
-            <div className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
-              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-pink-500/40 to-transparent" />
+            <div className="relative bg-card border border-border rounded-none p-4 hover:border-border/80 transition-all duration-300 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#6a5ea8]/40 to-transparent" />
               <div className="flex items-center gap-2 text-muted-foreground/60 mb-1.5">
                 <Activity className="w-3.5 h-3.5" />
-                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Completed</span>
+                <span className="text-[10px] ff-mono uppercase tracking-[0.1em] font-medium">Completed</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{completedSessions.length}</p>
             </div>
-            <div className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-border/80 transition-all duration-300 overflow-hidden">
-              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-orange-500/40 to-transparent" />
+            <div className="relative bg-card border border-border rounded-none p-4 hover:border-border/80 transition-all duration-300 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#c98a2a]/40 to-transparent" />
               <div className="flex items-center gap-2 text-muted-foreground/60 mb-1.5">
                 <TrendingUp className="w-3.5 h-3.5" />
-                <span className="text-[10px] uppercase tracking-[0.15em] font-medium">Engagement Rate</span>
+                <span className="text-[10px] ff-mono uppercase tracking-[0.1em] font-medium">Engagement Rate</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{avgResponsesPerParticipant}x</p>
             </div>
           </div>
 
           {/* Charts Placeholder */}
-          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-2.5">Trends</p>
+          <p className="text-[10px] ff-mono uppercase tracking-[0.1em] text-muted-foreground/60 font-medium mb-2.5">Trends</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-            <div className="relative bg-card border border-border rounded-2xl p-6 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] overflow-hidden">
-              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
+            <div className="relative bg-card border border-border rounded-none p-6 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#3E6DC4]/20 to-transparent" />
               <div className="flex items-center gap-2 text-muted-foreground/60 mb-4">
                 <BarChart2 className="w-4 h-4" />
                 <span className="text-xs font-medium">Participation Over Time</span>
@@ -324,7 +324,7 @@ export default async function ReportsPage() {
                   return (
                     <div key={s.id} className="flex-1 flex flex-col items-center gap-1">
                       <div
-                        className="w-full bg-primary/20 hover:bg-primary/30 rounded-t-md transition-colors duration-200"
+                        className="w-full bg-primary/20 hover:bg-primary/30 rounded-none transition-colors duration-200"
                         style={{ height: `${height}%` }}
                         title={`${s.presentation_title}: ${s.participant_count} participants`}
                       />
@@ -341,8 +341,8 @@ export default async function ReportsPage() {
                 )}
               </div>
             </div>
-            <div className="relative bg-card border border-border rounded-2xl p-6 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] overflow-hidden">
-              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-violet-500/20 to-transparent" />
+            <div className="relative bg-card border border-border rounded-none p-6 overflow-hidden">
+              <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#6a5ea8]/20 to-transparent" />
               <div className="flex items-center gap-2 text-muted-foreground/60 mb-4">
                 <PieChart className="w-4 h-4" />
                 <span className="text-xs font-medium">Response Distribution</span>
@@ -354,9 +354,9 @@ export default async function ReportsPage() {
                   return (
                     <div key={deck.id} className="flex items-center gap-3">
                       <span className="text-[10px] text-muted-foreground/70 truncate w-24 shrink-0 text-right">{deck.title}</span>
-                      <div className="flex-1 h-5 bg-muted/30 rounded-full overflow-hidden">
+                      <div className="flex-1 h-5 bg-muted/30 rounded-none overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-violet-500/30 to-violet-500/50 rounded-full transition-all duration-500"
+                          className="h-full bg-[#6a5ea8]/40 rounded-none transition-all duration-500"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -376,18 +376,18 @@ export default async function ReportsPage() {
           {/* Completed Sessions List */}
           {completedSessions.length > 0 && (
             <>
-              <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-2.5">Completed Sessions</p>
+              <p className="text-[10px] ff-mono uppercase tracking-[0.1em] text-muted-foreground/60 font-medium mb-2.5">Completed Sessions</p>
               <div className="grid gap-2">
                 {completedSessions.map((session) => (
                   <Link
                     key={session.id}
                     href={`/presentations/${session.presentation_id}/results`}
-                    className="relative bg-card border border-border rounded-2xl p-4 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-primary/20 transition-all duration-300 group overflow-hidden"
+                    className="relative bg-card border border-border rounded-none p-4 hover:border-primary/20 transition-all duration-300 group overflow-hidden"
                   >
-                    <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
+                    <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#2E9E63]/20 to-transparent" />
                     <div className="relative flex items-center gap-4">
-                      <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/[0.08] flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-emerald-500/15 transition-all duration-200">
-                        <Play className="w-4 h-4 text-emerald-500" />
+                      <div className="w-9 h-9 rounded-none bg-[#2E9E63]/10 border border-[#2E9E63]/[0.08] flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-[#2E9E63]/15 transition-all duration-200">
+                        <Play className="w-4 h-4 text-[#2E9E63]" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors duration-200">

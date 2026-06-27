@@ -75,7 +75,7 @@ export default async function SessionReportPage({
       </Link>
 
       {/* Session Info Card */}
-      <div className="bg-card border border-border rounded-2xl p-6">
+      <div className="bg-card border border-border rounded-none p-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <h1 className="text-xl font-bold text-foreground">
@@ -84,7 +84,7 @@ export default async function SessionReportPage({
             <p className="text-sm text-muted-foreground mt-1">
               Session: <span className="font-mono">{session.room_code || session.id.slice(0, 8)}</span>
               {' '}&middot;{' '}
-              <span className={session.status === 'active' ? 'text-emerald-500 font-medium' : ''}>
+              <span className={session.status === 'active' ? 'text-[#2E9E63] font-medium' : ''}>
                 {session.status}
               </span>
             </p>
@@ -94,7 +94,7 @@ export default async function SessionReportPage({
 
         {/* Stat pills */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
-          <div className="bg-muted/50 rounded-xl p-4 flex items-center gap-3">
+          <div className="bg-muted/50 rounded-none p-4 flex items-center gap-3">
             <Calendar className="w-5 h-5 text-primary" />
             <div>
               <p className="text-xs text-muted-foreground">Started</p>
@@ -103,21 +103,21 @@ export default async function SessionReportPage({
               </p>
             </div>
           </div>
-          <div className="bg-muted/50 rounded-xl p-4 flex items-center gap-3">
+          <div className="bg-muted/50 rounded-none p-4 flex items-center gap-3">
             <Clock className="w-5 h-5 text-primary" />
             <div>
               <p className="text-xs text-muted-foreground">Duration</p>
               <p className="text-sm font-medium">{durationMin !== null ? `${durationMin} min` : '-'}</p>
             </div>
           </div>
-          <div className="bg-muted/50 rounded-xl p-4 flex items-center gap-3">
+          <div className="bg-muted/50 rounded-none p-4 flex items-center gap-3">
             <Users className="w-5 h-5 text-primary" />
             <div>
               <p className="text-xs text-muted-foreground">Participants</p>
               <p className="text-sm font-medium">{participants.length}</p>
             </div>
           </div>
-          <div className="bg-muted/50 rounded-xl p-4 flex items-center gap-3">
+          <div className="bg-muted/50 rounded-none p-4 flex items-center gap-3">
             <MessageSquare className="w-5 h-5 text-primary" />
             <div>
               <p className="text-xs text-muted-foreground">Responses</p>
@@ -128,7 +128,7 @@ export default async function SessionReportPage({
       </div>
 
       {/* Participants Table */}
-      <div className="bg-card border border-border rounded-2xl p-6">
+      <div className="bg-card border border-border rounded-none p-6">
         <h2 className="font-semibold text-foreground mb-4">Participants</h2>
         {participants.length === 0 ? (
           <p className="text-sm text-muted-foreground">No participants recorded.</p>

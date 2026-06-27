@@ -114,14 +114,14 @@ export function ColorPickerPopover({ value, onChange, className }: ColorPickerPo
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className={`h-7 w-9 rounded-md border border-[#3f4147] cursor-pointer transition-all hover:border-zinc-400 ${className || ''}`} style={{ backgroundColor: value || '#4a5568' }} />
+        <button className={`h-7 w-9 rounded-none border border-[#3f4147] cursor-pointer transition-all hover:border-zinc-400 ${className || ''}`} style={{ backgroundColor: value || '#4a5568' }} />
       </PopoverTrigger>
       <PopoverContent className="w-52 bg-[#1a1a1c] border-[#3f4147] p-3 shadow-2xl" side="left" sideOffset={8}>
         {/* Spectrum */}
         <canvas
           ref={spectrumRef}
           width={180} height={120}
-          className="w-full h-28 rounded-md cursor-crosshair border border-[#2b2d31]"
+          className="w-full h-28 rounded-none cursor-crosshair border border-[#2b2d31]"
           onClick={handleSpectrumClick}
           onMouseDown={e => { const move = (ev: MouseEvent) => handleSpectrumClick(ev as unknown as React.MouseEvent<HTMLCanvasElement>); const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up) }; window.addEventListener('mousemove', move); window.addEventListener('mouseup', up); handleSpectrumClick(e) }}
         />
@@ -134,7 +134,7 @@ export function ColorPickerPopover({ value, onChange, className }: ColorPickerPo
         />
         {/* Current color + hex input */}
         <div className="flex items-center gap-2 mt-2">
-          <div className="w-7 h-7 rounded-md border border-[#3f4147] shrink-0" style={{ backgroundColor: value }} />
+          <div className="w-7 h-7 rounded-none border border-[#3f4147] shrink-0" style={{ backgroundColor: value }} />
           <div className="flex-1 flex items-center gap-1">
             <Pipette className="w-3 h-3 text-zinc-500 shrink-0" />
             <input
@@ -143,7 +143,7 @@ export function ColorPickerPopover({ value, onChange, className }: ColorPickerPo
               onChange={e => setHexInput(e.target.value)}
               onBlur={handleHexSubmit}
               onKeyDown={e => { if (e.key === 'Enter') handleHexSubmit() }}
-              className="w-full h-6 px-1.5 text-[10px] font-mono rounded border border-[#3f4147] bg-[#2b2d31] text-zinc-200 focus:outline-none focus:border-red-500"
+              className="w-full h-6 px-1.5 text-[10px] font-mono rounded-none border border-[#3f4147] bg-[#2b2d31] text-zinc-200 focus:outline-none focus:border-red-500"
             />
           </div>
         </div>
@@ -151,7 +151,7 @@ export function ColorPickerPopover({ value, onChange, className }: ColorPickerPo
         <div className="flex flex-wrap gap-1 mt-2">
           {PRESET_COLORS.map(c => (
             <button key={c} onClick={() => { onChange(c); setHexInput(c); setHsl(hexToHsl(c)) }}
-              className={`w-4 h-4 rounded-sm border transition-all hover:scale-110 ${value === c ? 'border-white ring-1 ring-white/30' : 'border-[#3f4147]'}`}
+              className={`w-4 h-4 rounded-none border transition-all hover:scale-110 ${value === c ? 'border-white ring-1 ring-white/30' : 'border-[#3f4147]'}`}
               style={{ backgroundColor: c }}
             />
           ))}

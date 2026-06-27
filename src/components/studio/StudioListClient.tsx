@@ -91,9 +91,9 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
 
   if (presentations.length === 0) {
     return (
-      <div className="relative border border-dashed border-border rounded-2xl p-12 text-center">
-        <div className="mx-auto w-16 h-16 rounded-2xl bg-cyan-500/10 flex items-center justify-center mb-4">
-          <Monitor className="w-8 h-8 text-cyan-500/60" />
+      <div className="relative border border-dashed border-border rounded-none p-12 text-center">
+        <div className="mx-auto w-16 h-16 rounded-none bg-[#6a5ea8]/10 flex items-center justify-center mb-4">
+          <Monitor className="w-8 h-8 text-[#6a5ea8]/60" />
         </div>
         <h3 className="text-lg font-semibold text-foreground mb-1">
           No scenes yet
@@ -122,14 +122,14 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search scenes..."
-            className="pl-9 h-9 rounded-xl bg-background border-border"
+            className="pl-9 h-9 rounded-none bg-background border-border"
           />
         </div>
 
         {/* Sort dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9 gap-2 text-muted-foreground hover:text-foreground rounded-xl border-border">
+            <Button variant="outline" size="sm" className="h-9 gap-2 text-muted-foreground hover:text-foreground rounded-none border-border">
               <ArrowUpDown className="w-3.5 h-3.5" />
               <span className="text-xs">
                 {SORT_OPTIONS.find((o) => o.value === sortBy)?.label}
@@ -150,7 +150,7 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
         </DropdownMenu>
 
         {/* View toggle */}
-        <div className="flex items-center rounded-xl border border-border overflow-hidden">
+        <div className="flex items-center rounded-none border border-border overflow-hidden">
           <button
             onClick={() => { setView('grid'); localStorage.setItem('c360-view-mode', 'grid') }}
             className={`p-2 transition-all duration-200 ${
@@ -173,7 +173,7 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
       {/* Empty search */}
       {filtered.length === 0 && search && (
         <div className="text-center py-16 text-muted-foreground">
-          <div className="w-16 h-16 rounded-2xl bg-muted/50 border border-border/50 flex items-center justify-center mx-auto mb-3">
+          <div className="w-16 h-16 rounded-none bg-muted/50 border border-border/50 flex items-center justify-center mx-auto mb-3">
             <Search className="w-8 h-8 opacity-20" />
           </div>
           <p className="text-sm">No scenes matching &quot;{search}&quot;</p>
@@ -195,17 +195,17 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
               return (
                 <div
                   key={p.id}
-                  className={`group relative bg-card border border-border rounded-2xl p-5 hover:border-cyan-500/30 hover:shadow-lg hover:shadow-cyan-500/5 hover:-translate-y-0.5 transition-all duration-200 overflow-hidden dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] ${isLoading ? 'pointer-events-none opacity-70' : ''}`}
+                  className={`group relative bg-card border border-border rounded-none p-5 hover:border-[#6a5ea8]/30 hover:shadow-lg hover:shadow-[#6a5ea8]/5 hover:-translate-y-0.5 transition-all duration-200 overflow-hidden dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] ${isLoading ? 'pointer-events-none opacity-70' : ''}`}
                 >
                   {/* Top accent */}
-                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#6a5ea8]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
                   <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="w-9 h-9 rounded-xl bg-cyan-500/10 flex items-center justify-center shrink-0 group-hover:bg-cyan-500/20 transition-colors">
-                      <Monitor className="w-4 h-4 text-cyan-500" />
+                    <div className="w-9 h-9 rounded-none bg-[#6a5ea8]/10 flex items-center justify-center shrink-0 group-hover:bg-[#6a5ea8]/20 transition-colors">
+                      <Monitor className="w-4 h-4 text-[#6a5ea8]" />
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 px-2 py-0.5 font-medium">
+                      <span className="text-[10px] rounded-none bg-[#6a5ea8]/10 text-[#6a5ea8] px-2 py-0.5 font-medium">
                         {p.studioSlideCount} studio slide{p.studioSlideCount !== 1 ? 's' : ''}
                       </span>
                       {/* Quick actions */}
@@ -256,8 +256,8 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
 
                   {/* Loading overlay */}
                   {isLoading && (
-                    <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center rounded-2xl">
-                      <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-xl shadow-lg border border-border">
+                    <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center rounded-none">
+                      <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-none shadow-lg border border-border">
                         <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                         <span className="text-sm text-muted-foreground capitalize">{loadingStates[p.id]}...</span>
                       </div>
@@ -280,12 +280,12 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
               return (
                 <div
                   key={p.id}
-                  className={`group relative flex items-center gap-4 bg-card border border-border rounded-2xl p-4 overflow-hidden transition-all duration-200 hover:shadow-md hover:shadow-black/5 hover:border-cyan-500/20 hover:-translate-y-0.5 dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] ${isLoading ? 'pointer-events-none opacity-70' : ''}`}
+                  className={`group relative flex items-center gap-4 bg-card border border-border rounded-none p-4 overflow-hidden transition-all duration-200 hover:shadow-md hover:shadow-black/5 hover:border-[#6a5ea8]/20 hover:-translate-y-0.5 dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] ${isLoading ? 'pointer-events-none opacity-70' : ''}`}
                 >
-                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent group-hover:via-cyan-500/30 transition-colors duration-300" />
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent group-hover:via-[#6a5ea8]/30 transition-colors duration-300" />
 
-                  <div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center shrink-0 group-hover:bg-cyan-500/20 transition-colors">
-                    <Monitor className="w-5 h-5 text-cyan-500" />
+                  <div className="w-10 h-10 rounded-none bg-[#6a5ea8]/10 flex items-center justify-center shrink-0 group-hover:bg-[#6a5ea8]/20 transition-colors">
+                    <Monitor className="w-5 h-5 text-[#6a5ea8]" />
                   </div>
 
                   <div className="min-w-0 flex-1">
@@ -295,7 +295,7 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
                           {p.title}
                         </h3>
                       </Link>
-                      <span className="text-[10px] rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 px-2 py-0.5 font-medium shrink-0">
+                      <span className="text-[10px] rounded-none bg-[#6a5ea8]/10 text-[#6a5ea8] px-2 py-0.5 font-medium shrink-0">
                         {p.studioSlideCount} studio
                       </span>
                     </div>
@@ -342,7 +342,7 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
 
                   {/* Loading overlay */}
                   {isLoading && (
-                    <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center rounded-2xl">
+                    <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center rounded-none">
                       <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                     </div>
                   )}
@@ -355,12 +355,12 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
     </div>
     {deleteConfirm && (
       <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setDeleteConfirm(null)}>
-        <div className="bg-[#1e1f22] border border-[#3f4147] rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="bg-card border border-border rounded-none p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
           <h3 className="text-sm font-semibold text-white mb-2">Delete &ldquo;{deleteConfirm.title}&rdquo;?</h3>
-          <p className="text-[11px] text-zinc-400 mb-4">This action cannot be undone.</p>
+          <p className="text-[11px] text-muted-foreground mb-4">This action cannot be undone.</p>
           <div className="flex gap-2 justify-end">
-            <button onClick={() => setDeleteConfirm(null)} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
-            <button onClick={confirmDelete} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors">Delete</button>
+            <button onClick={() => setDeleteConfirm(null)} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-muted text-muted-foreground hover:bg-muted/80 transition-colors">Cancel</button>
+            <button onClick={confirmDelete} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#C9241A] text-white hover:bg-[#C9241A]/90 transition-colors">Delete</button>
           </div>
         </div>
       </div>

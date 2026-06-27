@@ -103,7 +103,7 @@ export function TimelineClip({
 
   return (
     <div
-      className={`absolute top-1 bottom-1 rounded group cursor-grab active:cursor-grabbing select-none ${
+      className={`absolute top-1 bottom-1 rounded-none group cursor-grab active:cursor-grabbing select-none ${
         isSelected ? 'ring-1 ring-red-400 ring-offset-0' : ''
       }`}
       style={{
@@ -117,12 +117,12 @@ export function TimelineClip({
     >
       {/* Selected highlight */}
       {isSelected && (
-        <div className="absolute inset-0 bg-red-500/10 rounded pointer-events-none" />
+        <div className="absolute inset-0 bg-red-500/10 rounded-none pointer-events-none" />
       )}
 
       {/* Clip label */}
       <div className="absolute inset-0 flex items-center px-1.5 overflow-hidden">
-        <span className="text-[10px] text-zinc-200 truncate font-medium">
+        <span className="text-[10px] text-white truncate font-medium">
           {layerName || clip.id.slice(0, 8)}
         </span>
       </div>
@@ -136,7 +136,7 @@ export function TimelineClip({
           <Tooltip key={kf.id}><TooltipTrigger asChild>
           <div
             className={`absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rotate-45 border z-10 cursor-pointer transition-colors ${
-              isKfSelected ? 'bg-red-500 border-red-600' : 'bg-yellow-400 border-yellow-600 hover:bg-yellow-300'
+              isKfSelected ? 'bg-red-500 border-red-600' : 'bg-[#c98a2a] border-[#c98a2a] hover:bg-[#c98a2a]'
             }`}
             style={{ left: kfLeft - 5 }}
             onClick={(e) => { e.stopPropagation(); onSelectKeyframe?.(kf.id) }}

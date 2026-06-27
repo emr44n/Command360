@@ -36,7 +36,7 @@ export function WordCloudInput({ slide, onSubmit, disabled }: WordCloudInputProp
           placeholder="Type a word..."
           maxLength={50}
           disabled={disabled || submitting}
-          className="bg-background border-border text-foreground placeholder:text-muted-foreground text-center text-xl py-6 rounded-xl focus-visible:ring-primary"
+          className="bg-background border-border text-foreground placeholder:text-muted-foreground text-center text-xl py-6 rounded-none focus-visible:ring-primary"
           autoFocus
         />
         <p className="text-muted-foreground text-xs text-center">
@@ -46,7 +46,7 @@ export function WordCloudInput({ slide, onSubmit, disabled }: WordCloudInputProp
       <Button
         type="submit"
         disabled={!word.trim() || submitting || disabled}
-        className="w-full bg-red-600 hover:bg-red-500 text-white font-semibold py-6 rounded-xl text-lg transition-all hover:shadow-lg hover:shadow-red-500/25"
+        className="w-full bg-[#C9241A] hover:bg-[#a81d15] text-white font-semibold py-6 rounded-none text-lg transition-all hover:shadow-lg hover:shadow-[#C9241A]/25"
       >
         {submitting ? 'Submitting...' : 'Submit'}
       </Button>

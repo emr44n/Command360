@@ -485,10 +485,10 @@ export function StudioGallery({
   const typeIcon = (type: StudioLayer['type']) => {
     switch (type) {
       case 'image': return <ImageIcon className="size-3.5 text-red-400" />
-      case 'video': return <VideoIcon className="size-3.5 text-purple-400" />
+      case 'video': return <VideoIcon className="size-3.5 text-[#6a5ea8]" />
       case 'text': return <span className="text-xs font-bold text-amber-400">T</span>
-      case 'shape': return <span className="text-xs text-emerald-400">&#9632;</span>
-      case 'audio': return <Volume2 className="size-3.5 text-cyan-400" />
+      case 'shape': return <span className="text-xs text-[#2E9E63]">&#9632;</span>
+      case 'audio': return <Volume2 className="size-3.5 text-[#3E6DC4]" />
       default: return null
     }
   }
@@ -500,8 +500,8 @@ export function StudioGallery({
     return (
       <div
         key={evt.id}
-        className={`flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs cursor-pointer transition-all group ${
-          isSelected ? 'bg-red-600/20 text-red-300' : 'hover:bg-zinc-800 text-zinc-300'
+        className={`flex items-center gap-1.5 rounded-none px-2 py-1.5 text-xs cursor-pointer transition-all group ${
+          isSelected ? 'bg-red-600/20 text-red-300' : 'hover:bg-[#2b2d31] text-[#9aa0a8]'
         }`}
         onClick={() => setSelectedEventId(evt.id)}
       >
@@ -515,7 +515,7 @@ export function StudioGallery({
             onChange={(e) => setEditingName(e.target.value)}
             onBlur={() => handleRenameEvent(evt.id, editingName)}
             onKeyDown={(e) => { if (e.key === 'Enter') handleRenameEvent(evt.id, editingName) }}
-            className="flex-1 h-5 text-xs bg-zinc-800 border border-zinc-600 rounded px-1 text-zinc-100"
+            className="flex-1 h-5 text-xs bg-[#2b2d31] border border-zinc-600 rounded-none px-1 text-white"
             autoFocus
             onClick={(e) => e.stopPropagation()}
           />
@@ -532,17 +532,17 @@ export function StudioGallery({
           </span>
         )}
         {targetName && (
-          <span className="text-[9px] text-zinc-500 truncate max-w-[60px]">{targetName}</span>
+          <span className="text-[9px] text-[#9aa0a8] truncate max-w-[60px]">{targetName}</span>
         )}
         {evt.actions.length > 0 && (
-          <span className="text-[9px] bg-zinc-700/50 text-zinc-400 px-1 rounded">
+          <span className="text-[9px] bg-zinc-700/50 text-[#9aa0a8] px-1 rounded-none">
             {evt.actions.length}
           </span>
         )}
         {onTriggerEvent && (
           <Tooltip><TooltipTrigger asChild>
           <button
-            className="p-0.5 text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-emerald-400 transition-all cursor-pointer"
+            className="p-0.5 text-[#9aa0a8] opacity-0 group-hover:opacity-100 hover:text-[#2E9E63] transition-all cursor-pointer"
             onClick={(e) => { e.stopPropagation(); onTriggerEvent(evt.id) }}
           >
             <Play className="size-3 fill-current" />
@@ -551,7 +551,7 @@ export function StudioGallery({
         )}
         <Tooltip><TooltipTrigger asChild>
         <button
-          className="p-0.5 text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all cursor-pointer"
+          className="p-0.5 text-[#9aa0a8] opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all cursor-pointer"
           onClick={(e) => { e.stopPropagation(); handleDeleteEvent(evt.id) }}
         >
           <Trash2Icon className="size-3" />
@@ -562,35 +562,35 @@ export function StudioGallery({
   }
 
   return (
-    <div className="flex h-full flex-col bg-[#2b2d31] text-zinc-200">
+    <div className="flex h-full flex-col bg-[#2b2d31] text-white">
       <Tabs defaultValue={initialTab} key={initialTab} className="flex h-full flex-col">
         <div ref={tabContainerRef} className="flex border-b border-[#1e1f22] shrink-0">
           <TabsList className="w-full bg-transparent p-0 h-auto rounded-none gap-0">
-            <Tooltip><TooltipTrigger asChild><TabsTrigger value="images" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
+            <Tooltip><TooltipTrigger asChild><TabsTrigger value="images" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-white data-[state=inactive]:hover:bg-[#2a2b30]">
               <ImageIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Images'}
             </TabsTrigger></TooltipTrigger><TooltipContent>Images</TooltipContent></Tooltip>
-            <Tooltip><TooltipTrigger asChild><TabsTrigger value="videos" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
+            <Tooltip><TooltipTrigger asChild><TabsTrigger value="videos" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-white data-[state=inactive]:hover:bg-[#2a2b30]">
               <VideoIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Videos'}
             </TabsTrigger></TooltipTrigger><TooltipContent>Videos</TooltipContent></Tooltip>
-            <Tooltip><TooltipTrigger asChild><TabsTrigger value="audio" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
+            <Tooltip><TooltipTrigger asChild><TabsTrigger value="audio" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-white data-[state=inactive]:hover:bg-[#2a2b30]">
               <Volume2 className="size-3 shrink-0" />
               {!tabsNarrow && 'Audio'}
             </TabsTrigger></TooltipTrigger><TooltipContent>Audio</TooltipContent></Tooltip>
-            <Tooltip><TooltipTrigger asChild><TabsTrigger value="placed" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
+            <Tooltip><TooltipTrigger asChild><TabsTrigger value="placed" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-white data-[state=inactive]:hover:bg-[#2a2b30]">
               <LayersIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Layers'}
             </TabsTrigger></TooltipTrigger><TooltipContent>Layers</TooltipContent></Tooltip>
-            <Tooltip><TooltipTrigger asChild><TabsTrigger value="text" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
+            <Tooltip><TooltipTrigger asChild><TabsTrigger value="text" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-white data-[state=inactive]:hover:bg-[#2a2b30]">
               <svg viewBox="0 0 24 24" className="size-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
               {!tabsNarrow && 'Text'}
             </TabsTrigger></TooltipTrigger><TooltipContent>Text</TooltipContent></Tooltip>
-            <Tooltip><TooltipTrigger asChild><TabsTrigger value="shapes" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
+            <Tooltip><TooltipTrigger asChild><TabsTrigger value="shapes" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-white data-[state=inactive]:hover:bg-[#2a2b30]">
               <svg viewBox="0 0 24 24" className="size-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
               {!tabsNarrow && 'Shapes'}
             </TabsTrigger></TooltipTrigger><TooltipContent>Shapes</TooltipContent></Tooltip>
-            <Tooltip><TooltipTrigger asChild><TabsTrigger value="events" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-zinc-300 data-[state=inactive]:hover:bg-[#2a2b30]">
+            <Tooltip><TooltipTrigger asChild><TabsTrigger value="events" className="flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-semibold rounded-none border-b-[3px] transition-all duration-200 data-[state=active]:border-red-500 data-[state=active]:text-white data-[state=active]:bg-[#3a1c1c] data-[state=active]:[&_svg]:text-red-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-700 data-[state=inactive]:bg-[#1a1b1e] data-[state=inactive]:[&_svg]:text-zinc-700 data-[state=inactive]:hover:text-white data-[state=inactive]:hover:bg-[#2a2b30]">
               <ZapIcon className="size-3 shrink-0" />
               {!tabsNarrow && 'Events'}
             </TabsTrigger></TooltipTrigger><TooltipContent>Events</TooltipContent></Tooltip>
@@ -600,7 +600,7 @@ export function StudioGallery({
             <Tooltip><TooltipTrigger asChild>
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1 rounded transition-colors ${viewMode === 'grid' ? 'text-zinc-300 bg-[#35363c]' : 'text-zinc-600 hover:text-zinc-400'}`}
+              className={`p-1 rounded-none transition-colors ${viewMode === 'grid' ? 'text-[#9aa0a8] bg-[#35363c]' : 'text-[#9aa0a8] hover:text-white'}`}
             >
               <LayoutGrid className="size-3" />
             </button>
@@ -608,7 +608,7 @@ export function StudioGallery({
             <Tooltip><TooltipTrigger asChild>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-1 rounded transition-colors ${viewMode === 'list' ? 'text-zinc-300 bg-[#35363c]' : 'text-zinc-600 hover:text-zinc-400'}`}
+              className={`p-1 rounded-none transition-colors ${viewMode === 'list' ? 'text-[#9aa0a8] bg-[#35363c]' : 'text-[#9aa0a8] hover:text-white'}`}
             >
               <List className="size-3" />
             </button>
@@ -621,15 +621,15 @@ export function StudioGallery({
           <input ref={imageInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />
           <Button
             variant="outline" size="sm"
-            className="mt-2 w-full border-dashed border-zinc-600 bg-[#383a40] text-zinc-300 hover:bg-zinc-700"
+            className="mt-2 w-full border-dashed border-zinc-600 bg-[#383a40] text-[#9aa0a8] hover:bg-zinc-700"
             onClick={() => imageInputRef.current?.click()} disabled={uploading}
           >
             {uploading ? <Loader2Icon className="mr-1.5 size-3.5 animate-spin" /> : <UploadIcon className="mr-1.5 size-3.5" />}
             {uploading ? 'Uploading...' : 'Upload Image'}
           </Button>
           {uploading && (
-            <div className="mt-1.5 h-1 w-full rounded-full bg-zinc-800 overflow-hidden">
-              <div className="h-1 bg-red-500 rounded-full transition-all duration-150" style={{ width: `${uploadProgress}%` }} />
+            <div className="mt-1.5 h-1 w-full rounded-none bg-[#2b2d31] overflow-hidden">
+              <div className="h-1 bg-red-500 rounded-none transition-all duration-150" style={{ width: `${uploadProgress}%` }} />
             </div>
           )}
           {images.length === 0 && <p className="mt-4 text-center text-xs text-zinc-500">No images uploaded yet</p>}
@@ -685,7 +685,7 @@ export function StudioGallery({
           <div className="mt-2 flex gap-1">
             <Button
               variant="outline" size="sm"
-              className="flex-1 border-dashed border-zinc-600 bg-[#383a40] text-zinc-300 hover:bg-zinc-700"
+              className="flex-1 border-dashed border-zinc-600 bg-[#383a40] text-[#9aa0a8] hover:bg-zinc-700"
               onClick={() => videoInputRef.current?.click()} disabled={uploading}
             >
               {uploading ? <Loader2Icon className="mr-1.5 size-3.5 animate-spin" /> : <UploadIcon className="mr-1.5 size-3.5" />}
@@ -693,7 +693,7 @@ export function StudioGallery({
             </Button>
             <Button
               variant="outline" size="sm"
-              className={`border-zinc-600 bg-[#383a40] text-zinc-300 hover:bg-zinc-700 px-2 ${showYoutubeInput ? 'border-red-500 bg-red-500/10 text-red-400' : ''}`}
+              className={`border-zinc-600 bg-[#383a40] text-[#9aa0a8] hover:bg-zinc-700 px-2 ${showYoutubeInput ? 'border-red-500 bg-red-500/10 text-red-400' : ''}`}
               onClick={() => setShowYoutubeInput(v => !v)}
             >
               <svg viewBox="0 0 24 24" className="size-3.5" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.8 3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
@@ -732,8 +732,8 @@ export function StudioGallery({
             </div>
           )}
           {uploading && (
-            <div className="mt-1.5 h-1 w-full rounded-full bg-zinc-800 overflow-hidden">
-              <div className="h-1 bg-red-500 rounded-full transition-all duration-150" style={{ width: `${uploadProgress}%` }} />
+            <div className="mt-1.5 h-1 w-full rounded-none bg-[#2b2d31] overflow-hidden">
+              <div className="h-1 bg-red-500 rounded-none transition-all duration-150" style={{ width: `${uploadProgress}%` }} />
             </div>
           )}
           {videos.length === 0 && <p className="mt-4 text-center text-xs text-zinc-500">No videos uploaded yet</p>}
@@ -820,15 +820,15 @@ export function StudioGallery({
           <input ref={audioInputRef} type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/mp4,audio/*" multiple className="hidden" onChange={handleAudioUpload} />
           <Button
             variant="outline" size="sm"
-            className="mt-2 w-full border-dashed border-zinc-600 bg-[#383a40] text-zinc-300 hover:bg-zinc-700"
+            className="mt-2 w-full border-dashed border-zinc-600 bg-[#383a40] text-[#9aa0a8] hover:bg-zinc-700"
             onClick={() => audioInputRef.current?.click()} disabled={uploading}
           >
             {uploading ? <Loader2Icon className="mr-1.5 size-3.5 animate-spin" /> : <UploadIcon className="mr-1.5 size-3.5" />}
             {uploading ? 'Uploading...' : 'Upload Audio'}
           </Button>
           {uploading && (
-            <div className="mt-1.5 h-1 w-full rounded-full bg-zinc-800 overflow-hidden">
-              <div className="h-1 bg-red-500 rounded-full transition-all duration-150" style={{ width: `${uploadProgress}%` }} />
+            <div className="mt-1.5 h-1 w-full rounded-none bg-[#2b2d31] overflow-hidden">
+              <div className="h-1 bg-red-500 rounded-none transition-all duration-150" style={{ width: `${uploadProgress}%` }} />
             </div>
           )}
           {audios.length === 0 && <p className="mt-4 text-center text-xs text-zinc-500">No audio files uploaded yet</p>}
@@ -872,7 +872,7 @@ export function StudioGallery({
 
         {/* Text Tab */}
         <TabsContent value="text" className="flex-1 overflow-y-auto px-2 pb-2 animate-[fadeIn_0.2s_ease-out]">
-          <Button variant="outline" size="sm" className="mt-2 w-full border-dashed border-zinc-600 bg-[#383a40] text-zinc-300 hover:bg-zinc-700"
+          <Button variant="outline" size="sm" className="mt-2 w-full border-dashed border-zinc-600 bg-[#383a40] text-[#9aa0a8] hover:bg-zinc-700"
             onClick={() => onAddLayer({ type: 'text', name: 'Text', text: 'Text', fontSize: 24, color: '#ffffff', x: 10, y: 10, width: 20, height: 10, rotation: 0, opacity: 1, blendMode: 'normal', visible: true, locked: false })}>
             <PlusIcon className="mr-1.5 size-3.5" /> Add Text Layer
           </Button>
@@ -930,7 +930,7 @@ export function StudioGallery({
               />
               <Button
                 variant="outline" size="sm"
-                className="h-6 shrink-0 border-zinc-600 bg-zinc-800 px-2 text-zinc-300 hover:bg-zinc-700"
+                className="h-6 shrink-0 border-zinc-600 bg-[#2b2d31] px-2 text-[#9aa0a8] hover:bg-zinc-700"
                 onClick={handleAddCategory} disabled={!newCategoryName.trim()}
               >
                 <PlusIcon className="size-3.5" />

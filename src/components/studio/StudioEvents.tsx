@@ -257,11 +257,11 @@ export function StudioEvents({
   const renderAction = (eventId: string, action: StudioAction) => (
     <div
       key={action.id}
-      className="rounded border border-zinc-700 bg-zinc-800/60 p-2 space-y-2"
+      className="rounded-none border border-[#3f4147] bg-[#2b2d31]/60 p-2 space-y-2"
     >
       <div className="flex items-center gap-2">
-        <GripVerticalIcon className="size-3 text-zinc-500" />
-        <span className="flex-1 text-[10px] uppercase tracking-wider text-zinc-400">
+        <GripVerticalIcon className="size-3 text-[#9aa0a8]" />
+        <span className="flex-1 text-[10px] uppercase tracking-wider text-[#9aa0a8]">
           Action
         </span>
         <Button
@@ -277,14 +277,14 @@ export function StudioEvents({
       {/* Layer target */}
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <Label className="text-[10px] text-zinc-400">Layer</Label>
+          <Label className="text-[10px] text-[#9aa0a8]">Layer</Label>
           <Select
             value={action.layerId}
             onValueChange={(v) =>
               updateAction(eventId, action.id, { layerId: v })
             }
           >
-            <SelectTrigger className="h-6 w-full border-zinc-700 bg-zinc-900 text-[11px] text-zinc-100">
+            <SelectTrigger className="h-6 w-full border-[#3f4147] bg-[#1e1f22] text-[11px] text-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -297,7 +297,7 @@ export function StudioEvents({
           </Select>
         </div>
         <div>
-          <Label className="text-[10px] text-zinc-400">Property</Label>
+          <Label className="text-[10px] text-[#9aa0a8]">Property</Label>
           <Select
             value={action.property}
             onValueChange={(v) =>
@@ -306,7 +306,7 @@ export function StudioEvents({
               })
             }
           >
-            <SelectTrigger className="h-6 w-full border-zinc-700 bg-zinc-900 text-[11px] text-zinc-100">
+            <SelectTrigger className="h-6 w-full border-[#3f4147] bg-[#1e1f22] text-[11px] text-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -322,7 +322,7 @@ export function StudioEvents({
 
       {/* Value */}
       <div>
-        <Label className="text-[10px] text-zinc-400">To Value</Label>
+        <Label className="text-[10px] text-[#9aa0a8]">To Value</Label>
         <Input
           value={String(action.toValue)}
           onChange={(e) => {
@@ -333,14 +333,14 @@ export function StudioEvents({
             else if (!isNaN(Number(raw)) && raw !== '') parsed = Number(raw)
             updateAction(eventId, action.id, { toValue: parsed })
           }}
-          className="h-6 border-zinc-700 bg-zinc-900 text-[11px] text-zinc-100"
+          className="h-6 border-[#3f4147] bg-[#1e1f22] text-[11px] text-white"
         />
       </div>
 
       {/* Timing */}
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <Label className="text-[10px] text-zinc-400">Delay (ms)</Label>
+          <Label className="text-[10px] text-[#9aa0a8]">Delay (ms)</Label>
           <Input
             type="number"
             value={action.delay}
@@ -350,11 +350,11 @@ export function StudioEvents({
                 delay: parseInt(e.target.value) || 0,
               })
             }
-            className="h-6 border-zinc-700 bg-zinc-900 text-[11px] text-zinc-100"
+            className="h-6 border-[#3f4147] bg-[#1e1f22] text-[11px] text-white"
           />
         </div>
         <div>
-          <Label className="text-[10px] text-zinc-400">Duration (ms)</Label>
+          <Label className="text-[10px] text-[#9aa0a8]">Duration (ms)</Label>
           <Input
             type="number"
             value={action.duration}
@@ -364,7 +364,7 @@ export function StudioEvents({
                 duration: parseInt(e.target.value) || 0,
               })
             }
-            className="h-6 border-zinc-700 bg-zinc-900 text-[11px] text-zinc-100"
+            className="h-6 border-[#3f4147] bg-[#1e1f22] text-[11px] text-white"
           />
         </div>
       </div>
@@ -372,7 +372,7 @@ export function StudioEvents({
       {/* Easing & End Behaviour */}
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <Label className="text-[10px] text-zinc-400">Easing</Label>
+          <Label className="text-[10px] text-[#9aa0a8]">Easing</Label>
           <Select
             value={action.easing}
             onValueChange={(v) =>
@@ -381,7 +381,7 @@ export function StudioEvents({
               })
             }
           >
-            <SelectTrigger className="h-6 w-full border-zinc-700 bg-zinc-900 text-[11px] text-zinc-100">
+            <SelectTrigger className="h-6 w-full border-[#3f4147] bg-[#1e1f22] text-[11px] text-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -394,7 +394,7 @@ export function StudioEvents({
           </Select>
         </div>
         <div>
-          <Label className="text-[10px] text-zinc-400">End Behaviour</Label>
+          <Label className="text-[10px] text-[#9aa0a8]">End Behaviour</Label>
           <Select
             value={action.endBehaviour}
             onValueChange={(v) =>
@@ -403,7 +403,7 @@ export function StudioEvents({
               })
             }
           >
-            <SelectTrigger className="h-6 w-full border-zinc-700 bg-zinc-900 text-[11px] text-zinc-100">
+            <SelectTrigger className="h-6 w-full border-[#3f4147] bg-[#1e1f22] text-[11px] text-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -423,29 +423,29 @@ export function StudioEvents({
     const isExpanded = expandedEvents.has(event.id)
 
     return (
-      <div key={event.id} className="border-b border-zinc-800/50">
+      <div key={event.id} className="border-b border-[#2b2d31]/50">
         {/* Event header */}
         <button
-          className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs hover:bg-zinc-800/40"
+          className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs hover:bg-[#2b2d31]/40"
           onClick={() => toggleEvent(event.id)}
         >
           {isExpanded ? (
-            <ChevronDownIcon className="size-3 text-zinc-400" />
+            <ChevronDownIcon className="size-3 text-[#9aa0a8]" />
           ) : (
-            <ChevronRightIcon className="size-3 text-zinc-400" />
+            <ChevronRightIcon className="size-3 text-[#9aa0a8]" />
           )}
           <span
             className="size-2 rounded-full"
             style={{ backgroundColor: event.color ?? '#6366f1' }}
           />
           <span className="flex-1 truncate">{event.name}</span>
-          <span className="rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] text-zinc-400">
+          <span className="rounded-none bg-[#2b2d31] px-1.5 py-0.5 text-[10px] text-[#9aa0a8]">
             {event.trigger}
           </span>
           <Button
             variant="ghost"
             size="sm"
-            className="h-5 w-5 p-0 text-zinc-500 hover:text-red-400"
+            className="h-5 w-5 p-0 text-[#9aa0a8] hover:text-red-400"
             onClick={(e) => {
               e.stopPropagation()
               deleteEvent(event.id)
@@ -460,19 +460,19 @@ export function StudioEvents({
           <div className="space-y-2 px-3 pb-3 pt-1">
             {/* Name */}
             <div>
-              <Label className="text-[10px] text-zinc-400">Name</Label>
+              <Label className="text-[10px] text-[#9aa0a8]">Name</Label>
               <Input
                 value={event.name}
                 onChange={(e) =>
                   updateEvent(event.id, { name: e.target.value })
                 }
-                className="h-7 border-zinc-700 bg-zinc-800 text-xs text-zinc-100"
+                className="h-7 border-[#3f4147] bg-[#2b2d31] text-xs text-white"
               />
             </div>
 
             {/* Category */}
             <div>
-              <Label className="text-[10px] text-zinc-400">Category</Label>
+              <Label className="text-[10px] text-[#9aa0a8]">Category</Label>
               <Select
                 value={event.categoryId ?? '__none'}
                 onValueChange={(v) =>
@@ -481,7 +481,7 @@ export function StudioEvents({
                   })
                 }
               >
-                <SelectTrigger className="h-7 w-full border-zinc-700 bg-zinc-800 text-xs text-zinc-100">
+                <SelectTrigger className="h-7 w-full border-[#3f4147] bg-[#2b2d31] text-xs text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -497,9 +497,9 @@ export function StudioEvents({
 
             {/* Trigger type */}
             <div>
-              <Label className="text-[10px] text-zinc-400">Trigger</Label>
+              <Label className="text-[10px] text-[#9aa0a8]">Trigger</Label>
               <div className="mt-1 flex gap-2">
-                <label className="flex items-center gap-1 text-xs text-zinc-300">
+                <label className="flex items-center gap-1 text-xs text-[#9aa0a8]">
                   <input
                     type="radio"
                     name={`trigger-${event.id}`}
@@ -511,7 +511,7 @@ export function StudioEvents({
                   />
                   Manual
                 </label>
-                <label className="flex items-center gap-1 text-xs text-zinc-300">
+                <label className="flex items-center gap-1 text-xs text-[#9aa0a8]">
                   <input
                     type="radio"
                     name={`trigger-${event.id}`}
@@ -526,9 +526,9 @@ export function StudioEvents({
 
             {/* Vote-specific fields */}
             {event.trigger === 'vote' && (
-              <div className="space-y-2 rounded border border-zinc-700 bg-zinc-800/40 p-2">
+              <div className="space-y-2 rounded-none border border-[#3f4147] bg-[#2b2d31]/40 p-2">
                 <div>
-                  <Label className="text-[10px] text-zinc-400">
+                  <Label className="text-[10px] text-[#9aa0a8]">
                     Vote Question
                   </Label>
                   <Input
@@ -539,11 +539,11 @@ export function StudioEvents({
                       })
                     }
                     placeholder="What should happen next?"
-                    className="h-7 border-zinc-700 bg-zinc-900 text-xs text-zinc-100"
+                    className="h-7 border-[#3f4147] bg-[#1e1f22] text-xs text-white"
                   />
                 </div>
 
-                <Label className="text-[10px] text-zinc-400">
+                <Label className="text-[10px] text-[#9aa0a8]">
                   Vote Options
                 </Label>
                 {(event.voteOptions ?? []).map((opt) => (
@@ -555,7 +555,7 @@ export function StudioEvents({
                           label: e.target.value,
                         })
                       }
-                      className="h-6 flex-1 border-zinc-700 bg-zinc-900 text-[11px] text-zinc-100"
+                      className="h-6 flex-1 border-[#3f4147] bg-[#1e1f22] text-[11px] text-white"
                     />
                     <Button
                       variant="ghost"
@@ -570,7 +570,7 @@ export function StudioEvents({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-6 w-full border-dashed border-zinc-600 bg-transparent text-[11px] text-zinc-400 hover:bg-zinc-800"
+                  className="h-6 w-full border-dashed border-[#3f4147] bg-transparent text-[11px] text-[#9aa0a8] hover:bg-[#2b2d31]"
                   onClick={() => addVoteOption(event.id)}
                 >
                   <PlusIcon className="mr-1 size-3" /> Add Option
@@ -580,7 +580,7 @@ export function StudioEvents({
 
             {/* Actions */}
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-wider text-zinc-400">
+              <Label className="text-[10px] uppercase tracking-wider text-[#9aa0a8]">
                 Actions
               </Label>
               {event.actions.map((action) =>
@@ -589,7 +589,7 @@ export function StudioEvents({
               <Button
                 variant="outline"
                 size="sm"
-                className="h-7 w-full border-dashed border-zinc-600 bg-transparent text-xs text-zinc-400 hover:bg-zinc-800"
+                className="h-7 w-full border-dashed border-[#3f4147] bg-transparent text-xs text-[#9aa0a8] hover:bg-[#2b2d31]"
                 onClick={() => addAction(event.id)}
               >
                 <PlusIcon className="mr-1 size-3.5" /> Add Action
@@ -607,16 +607,16 @@ export function StudioEvents({
   )
 
   return (
-    <div className="flex h-full flex-col bg-zinc-900 text-zinc-100">
-      <div className="flex items-center justify-between border-b border-zinc-800 px-3 py-2">
-        <span className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+    <div className="flex h-full flex-col bg-[#1e1f22] text-white">
+      <div className="flex items-center justify-between border-b border-[#2b2d31] px-3 py-2">
+        <span className="text-xs font-medium uppercase tracking-wider text-[#9aa0a8]">
           Events
         </span>
         <div className="flex gap-1">
           <Button
             variant="ghost"
             size="sm"
-            className="h-6 px-2 text-[11px] text-zinc-400 hover:text-zinc-100"
+            className="h-6 px-2 text-[11px] text-[#9aa0a8] hover:text-white"
             onClick={addCategory}
           >
             <PlusIcon className="mr-0.5 size-3" /> Category
@@ -624,7 +624,7 @@ export function StudioEvents({
           <Button
             variant="ghost"
             size="sm"
-            className="h-6 px-2 text-[11px] text-zinc-400 hover:text-zinc-100"
+            className="h-6 px-2 text-[11px] text-[#9aa0a8] hover:text-white"
             onClick={() => addEvent()}
           >
             <PlusIcon className="mr-0.5 size-3" /> Event
@@ -644,24 +644,24 @@ export function StudioEvents({
               open={isOpen}
               onOpenChange={() => toggleCategory(cat.id)}
             >
-              <CollapsibleTrigger className="flex w-full items-center gap-2 border-b border-zinc-800 bg-zinc-800/30 px-3 py-1.5 text-left text-xs hover:bg-zinc-800/50">
+              <CollapsibleTrigger className="flex w-full items-center gap-2 border-b border-[#2b2d31] bg-[#2b2d31]/30 px-3 py-1.5 text-left text-xs hover:bg-[#2b2d31]/50">
                 {isOpen ? (
-                  <ChevronDownIcon className="size-3 text-zinc-400" />
+                  <ChevronDownIcon className="size-3 text-[#9aa0a8]" />
                 ) : (
-                  <ChevronRightIcon className="size-3 text-zinc-400" />
+                  <ChevronRightIcon className="size-3 text-[#9aa0a8]" />
                 )}
                 <span
                   className="size-2 rounded-full"
                   style={{ backgroundColor: cat.color ?? '#8b5cf6' }}
                 />
                 <span className="flex-1 font-medium">{cat.name}</span>
-                <span className="text-[10px] text-zinc-500">
+                <span className="text-[10px] text-[#9aa0a8]">
                   {catEvents.length}
                 </span>
                 <span
                   role="button"
                   tabIndex={0}
-                  className="inline-flex h-5 w-5 items-center justify-center rounded text-zinc-500 hover:text-zinc-300 hover:bg-zinc-700/50 cursor-pointer"
+                  className="inline-flex h-5 w-5 items-center justify-center rounded-none text-[#9aa0a8] hover:text-white hover:bg-[#3f4147]/50 cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation()
                     addEvent(cat.id)
@@ -672,7 +672,7 @@ export function StudioEvents({
                 <span
                   role="button"
                   tabIndex={0}
-                  className="inline-flex h-5 w-5 items-center justify-center rounded text-zinc-500 hover:text-red-400 hover:bg-zinc-700/50 cursor-pointer"
+                  className="inline-flex h-5 w-5 items-center justify-center rounded-none text-[#9aa0a8] hover:text-red-400 hover:bg-[#3f4147]/50 cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation()
                     deleteCategory(cat.id)
@@ -683,7 +683,7 @@ export function StudioEvents({
               </CollapsibleTrigger>
               <CollapsibleContent>
                 {catEvents.length === 0 && (
-                  <p className="px-3 py-2 text-[11px] text-zinc-500">
+                  <p className="px-3 py-2 text-[11px] text-[#9aa0a8]">
                     No events in this category
                   </p>
                 )}
@@ -699,16 +699,16 @@ export function StudioEvents({
             open={expandedCategories.has('__uncategorised')}
             onOpenChange={() => toggleCategory('__uncategorised')}
           >
-            <CollapsibleTrigger className="flex w-full items-center gap-2 border-b border-zinc-800 bg-zinc-800/30 px-3 py-1.5 text-left text-xs hover:bg-zinc-800/50">
+            <CollapsibleTrigger className="flex w-full items-center gap-2 border-b border-[#2b2d31] bg-[#2b2d31]/30 px-3 py-1.5 text-left text-xs hover:bg-[#2b2d31]/50">
               {expandedCategories.has('__uncategorised') ? (
-                <ChevronDownIcon className="size-3 text-zinc-400" />
+                <ChevronDownIcon className="size-3 text-[#9aa0a8]" />
               ) : (
-                <ChevronRightIcon className="size-3 text-zinc-400" />
+                <ChevronRightIcon className="size-3 text-[#9aa0a8]" />
               )}
-              <span className="flex-1 font-medium text-zinc-400">
+              <span className="flex-1 font-medium text-[#9aa0a8]">
                 Uncategorised
               </span>
-              <span className="text-[10px] text-zinc-500">
+              <span className="text-[10px] text-[#9aa0a8]">
                 {uncategorisedEvents.length}
               </span>
             </CollapsibleTrigger>
@@ -719,7 +719,7 @@ export function StudioEvents({
         )}
 
         {events.length === 0 && eventCategories.length === 0 && (
-          <p className="p-4 text-center text-xs text-zinc-500">
+          <p className="p-4 text-center text-xs text-[#9aa0a8]">
             No events created yet. Add a category or event to get started.
           </p>
         )}

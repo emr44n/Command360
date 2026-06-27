@@ -15,9 +15,9 @@ interface Props {
 
 const OPTION_COLORS = [
   'border-primary hover:bg-primary/10 data-[selected=true]:bg-primary/20',
-  'border-blue-500 hover:bg-blue-500/10 data-[selected=true]:bg-blue-500/20',
-  'border-emerald-500 hover:bg-emerald-500/10 data-[selected=true]:bg-emerald-500/20',
-  'border-amber-500 hover:bg-amber-500/10 data-[selected=true]:bg-amber-500/20',
+  'border-[#3E6DC4] hover:bg-[#3E6DC4]/10 data-[selected=true]:bg-[#3E6DC4]/20',
+  'border-[#2E9E63] hover:bg-[#2E9E63]/10 data-[selected=true]:bg-[#2E9E63]/20',
+  'border-[#c98a2a] hover:bg-[#c98a2a]/10 data-[selected=true]:bg-[#c98a2a]/20',
 ]
 
 export function StudioInput({ slide, sessionId, onSubmit }: Props) {
@@ -225,10 +225,10 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
     const formatDuration = (s: number) => `${Math.floor(s / 60)}m ${s % 60}s`
     return (
       <div className="text-center py-12 space-y-4 animate-in fade-in zoom-in-95 duration-500">
-        <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center mx-auto">
+        <div className="w-14 h-14 bg-[#C9241A] rounded-none flex items-center justify-center mx-auto">
           <svg viewBox="0 0 24 24" className="w-7 h-7 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
         </div>
-        <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-medium">Command 360</p>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#9aa0a8] font-medium">Command 360</p>
         <h2 className="text-xl font-bold">Exercise Ended</h2>
         {exerciseStats && (
           <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
@@ -237,7 +237,7 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
           </div>
         )}
         <p className="text-sm text-muted-foreground">The presenter has ended this exercise session.</p>
-        <button onClick={() => { try { window.close() } catch { /* can't close */ } }} className="mt-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition-colors">Close Window</button>
+        <button onClick={() => { try { window.close() } catch { /* can't close */ } }} className="mt-2 px-4 py-2 rounded-none bg-[#C9241A] hover:bg-[#a81d15] text-white text-sm font-medium transition-colors">Close Window</button>
       </div>
     )
   }
@@ -248,8 +248,8 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
       return (
         <div className="text-center py-8 space-y-3 animate-in fade-in zoom-in-95 duration-300">
           <div className="flex justify-center">
-            <div className="w-14 h-14 rounded-full bg-emerald-500/10 flex items-center justify-center">
-              <CheckCircle2 className="w-7 h-7 text-emerald-500" />
+            <div className="w-14 h-14 rounded-full bg-[#2E9E63]/10 flex items-center justify-center">
+              <CheckCircle2 className="w-7 h-7 text-[#2E9E63]" />
             </div>
           </div>
           <h3 className="text-base font-semibold">Vote submitted!</h3>
@@ -270,7 +270,7 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
               data-selected={selectedOptionId === opt.id}
               onClick={() => setSelectedOptionId(opt.id)}
               className={cn(
-                'w-full text-left px-5 py-4 rounded-2xl border-2 transition-all duration-200 font-medium',
+                'w-full text-left px-5 py-4 rounded-none border-2 transition-all duration-200 font-medium',
                 selectedOptionId === opt.id
                   ? 'border-primary bg-primary/15 scale-[1.02] shadow-md shadow-primary/10'
                   : 'bg-card border-border hover:border-primary/50',
@@ -287,7 +287,7 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
         <Button
           onClick={handleVoteSubmit}
           disabled={!selectedOptionId || submittingVote}
-          className="w-full bg-red-600 hover:bg-red-500 text-white font-semibold py-6 rounded-xl text-lg transition-all hover:shadow-lg hover:shadow-red-500/25"
+          className="w-full bg-[#C9241A] hover:bg-[#a81d15] text-white font-semibold py-6 rounded-none text-lg transition-all hover:shadow-lg hover:shadow-[#C9241A]/25"
         >
           {submittingVote ? 'Submitting...' : 'Submit vote'}
         </Button>
@@ -314,9 +314,9 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
     <div className="flex flex-col items-center gap-2 animate-in fade-in duration-300 w-full max-w-5xl mx-auto relative">
       {/* Red gradient glow background */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_30%,rgba(220,38,38,0.12),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_30%,rgba(201,36,26,0.12),transparent)]" />
         <div className="absolute inset-0 opacity-[0.04]" style={{
-          backgroundImage: 'linear-gradient(rgba(220,38,38,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(220,38,38,0.3) 1px, transparent 1px)',
+          backgroundImage: 'linear-gradient(rgba(201,36,26,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(201,36,26,0.3) 1px, transparent 1px)',
           backgroundSize: '48px 48px',
         }} />
       </div>
@@ -335,7 +335,7 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
       {/* Large scene canvas */}
       <div
         ref={canvasRef}
-        className="w-full relative overflow-hidden rounded-xl z-10"
+        className="w-full relative overflow-hidden rounded-none z-10"
         style={{
           aspectRatio: '16 / 9',
           backgroundColor: canvas.backgroundColor,
@@ -350,7 +350,7 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={toggleCanvasFullscreen}
-          className="absolute bottom-2 right-2 z-10 w-8 h-8 rounded-lg bg-black/50 hover:bg-black/70 text-white/50 hover:text-white flex items-center justify-center transition-all backdrop-blur-sm"
+          className="absolute bottom-2 right-2 z-10 w-8 h-8 rounded-none bg-black/50 hover:bg-black/70 text-white/50 hover:text-white flex items-center justify-center transition-all backdrop-blur-sm"
         >
           <Maximize2 className="w-4 h-4" />
         </button>
@@ -359,7 +359,7 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
         {isCanvasFullscreen && (
           <Tooltip><TooltipTrigger asChild>
           <button onClick={toggleCanvasFullscreen}
-            className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors">
+            className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-[#C9241A] hover:bg-[#a81d15] text-white flex items-center justify-center shadow-lg transition-colors">
             <X className="w-4 h-4" />
           </button>
           </TooltipTrigger><TooltipContent>Exit fullscreen</TooltipContent></Tooltip>
@@ -369,10 +369,10 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
       {/* Status indicator */}
       <div className="flex flex-col items-center gap-1.5 z-10">
         <div className="flex items-center justify-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="w-1.5 h-1.5 rounded-full bg-[#2E9E63] animate-pulse" />
           <p className="text-center text-muted-foreground text-xs">Scene in progress</p>
         </div>
-        <div className="px-2.5 py-1 rounded-md bg-zinc-900/80 border border-zinc-800 text-[11px] font-mono text-zinc-400 tabular-nums">
+        <div className="px-2.5 py-1 rounded-none bg-[#16191E] border border-white/14 text-[11px] font-mono text-[#9aa0a8] tabular-nums">
           Session: {formatTimer(sessionSeconds)}
         </div>
       </div>

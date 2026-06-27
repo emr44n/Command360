@@ -56,18 +56,18 @@ export function QuizInput({ slide, onSubmit, disabled }: QuizInputProps) {
       {!disabled && (
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <div className={cn('flex items-center gap-1.5', isUrgent ? 'text-red-500' : 'text-muted-foreground')}>
+            <div className={cn('flex items-center gap-1.5', isUrgent ? 'text-[#C9241A]' : 'text-muted-foreground')}>
               <Timer className="w-4 h-4" />
               <span className={cn('font-mono font-bold text-lg', isUrgent && 'animate-pulse')}>{timeLeft}s</span>
             </div>
             <span className="text-muted-foreground text-xs">{content.points || 1000} pts</span>
           </div>
-          <Progress value={pct} className={cn('h-2', isUrgent ? '[&>div]:bg-red-500' : '[&>div]:bg-primary')} />
+          <Progress value={pct} className={cn('h-2', isUrgent ? '[&>div]:bg-[#C9241A]' : '[&>div]:bg-primary')} />
         </div>
       )}
 
       {timedOut && !selected && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-center text-red-600 dark:text-red-400">
+        <div className="bg-[#C9241A]/10 border border-[#C9241A]/30 rounded-none p-4 text-center text-[#C9241A]">
           Time&apos;s up! You didn&apos;t answer in time.
         </div>
       )}
@@ -77,9 +77,9 @@ export function QuizInput({ slide, onSubmit, disabled }: QuizInputProps) {
           const letters = ['A', 'B', 'C', 'D', 'E', 'F']
           const colors = [
             'border-primary data-[selected=true]:bg-primary/20',
-            'border-blue-500 data-[selected=true]:bg-blue-500/20',
-            'border-emerald-500 data-[selected=true]:bg-emerald-500/20',
-            'border-amber-500 data-[selected=true]:bg-amber-500/20',
+            'border-[#3E6DC4] data-[selected=true]:bg-[#3E6DC4]/20',
+            'border-[#2E9E63] data-[selected=true]:bg-[#2E9E63]/20',
+            'border-[#c98a2a] data-[selected=true]:bg-[#c98a2a]/20',
           ]
           return (
             <button
@@ -88,7 +88,7 @@ export function QuizInput({ slide, onSubmit, disabled }: QuizInputProps) {
               onClick={() => handleSelect(opt.id)}
               disabled={!!selected || timedOut || disabled}
               className={cn(
-                'w-full text-left px-5 py-4 rounded-2xl border-2 transition-all duration-200',
+                'w-full text-left px-5 py-4 rounded-none border-2 transition-all duration-200',
                 'disabled:cursor-not-allowed',
                 selected === opt.id
                   ? 'border-primary bg-primary/15 scale-[1.02] shadow-md shadow-primary/10'
@@ -98,7 +98,7 @@ export function QuizInput({ slide, onSubmit, disabled }: QuizInputProps) {
               )}
             >
               <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground shrink-0">
+                <span className="w-8 h-8 rounded-none bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground shrink-0">
                   {letters[i] || String(i + 1)}
                 </span>
                 <span className="font-medium">{opt.text}</span>

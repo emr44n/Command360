@@ -148,36 +148,36 @@ export function ExportDialog({ isOpen, onClose, presentationId, presentationTitl
 
   return (
     <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-[#1e1f22] border border-[#3f4147] rounded-xl p-5 max-w-sm w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+      <div className="bg-[#1e1f22] border border-[#3f4147] rounded-none p-5 max-w-sm w-full shadow-2xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-white flex items-center gap-2">
             <Download className="w-4 h-4 text-red-400" />
             Export Scene
           </h3>
-          <button onClick={onClose} className="p-1 rounded-md text-zinc-500 hover:text-white hover:bg-white/10 transition-colors">
+          <button onClick={onClose} className="p-1 rounded-none text-[#9aa0a8] hover:text-white hover:bg-white/10 transition-colors">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
         <div className="space-y-2">
           <button onClick={handleExportPPTX} disabled={!!exporting}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#2b2d31] hover:bg-[#35363c] transition-colors text-left disabled:opacity-50">
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-none bg-[#2b2d31] hover:bg-[#35363c] transition-colors text-left disabled:opacity-50">
             <Presentation className="w-5 h-5 text-orange-400" />
             <div className="flex-1">
-              <p className="text-[11px] font-medium text-zinc-200">PowerPoint (.pptx)</p>
-              <p className="text-[9px] text-zinc-500">Editable slides with layers</p>
+              <p className="text-[11px] font-medium text-white">PowerPoint (.pptx)</p>
+              <p className="text-[9px] text-[#9aa0a8]">Editable slides with layers</p>
             </div>
-            {exporting === 'pptx' && <Loader2 className="w-4 h-4 text-zinc-400 animate-spin" />}
+            {exporting === 'pptx' && <Loader2 className="w-4 h-4 text-[#9aa0a8] animate-spin" />}
           </button>
 
           <button onClick={handleExportPDF} disabled={!!exporting}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#2b2d31] hover:bg-[#35363c] transition-colors text-left disabled:opacity-50">
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-none bg-[#2b2d31] hover:bg-[#35363c] transition-colors text-left disabled:opacity-50">
             <FileText className="w-5 h-5 text-red-400" />
             <div className="flex-1">
-              <p className="text-[11px] font-medium text-zinc-200">PDF (Print Preview)</p>
-              <p className="text-[9px] text-zinc-500">Opens print dialog for PDF</p>
+              <p className="text-[11px] font-medium text-white">PDF (Print Preview)</p>
+              <p className="text-[9px] text-[#9aa0a8]">Opens print dialog for PDF</p>
             </div>
-            {exporting === 'pdf' && <Loader2 className="w-4 h-4 text-zinc-400 animate-spin" />}
+            {exporting === 'pdf' && <Loader2 className="w-4 h-4 text-[#9aa0a8] animate-spin" />}
           </button>
 
           <button onClick={handleExportC360} disabled={!!exporting}

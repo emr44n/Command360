@@ -353,7 +353,7 @@ export function StudioTimeline({
 
           {/* Empty state */}
           {tracks.length === 0 && (
-            <div className="flex items-center justify-center h-[120px] text-zinc-600 text-xs">
+            <div className="flex items-center justify-center h-[120px] text-[#9aa0a8] text-xs">
               No tracks. Add layers to create timeline tracks.
             </div>
           )}

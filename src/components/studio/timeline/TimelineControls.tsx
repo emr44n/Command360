@@ -47,7 +47,7 @@ export function TimelineControls({
           <Tooltip><TooltipTrigger asChild>
           <button
             onClick={onPause}
-            className="flex items-center justify-center w-6 h-6 rounded-md bg-[#1e1f22] hover:bg-zinc-700 text-white transition-colors cursor-pointer"
+            className="flex items-center justify-center w-6 h-6 rounded-none bg-[#1e1f22] hover:bg-[#3f4147] text-white transition-colors cursor-pointer"
           >
             <Pause className="w-3.5 h-3.5" />
           </button>

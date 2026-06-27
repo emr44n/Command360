@@ -582,7 +582,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <div className="w-5 h-5 bg-primary rounded flex items-center justify-center">
+            <div className="w-5 h-5 bg-primary rounded-none flex items-center justify-center">
               <svg viewBox="0 0 24 24" className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
             </div>
           </button>
@@ -593,7 +593,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             <button
               onClick={() => setStudioFileMenu(v => !v)}
               className={cn(
-                'h-7 px-2 rounded-md text-xs font-medium flex items-center gap-1 transition-all',
+                'h-7 px-2 rounded-none text-xs font-medium flex items-center gap-1 transition-all',
                 studioFileMenu
                   ? 'bg-zinc-800 text-white'
                   : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
@@ -603,7 +603,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
               <ChevronDown className="w-3 h-3" />
             </button>
             {studioFileMenu && (
-              <div className="absolute top-full left-0 mt-1 w-56 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl z-50 py-1 animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="absolute top-full left-0 mt-1 w-56 bg-zinc-900 border border-zinc-700 rounded-none shadow-xl z-50 py-1 animate-in fade-in slide-in-from-top-1 duration-150">
                 <StudioFileMenuItem icon={Save} label="Save" shortcut="Ctrl+S" onClick={() => { flushSaves(); toast.success('Saved', { duration: 2000 }); setStudioFileMenu(false) }} />
                 <StudioFileMenuItem icon={FilePlus} label="New scene" onClick={() => { setStudioFileMenu(false); router.push('/dashboard') }} />
                 <div className="h-px bg-zinc-700 mx-2 my-1" />
@@ -628,13 +628,13 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           </div>
 
           <span className="text-[10px] uppercase tracking-[0.15em] text-zinc-500 font-medium">Command Studio</span>
-          <span className="text-[9px] uppercase tracking-wider font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">Build Mode</span>
+          <span className="text-[9px] uppercase tracking-wider font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-none">Build Mode</span>
           <div className="relative group/title flex items-center">
             <input
               type="text"
               value={presentationTitle}
               onChange={(e) => handleTitleChange(e.target.value)}
-              className="bg-transparent border border-transparent hover:border-zinc-700 focus:border-zinc-600 text-sm text-white font-medium focus:outline-none rounded px-2 py-0.5 w-auto max-w-[300px] truncate transition-colors"
+              className="bg-transparent border border-transparent hover:border-zinc-700 focus:border-zinc-600 text-sm text-white font-medium focus:outline-none rounded-none px-2 py-0.5 w-auto max-w-[300px] truncate transition-colors"
               placeholder="Untitled Scene"
             />
             <svg className="w-3 h-3 text-zinc-600 group-hover/title:text-zinc-400 transition-colors -ml-5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
@@ -678,7 +678,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             onClick={() => setShowActiveEntry(true)}
             disabled={starting}
             size="sm"
-            className="bg-red-600 hover:bg-red-500 text-white gap-1 rounded-full px-4 h-7 text-xs font-semibold"
+            className="bg-red-600 hover:bg-red-500 text-white gap-1 rounded-none px-4 h-7 text-xs font-semibold"
           >
             <Play className="w-3 h-3" />
             {starting ? 'Starting...' : 'Run Scene'}
@@ -798,19 +798,19 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
         {/* Custom delete confirmation modal */}
         {deleteTargetId && (
           <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setDeleteTargetId(null)}>
-            <div className="bg-[#1e1f22] border border-[#3f4147] rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="bg-[#1e1f22] border border-[#3f4147] rounded-none p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
               <h3 className="text-sm font-semibold text-white mb-2">Delete this scene?</h3>
               <p className="text-[11px] text-zinc-400 mb-4">This action cannot be undone. The scene and all its layers will be permanently removed.</p>
               <div className="flex gap-2 justify-end">
                 <button
                   onClick={() => setDeleteTargetId(null)}
-                  className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors"
+                  className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmDeleteSlide}
-                  className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors"
+                  className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-red-600 text-white hover:bg-red-500 transition-colors"
                 >
                   Delete
                 </button>
@@ -846,7 +846,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       <div className="h-14 bg-background/80 backdrop-blur-xl border-b border-border flex items-center gap-2 px-4 shrink-0 relative z-[60]">
         {/* Left: back + File menu + title */}
         <Button variant="ghost" size="icon" onClick={() => router.push('/dashboard')}
-          className="text-muted-foreground hover:text-foreground h-8 w-8 shrink-0 rounded-xl">
+          className="text-muted-foreground hover:text-foreground h-8 w-8 shrink-0 rounded-none">
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <div className="w-px h-5 bg-border mx-1" />
@@ -856,7 +856,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           <button
             onClick={() => setShowFileMenu(v => !v)}
             className={cn(
-              'h-8 px-2.5 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all',
+              'h-8 px-2.5 rounded-none text-xs font-medium flex items-center gap-1.5 transition-all',
               showFileMenu
                 ? 'bg-muted text-foreground'
                 : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -866,7 +866,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             <ChevronDown className="w-3 h-3" />
           </button>
           {showFileMenu && (
-            <div className="absolute top-full left-0 mt-1 w-64 bg-card border border-border rounded-xl shadow-xl z-50 py-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
+            <div className="absolute top-full left-0 mt-1 w-64 bg-card border border-border rounded-none shadow-xl z-50 py-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
               <FileMenuItem icon={Save} label="Save" shortcut="Ctrl+S" onClick={() => { flushSaves(); toast.success('Saved', { duration: 2000 }); setShowFileMenu(false) }} />
               <FileMenuItem icon={FilePlus} label="New session" onClick={() => { setShowFileMenu(false); router.push('/dashboard') }} />
               <div className="h-px bg-border mx-2 my-1" />
@@ -897,7 +897,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
         <Input
           value={presentationTitle}
           onChange={(e) => handleTitleChange(e.target.value)}
-          className="bg-transparent border-transparent hover:border-border focus:border-border text-foreground font-semibold max-w-[220px] h-8 text-sm rounded-xl"
+          className="bg-transparent border-transparent hover:border-border focus:border-border text-foreground font-semibold max-w-[220px] h-8 text-sm rounded-none"
         />
 
         {/* Save status */}
@@ -922,49 +922,49 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
         <div className="flex-1" />
 
         {/* Center: toolbar */}
-        <div className="flex items-center gap-0.5 bg-muted/60 rounded-xl px-1.5 py-1">
+        <div className="flex items-center gap-0.5 bg-muted/60 rounded-none px-1.5 py-1">
           <Tooltip><TooltipTrigger asChild>
           <button onClick={handleUndo} disabled={undoStack.length === 0}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all">
+            className="p-1.5 rounded-none text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all">
             <Undo2 className="w-4 h-4" />
           </button>
           </TooltipTrigger><TooltipContent>Undo (Ctrl+Z)</TooltipContent></Tooltip>
           <Tooltip><TooltipTrigger asChild>
           <button onClick={handleRedo} disabled={redoStack.length === 0}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all">
+            className="p-1.5 rounded-none text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all">
             <Redo2 className="w-4 h-4" />
           </button>
           </TooltipTrigger><TooltipContent>Redo (Ctrl+Shift+Z)</TooltipContent></Tooltip>
           <div className="w-px h-4 bg-border mx-1" />
           <Tooltip><TooltipTrigger asChild>
           <button onClick={handleDuplicateSlide} disabled={!selectedSlide}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all">
+            className="p-1.5 rounded-none text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all">
             <Copy className="w-4 h-4" />
           </button>
           </TooltipTrigger><TooltipContent>Duplicate slide</TooltipContent></Tooltip>
           <div className="w-px h-4 bg-border mx-1" />
           <Tooltip><TooltipTrigger asChild>
           <button onClick={handleAddTextElement} disabled={!selectedSlide}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all">
+            className="p-1.5 rounded-none text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all">
             <Type className="w-4 h-4" />
           </button>
           </TooltipTrigger><TooltipContent>Add text</TooltipContent></Tooltip>
           <Tooltip><TooltipTrigger asChild>
           <button onClick={handleAddImageElement} disabled={!selectedSlide}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all">
+            className="p-1.5 rounded-none text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-30 disabled:pointer-events-none transition-all">
             <ImageIcon className="w-4 h-4" />
           </button>
           </TooltipTrigger><TooltipContent>Add image</TooltipContent></Tooltip>
           <div className="w-px h-4 bg-border mx-1" />
           <Tooltip><TooltipTrigger asChild>
           <button onClick={() => setNotesOpen(v => !v)}
-            className={cn('p-1.5 rounded-lg transition-all', notesOpen ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-background')}>
+            className={cn('p-1.5 rounded-none transition-all', notesOpen ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-background')}>
             <StickyNote className="w-4 h-4" />
           </button>
           </TooltipTrigger><TooltipContent>Speaker notes</TooltipContent></Tooltip>
           <Tooltip><TooltipTrigger asChild>
           <button onClick={() => setShowQR(v => !v)}
-            className={cn('p-1.5 rounded-lg transition-all', showQR ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-background')}>
+            className={cn('p-1.5 rounded-none transition-all', showQR ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-background')}>
             <QrCode className="w-4 h-4" />
           </button>
           </TooltipTrigger><TooltipContent>QR code / join info</TooltipContent></Tooltip>
@@ -975,7 +975,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
         {/* Right: actions */}
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm"
-            className="gap-1.5 text-muted-foreground hover:text-foreground h-8 text-xs rounded-xl"
+            className="gap-1.5 text-muted-foreground hover:text-foreground h-8 text-xs rounded-none"
             onClick={() => {
               window.open(`/api/presentations/${presentation.id}/export-c360`, '_blank')
             }}>
@@ -983,19 +983,19 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             Export
           </Button>
           <Button variant="outline" size="sm"
-            className="gap-1.5 text-muted-foreground hover:text-foreground h-8 text-xs rounded-xl"
+            className="gap-1.5 text-muted-foreground hover:text-foreground h-8 text-xs rounded-none"
             onClick={() => importInputRef.current?.click()}>
             <Upload className="w-3.5 h-3.5" />
             Import
           </Button>
           <Button variant="outline" size="sm"
-            className="gap-1.5 text-muted-foreground hover:text-foreground h-8 text-xs rounded-xl"
+            className="gap-1.5 text-muted-foreground hover:text-foreground h-8 text-xs rounded-none"
             onClick={() => window.open(`/presentations/${presentation.id}/preview?slide=${selectedIndex}`, '_blank')}>
             <Maximize2 className="w-3.5 h-3.5" />
             Preview
           </Button>
           <Button variant="outline" size="sm"
-            className="gap-1.5 text-muted-foreground hover:text-foreground h-8 text-xs rounded-xl"
+            className="gap-1.5 text-muted-foreground hover:text-foreground h-8 text-xs rounded-none"
             onClick={() => router.push(`/presentations/${presentation.id}/results`)}>
             <BarChart2 className="w-3.5 h-3.5" />
             Results
@@ -1003,7 +1003,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           <Button
             onClick={handleStart}
             disabled={slides.length === 0 || starting}
-            className="bg-red-600 hover:bg-red-500 text-white gap-1.5 rounded-full px-5 h-8 text-xs font-semibold transition-all hover:shadow-lg hover:shadow-red-500/25"
+            className="bg-red-600 hover:bg-red-500 text-white gap-1.5 rounded-none px-5 h-8 text-xs font-semibold transition-all hover:shadow-lg hover:shadow-red-500/25"
             size="sm">
             <Play className="w-3.5 h-3.5" />
             {starting ? 'Starting...' : 'Start Session'}
@@ -1021,7 +1021,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                 <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Slides</span>
                 <Tooltip><TooltipTrigger asChild>
                 <button onClick={() => setSlideListOpen(false)}
-                  className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                  className="p-1 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
                   <ChevronLeft className="w-3.5 h-3.5" />
                 </button>
                 </TooltipTrigger><TooltipContent>Collapse slides</TooltipContent></Tooltip>
@@ -1029,7 +1029,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
               <div className="flex-1 overflow-y-auto p-2.5 slide-list-scroll">
                 {slides.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full py-16 text-center px-4">
-                    <div className="w-14 h-14 rounded-2xl bg-muted/60 flex items-center justify-center mb-4">
+                    <div className="w-14 h-14 rounded-none bg-muted/60 flex items-center justify-center mb-4">
                       <Plus className="w-6 h-6 text-muted-foreground/50" />
                     </div>
                     <p className="text-muted-foreground text-sm font-medium mb-1">No slides yet</p>
@@ -1047,7 +1047,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                 )}
               </div>
               <div className="p-2.5 border-t border-border">
-                <Button onClick={() => setShowTypeSelector(true)} variant="outline" className="w-full gap-1.5 h-9 text-xs rounded-xl" size="sm">
+                <Button onClick={() => setShowTypeSelector(true)} variant="outline" className="w-full gap-1.5 h-9 text-xs rounded-none" size="sm">
                   <Plus className="w-3.5 h-3.5" />
                   Add slide
                 </Button>
@@ -1076,7 +1076,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
               }}
             >
               <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-center">
-                <div className="w-0.5 h-8 rounded-full bg-border group-hover:bg-primary/40 transition-colors" />
+                <div className="w-0.5 h-8 rounded-none bg-border group-hover:bg-primary/40 transition-colors" />
               </div>
             </div>
           </>
@@ -1112,17 +1112,17 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                 <div className="bg-card border-b border-border px-4 py-2.5 flex items-center gap-3 shrink-0">
                   <QrCode className="w-5 h-5 text-primary shrink-0" />
                   <div className="flex-1 flex items-center gap-3 flex-wrap">
-                    <div className="bg-muted rounded-lg px-3 py-1.5">
+                    <div className="bg-muted rounded-none px-3 py-1.5">
                       <span className="text-xs text-muted-foreground mr-1.5">Join at:</span>
                       <span className="text-sm font-bold font-mono text-foreground tracking-wider">command360.co.uk/join</span>
                     </div>
-                    <div className="bg-muted rounded-lg px-3 py-1.5">
+                    <div className="bg-muted rounded-none px-3 py-1.5">
                       <span className="text-xs text-muted-foreground mr-1.5">Room code:</span>
                       <span className="text-sm font-bold font-mono text-primary tracking-widest">------</span>
                     </div>
                     <span className="text-[11px] text-muted-foreground/60 italic">Room code generated when you start presenting</span>
                   </div>
-                  <button onClick={() => setShowQR(false)} className="p-1 rounded text-muted-foreground hover:text-foreground">
+                  <button onClick={() => setShowQR(false)} className="p-1 rounded-none text-muted-foreground hover:text-foreground">
                     <ChevronUp className="w-4 h-4" />
                   </button>
                 </div>
@@ -1158,7 +1158,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                       <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Speaker Notes</span>
                       <span className="text-[10px] text-muted-foreground/50 ml-1">(only visible to you)</span>
                     </div>
-                    <button onClick={() => setNotesOpen(false)} className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                    <button onClick={() => setNotesOpen(false)} className="p-1.5 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
                       <ChevronDown className="w-4 h-4" />
                     </button>
                   </div>
@@ -1167,7 +1167,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                       value={selectedSlide.speaker_notes || ''}
                       onChange={(e) => handleSlideChange({ speaker_notes: e.target.value })}
                       placeholder="Add speaker notes here... These will be visible to you during presentation mode when you press N."
-                      className="w-full h-full bg-muted/30 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none p-3 border border-border/50 focus:border-border transition-colors"
+                      className="w-full h-full bg-muted/30 rounded-none text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none p-3 border border-border/50 focus:border-border transition-colors"
                     />
                   </div>
                 </div>
@@ -1193,7 +1193,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                         Back to slide
                       </button>
                     )}
-                    <button onClick={() => setSettingsOpen(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-muted">
+                    <button onClick={() => setSettingsOpen(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-none hover:bg-muted">
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>

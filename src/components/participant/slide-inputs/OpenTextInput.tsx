@@ -37,10 +37,10 @@ export function OpenTextInput({ slide, onSubmit, disabled }: Props) {
           placeholder={content.placeholder || 'Type your response here...'}
           disabled={disabled || submitting}
           rows={5}
-          className="bg-background border-border text-foreground placeholder:text-muted-foreground text-base rounded-xl resize-none focus-visible:ring-primary p-4"
+          className="bg-background border-border text-foreground placeholder:text-muted-foreground text-base rounded-none resize-none focus-visible:ring-primary p-4"
           autoFocus
         />
-        <span className={`absolute bottom-3 right-3 text-xs ${isNearLimit ? 'text-red-500 font-medium' : 'text-muted-foreground/50'}`}>
+        <span className={`absolute bottom-3 right-3 text-xs ${isNearLimit ? 'text-[#C9241A] font-medium' : 'text-muted-foreground/50'}`}>
           {charCount}/{maxLength}
         </span>
       </div>
@@ -48,7 +48,7 @@ export function OpenTextInput({ slide, onSubmit, disabled }: Props) {
       <Button
         type="submit"
         disabled={!text.trim() || submitting || disabled}
-        className="w-full bg-red-600 hover:bg-red-500 text-white font-semibold py-6 rounded-xl text-lg transition-all hover:shadow-lg hover:shadow-red-500/25"
+        className="w-full bg-[#C9241A] hover:bg-[#a81d15] text-white font-semibold py-6 rounded-none text-lg transition-all hover:shadow-lg hover:shadow-[#C9241A]/25"
       >
         {submitting ? 'Submitting...' : 'Submit'}
       </Button>

@@ -113,7 +113,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
           <p className="text-muted-foreground">No slides to preview</p>
           <button
             onClick={() => router.push(`/presentations/${presentation.id}/edit`)}
-            className="mt-4 px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+            className="mt-4 px-5 py-2 rounded-none bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
           >
             Back to editor
           </button>
@@ -155,13 +155,13 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
         </div>
         {/* Center logo */}
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5">
-          <div className="w-5 h-5 rounded-md bg-primary flex items-center justify-center">
+          <div className="w-5 h-5 rounded-none bg-primary flex items-center justify-center">
             <svg viewBox="0 0 24 24" className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
           </div>
           <span className="text-xs font-semibold text-muted-foreground tracking-tight">Command 360</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="px-2.5 py-1 rounded-md bg-muted text-xs text-muted-foreground font-semibold">
+          <div className="px-2.5 py-1 rounded-none bg-muted text-xs text-muted-foreground font-semibold">
             {current + 1} / {slides.length}
           </div>
           <TBtn icon={Grid3X3} title="Grid overview (G)" onClick={() => setShowGrid(true)} />
@@ -416,7 +416,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                 Speaker Notes
               </h3>
               <button onClick={() => setShowNotes(false)}
-                className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                className="p-1 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -430,7 +430,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                 <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/60 mb-2">
                   Next slide
                 </p>
-                <div className="bg-muted rounded-lg px-3 py-2 text-xs text-muted-foreground">
+                <div className="bg-muted rounded-none px-3 py-2 text-xs text-muted-foreground">
                   <p className="font-semibold">{slides[current + 1].title || 'Untitled'}</p>
                 </div>
               </div>
@@ -443,7 +443,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
       {/* Bottom bar */}
       <div className="h-11 flex items-center justify-center gap-3 bg-card/80 backdrop-blur shrink-0 border-t border-border">
         <button onClick={goPrev} disabled={current === 0}
-          className={cn('p-1.5 rounded-lg transition-colors', current === 0 ? 'text-muted-foreground/20 cursor-default' : 'text-foreground hover:bg-muted cursor-pointer')}>
+          className={cn('p-1.5 rounded-none transition-colors', current === 0 ? 'text-muted-foreground/20 cursor-default' : 'text-foreground hover:bg-muted cursor-pointer')}>
           <ArrowLeft className="w-4 h-4" />
         </button>
         <div className="flex items-center gap-1">
@@ -459,7 +459,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
           ))}
         </div>
         <button onClick={goNext} disabled={current === slides.length - 1}
-          className={cn('p-1.5 rounded-lg transition-colors', current === slides.length - 1 ? 'text-muted-foreground/20 cursor-default' : 'text-foreground hover:bg-muted cursor-pointer')}>
+          className={cn('p-1.5 rounded-none transition-colors', current === slides.length - 1 ? 'text-muted-foreground/20 cursor-default' : 'text-foreground hover:bg-muted cursor-pointer')}>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
@@ -471,7 +471,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
           <div className="h-12 flex items-center justify-between px-5 shrink-0">
             <h3 className="text-sm font-semibold text-muted-foreground">All Slides</h3>
             <button onClick={() => setShowGrid(false)}
-              className="p-1.5 rounded-lg bg-muted text-foreground hover:bg-muted/80 transition-colors">
+              className="p-1.5 rounded-none bg-muted text-foreground hover:bg-muted/80 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -509,12 +509,12 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
       {showShortcuts && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4"
           onClick={() => setShowShortcuts(false)}>
-          <div className="bg-[#1e1f22] rounded-xl p-5 max-w-sm w-full border border-[#3f4147] shadow-2xl"
+          <div className="bg-[#1e1f22] rounded-none p-5 max-w-sm w-full border border-[#3f4147] shadow-2xl"
             onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-semibold text-white">Keyboard Shortcuts</h3>
               <button onClick={() => setShowShortcuts(false)}
-                className="p-1 rounded-md text-zinc-500 hover:text-white hover:bg-white/10 transition-colors">
+                className="p-1 rounded-none text-zinc-500 hover:text-white hover:bg-white/10 transition-colors">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -527,7 +527,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
               ].map(([key, desc]) => (
                 <div key={key} className="flex items-center justify-between py-0.5">
                   <span className="text-[11px] text-zinc-400">{desc}</span>
-                  <kbd className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-[#2b2d31] text-zinc-300 border border-[#3f4147]">{key}</kbd>
+                  <kbd className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-none bg-[#2b2d31] text-zinc-300 border border-[#3f4147]">{key}</kbd>
                 </div>
               ))}
             </div>
@@ -544,7 +544,7 @@ function TBtn({ icon: Icon, title, onClick, active }: { icon: React.ElementType;
     <Tooltip><TooltipTrigger asChild>
     <button onClick={onClick}
       className={cn(
-        'p-[5px] rounded-md transition-all',
+        'p-[5px] rounded-none transition-all',
         active
           ? 'bg-primary/20 text-primary'
           : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'
@@ -969,7 +969,7 @@ function StudioPreviewContent({ slide, animClass, allSlides = [] }: { slide: Sli
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={toggleCanvasFullscreen}
-          className="absolute top-3 right-3 z-20 w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white/60 hover:text-white flex items-center justify-center transition-all"
+          className="absolute top-3 right-3 z-20 w-8 h-8 rounded-none bg-white/10 hover:bg-white/20 text-white/60 hover:text-white flex items-center justify-center transition-all"
         >
           <Maximize className="w-4 h-4" />
         </button>
@@ -978,13 +978,13 @@ function StudioPreviewContent({ slide, animClass, allSlides = [] }: { slide: Sli
         {isCanvasFullscreen && (
           <Tooltip><TooltipTrigger asChild>
           <button onClick={toggleCanvasFullscreen}
-            className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors">
+            className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-none bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors">
             <X className="w-4 h-4" />
           </button>
           </TooltipTrigger><TooltipContent>Exit fullscreen</TooltipContent></Tooltip>
         )}
         <div ref={canvasRef} className="w-full max-w-5xl" style={{ maxWidth: 'min(64rem, calc((100vh - 10rem) * 16 / 9))' }}>
-          <div className="w-full overflow-hidden rounded-xl shadow-2xl" style={{ aspectRatio: '16 / 9', display: 'grid', gap: '2px', background: '#000', ...gridStyle }}>
+          <div className="w-full overflow-hidden rounded-none shadow-2xl" style={{ aspectRatio: '16 / 9', display: 'grid', gap: '2px', background: '#000', ...gridStyle }}>
             {Array.from({ length: count }, (_, i) => {
               const slideId = cctvSlots[i]
               const scene = slideId ? allSlides.find(s => s.id === slideId) : null
@@ -993,7 +993,7 @@ function StudioPreviewContent({ slide, animClass, allSlides = [] }: { slide: Sli
               const canvasBg = sc?.canvas?.backgroundColor || '#111'
               return (
                 <div key={i} className="relative overflow-hidden" style={{ backgroundColor: canvasBg, gridRow: cctvLayout === '3' && i === 0 ? 'span 2' : undefined }}>
-                  <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded bg-black/60 text-[8px] text-white/70 font-medium">
+                  <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-none bg-black/60 text-[8px] text-white/70 font-medium">
                     {scene ? (scene.title || `Scene ${allSlides.indexOf(scene) + 1}`) : `View ${i + 1}`}
                   </div>
                   {scene && sceneLayers.length > 0 ? sceneLayers.map(layer => {
@@ -1027,7 +1027,7 @@ function StudioPreviewContent({ slide, animClass, allSlides = [] }: { slide: Sli
           <Tooltip><TooltipTrigger asChild>
           <button
             onClick={toggleCanvasFullscreen}
-            className="absolute top-2 right-2 z-20 w-7 h-7 rounded-lg bg-black/40 hover:bg-black/60 text-white/50 hover:text-white flex items-center justify-center transition-all"
+            className="absolute top-2 right-2 z-20 w-7 h-7 rounded-none bg-black/40 hover:bg-black/60 text-white/50 hover:text-white flex items-center justify-center transition-all"
           >
             <Maximize className="w-3.5 h-3.5" />
           </button>
@@ -1036,14 +1036,14 @@ function StudioPreviewContent({ slide, animClass, allSlides = [] }: { slide: Sli
           {isCanvasFullscreen && (
             <Tooltip><TooltipTrigger asChild>
             <button onClick={toggleCanvasFullscreen}
-              className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors">
+              className="fixed top-4 right-4 z-[9999] w-8 h-8 rounded-none bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-colors">
               <X className="w-4 h-4" />
             </button>
             </TooltipTrigger><TooltipContent>Exit fullscreen</TooltipContent></Tooltip>
           )}
           <div
             ref={canvasRef}
-            className="w-full relative overflow-hidden rounded-xl shadow-2xl"
+            className="w-full relative overflow-hidden rounded-none shadow-2xl"
             style={{ aspectRatio: '16 / 9', backgroundColor: canvas.backgroundColor }}
           >
             {layers.map((layer) => {
@@ -1066,7 +1066,7 @@ function StudioPreviewContent({ slide, animClass, allSlides = [] }: { slide: Sli
               key={evt.id}
               onClick={() => handleTrigger(evt)}
               className={cn(
-                'w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-medium transition-all text-left',
+                'w-full flex items-center gap-2 px-2.5 py-2 rounded-none text-xs font-medium transition-all text-left',
                 triggeredEvents.has(evt.id)
                   ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/30'
                   : 'bg-muted hover:bg-muted/80 text-foreground border border-border hover:border-primary/30'
@@ -1090,7 +1090,7 @@ function StudioPreviewContent({ slide, animClass, allSlides = [] }: { slide: Sli
                     key={evt.id}
                     onClick={() => handleTrigger(evt)}
                     className={cn(
-                      'w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-medium transition-all text-left mb-1',
+                      'w-full flex items-center gap-2 px-2.5 py-2 rounded-none text-xs font-medium transition-all text-left mb-1',
                       triggeredEvents.has(evt.id)
                         ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/30'
                         : 'bg-muted hover:bg-muted/80 text-foreground border border-border hover:border-primary/30'

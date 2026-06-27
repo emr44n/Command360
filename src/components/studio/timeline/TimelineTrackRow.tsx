@@ -94,7 +94,7 @@ export function TimelineTrackRow({
       <div className="flex-shrink-0 flex items-center gap-1 px-1 bg-[#2b2d31] border-r border-[#1e1f22]" style={{ width: labelWidth }}>
         {/* Drag handle */}
         {onReorderTrack && (
-          <GripVertical className="w-3 h-3 text-zinc-600 shrink-0 cursor-grab active:cursor-grabbing" />
+          <GripVertical className="w-3 h-3 text-[#9aa0a8] shrink-0 cursor-grab active:cursor-grabbing" />
         )}
         {/* Color dot */}
         <div
@@ -108,14 +108,14 @@ export function TimelineTrackRow({
             onChange={(e) => setEditName(e.target.value)}
             onBlur={handleRenameSubmit}
             onKeyDown={(e) => { if (e.key === 'Enter') handleRenameSubmit(); if (e.key === 'Escape') setIsEditing(false) }}
-            className="flex-1 h-5 text-zinc-100 bg-zinc-800 border border-zinc-600 rounded px-1 outline-none"
+            className="flex-1 h-5 text-white bg-[#2b2d31] border border-zinc-600 rounded-none px-1 outline-none"
             style={{ fontSize: compact ? 9 : 11 }}
             autoFocus
           />
         ) : (
           <Tooltip><TooltipTrigger asChild>
           <span
-            className="text-zinc-300 truncate flex-1 cursor-default"
+            className="text-[#9aa0a8] truncate flex-1 cursor-default"
             style={{ fontSize: compact ? 9 : 11 }}
             onDoubleClick={handleDoubleClick}
           >
@@ -128,8 +128,8 @@ export function TimelineTrackRow({
           <Tooltip><TooltipTrigger asChild>
           <button
             onClick={onToggleMute}
-            className={`p-0.5 rounded transition-colors ${
-              track.muted ? 'text-red-400 opacity-100' : 'text-zinc-500 hover:text-zinc-300'
+            className={`p-0.5 rounded-none transition-colors ${
+              track.muted ? 'text-red-400 opacity-100' : 'text-[#9aa0a8] hover:text-white'
             }`}
           >
             {track.muted ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
@@ -138,20 +138,20 @@ export function TimelineTrackRow({
           <Tooltip><TooltipTrigger asChild>
           <button
             onClick={onToggleHidden}
-            className={`p-0.5 rounded transition-colors ${
-              track.hidden ? 'text-red-400 opacity-100' : 'text-zinc-500 hover:text-zinc-300'
+            className={`p-0.5 rounded-none transition-colors ${
+              track.hidden ? 'text-red-400 opacity-100' : 'text-[#9aa0a8] hover:text-white'
             }`}
           >
             {track.hidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
           </button>
           </TooltipTrigger><TooltipContent>{track.hidden ? 'Show' : 'Hide'}</TooltipContent></Tooltip>
           {track.locked && (
-            <Lock className="w-3 h-3 text-zinc-600" />
+            <Lock className="w-3 h-3 text-[#9aa0a8]" />
           )}
           <Tooltip><TooltipTrigger asChild>
           <button
             onClick={onDeleteTrack}
-            className="p-0.5 rounded text-zinc-500 hover:text-red-400 transition-colors"
+            className="p-0.5 rounded-none text-[#9aa0a8] hover:text-red-400 transition-colors"
           >
             <Trash2 className="w-3 h-3" />
           </button>

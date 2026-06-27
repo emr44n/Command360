@@ -51,7 +51,7 @@ export function TimelineRuler({ totalDuration, zoomLevel, scrollLeft, height = 2
   }, [totalDuration, zoomLevel])
 
   return (
-    <div className="relative bg-zinc-900 border-b border-zinc-800 overflow-hidden select-none" style={{ height }}>
+    <div className="relative bg-[#1e1f22] border-b border-[#3f4147] overflow-hidden select-none" style={{ height }}>
       <div
         className="relative h-full"
         style={{ width: totalWidth, transform: `translateX(-${scrollLeft}px)` }}
@@ -65,13 +65,13 @@ export function TimelineRuler({ totalDuration, zoomLevel, scrollLeft, height = 2
             {/* Tick line */}
             <div
               className={`absolute bottom-0 w-px ${
-                tick.isMajor ? 'h-3 bg-zinc-500' : 'h-1.5 bg-zinc-700'
+                tick.isMajor ? 'h-3 bg-[#9aa0a8]' : 'h-1.5 bg-[#3f4147]'
               }`}
             />
             {/* Label */}
             {tick.label !== null && (
               <span
-                className="absolute left-1 text-zinc-500 whitespace-nowrap font-mono tabular-nums"
+                className="absolute left-1 text-[#9aa0a8] whitespace-nowrap font-mono tabular-nums"
                 style={{ top: 1, fontSize: height < 22 ? 7 : 9 }}
               >
                 {tick.label}

@@ -84,7 +84,7 @@ export function AddImageDialog({ open, onClose, onAdd }: Props) {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
 
       {/* Dialog */}
-      <div className="relative bg-card border border-border rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
+      <div className="relative bg-card border border-border rounded-none shadow-xl w-full max-w-md mx-4 overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-2">
@@ -93,7 +93,7 @@ export function AddImageDialog({ open, onClose, onAdd }: Props) {
           </div>
           <button
             onClick={handleClose}
-            className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+            className="p-1 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -135,7 +135,7 @@ export function AddImageDialog({ open, onClose, onAdd }: Props) {
                 onDragLeave={() => setDragOver(false)}
                 onDrop={handleDrop}
                 onClick={() => fileRef.current?.click()}
-                className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${
+                className={`relative border-2 border-dashed rounded-none p-8 text-center transition-colors cursor-pointer ${
                   dragOver
                     ? 'border-primary bg-primary/5'
                     : 'border-border hover:border-muted-foreground/40'
@@ -156,9 +156,9 @@ export function AddImageDialog({ open, onClose, onAdd }: Props) {
                   <div className="space-y-3">
                     <Loader2 className="w-8 h-8 text-primary mx-auto animate-spin" />
                     <p className="text-xs text-muted-foreground">Uploading… {progress}%</p>
-                    <div className="h-1.5 bg-muted rounded-full overflow-hidden max-w-[200px] mx-auto">
+                    <div className="h-1.5 bg-muted rounded-none overflow-hidden max-w-[200px] mx-auto">
                       <div
-                        className="h-full bg-primary rounded-full transition-all duration-300"
+                        className="h-full bg-primary rounded-none transition-all duration-300"
                         style={{ width: `${progress}%` }}
                       />
                     </div>
@@ -179,7 +179,7 @@ export function AddImageDialog({ open, onClose, onAdd }: Props) {
                 <p className="text-xs text-destructive text-center">{uploadError}</p>
               )}
               {preview && !uploading && (
-                <div className="rounded-xl border border-border overflow-hidden bg-muted/30">
+                <div className="rounded-none border border-border overflow-hidden bg-muted/30">
                   <img src={preview} alt="Preview" className="w-full max-h-36 object-contain" />
                 </div>
               )}
@@ -204,7 +204,7 @@ export function AddImageDialog({ open, onClose, onAdd }: Props) {
 
               {/* Preview */}
               {preview && (
-                <div className="rounded-xl border border-border overflow-hidden bg-muted/30">
+                <div className="rounded-none border border-border overflow-hidden bg-muted/30">
                   {loading && !error && (
                     <div className="flex items-center justify-center h-32">
                       <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />

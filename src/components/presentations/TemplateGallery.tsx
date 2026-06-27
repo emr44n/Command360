@@ -66,9 +66,9 @@ const TYPE_ICONS: Record<string, React.ElementType> = {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  poll: '#dc2626', word_cloud: '#3b82f6', quiz: '#10b981', qna: '#f59e0b',
-  survey: '#ec4899', content: '#6b7280', rating_scale: '#f97316', open_text: '#14b8a6',
-  studio: '#ef4444',
+  poll: '#C9241A', word_cloud: '#3E6DC4', quiz: '#2E9E63', qna: '#c98a2a',
+  survey: '#C9241A', content: '#9aa0a8', rating_scale: '#c98a2a', open_text: '#3E6DC4',
+  studio: '#C9241A',
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -101,7 +101,7 @@ const TEMPLATES: Template[] = [
     title: 'Safety Briefing',
     description: 'Pre-shift safety awareness check with hazard identification, PPE compliance, and knowledge quiz.',
     icon: Shield,
-    color: 'text-red-500 bg-red-500/10',
+    color: 'text-[#C9241A] bg-[#C9241A]/10',
     category: 'Briefings & Debriefs',
     tags: ['safety', 'briefing', 'fire', 'police', 'ambulance'],
     featured: true,
@@ -121,7 +121,7 @@ const TEMPLATES: Template[] = [
     title: 'Incident Debrief',
     description: 'Structured post-incident debrief covering timeline, decisions, outcomes, and lessons learned.',
     icon: AlertTriangle,
-    color: 'text-amber-500 bg-amber-500/10',
+    color: 'text-[#c98a2a] bg-[#c98a2a]/10',
     category: 'Briefings & Debriefs',
     tags: ['debrief', 'incident', 'review', 'lessons'],
     featured: true,
@@ -143,7 +143,7 @@ const TEMPLATES: Template[] = [
     title: 'Hot Debrief',
     description: 'Quick 5-minute post-incident capture while details are fresh. Designed for immediate use on scene.',
     icon: Flame,
-    color: 'text-orange-500 bg-orange-500/10',
+    color: 'text-[#c98a2a] bg-[#c98a2a]/10',
     category: 'Briefings & Debriefs',
     tags: ['debrief', 'quick', 'post-incident', 'immediate'],
     featured: true,
@@ -160,7 +160,7 @@ const TEMPLATES: Template[] = [
     title: 'Shift Briefing',
     description: 'Standard shift handover covering key information, risk updates, and tasking assignments.',
     icon: Radio,
-    color: 'text-blue-500 bg-blue-500/10',
+    color: 'text-[#3E6DC4] bg-[#3E6DC4]/10',
     category: 'Briefings & Debriefs',
     tags: ['shift', 'handover', 'briefing', 'daily'],
     slides: [
@@ -179,7 +179,7 @@ const TEMPLATES: Template[] = [
     title: 'Protocol Training',
     description: 'Step-by-step protocol walkthrough with embedded knowledge checks and competency verification.',
     icon: BookOpen,
-    color: 'text-emerald-500 bg-emerald-500/10',
+    color: 'text-[#2E9E63] bg-[#2E9E63]/10',
     category: 'Training & Assessment',
     tags: ['training', 'protocol', 'procedure', 'learning'],
     featured: true,
@@ -203,7 +203,7 @@ const TEMPLATES: Template[] = [
     title: 'Equipment Check',
     description: 'Equipment competency assessment covering identification, usage, and maintenance procedures.',
     icon: ClipboardList,
-    color: 'text-violet-500 bg-violet-500/10',
+    color: 'text-[#6a5ea8] bg-[#6a5ea8]/10',
     category: 'Training & Assessment',
     tags: ['equipment', 'competency', 'assessment', 'check'],
     slides: [
@@ -222,7 +222,7 @@ const TEMPLATES: Template[] = [
     title: 'Knowledge Assessment',
     description: 'Scored knowledge quiz with multiple topics, instant results, and competency tracking.',
     icon: HelpCircle,
-    color: 'text-cyan-500 bg-cyan-500/10',
+    color: 'text-[#3E6DC4] bg-[#3E6DC4]/10',
     category: 'Training & Assessment',
     tags: ['quiz', 'assessment', 'knowledge', 'scoring'],
     slides: [
@@ -242,7 +242,7 @@ const TEMPLATES: Template[] = [
     title: 'New Starter Onboarding',
     description: 'Induction session for new starters covering key procedures, expectations, and introductions.',
     icon: Users,
-    color: 'text-indigo-500 bg-indigo-500/10',
+    color: 'text-[#6a5ea8] bg-[#6a5ea8]/10',
     category: 'Training & Assessment',
     tags: ['onboarding', 'induction', 'new starter', 'welcome'],
     slides: [
@@ -267,7 +267,7 @@ const TEMPLATES: Template[] = [
     title: 'Welfare Check',
     description: 'Anonymous wellbeing survey for team welfare monitoring. Spot concerns early.',
     icon: Heart,
-    color: 'text-pink-500 bg-pink-500/10',
+    color: 'text-[#C9241A] bg-[#C9241A]/10',
     category: 'Wellbeing & Feedback',
     tags: ['wellbeing', 'welfare', 'mental health', 'anonymous'],
     featured: true,
@@ -286,7 +286,7 @@ const TEMPLATES: Template[] = [
     title: 'Team Feedback',
     description: 'Collect anonymous feedback on team dynamics, leadership, and morale.',
     icon: Users,
-    color: 'text-sky-500 bg-sky-500/10',
+    color: 'text-[#3E6DC4] bg-[#3E6DC4]/10',
     category: 'Wellbeing & Feedback',
     tags: ['feedback', 'team', 'leadership', 'morale'],
     slides: [
@@ -304,7 +304,7 @@ const TEMPLATES: Template[] = [
     title: 'Training Evaluation',
     description: 'Post-training feedback form with rating scales, comments, and improvement suggestions.',
     icon: BarChart2,
-    color: 'text-purple-500 bg-purple-500/10',
+    color: 'text-[#6a5ea8] bg-[#6a5ea8]/10',
     category: 'Wellbeing & Feedback',
     tags: ['evaluation', 'training', 'feedback', 'post-training'],
     slides: [
@@ -320,7 +320,7 @@ const TEMPLATES: Template[] = [
     title: 'Risk Assessment Workshop',
     description: 'Collaborative risk identification and prioritisation session with team voting.',
     icon: AlertTriangle,
-    color: 'text-rose-500 bg-rose-500/10',
+    color: 'text-[#C9241A] bg-[#C9241A]/10',
     category: 'Wellbeing & Feedback',
     tags: ['risk', 'assessment', 'workshop', 'collaborative'],
     slides: [
@@ -425,10 +425,10 @@ function HeartButton({ templateId, favorites, onToggle, className = '' }: {
     <Tooltip><TooltipTrigger asChild>
       <button
         onClick={(e) => { e.stopPropagation(); onToggle(templateId) }}
-        className={`p-1.5 rounded-lg transition-all hover:scale-110 ${className}`}
+        className={`p-1.5 rounded-none transition-all hover:scale-110 ${className}`}
       >
         <Heart
-          className={`w-3.5 h-3.5 transition-colors ${isFav ? 'fill-red-500 text-red-500' : 'text-muted-foreground hover:text-red-400'}`}
+          className={`w-3.5 h-3.5 transition-colors ${isFav ? 'fill-[#C9241A] text-[#C9241A]' : 'text-muted-foreground hover:text-[#C9241A]'}`}
         />
       </button>
     </TooltipTrigger><TooltipContent>{isFav ? 'Remove from favourites' : 'Add to favourites'}</TooltipContent></Tooltip>
@@ -734,7 +734,7 @@ export function TemplateGallery() {
           <Tooltip><TooltipTrigger asChild>
             <button
               onClick={(e) => e.stopPropagation()}
-              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+              className="p-1.5 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
             >
               <FolderInput className="w-3.5 h-3.5" />
             </button>
@@ -804,7 +804,7 @@ export function TemplateGallery() {
         </Button>
 
         {/* View toggle */}
-        <div className="flex items-center rounded-xl border border-border overflow-hidden shrink-0">
+        <div className="flex items-center rounded-none border border-border overflow-hidden shrink-0">
           <button
             onClick={() => { setView('grid'); localStorage.setItem('c360-view-mode', 'grid') }}
             className={`p-2 transition-all duration-200 ${
@@ -828,7 +828,7 @@ export function TemplateGallery() {
       {hasFavorites && !search && activeCategory === 'All' && (
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <Heart className="w-4 h-4 text-red-500 fill-red-500" />
+            <Heart className="w-4 h-4 text-[#C9241A] fill-[#C9241A]" />
             <h3 className="text-sm font-semibold text-foreground">Favourites</h3>
             <span className="text-xs text-muted-foreground">({favBuiltIn.length + favUser.length})</span>
           </div>
@@ -955,7 +955,7 @@ export function TemplateGallery() {
             {DEFAULT_CATEGORIES.map((cat) => {
               const CIcon = CATEGORY_ICONS[cat]
               return (
-                <div key={cat} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-muted/50">
+                <div key={cat} className="flex items-center gap-3 px-3 py-2 rounded-none bg-muted/50">
                   {CIcon && <CIcon className="w-4 h-4 text-muted-foreground" />}
                   <span className="text-sm text-foreground">{cat}</span>
                 </div>
@@ -972,7 +972,7 @@ export function TemplateGallery() {
             {customCategories.map((cat) => {
               const CIcon = getPresetIcon(cat.icon)
               return (
-                <div key={cat.id} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-muted/50">
+                <div key={cat.id} className="flex items-center gap-3 px-3 py-2 rounded-none bg-muted/50">
                   <CIcon className="w-4 h-4 text-muted-foreground" />
                   {editingCat === cat.id ? (
                     <div className="flex-1 flex gap-2">
@@ -1010,7 +1010,7 @@ export function TemplateGallery() {
               <div className="shrink-0">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="w-9 h-9 rounded-lg border border-border flex items-center justify-center hover:bg-muted transition-colors">
+                    <button className="w-9 h-9 rounded-none border border-border flex items-center justify-center hover:bg-muted transition-colors">
                       {(() => { const I = getPresetIcon(newCatIcon); return <I className="w-4 h-4 text-muted-foreground" /> })()}
                     </button>
                   </DropdownMenuTrigger>
@@ -1020,7 +1020,7 @@ export function TemplateGallery() {
                         <button
                           key={p.value}
                           onClick={() => setNewCatIcon(p.value)}
-                          className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors ${newCatIcon === p.value ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-muted-foreground'}`}
+                          className={`w-8 h-8 rounded-none flex items-center justify-center transition-colors ${newCatIcon === p.value ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-muted-foreground'}`}
                         >
                           <p.Icon className="w-4 h-4" />
                         </button>
@@ -1051,13 +1051,13 @@ export function TemplateGallery() {
           onClick={() => setPreviewTemplate(null)}
         >
           <div
-            className="bg-background rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-border"
+            className="bg-background rounded-none w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-border"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border shrink-0">
               <div className="flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${previewTemplate.color}`}>
+                <div className={`w-9 h-9 rounded-none flex items-center justify-center ${previewTemplate.color}`}>
                   <previewTemplate.icon className="w-4 h-4" />
                 </div>
                 <div>
@@ -1071,7 +1071,7 @@ export function TemplateGallery() {
                 <HeartButton templateId={previewTemplate.id} favorites={favorites} onToggle={toggleFavorite} />
                 <Button
                   size="sm"
-                  className="gap-1.5 rounded-full text-xs bg-primary hover:bg-primary/90 text-primary-foreground"
+                  className="gap-1.5 rounded-none text-xs bg-primary hover:bg-primary/90 text-primary-foreground"
                   onClick={() => createFromTemplate(previewTemplate)}
                   disabled={creating !== null}
                 >
@@ -1080,7 +1080,7 @@ export function TemplateGallery() {
                 </Button>
                 <button
                   onClick={() => setPreviewTemplate(null)}
-                  className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  className="p-1.5 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -1098,7 +1098,7 @@ export function TemplateGallery() {
                     <button
                       key={i}
                       onClick={() => setPreviewSlide(i)}
-                      className={`w-full text-left p-2.5 rounded-lg mb-1 transition-all ${
+                      className={`w-full text-left p-2.5 rounded-none mb-1 transition-all ${
                         previewSlide === i
                           ? 'bg-primary/10 border border-primary/20'
                           : 'hover:bg-muted border border-transparent'
@@ -1119,7 +1119,7 @@ export function TemplateGallery() {
 
               {/* Slide content preview */}
               <div className="flex-1 p-6 flex flex-col items-center justify-center bg-muted/10">
-                <div className="w-full max-w-lg bg-white rounded-2xl border border-border shadow-sm overflow-hidden relative aspect-video" style={{ aspectRatio: '16/9' }}>
+                <div className="w-full max-w-lg bg-white rounded-none border border-border shadow-sm overflow-hidden relative aspect-video" style={{ aspectRatio: '16/9' }}>
                   <div className="absolute inset-0 flex flex-col p-6">
                     {/* Type badge */}
                     <div className="flex items-center gap-1.5 mb-3 shrink-0">
@@ -1128,7 +1128,7 @@ export function TemplateGallery() {
                         const TypeIcon = TYPE_ICONS[s.slide_type] || FileText
                         const color = TYPE_COLORS[s.slide_type] || '#6b7280'
                         return (
-                          <span className="flex items-center gap-1 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-md" style={{ background: `${color}15`, color }}>
+                          <span className="flex items-center gap-1 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-none" style={{ background: `${color}15`, color }}>
                             <TypeIcon style={{ width: 10, height: 10 }} />
                             {TYPE_LABELS[s.slide_type] || s.slide_type}
                           </span>
@@ -1153,7 +1153,7 @@ export function TemplateGallery() {
                   <button
                     onClick={() => setPreviewSlide(p => Math.max(0, p - 1))}
                     disabled={previewSlide === 0}
-                    className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground disabled:opacity-30 hover:bg-muted transition-all"
+                    className="p-1.5 rounded-none text-muted-foreground hover:text-foreground disabled:opacity-30 hover:bg-muted transition-all"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
@@ -1163,7 +1163,7 @@ export function TemplateGallery() {
                   <button
                     onClick={() => setPreviewSlide(p => Math.min(previewTemplate!.slides.length - 1, p + 1))}
                     disabled={previewSlide === previewTemplate.slides.length - 1}
-                    className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground disabled:opacity-30 hover:bg-muted transition-all"
+                    className="p-1.5 rounded-none text-muted-foreground hover:text-foreground disabled:opacity-30 hover:bg-muted transition-all"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -1191,11 +1191,11 @@ function BuiltInGridCard({ t, creating, createFromTemplate, openPreview, favorit
   const uniqueTypes = [...new Set(t.slides.map(s => s.slide_type))]
   return (
     <div
-      className="bg-card border border-border rounded-2xl p-5 hover:shadow-md hover:border-primary/20 transition-all group cursor-pointer"
+      className="bg-card border border-border rounded-none p-5 hover:shadow-md hover:border-primary/20 transition-all group cursor-pointer"
       onClick={() => openPreview(t)}
     >
       <div className="flex items-start gap-3 mb-3">
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${t.color} group-hover:scale-110 transition-transform duration-200`}>
+        <div className={`w-10 h-10 rounded-none flex items-center justify-center shrink-0 ${t.color} group-hover:scale-110 transition-transform duration-200`}>
           <t.icon className="w-5 h-5" />
         </div>
         <div className="min-w-0 flex-1">
@@ -1249,7 +1249,7 @@ function BuiltInGridCard({ t, creating, createFromTemplate, openPreview, favorit
         <Button
           size="sm"
           variant="outline"
-          className="gap-1.5 flex-1 rounded-full text-xs group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors"
+          className="gap-1.5 flex-1 rounded-none text-xs group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors"
           onClick={(e) => { e.stopPropagation(); createFromTemplate(t) }}
           disabled={creating !== null}
         >
@@ -1277,15 +1277,15 @@ function BuiltInListCard({ t, creating, createFromTemplate, openPreview, favorit
   const duration = estimateDuration(t.slides)
   const uniqueTypes = [...new Set(t.slides.map(s => s.slide_type))]
   return (
-    <div className="group relative flex items-center gap-4 bg-card border border-border rounded-2xl p-4 overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5">
-      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${t.color}`}>
+    <div className="group relative flex items-center gap-4 bg-card border border-border rounded-none p-4 overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5">
+      <div className={`w-10 h-10 rounded-none flex items-center justify-center shrink-0 ${t.color}`}>
         <t.icon className="w-5 h-5" />
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <h4 className="font-medium text-foreground text-sm group-hover:text-primary transition-colors truncate">{t.title}</h4>
           {t.featured && (
-            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 shrink-0">Popular</span>
+            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-none bg-[#c98a2a]/10 text-[#c98a2a] shrink-0">Popular</span>
           )}
         </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
@@ -1317,7 +1317,7 @@ function BuiltInListCard({ t, creating, createFromTemplate, openPreview, favorit
         <Button
           size="sm"
           variant="outline"
-          className="gap-1.5 text-xs rounded-full"
+          className="gap-1.5 text-xs rounded-none"
           onClick={() => createFromTemplate(t)}
           disabled={creating !== null}
         >
@@ -1340,9 +1340,9 @@ function UserGridCard({ t, creating, deletingTemplate, handleUseUserTemplate, pr
   MoveToCategoryMenu: React.ComponentType<{ templateId: string }>
 }) {
   return (
-    <div className="bg-card border border-border rounded-2xl p-5 hover:shadow-md hover:border-primary/20 transition-all group">
+    <div className="bg-card border border-border rounded-none p-5 hover:shadow-md hover:border-primary/20 transition-all group">
       <div className="flex items-start gap-3 mb-3">
-        <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-primary bg-primary/10 group-hover:scale-110 transition-transform duration-200">
+        <div className="w-10 h-10 rounded-none flex items-center justify-center shrink-0 text-primary bg-primary/10 group-hover:scale-110 transition-transform duration-200">
           <Bookmark className="w-5 h-5" />
         </div>
         <div className="min-w-0 flex-1">
@@ -1362,7 +1362,7 @@ function UserGridCard({ t, creating, deletingTemplate, handleUseUserTemplate, pr
         <Button
           size="sm"
           variant="outline"
-          className="gap-1.5 flex-1 rounded-full text-xs group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors"
+          className="gap-1.5 flex-1 rounded-none text-xs group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors"
           onClick={() => handleUseUserTemplate(t.id)}
           disabled={creating !== null}
         >
@@ -1398,8 +1398,8 @@ function UserListCard({ t, creating, deletingTemplate, handleUseUserTemplate, pr
   MoveToCategoryMenu: React.ComponentType<{ templateId: string }>
 }) {
   return (
-    <div className="group relative flex items-center gap-4 bg-card border border-border rounded-2xl p-4 overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5">
-      <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-primary bg-primary/10">
+    <div className="group relative flex items-center gap-4 bg-card border border-border rounded-none p-4 overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5">
+      <div className="w-10 h-10 rounded-none flex items-center justify-center shrink-0 text-primary bg-primary/10">
         <Bookmark className="w-5 h-5" />
       </div>
       <div className="min-w-0 flex-1">
@@ -1414,7 +1414,7 @@ function UserListCard({ t, creating, deletingTemplate, handleUseUserTemplate, pr
         <Button
           size="sm"
           variant="outline"
-          className="gap-1.5 text-xs rounded-full"
+          className="gap-1.5 text-xs rounded-none"
           onClick={() => handleUseUserTemplate(t.id)}
           disabled={creating !== null}
         >
@@ -1445,7 +1445,7 @@ function TemplateSlidePreview({ slide }: { slide: TemplateSlide }) {
       return (
         <div className="space-y-2">
           {options.map((o, i) => (
-            <div key={i} className="bg-muted rounded-lg px-3 py-2 text-sm text-foreground flex items-center gap-2">
+            <div key={i} className="bg-muted rounded-none px-3 py-2 text-sm text-foreground flex items-center gap-2">
               <span className="w-5 h-5 rounded bg-muted-foreground/10 flex items-center justify-center text-[10px] font-bold text-muted-foreground shrink-0">
                 {String.fromCharCode(65 + i)}
               </span>
@@ -1460,7 +1460,7 @@ function TemplateSlidePreview({ slide }: { slide: TemplateSlide }) {
       return (
         <div className="grid grid-cols-2 gap-2">
           {options.map((o, i) => (
-            <div key={i} className={`rounded-lg px-3 py-2 text-xs font-medium text-center ${o.is_correct ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30' : 'bg-muted text-foreground'}`}>
+            <div key={i} className={`rounded-none px-3 py-2 text-xs font-medium text-center ${o.is_correct ? 'bg-[#2E9E63]/10 text-[#2E9E63] border border-[#2E9E63]/30' : 'bg-muted text-foreground'}`}>
               {o.text} {o.is_correct && '\u2713'}
             </div>
           ))}
@@ -1479,7 +1479,7 @@ function TemplateSlidePreview({ slide }: { slide: TemplateSlide }) {
         <div className="py-2">
           <div className="flex justify-center gap-1.5 mb-2">
             {Array.from({ length: Math.min(((content.max_value as number) || 10) - ((content.min_value as number) || 1) + 1, 10) }, (_, i) => (
-              <div key={i} className="w-8 h-8 rounded-md bg-muted flex items-center justify-center text-xs font-semibold text-muted-foreground">
+              <div key={i} className="w-8 h-8 rounded-none bg-muted flex items-center justify-center text-xs font-semibold text-muted-foreground">
                 {((content.min_value as number) || 1) + i}
               </div>
             ))}
@@ -1492,7 +1492,7 @@ function TemplateSlidePreview({ slide }: { slide: TemplateSlide }) {
       )
     case 'open_text':
       return (
-        <div className="border-2 border-dashed border-border rounded-lg px-3 py-2 text-sm text-muted-foreground">
+        <div className="border-2 border-dashed border-border rounded-none px-3 py-2 text-sm text-muted-foreground">
           {(content.placeholder as string) || 'Type your response here...'}
         </div>
       )
@@ -1507,7 +1507,7 @@ function TemplateSlidePreview({ slide }: { slide: TemplateSlide }) {
       return (
         <div className="space-y-1.5">
           {questions.slice(0, 3).map((q, i) => (
-            <div key={i} className="bg-muted rounded-lg px-3 py-2 text-sm text-foreground">
+            <div key={i} className="bg-muted rounded-none px-3 py-2 text-sm text-foreground">
               {i + 1}. {q.text}
             </div>
           ))}

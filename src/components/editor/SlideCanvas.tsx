@@ -60,7 +60,7 @@ export function SlideCanvas({ slide, slides, selectedIndex, onTitleChange, onCan
     return (
       <div className="flex-1 flex items-center justify-center h-full" style={{ background: '#0c0c10' }}>
         <div className="flex flex-col items-center text-center max-w-xs">
-          <div className="w-20 h-20 rounded-3xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-5">
+          <div className="w-20 h-20 rounded-none bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-5">
             <FileText className="w-9 h-9 text-white/20" />
           </div>
           <p className="text-base font-semibold text-white/70 mb-1.5">No slides yet</p>
@@ -127,7 +127,7 @@ export function SlideCanvas({ slide, slides, selectedIndex, onTitleChange, onCan
                   alignItems: 'center',
                   gap: 5,
                   background: `${sColor}20`,
-                  borderRadius: 5,
+                  borderRadius: 0,
                   padding: '2px 8px',
                 }}>
                   <SIcon style={{ width: 10, height: 10, color: sColor }} />

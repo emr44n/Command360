@@ -66,7 +66,7 @@ export function ContentSlideForm({ slide, onChange }: Props) {
         <div className="space-y-2">
           <Label className="text-muted-foreground text-xs uppercase tracking-wide">Image</Label>
           {imageUrl ? (
-            <div className="relative group rounded-lg overflow-hidden border border-border">
+            <div className="relative group rounded-none overflow-hidden border border-border">
               <img
                 src={imageUrl}
                 alt="Slide image"
@@ -75,7 +75,7 @@ export function ContentSlideForm({ slide, onChange }: Props) {
               />
               <button
                 onClick={handleRemoveImage}
-                className="absolute top-2 right-2 p-1 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+                className="absolute top-2 right-2 p-1 rounded-none bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -84,7 +84,7 @@ export function ContentSlideForm({ slide, onChange }: Props) {
             <div className="space-y-2">
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors"
+                className="border-2 border-dashed border-border rounded-none p-6 text-center cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors"
               >
                 <ImagePlus className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
                 <p className="text-xs text-muted-foreground">Click to upload or paste URL below</p>
@@ -94,7 +94,7 @@ export function ContentSlideForm({ slide, onChange }: Props) {
                 value={imageUrl}
                 onChange={(e) => handleImageUrlChange(e.target.value)}
                 placeholder="https://example.com/image.jpg"
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full px-3 py-2 rounded-none border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
           )}

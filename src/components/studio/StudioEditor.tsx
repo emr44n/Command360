@@ -65,7 +65,7 @@ function CctvLivePreview({ content, slides }: { content: StudioContent; slides: 
 
   return (
     <div
-      className="w-full max-w-4xl aspect-video rounded-lg overflow-hidden border border-[#3f4147] shadow-2xl"
+      className="w-full max-w-4xl aspect-video rounded-none overflow-hidden border border-[#3f4147] shadow-2xl"
       style={{ display: 'grid', gap: '2px', background: '#000', ...gridStyle }}
     >
       {Array.from({ length: count }, (_, i) => {
@@ -85,7 +85,7 @@ function CctvLivePreview({ content, slides }: { content: StudioContent; slides: 
             }}
           >
             {/* Scene label */}
-            <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded bg-black/60 text-[8px] text-white/70 font-medium">
+            <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-none bg-black/60 text-[8px] text-white/70 font-medium">
               {scene ? (scene.title || `Scene ${slides.indexOf(scene) + 1}`) : `View ${i + 1}`}
             </div>
 
@@ -677,13 +677,13 @@ export function StudioEditor({
 
   // Icon sidebar items — each has its own accent color
   const SIDEBAR_ICONS = [
-    ...(hasSlides ? [{ icon: Layers, label: 'Scenes', panel: 'slides' as const, activeClass: 'bg-violet-600/20 text-violet-400' }] : []),
-    { icon: LayoutList, label: 'Layers', panel: 'layers' as const, activeClass: 'bg-cyan-600/20 text-cyan-400' },
-    { icon: FolderOpen, label: 'Assets', panel: 'gallery' as const, activeClass: 'bg-red-600/20 text-red-400' },
-    { icon: Type, label: 'Text', panel: 'text' as const, activeClass: 'bg-sky-600/20 text-sky-400' },
-    { icon: Shapes, label: 'Shapes', panel: 'shapes' as const, activeClass: 'bg-emerald-600/20 text-emerald-400' },
-    { icon: Sparkles, label: 'Events', panel: 'events' as const, activeClass: 'bg-amber-600/20 text-amber-400' },
-    { icon: Layout, label: 'Templates', panel: 'templates' as const, activeClass: 'bg-pink-600/20 text-pink-400' },
+    ...(hasSlides ? [{ icon: Layers, label: 'Scenes', panel: 'slides' as const, activeClass: 'bg-[#6a5ea8]/20 text-[#6a5ea8]' }] : []),
+    { icon: LayoutList, label: 'Layers', panel: 'layers' as const, activeClass: 'bg-[#3E6DC4]/20 text-[#3E6DC4]' },
+    { icon: FolderOpen, label: 'Assets', panel: 'gallery' as const, activeClass: 'bg-[#C9241A]/20 text-[#C9241A]' },
+    { icon: Type, label: 'Text', panel: 'text' as const, activeClass: 'bg-[#3E6DC4]/20 text-[#3E6DC4]' },
+    { icon: Shapes, label: 'Shapes', panel: 'shapes' as const, activeClass: 'bg-[#2E9E63]/20 text-[#2E9E63]' },
+    { icon: Sparkles, label: 'Events', panel: 'events' as const, activeClass: 'bg-[#c98a2a]/20 text-[#c98a2a]' },
+    { icon: Layout, label: 'Templates', panel: 'templates' as const, activeClass: 'bg-[#6a5ea8]/20 text-[#6a5ea8]' },
   ]
 
   const [activePanel, setActivePanel] = useState<'slides' | 'layers' | 'gallery' | 'events' | 'text' | 'shapes' | 'templates'>(hasSlides ? 'slides' : 'gallery')
@@ -705,7 +705,7 @@ export function StudioEditor({
                   setShowLeftPanel(true)
                 }
               }}
-              className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
+              className={`w-10 h-10 rounded-none flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
                 isActive
                   ? `${item.activeClass} shadow-lg`
                   : 'text-zinc-500 hover:text-zinc-200 hover:bg-[#35363c]'
@@ -724,7 +724,7 @@ export function StudioEditor({
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => setShowTemplateName(true)}
-          className="w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer text-zinc-500 hover:text-zinc-200 hover:bg-[#35363c]"
+          className="w-10 h-10 rounded-none flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer text-zinc-500 hover:text-zinc-200 hover:bg-[#35363c]"
         >
           <Save className="w-4 h-4" />
           <span className="text-[7px] leading-none font-medium">Save</span>
@@ -738,7 +738,7 @@ export function StudioEditor({
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => setShowProperties(v => !v)}
-          className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
+          className={`w-10 h-10 rounded-none flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
             showProperties ? 'bg-[#35363c] text-zinc-300' : 'text-zinc-600 hover:text-zinc-400 hover:bg-[#35363c]'
           }`}
         >
@@ -749,7 +749,7 @@ export function StudioEditor({
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => setShowTimeline(v => !v)}
-          className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
+          className={`w-10 h-10 rounded-none flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
             showTimeline ? 'bg-[#35363c] text-zinc-300' : 'text-zinc-600 hover:text-zinc-400 hover:bg-[#35363c]'
           }`}
         >
@@ -769,7 +769,7 @@ export function StudioEditor({
               <div className="shrink-0 bg-[#2b2d31] overflow-hidden overflow-x-hidden flex flex-col border-r border-[#1e1f22]" style={{ width: leftPanelWidth }}>
                 {/* Active panel accent strip */}
                 <div className="h-[2px] shrink-0" style={{
-                  backgroundColor: activePanel === 'slides' ? '#7c3aed' : activePanel === 'layers' ? '#06b6d4' : activePanel === 'gallery' ? '#ef4444' : activePanel === 'text' ? '#0ea5e9' : activePanel === 'shapes' ? '#10b981' : activePanel === 'templates' ? '#ec4899' : '#f59e0b'
+                  backgroundColor: activePanel === 'slides' ? '#6a5ea8' : activePanel === 'layers' ? '#3E6DC4' : activePanel === 'gallery' ? '#C9241A' : activePanel === 'text' ? '#3E6DC4' : activePanel === 'shapes' ? '#2E9E63' : activePanel === 'templates' ? '#6a5ea8' : '#c98a2a'
                 }} />
                 {activePanel === 'slides' && hasSlides ? (
                   <SlidesPanel
@@ -876,7 +876,7 @@ export function StudioEditor({
                 )}
               </div>
               <div
-                className="w-[3px] shrink-0 cursor-col-resize bg-[#1e1f22] hover:bg-indigo-500/60 transition-colors"
+                className="w-[3px] shrink-0 cursor-col-resize bg-[#1e1f22] hover:bg-[#C9241A]/60 transition-colors"
                 onMouseDown={() => startDrag('left')}
               />
             </>
@@ -926,30 +926,30 @@ export function StudioEditor({
                 </div>
                 {/* Transport bar */}
                 <div className="h-6 shrink-0 bg-[#2b2d31] border-t border-[#1e1f22] flex items-center justify-center gap-3 px-3">
-                  <span className="text-[9px] font-mono text-emerald-400 tabular-nums">
+                  <span className="text-[9px] font-mono text-[#2E9E63] tabular-nums">
                     {formatTime(currentTime)}
                   </span>
                   <div className="flex items-center gap-1">
                     <Tooltip><TooltipTrigger asChild>
                     <button onClick={handleUndo} disabled={undoStack.length === 0}
-                      className="w-6 h-6 rounded-md flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer">
+                      className="w-6 h-6 rounded-none flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer">
                       <Undo2 className="w-3.5 h-3.5" />
                     </button>
                     </TooltipTrigger><TooltipContent>Undo (Ctrl+Z)</TooltipContent></Tooltip>
                     <Tooltip><TooltipTrigger asChild>
                     <button onClick={handleRedo} disabled={redoStack.length === 0}
-                      className="w-6 h-6 rounded-md flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer">
+                      className="w-6 h-6 rounded-none flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer">
                       <Redo2 className="w-3.5 h-3.5" />
                     </button>
                     </TooltipTrigger><TooltipContent>Redo (Ctrl+Shift+Z)</TooltipContent></Tooltip>
-                    <button onClick={() => { setIsPlaying(false); setCurrentTime(0) }} className="w-5 h-5 rounded flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
+                    <button onClick={() => { setIsPlaying(false); setCurrentTime(0) }} className="w-5 h-5 rounded-none flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
                       <SkipBack className="w-3 h-3" />
                     </button>
                     <button
                       onClick={() => {
                         if (isPlaying) { setIsPlaying(false) } else { if (currentTime >= totalDuration) setCurrentTime(0); setIsPlaying(true) }
                       }}
-                      className="w-5 h-5 rounded-md flex items-center justify-center bg-zinc-700 hover:bg-zinc-600 text-white transition-colors cursor-pointer"
+                      className="w-5 h-5 rounded-none flex items-center justify-center bg-zinc-700 hover:bg-zinc-600 text-white transition-colors cursor-pointer"
                     >
                       {isPlaying ? <Square className="w-2 h-2 fill-current" /> : <Play className="w-2.5 h-2.5 fill-current ml-0.5" />}
                     </button>
@@ -966,7 +966,7 @@ export function StudioEditor({
           {showProperties && (
             <>
               <div
-                className="w-[3px] shrink-0 cursor-col-resize bg-[#1e1f22] hover:bg-indigo-500/60 transition-colors"
+                className="w-[3px] shrink-0 cursor-col-resize bg-[#1e1f22] hover:bg-[#C9241A]/60 transition-colors"
                 onMouseDown={() => startDrag('properties')}
               />
               <div className="shrink-0 bg-[#2b2d31] border-l border-[#1e1f22] overflow-y-auto overflow-x-hidden" style={{ width: propertiesWidth }}>
@@ -1018,10 +1018,10 @@ export function StudioEditor({
         {/* Timeline resize splitter */}
         {showTimeline && !content.cctvLayout && (
           <div
-            className="h-[5px] shrink-0 cursor-row-resize bg-[#1e1f22] hover:bg-indigo-500/60 transition-colors flex items-center justify-center group"
+            className="h-[5px] shrink-0 cursor-row-resize bg-[#1e1f22] hover:bg-[#C9241A]/60 transition-colors flex items-center justify-center group"
             onMouseDown={() => startDrag('timeline')}
           >
-            <div className="w-10 h-[2px] rounded-full bg-zinc-600 group-hover:bg-indigo-400 transition-colors" />
+            <div className="w-10 h-[2px] rounded-full bg-zinc-600 group-hover:bg-[#C9241A] transition-colors" />
           </div>
         )}
 
@@ -1058,12 +1058,12 @@ export function StudioEditor({
       {/* Template name dialog */}
       {showTemplateName && (
         <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowTemplateName(false)}>
-          <div className="bg-[#1e1f22] border border-[#3f4147] rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-[#1e1f22] border border-[#3f4147] rounded-none p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
             <h3 className="text-sm font-semibold text-white mb-3">Save as Template</h3>
-            <input type="text" value={templateNameInput} onChange={e => setTemplateNameInput(e.target.value)} onKeyDown={async e => { if (e.key === 'Enter' && templateNameInput.trim()) { saveAsTemplate(content, templateNameInput.trim()); const { toast } = await import('sonner'); toast.success('Saved as template', { duration: 2000 }); setShowTemplateName(false); setTemplateNameInput('') } }} placeholder="Template name..." className="w-full h-8 px-3 text-sm rounded-lg border border-[#3f4147] bg-[#2b2d31] text-white placeholder:text-zinc-500 focus:outline-none focus:border-red-500 mb-3" autoFocus />
+            <input type="text" value={templateNameInput} onChange={e => setTemplateNameInput(e.target.value)} onKeyDown={async e => { if (e.key === 'Enter' && templateNameInput.trim()) { saveAsTemplate(content, templateNameInput.trim()); const { toast } = await import('sonner'); toast.success('Saved as template', { duration: 2000 }); setShowTemplateName(false); setTemplateNameInput('') } }} placeholder="Template name..." className="w-full h-8 px-3 text-sm rounded-none border border-[#3f4147] bg-[#2b2d31] text-white placeholder:text-zinc-500 focus:outline-none focus:border-red-500 mb-3" autoFocus />
             <div className="flex gap-2 justify-end">
-              <button onClick={() => { setShowTemplateName(false); setTemplateNameInput('') }} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
-              <button onClick={async () => { if (!templateNameInput.trim()) return; saveAsTemplate(content, templateNameInput.trim()); const { toast } = await import('sonner'); toast.success('Saved as template', { duration: 2000 }); setShowTemplateName(false); setTemplateNameInput('') }} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors">Save</button>
+              <button onClick={() => { setShowTemplateName(false); setTemplateNameInput('') }} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
+              <button onClick={async () => { if (!templateNameInput.trim()) return; saveAsTemplate(content, templateNameInput.trim()); const { toast } = await import('sonner'); toast.success('Saved as template', { duration: 2000 }); setShowTemplateName(false); setTemplateNameInput('') }} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-red-600 text-white hover:bg-red-500 transition-colors">Save</button>
             </div>
           </div>
         </div>
@@ -1072,12 +1072,12 @@ export function StudioEditor({
       {/* Delete layer confirmation */}
       {confirmDeleteLayerId && (
         <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setConfirmDeleteLayerId(null)}>
-          <div className="bg-[#1e1f22] border border-[#3f4147] rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-[#1e1f22] border border-[#3f4147] rounded-none p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
             <h3 className="text-sm font-semibold text-white mb-2">Delete this layer?</h3>
             <p className="text-[11px] text-zinc-400 mb-4">This will remove the layer from the canvas and timeline. This cannot be undone.</p>
             <div className="flex gap-2 justify-end">
-              <button onClick={() => setConfirmDeleteLayerId(null)} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
-              <button onClick={() => { handleDeleteLayer(confirmDeleteLayerId); setConfirmDeleteLayerId(null) }} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors">Delete</button>
+              <button onClick={() => setConfirmDeleteLayerId(null)} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
+              <button onClick={() => { handleDeleteLayer(confirmDeleteLayerId); setConfirmDeleteLayerId(null) }} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-red-600 text-white hover:bg-red-500 transition-colors">Delete</button>
             </div>
           </div>
         </div>
@@ -1107,7 +1107,7 @@ function CctvCanvasPreview({ content, slides }: { content: StudioContent; slides
 
   return (
     <div
-      className="w-full max-w-4xl rounded-lg overflow-hidden shadow-2xl shadow-black/60"
+      className="w-full max-w-4xl rounded-none overflow-hidden shadow-2xl shadow-black/60"
       style={{ aspectRatio: '16/9', display: 'grid', gap: '2px', backgroundColor: '#111', ...gridStyle() }}
     >
       {Array.from({ length: slotCount }, (_, i) => {
@@ -1154,7 +1154,7 @@ function CctvCanvasPreview({ content, slides }: { content: StudioContent; slides
                   ))}
                 </div>
                 {label && (
-                  <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 bg-black/70 rounded text-[9px] font-semibold text-white/80 backdrop-blur-sm">
+                  <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 bg-black/70 rounded-none text-[9px] font-semibold text-white/80 backdrop-blur-sm">
                     {label}
                   </div>
                 )}
@@ -1241,7 +1241,7 @@ function SlidesPanel({
               }}
               onDragEnd={() => { setDragFromIndex(null); setDragOverIndex(null) }}
               onClick={() => onSelectSlide(slide.id)}
-              className={`w-full rounded-lg overflow-hidden transition-all cursor-grab group relative ${
+              className={`w-full rounded-none overflow-hidden transition-all cursor-grab group relative ${
                 dragFromIndex === index ? 'opacity-70 scale-105 shadow-2xl ring-2 ring-red-500 z-50 cursor-grabbing' : ''
               } ${
                 isActive && dragFromIndex !== index
@@ -1310,7 +1310,7 @@ function SlidesPanel({
                           )
                         })}
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <span className="text-[8px] font-bold text-indigo-400/70 bg-black/60 px-1 py-0.5 rounded">CCTV</span>
+                          <span className="text-[8px] font-bold text-[#C9241A]/70 bg-black/60 px-1 py-0.5 rounded-none">CCTV</span>
                         </div>
                       </div>
                     )
@@ -1365,7 +1365,7 @@ function SlidesPanel({
                         if (e.key === 'Escape') setEditingId(null)
                       }}
                       onClick={(e) => e.stopPropagation()}
-                      className="w-[80%] h-5 text-[10px] text-zinc-100 bg-[#383a40] border border-zinc-600 rounded px-1 text-center outline-none"
+                      className="w-[80%] h-5 text-[10px] text-zinc-100 bg-[#383a40] border border-zinc-600 rounded-none px-1 text-center outline-none"
                       autoFocus
                     />
                   </div>
@@ -1380,14 +1380,14 @@ function SlidesPanel({
                         setEditingId(slide.id)
                       }}
                     >
-                      {isCctv && <Monitor className="w-2.5 h-2.5 text-indigo-400 shrink-0" />}
+                      {isCctv && <Monitor className="w-2.5 h-2.5 text-[#C9241A] shrink-0" />}
                       {slide.title || (isCctv ? `CCTV ${index + 1}` : `Scene ${index + 1}`)}
                     </span>
                     </TooltipTrigger><TooltipContent>Double-click to rename</TooltipContent></Tooltip>
                   </div>
                 )}
                 {/* Scene number badge */}
-                <span className={`absolute top-1 left-1 z-20 text-[9px] font-bold px-1 py-0.5 rounded ${
+                <span className={`absolute top-1 left-1 z-20 text-[9px] font-bold px-1 py-0.5 rounded-none ${
                   isActive ? 'bg-red-600 text-white' : 'bg-[#383a40]/80 text-zinc-400'
                 }`}>
                   {index + 1}
@@ -1398,7 +1398,7 @@ function SlidesPanel({
                     <Tooltip><TooltipTrigger asChild>
                     <button
                       onClick={(e) => { e.stopPropagation(); onDuplicateSlide(slide.id) }}
-                      className="w-5 h-5 rounded-md bg-[#383a40]/90 hover:bg-indigo-500/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                      className="w-5 h-5 rounded-none bg-[#383a40]/90 hover:bg-[#6a5ea8]/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
                     >
                       <Copy className="w-2.5 h-2.5" />
                     </button>
@@ -1408,7 +1408,7 @@ function SlidesPanel({
                     <Tooltip><TooltipTrigger asChild>
                     <button
                       onClick={(e) => { e.stopPropagation(); onDeleteSlide(slide.id) }}
-                      className="w-5 h-5 rounded-md bg-[#383a40]/90 hover:bg-red-500/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                      className="w-5 h-5 rounded-none bg-[#383a40]/90 hover:bg-red-500/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
                     >
                       <Trash2Icon className="w-2.5 h-2.5" />
                     </button>
@@ -1430,7 +1430,7 @@ function SlidesPanel({
           {onAddSlide && (
             <button
               onClick={onAddSlide}
-              className="flex-1 h-7 rounded-lg border border-dashed border-[#3f4147] hover:border-red-500/50 text-zinc-500 hover:text-red-400 flex items-center justify-center gap-1 text-[11px] transition-all cursor-pointer"
+              className="flex-1 h-7 rounded-none border border-dashed border-[#3f4147] hover:border-red-500/50 text-zinc-500 hover:text-red-400 flex items-center justify-center gap-1 text-[11px] transition-all cursor-pointer"
             >
               <Plus className="w-3 h-3" />
               Scene
@@ -1439,7 +1439,7 @@ function SlidesPanel({
           {onAddCctvSlide && (
             <button
               onClick={onAddCctvSlide}
-              className="flex-1 h-7 rounded-lg border border-dashed border-[#3f4147] hover:border-indigo-500/50 text-zinc-500 hover:text-indigo-400 flex items-center justify-center gap-1 text-[11px] transition-all cursor-pointer"
+              className="flex-1 h-7 rounded-none border border-dashed border-[#3f4147] hover:border-[#C9241A]/50 text-zinc-500 hover:text-[#C9241A] flex items-center justify-center gap-1 text-[11px] transition-all cursor-pointer"
             >
               <Monitor className="w-3 h-3" />
               CCTV
@@ -1475,7 +1475,7 @@ function TextPanel({
       <div className="px-2 py-2">
         <button
           onClick={() => onAddLayer({ type: 'text', name: 'Text', text: 'Text', fontSize: 24, color: '#000000' })}
-          className="w-full h-8 rounded-lg border border-dashed border-[#2a2a2a] hover:border-red-500/50 text-zinc-500 hover:text-red-400 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer"
+          className="w-full h-8 rounded-none border border-dashed border-[#2a2a2a] hover:border-red-500/50 text-zinc-500 hover:text-red-400 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" />
           Add Text
@@ -1490,7 +1490,7 @@ function TextPanel({
           return (
             <div
               key={layer.id}
-              className={`flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs cursor-pointer transition-all group ${
+              className={`flex items-center gap-2 rounded-none px-2 py-1.5 text-xs cursor-pointer transition-all group ${
                 isActive ? 'bg-red-600/20 text-red-300' : 'text-zinc-300 hover:bg-white/5'
               }`}
               onClick={() => onSelectLayer(layer.id)}
@@ -1563,7 +1563,7 @@ function ShapesPanel({
                 })
               }
             }}
-            className="h-10 rounded-lg border border-[#2a2a2a] hover:border-red-500/50 text-zinc-400 hover:text-red-400 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer"
+            className="h-10 rounded-none border border-[#2a2a2a] hover:border-red-500/50 text-zinc-400 hover:text-red-400 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer"
           >
             <span className="text-base">{preset.icon}</span>
             <span>{preset.label}</span>
@@ -1582,19 +1582,19 @@ function ShapesPanel({
           return (
             <div
               key={layer.id}
-              className={`flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs cursor-pointer transition-all group ${
+              className={`flex items-center gap-2 rounded-none px-2 py-1.5 text-xs cursor-pointer transition-all group ${
                 isActive ? 'bg-red-600/20 text-red-300' : 'text-zinc-300 hover:bg-white/5'
               }`}
               onClick={() => onSelectLayer(layer.id)}
             >
-              <div className="w-3.5 h-3.5 rounded-sm shrink-0" style={{ backgroundColor: layer.color || '#666666' }} />
+              <div className="w-3.5 h-3.5 rounded-none shrink-0" style={{ backgroundColor: layer.color || '#666666' }} />
               <span className="flex-1 truncate">{layer.name}</span>
               <input
                 type="color"
                 value={layer.color || '#666666'}
                 onChange={(e) => { e.stopPropagation(); onUpdateLayer(layer.id, { color: e.target.value }) }}
                 onClick={(e) => e.stopPropagation()}
-                className="w-5 h-5 rounded cursor-pointer border-0 bg-transparent p-0"
+                className="w-5 h-5 rounded-none cursor-pointer border-0 bg-transparent p-0"
               />
               <Tooltip><TooltipTrigger asChild>
               <button
@@ -1664,13 +1664,13 @@ function SceneProperties({
                 }
                 if (e.key === 'Escape') setIsEditingName(false)
               }}
-              className="w-full h-7 text-[11px] text-zinc-100 bg-[#383a40] border border-zinc-600 rounded-md px-2 outline-none focus:border-red-500/60"
+              className="w-full h-7 text-[11px] text-zinc-100 bg-[#383a40] border border-zinc-600 rounded-none px-2 outline-none focus:border-red-500/60"
               autoFocus
             />
           ) : (
             <button
               onClick={() => { setNameValue(slideName); setIsEditingName(true) }}
-              className="w-full h-7 text-left text-[11px] text-zinc-300 bg-[#383a40] rounded-md px-2 flex items-center justify-between hover:bg-[#43454b] transition-colors cursor-pointer"
+              className="w-full h-7 text-left text-[11px] text-zinc-300 bg-[#383a40] rounded-none px-2 flex items-center justify-between hover:bg-[#43454b] transition-colors cursor-pointer"
             >
               <span className="truncate">{slideName || 'Untitled Scene'}</span>
               <Pencil className="w-3 h-3 text-zinc-500 shrink-0" />
@@ -1685,12 +1685,12 @@ function SceneProperties({
           <div className="flex flex-wrap gap-1 mb-1.5 max-w-full">
             {['#ffffff', '#000000', '#1a1a2e', '#dc2626'].map(c => (
               <button key={c} onClick={() => handleBgChange(c)}
-                className={`w-5 h-5 rounded-md border transition-all cursor-pointer ${bgColor === c ? 'border-red-500 ring-1 ring-red-500/50 scale-110' : 'border-[#3f4147] hover:border-zinc-400'}`}
+                className={`w-5 h-5 rounded-none border transition-all cursor-pointer ${bgColor === c ? 'border-red-500 ring-1 ring-red-500/50 scale-110' : 'border-[#3f4147] hover:border-zinc-400'}`}
                 style={{ backgroundColor: c }} />
             ))}
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md border border-[#3f4147] shrink-0 cursor-pointer relative overflow-hidden" style={{ backgroundColor: bgColor }}>
+            <div className="w-7 h-7 rounded-none border border-[#3f4147] shrink-0 cursor-pointer relative overflow-hidden" style={{ backgroundColor: bgColor }}>
               <input type="color" value={bgColor} onChange={(e) => handleBgChange(e.target.value)}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
             </div>
@@ -1700,7 +1700,7 @@ function SceneProperties({
                 const v = e.target.value
                 if (/^#[0-9a-fA-F]{0,6}$/.test(v)) handleBgChange(v)
               }}
-              className="flex-1 min-w-0 h-7 text-[11px] text-zinc-300 bg-[#383a40] border border-zinc-600 rounded-md px-2 font-mono outline-none focus:border-red-500/60"
+              className="flex-1 min-w-0 h-7 text-[11px] text-zinc-300 bg-[#383a40] border border-zinc-600 rounded-none px-2 font-mono outline-none focus:border-red-500/60"
             />
           </div>
         </div>
@@ -1709,7 +1709,7 @@ function SceneProperties({
         <div className="space-y-1.5">
           <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Canvas Size</label>
           <div className="flex items-center gap-2 text-[11px] text-zinc-400">
-            <div className="flex-1 h-7 bg-[#383a40] rounded-md px-2 flex items-center border border-zinc-700/50">
+            <div className="flex-1 h-7 bg-[#383a40] rounded-none px-2 flex items-center border border-zinc-700/50">
               {content.canvas?.width || 1920} x {content.canvas?.height || 1080}
             </div>
           </div>
@@ -1721,28 +1721,28 @@ function SceneProperties({
           <div className="grid grid-cols-2 gap-1.5">
             <button
               onClick={() => onOpenPanel('gallery')}
-              className="h-8 rounded-lg border border-[#3f4147] hover:border-red-500/50 text-zinc-400 hover:text-red-400 flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
+              className="h-8 rounded-none border border-[#3f4147] hover:border-red-500/50 text-zinc-400 hover:text-red-400 flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
             >
               <Image className="w-3 h-3" />
               Add Assets
             </button>
             <button
               onClick={() => onOpenPanel('text')}
-              className="h-8 rounded-lg border border-[#3f4147] hover:border-sky-500/50 text-zinc-400 hover:text-sky-400 flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
+              className="h-8 rounded-none border border-[#3f4147] hover:border-[#3E6DC4]/50 text-zinc-400 hover:text-[#3E6DC4] flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
             >
               <Type className="w-3 h-3" />
               Add Text
             </button>
             <button
               onClick={() => onOpenPanel('shapes')}
-              className="h-8 rounded-lg border border-[#3f4147] hover:border-emerald-500/50 text-zinc-400 hover:text-emerald-400 flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
+              className="h-8 rounded-none border border-[#3f4147] hover:border-[#2E9E63]/50 text-zinc-400 hover:text-[#2E9E63] flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
             >
               <Shapes className="w-3 h-3" />
               Add Shape
             </button>
             <button
               onClick={() => onOpenPanel('events')}
-              className="h-8 rounded-lg border border-[#3f4147] hover:border-amber-500/50 text-zinc-400 hover:text-amber-400 flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
+              className="h-8 rounded-none border border-[#3f4147] hover:border-amber-500/50 text-zinc-400 hover:text-amber-400 flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
             >
               <Sparkles className="w-3 h-3" />
               Add Event

@@ -41,10 +41,10 @@ export default function AdminPage() {
   }
 
   const statCards = [
-    { label: 'Classrooms', value: stats.presentationCount, icon: FileText, color: 'text-blue-500 bg-blue-500/10' },
-    { label: 'Activity', value: stats.sessionCount, icon: Radio, color: 'text-emerald-500 bg-emerald-500/10' },
-    { label: 'Participants', value: stats.participantCount, icon: Users, color: 'text-violet-500 bg-violet-500/10' },
-    { label: 'Responses', value: stats.responseCount, icon: BarChart2, color: 'text-orange-500 bg-orange-500/10' },
+    { label: 'Classrooms', value: stats.presentationCount, icon: FileText, color: 'text-[#3E6DC4] bg-[#3E6DC4]/10' },
+    { label: 'Activity', value: stats.sessionCount, icon: Radio, color: 'text-[#2E9E63] bg-[#2E9E63]/10' },
+    { label: 'Participants', value: stats.participantCount, icon: Users, color: 'text-[#6a5ea8] bg-[#6a5ea8]/10' },
+    { label: 'Responses', value: stats.responseCount, icon: BarChart2, color: 'text-[#c98a2a] bg-[#c98a2a]/10' },
   ]
 
   return (
@@ -57,9 +57,9 @@ export default function AdminPage() {
       {/* Stats cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map(card => (
-          <div key={card.label} className="bg-card border border-border rounded-2xl p-5">
+          <div key={card.label} className="bg-card border border-border rounded-none p-5">
             <div className="flex items-center gap-3 mb-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${card.color}`}>
+              <div className={`w-10 h-10 rounded-none flex items-center justify-center ${card.color}`}>
                 <card.icon className="w-5 h-5" />
               </div>
               <p className="text-sm font-medium text-muted-foreground">{card.label}</p>
@@ -72,7 +72,7 @@ export default function AdminPage() {
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Presentations */}
-        <div className="bg-card border border-border rounded-2xl p-6">
+        <div className="bg-card border border-border rounded-none p-6">
           <h2 className="font-semibold text-foreground mb-4">Recent Classrooms</h2>
           {stats.recentPresentations.length === 0 ? (
             <p className="text-sm text-muted-foreground">No classrooms yet.</p>
@@ -94,7 +94,7 @@ export default function AdminPage() {
         </div>
 
         {/* Recent Sessions */}
-        <div className="bg-card border border-border rounded-2xl p-6">
+        <div className="bg-card border border-border rounded-none p-6">
           <h2 className="font-semibold text-foreground mb-4">Recent Activity</h2>
           {stats.recentSessions.length === 0 ? (
             <p className="text-sm text-muted-foreground">No activity yet.</p>
@@ -110,10 +110,10 @@ export default function AdminPage() {
                       {s.started_at ? new Date(s.started_at).toLocaleDateString() : '-'}
                     </p>
                   </div>
-                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                    s.status === 'active' ? 'bg-emerald-500/15 text-emerald-600' :
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded-none ${
+                    s.status === 'active' ? 'bg-[#2E9E63]/15 text-[#2E9E63]' :
                     s.status === 'ended' ? 'bg-muted text-muted-foreground' :
-                    'bg-yellow-500/15 text-yellow-600'
+                    'bg-[#c98a2a]/15 text-[#c98a2a]'
                   }`}>
                     {s.status}
                   </span>

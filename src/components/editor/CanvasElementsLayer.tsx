@@ -154,19 +154,19 @@ export function CanvasElementsLayer({ elements, onChange, containerRef, selected
             zIndex: 40,
           }}
         >
-          <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-card/95 backdrop-blur border border-border shadow-lg">
+          <div className="flex items-center gap-1 px-2 py-1 rounded-none bg-card/95 backdrop-blur border border-border shadow-lg">
             <button
               onClick={() => {
                 if (onRequestAddImage) { onRequestAddImage(); return }
               }}
-              className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              className="px-2 py-1 rounded-none text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
               Change
             </button>
             <div className="w-px h-4 bg-border" />
             <button
               onClick={() => deleteElement(selectedId)}
-              className="p-1 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+              className="p-1 rounded-none text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -424,12 +424,12 @@ function TextFormatToolbar({ element, onUpdateStyle, onDelete }: {
   const style = element.style || {}
 
   return (
-    <div className="flex items-center gap-0.5 px-2 py-1 rounded-lg bg-card/95 backdrop-blur border border-border shadow-lg">
+    <div className="flex items-center gap-0.5 px-2 py-1 rounded-none bg-card/95 backdrop-blur border border-border shadow-lg">
       {/* Font size */}
       <select
         value={style.fontSize || 16}
         onChange={(e) => onUpdateStyle({ fontSize: Number(e.target.value) })}
-        className="bg-muted text-foreground text-xs rounded px-1 py-0.5 border-none outline-none cursor-pointer"
+        className="bg-muted text-foreground text-xs rounded-none px-1 py-0.5 border-none outline-none cursor-pointer"
         onMouseDown={(e) => e.stopPropagation()}
       >
         {[10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 42, 48, 56, 64, 72].map(s => (
@@ -442,7 +442,7 @@ function TextFormatToolbar({ element, onUpdateStyle, onDelete }: {
       {/* Bold */}
       <button
         onClick={() => onUpdateStyle({ fontWeight: style.fontWeight === 'bold' ? 'normal' : 'bold' })}
-        className={cn('p-1 rounded transition-colors', style.fontWeight === 'bold' ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted')}
+        className={cn('p-1 rounded-none transition-colors', style.fontWeight === 'bold' ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted')}
       >
         <Bold className="w-3.5 h-3.5" />
       </button>
@@ -450,7 +450,7 @@ function TextFormatToolbar({ element, onUpdateStyle, onDelete }: {
       {/* Italic */}
       <button
         onClick={() => onUpdateStyle({ fontStyle: style.fontStyle === 'italic' ? 'normal' : 'italic' })}
-        className={cn('p-1 rounded transition-colors', style.fontStyle === 'italic' ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted')}
+        className={cn('p-1 rounded-none transition-colors', style.fontStyle === 'italic' ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted')}
       >
         <Italic className="w-3.5 h-3.5" />
       </button>
@@ -464,7 +464,7 @@ function TextFormatToolbar({ element, onUpdateStyle, onDelete }: {
           <button
             key={align}
             onClick={() => onUpdateStyle({ textAlign: align })}
-            className={cn('p-1 rounded transition-colors', style.textAlign === align ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted')}
+            className={cn('p-1 rounded-none transition-colors', style.textAlign === align ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted')}
           >
             <AlignIcon className="w-3.5 h-3.5" />
           </button>
@@ -479,7 +479,7 @@ function TextFormatToolbar({ element, onUpdateStyle, onDelete }: {
         type="color"
         value={style.color || '#374151'}
         onChange={(e) => onUpdateStyle({ color: e.target.value })}
-        className="w-5 h-5 rounded cursor-pointer border-none"
+        className="w-5 h-5 rounded-none cursor-pointer border-none"
         onMouseDown={(e) => e.stopPropagation()}
       />
       </TooltipTrigger><TooltipContent>Text color</TooltipContent></Tooltip>
@@ -489,7 +489,7 @@ function TextFormatToolbar({ element, onUpdateStyle, onDelete }: {
       {/* Delete */}
       <button
         onClick={onDelete}
-        className="p-1 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+        className="p-1 rounded-none text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
       >
         <Trash2 className="w-3.5 h-3.5" />
       </button>

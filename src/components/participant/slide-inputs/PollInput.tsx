@@ -13,11 +13,11 @@ interface PollInputProps {
 
 const OPTION_COLORS = [
   'border-primary hover:bg-primary/10 data-[selected=true]:bg-primary/20',
-  'border-blue-500 hover:bg-blue-500/10 data-[selected=true]:bg-blue-500/20',
-  'border-emerald-500 hover:bg-emerald-500/10 data-[selected=true]:bg-emerald-500/20',
-  'border-amber-500 hover:bg-amber-500/10 data-[selected=true]:bg-amber-500/20',
-  'border-red-500 hover:bg-red-500/10 data-[selected=true]:bg-red-500/20',
-  'border-pink-500 hover:bg-pink-500/10 data-[selected=true]:bg-pink-500/20',
+  'border-[#3E6DC4] hover:bg-[#3E6DC4]/10 data-[selected=true]:bg-[#3E6DC4]/20',
+  'border-[#2E9E63] hover:bg-[#2E9E63]/10 data-[selected=true]:bg-[#2E9E63]/20',
+  'border-[#c98a2a] hover:bg-[#c98a2a]/10 data-[selected=true]:bg-[#c98a2a]/20',
+  'border-[#C9241A] hover:bg-[#C9241A]/10 data-[selected=true]:bg-[#C9241A]/20',
+  'border-[#6a5ea8] hover:bg-[#6a5ea8]/10 data-[selected=true]:bg-[#6a5ea8]/20',
 ]
 
 export function PollInput({ slide, onSubmit, disabled }: PollInputProps) {
@@ -54,7 +54,7 @@ export function PollInput({ slide, onSubmit, disabled }: PollInputProps) {
             onClick={() => toggleOption(opt.id)}
             disabled={disabled}
             className={cn(
-              'w-full text-left px-5 py-4 rounded-2xl border-2 transition-all duration-200 font-medium',
+              'w-full text-left px-5 py-4 rounded-none border-2 transition-all duration-200 font-medium',
               'disabled:opacity-50 disabled:cursor-not-allowed',
               selected.includes(opt.id)
                 ? 'border-primary bg-primary/15 scale-[1.02] shadow-md shadow-primary/10'
@@ -72,7 +72,7 @@ export function PollInput({ slide, onSubmit, disabled }: PollInputProps) {
       <Button
         onClick={handleSubmit}
         disabled={!selected.length || submitting || disabled}
-        className="w-full bg-red-600 hover:bg-red-500 text-white font-semibold py-6 rounded-xl text-lg transition-all hover:shadow-lg hover:shadow-red-500/25"
+        className="w-full bg-[#C9241A] hover:bg-[#a81d15] text-white font-semibold py-6 rounded-none text-lg transition-all hover:shadow-lg hover:shadow-[#C9241A]/25"
       >
         {submitting ? 'Submitting...' : 'Submit'}
       </Button>

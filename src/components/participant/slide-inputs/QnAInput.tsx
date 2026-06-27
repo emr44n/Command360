@@ -83,12 +83,12 @@ export function QnAInput({ slide, sessionId, disabled }: QnAInputProps) {
           placeholder="Ask the presenter a question..."
           disabled={disabled || submitting}
           rows={3}
-          className="bg-background border-border text-foreground placeholder:text-muted-foreground rounded-2xl resize-none focus-visible:ring-primary"
+          className="bg-background border-border text-foreground placeholder:text-muted-foreground rounded-none resize-none focus-visible:ring-primary"
         />
         <Button
           type="submit"
           disabled={!question.trim() || submitting || disabled}
-          className="w-full bg-red-600 hover:bg-red-500 text-white font-semibold py-5 rounded-xl transition-all hover:shadow-lg hover:shadow-red-500/25"
+          className="w-full bg-[#C9241A] hover:bg-[#a81d15] text-white font-semibold py-5 rounded-none transition-all hover:shadow-lg hover:shadow-[#C9241A]/25"
         >
           <MessageSquare className="w-4 h-4 mr-2" />
           {submitting ? 'Submitting...' : 'Ask Question'}
@@ -99,14 +99,14 @@ export function QnAInput({ slide, sessionId, disabled }: QnAInputProps) {
         <div className="space-y-2">
           <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">All questions</p>
           {questions.map((q) => (
-            <div key={q.id} className={`bg-card rounded-2xl p-3 border ${q.is_answered ? 'border-emerald-500/30 opacity-60' : 'border-border'}`}>
+            <div key={q.id} className={`bg-card rounded-none p-3 border ${q.is_answered ? 'border-[#2E9E63]/30 opacity-60' : 'border-border'}`}>
               <p className="text-foreground text-sm">{q.question_text}</p>
               <div className="flex items-center gap-2 mt-2">
-                {q.is_answered && <span className="text-xs text-emerald-500">✓ Answered</span>}
+                {q.is_answered && <span className="text-xs text-[#2E9E63]">✓ Answered</span>}
                 <button
                   onClick={() => handleUpvote(q.id)}
                   disabled={upvoted.has(q.id)}
-                  className={`flex items-center gap-1 text-xs px-2 py-1 rounded-xl border transition-colors ${
+                  className={`flex items-center gap-1 text-xs px-2 py-1 rounded-none border transition-colors ${
                     upvoted.has(q.id)
                       ? 'border-primary text-primary bg-primary/10'
                       : 'border-border text-muted-foreground hover:border-primary/50'

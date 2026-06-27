@@ -815,11 +815,11 @@ export function StudioCanvas({
     >
       {/* Zoom controls — bottom-right of canvas area */}
       {interactive && (
-        <div className="absolute bottom-2 right-2 z-20 flex items-center gap-1 bg-[#1e1f22]/90 backdrop-blur-sm rounded-lg px-1.5 py-1 border border-[#3f4147]/50">
-          <button onClick={() => setCanvasZoom(prev => Math.max(25, prev - 10))} className="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-white rounded-md transition-colors text-sm font-bold cursor-pointer">−</button>
+        <div className="absolute bottom-2 right-2 z-20 flex items-center gap-1 bg-[#1e1f22]/90 backdrop-blur-sm rounded-none px-1.5 py-1 border border-[#3f4147]/50">
+          <button onClick={() => setCanvasZoom(prev => Math.max(25, prev - 10))} className="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-white rounded-none transition-colors text-sm font-bold cursor-pointer">−</button>
           <span className="text-[10px] text-zinc-400 font-mono w-10 text-center">{canvasZoom}%</span>
-          <button onClick={() => setCanvasZoom(prev => Math.min(200, prev + 10))} className="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-white rounded-md transition-colors text-sm font-bold cursor-pointer">+</button>
-          <button onClick={() => setCanvasZoom(100)} className="ml-0.5 px-1.5 h-6 flex items-center justify-center text-zinc-500 hover:text-white rounded-md text-[9px] transition-colors cursor-pointer">Fit</button>
+          <button onClick={() => setCanvasZoom(prev => Math.min(200, prev + 10))} className="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-white rounded-none transition-colors text-sm font-bold cursor-pointer">+</button>
+          <button onClick={() => setCanvasZoom(100)} className="ml-0.5 px-1.5 h-6 flex items-center justify-center text-zinc-500 hover:text-white rounded-none text-[9px] transition-colors cursor-pointer">Fit</button>
         </div>
       )}
       {/* Konva stage for non-video layers */}
@@ -1017,13 +1017,13 @@ export function StudioCanvas({
                 const prevP = i > 0 ? polygonDrawPoints[i - 1] : null
                 return (
                   <React.Fragment key={i}>
-                    {prevP && <line x1={(prevP.x / 100) * stageSize.width} y1={(prevP.y / 100) * stageSize.height} x2={px} y2={py} stroke="#ef4444" strokeWidth="2" strokeDasharray="6 3" />}
-                    <circle cx={px} cy={py} r={i === 0 && polygonDrawPoints.length >= 3 ? 8 : 5} fill={i === 0 && polygonDrawPoints.length >= 3 ? '#ef4444' : '#ffffff'} stroke="#ef4444" strokeWidth="2" />
+                    {prevP && <line x1={(prevP.x / 100) * stageSize.width} y1={(prevP.y / 100) * stageSize.height} x2={px} y2={py} stroke="#C9241A" strokeWidth="2" strokeDasharray="6 3" />}
+                    <circle cx={px} cy={py} r={i === 0 && polygonDrawPoints.length >= 3 ? 8 : 5} fill={i === 0 && polygonDrawPoints.length >= 3 ? '#C9241A' : '#ffffff'} stroke="#C9241A" strokeWidth="2" />
                   </React.Fragment>
                 )
               })}
             </svg>
-            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-50 px-4 py-1.5 bg-red-600 rounded-full text-[11px] text-white font-bold shadow-lg">Click to add points • Click first point to close • Escape to cancel</div>
+            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-50 px-4 py-1.5 bg-red-600 rounded-none text-[11px] text-white font-bold shadow-lg">Click to add points • Click first point to close • Escape to cancel</div>
           </>
         )}
 
@@ -1062,7 +1062,7 @@ export function StudioCanvas({
                 <div
                   className="absolute inset-0 pointer-events-none"
                   style={{
-                    border: '2px dashed #3b82f6',
+                    border: '2px dashed #3E6DC4',
                   }}
                 />
               )}
@@ -1115,12 +1115,12 @@ export function StudioCanvas({
                   {/* Resize handle - bottom right */}
                   <div
                     data-handle="resize"
-                    className="absolute w-[8px] h-[8px] rounded-[2px] cursor-se-resize"
+                    className="absolute w-[8px] h-[8px] rounded-none cursor-se-resize"
                     style={{
                       right: -4,
                       bottom: -4,
                       backgroundColor: '#ffffff',
-                      border: '1.5px solid #3b82f6',
+                      border: '1.5px solid #3E6DC4',
                     }}
                     onMouseDown={(e) => {
                       e.preventDefault()
@@ -1150,12 +1150,12 @@ export function StudioCanvas({
                   {/* Resize handle - bottom left */}
                   <div
                     data-handle="resize-bl"
-                    className="absolute w-[8px] h-[8px] rounded-[2px] cursor-sw-resize"
+                    className="absolute w-[8px] h-[8px] rounded-none cursor-sw-resize"
                     style={{
                       left: -4,
                       bottom: -4,
                       backgroundColor: '#ffffff',
-                      border: '1.5px solid #3b82f6',
+                      border: '1.5px solid #3E6DC4',
                     }}
                     onMouseDown={(e) => {
                       e.preventDefault()
@@ -1189,12 +1189,12 @@ export function StudioCanvas({
                   {/* Resize handle - top right */}
                   <div
                     data-handle="resize-tr"
-                    className="absolute w-[8px] h-[8px] rounded-[2px] cursor-ne-resize"
+                    className="absolute w-[8px] h-[8px] rounded-none cursor-ne-resize"
                     style={{
                       right: -4,
                       top: -4,
                       backgroundColor: '#ffffff',
-                      border: '1.5px solid #3b82f6',
+                      border: '1.5px solid #3E6DC4',
                     }}
                     onMouseDown={(e) => {
                       e.preventDefault()
@@ -1228,13 +1228,13 @@ export function StudioCanvas({
                   {/* Middle-right resize handle */}
                   <div
                     data-handle="resize-mr"
-                    className="absolute w-[8px] h-[8px] rounded-[2px] cursor-e-resize"
+                    className="absolute w-[8px] h-[8px] rounded-none cursor-e-resize"
                     style={{
                       right: -4,
                       top: '50%',
                       marginTop: -4,
                       backgroundColor: '#ffffff',
-                      border: '1.5px solid #3b82f6',
+                      border: '1.5px solid #3E6DC4',
                     }}
                     onMouseDown={(e) => {
                       e.preventDefault()
@@ -1258,13 +1258,13 @@ export function StudioCanvas({
                   {/* Middle-bottom resize handle */}
                   <div
                     data-handle="resize-mb"
-                    className="absolute w-[8px] h-[8px] rounded-[2px] cursor-s-resize"
+                    className="absolute w-[8px] h-[8px] rounded-none cursor-s-resize"
                     style={{
                       bottom: -4,
                       left: '50%',
                       marginLeft: -4,
                       backgroundColor: '#ffffff',
-                      border: '1.5px solid #3b82f6',
+                      border: '1.5px solid #3E6DC4',
                     }}
                     onMouseDown={(e) => {
                       e.preventDefault()
