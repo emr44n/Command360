@@ -1,14 +1,12 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { PublicLayout } from '@/components/layout/PublicLayout'
-import { ScrollReveal } from '@/components/home/ScrollReveal'
-import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
+import { SiteShell } from '@/components/site/SiteShell'
+import { PageHero, Eyebrow, DarkSection, Container } from '@/components/site/primitives'
 import {
   Mail,
   MapPin,
   Phone,
-  Headset,
   Send,
   Loader2,
   CheckCircle2,
@@ -63,24 +61,28 @@ const subjectOptions = [
 ]
 
 /* ------------------------------------------------------------------ */
-/*  Styles for form elements                                           */
+/*  Styles for form elements (v5 — rigid, straight corners)            */
 /* ------------------------------------------------------------------ */
 
 const inputBase =
-  'w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition-all duration-200 focus:border-red-500/50 focus:ring-2 focus:ring-red-500/20 focus:bg-white/[0.06] hover:border-white/[0.14]'
+  'w-full border border-white/15 bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition-colors duration-200 focus:border-[#C9241A]'
 
 const selectBase =
-  'w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm text-white outline-none transition-all duration-200 focus:border-red-500/50 focus:ring-2 focus:ring-red-500/20 focus:bg-white/[0.06] hover:border-white/[0.14] appearance-none cursor-pointer'
+  'w-full border border-white/15 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition-colors duration-200 focus:border-[#C9241A] appearance-none cursor-pointer'
 
-const labelBase = 'block text-sm font-medium text-white/70 mb-2'
+const labelBase = 'block ff-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-[#7c828a] mb-2.5'
 
 /* ------------------------------------------------------------------ */
 /*  Page                                                               */
 /* ------------------------------------------------------------------ */
 
-export default function ContactPage() {
-  const { openAuth } = useAuthSlideOver()
+const CONTACT_CARDS = [
+  { icon: Mail, title: 'Email', desc: 'hello@command360.co.uk' },
+  { icon: Phone, title: 'Phone', desc: '+44 121 000 0000' },
+  { icon: MapPin, title: 'Location', desc: 'Birmingham, West Midlands, UK' },
+]
 
+export default function ContactPage() {
   const formRef = useRef<HTMLFormElement>(null)
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
@@ -119,418 +121,265 @@ export default function ContactPage() {
   }
 
   function fieldClass(field: string) {
-    return errors[field] ? 'ring-2 ring-red-500/60 border-red-500/50' : ''
+    return errors[field] ? 'border-[#C9241A]' : ''
   }
 
   return (
-    <PublicLayout>
-      {/* ── Hero ── */}
-      <section className="relative bg-[#07070a] overflow-hidden">
-        {/* Radial red glow */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(220,38,38,0.15),transparent)]" />
-        </div>
-        {/* Grid texture */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-[0.10]"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(220,38,38,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(220,38,38,0.35) 1px, transparent 1px)',
-            backgroundSize: '64px 64px',
-          }}
-        />
-        <div className="relative max-w-3xl mx-auto px-5 pt-36 pb-28 text-center">
-          <ScrollReveal>
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-[10px] uppercase tracking-[0.15em] text-white/60 mb-8">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 pulse-dot" />
-              Contact Us
-            </span>
-          </ScrollReveal>
-          <ScrollReveal delay={80}>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6">
-              Let&apos;s{' '}
-              <span className="bg-gradient-to-r from-red-400 via-red-500 to-orange-400 bg-clip-text text-transparent">
-                Talk
-              </span>
-            </h1>
-          </ScrollReveal>
-          <ScrollReveal delay={160}>
-            <p className="text-lg md:text-xl text-white/45 leading-relaxed max-w-lg mx-auto">
-              Questions, feedback, or partnership enquiries — we&apos;d love to hear from you.
-            </p>
-          </ScrollReveal>
-        </div>
-      </section>
+    <SiteShell>
+      <PageHero
+        eyebrow={<Eyebrow>Contact Us</Eyebrow>}
+        title={<>Let&apos;s <span className="text-[#C9241A]">Talk</span></>}
+        lede="Questions, feedback, or partnership enquiries — we'd love to hear from you."
+      />
 
       {/* ── Form + Map two-column section ── */}
-      <section className="relative bg-[#07070a] overflow-hidden border-t border-border/50">
-        {/* Subtle blur orbs */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-red-500/[0.03] blur-[150px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-red-500/[0.04] blur-[120px] pointer-events-none" />
-
-        <div className="relative max-w-6xl mx-auto px-5 py-24">
-          <ScrollReveal>
-            <div className="text-center mb-14">
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-[10px] uppercase tracking-[0.15em] text-white/60 mb-6">
-                <Headset className="w-3.5 h-3.5" />
-                Send a Message
-              </span>
-              <h2 className="text-2xl md:text-4xl font-bold tracking-tight text-white">
-                We&apos;re here to{' '}
-                <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
-                  help
-                </span>
-              </h2>
-            </div>
-          </ScrollReveal>
+      <DarkSection>
+        <div className="absolute top-[-140px] right-[-100px] w-[780px] h-[560px] pointer-events-none" aria-hidden="true" style={{ background: 'radial-gradient(55% 65% at 70% 30%,rgba(201,36,26,.14),transparent 76%)', filter: 'blur(46px)' }} />
+        <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
+        <Container className="relative">
+          <div className="max-w-[620px] mb-9">
+            <Eyebrow n="01">Send a Message</Eyebrow>
+            <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 text-white">We&apos;re here to help</h2>
+          </div>
+          <div className="h-0.5 bg-white/20 origin-left mb-10" data-rule />
 
           <div className="grid lg:grid-cols-[1fr_420px] gap-8 items-start">
             {/* ── Left: Form ── */}
-            <ScrollReveal delay={100}>
-              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 md:p-10 [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
-                {sent ? (
-                  /* ── Thank-you state ── */
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <div className="relative mb-6">
-                      <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center animate-[scale-in_0.4s_ease-out]">
-                        <CheckCircle2 className="w-10 h-10 text-emerald-400 animate-[fade-in-up_0.5s_ease-out_0.2s_both]" />
-                      </div>
-                      {/* Pulse ring */}
-                      <div className="absolute inset-0 rounded-full border-2 border-emerald-400/30 animate-ping" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-white mb-2">Thank you!</h3>
-                    <p className="text-white/45 max-w-sm leading-relaxed">
-                      Your message has been received. We&apos;ll get back to you within 24 hours on business days.
-                    </p>
-                    <button
-                      onClick={() => {
-                        setSent(false)
-                        setErrors({})
-                      }}
-                      className="mt-8 text-sm text-red-400 hover:text-red-300 transition-colors cursor-pointer"
-                    >
-                      Send another message
-                    </button>
+            <div data-reveal className="border border-white/14 bg-white/[0.02] p-6 md:p-10">
+              {sent ? (
+                /* ── Thank-you state ── */
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <div className="w-16 h-16 flex items-center justify-center mb-6 bg-[#2E9E63]/12 border border-[#2E9E63]/30">
+                    <CheckCircle2 className="w-8 h-8 text-[#2E9E63]" />
                   </div>
-                ) : (
-                  /* ── Form ── */
-                  <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-5">
-                    {/* Name + Email row */}
-                    <div className="grid sm:grid-cols-2 gap-5">
-                      <div>
-                        <label htmlFor="contact-name" className={labelBase}>
-                          Name <span className="text-red-400">*</span>
-                        </label>
-                        <input
-                          id="contact-name"
-                          name="name"
-                          type="text"
-                          required
-                          placeholder="Your full name"
-                          className={`${inputBase} ${fieldClass('name')}`}
-                          onChange={() => setErrors((e) => ({ ...e, name: false }))}
-                        />
-                        {errors.name && (
-                          <p className="mt-1.5 text-xs text-red-400">Please enter your name</p>
-                        )}
-                      </div>
-                      <div>
-                        <label htmlFor="contact-email" className={labelBase}>
-                          Email <span className="text-red-400">*</span>
-                        </label>
-                        <input
-                          id="contact-email"
-                          name="email"
-                          type="email"
-                          required
-                          placeholder="you@example.com"
-                          className={`${inputBase} ${fieldClass('email')}`}
-                          onChange={() => setErrors((e) => ({ ...e, email: false }))}
-                        />
-                        {errors.email && (
-                          <p className="mt-1.5 text-xs text-red-400">Please enter a valid email</p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Organisation dropdown */}
+                  <h3 className="ff-display font-bold text-2xl text-white mb-2">Thank you!</h3>
+                  <p className="text-white/45 max-w-sm leading-relaxed">
+                    Your message has been received. We&apos;ll get back to you within 24 hours on business days.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSent(false)
+                      setErrors({})
+                    }}
+                    className="mt-8 ff-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-[#C9241A] hover:text-[#a91d14] transition-colors cursor-pointer"
+                  >
+                    Send another message
+                  </button>
+                </div>
+              ) : (
+                /* ── Form ── */
+                <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-5">
+                  {/* Name + Email row */}
+                  <div className="grid sm:grid-cols-2 gap-5">
                     <div>
-                      <label htmlFor="contact-organisation" className={labelBase}>
-                        Organisation <span className="text-red-400">*</span>
+                      <label htmlFor="contact-name" className={labelBase}>
+                        Name <span className="text-[#C9241A]">*</span>
                       </label>
-                      <div className="relative">
-                        <select
-                          id="contact-organisation"
-                          name="organisation"
-                          required
-                          defaultValue=""
-                          className={`${selectBase} ${fieldClass('organisation')}`}
-                          onChange={() => setErrors((e) => ({ ...e, organisation: false }))}
-                        >
-                          <option value="" disabled>
-                            Select your organisation
-                          </option>
-                          <optgroup label="UK Fire & Rescue Services">
-                            {fireServices.map((s) => (
-                              <option key={s} value={s}>
-                                {s}
-                              </option>
-                            ))}
-                          </optgroup>
-                          <optgroup label="UK Police Services">
-                            {policeServices.map((s) => (
-                              <option key={s} value={s}>
-                                {s}
-                              </option>
-                            ))}
-                          </optgroup>
-                          <optgroup label="UK Ambulance Services">
-                            {ambulanceServices.map((s) => (
-                              <option key={s} value={s}>
-                                {s}
-                              </option>
-                            ))}
-                          </optgroup>
-                          <optgroup label="Other">
-                            <option value="other">Other organisation</option>
-                          </optgroup>
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
-                      </div>
-                      {errors.organisation && (
-                        <p className="mt-1.5 text-xs text-red-400">Please select your organisation</p>
+                      <input
+                        id="contact-name"
+                        name="name"
+                        type="text"
+                        required
+                        placeholder="Your full name"
+                        className={`${inputBase} ${fieldClass('name')}`}
+                        onChange={() => setErrors((e) => ({ ...e, name: false }))}
+                      />
+                      {errors.name && (
+                        <p className="mt-1.5 text-xs text-[#C9241A]">Please enter your name</p>
                       )}
                     </div>
-
-                    {/* Subject */}
                     <div>
-                      <label htmlFor="contact-subject" className={labelBase}>
-                        Subject <span className="text-red-400">*</span>
+                      <label htmlFor="contact-email" className={labelBase}>
+                        Email <span className="text-[#C9241A]">*</span>
                       </label>
-                      <div className="relative">
-                        <select
-                          id="contact-subject"
-                          name="subject"
-                          required
-                          defaultValue=""
-                          className={`${selectBase} ${fieldClass('subject')}`}
-                          onChange={() => setErrors((e) => ({ ...e, subject: false }))}
-                        >
-                          <option value="" disabled>
-                            What can we help with?
-                          </option>
-                          {subjectOptions.map((s) => (
+                      <input
+                        id="contact-email"
+                        name="email"
+                        type="email"
+                        required
+                        placeholder="you@example.com"
+                        className={`${inputBase} ${fieldClass('email')}`}
+                        onChange={() => setErrors((e) => ({ ...e, email: false }))}
+                      />
+                      {errors.email && (
+                        <p className="mt-1.5 text-xs text-[#C9241A]">Please enter a valid email</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Organisation dropdown */}
+                  <div>
+                    <label htmlFor="contact-organisation" className={labelBase}>
+                      Organisation <span className="text-[#C9241A]">*</span>
+                    </label>
+                    <div className="relative">
+                      <select
+                        id="contact-organisation"
+                        name="organisation"
+                        required
+                        defaultValue=""
+                        className={`${selectBase} ${fieldClass('organisation')}`}
+                        onChange={() => setErrors((e) => ({ ...e, organisation: false }))}
+                      >
+                        <option value="" disabled>
+                          Select your organisation
+                        </option>
+                        <optgroup label="UK Fire & Rescue Services">
+                          {fireServices.map((s) => (
                             <option key={s} value={s}>
                               {s}
                             </option>
                           ))}
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
-                      </div>
-                      {errors.subject && (
-                        <p className="mt-1.5 text-xs text-red-400">Please choose a subject</p>
-                      )}
+                        </optgroup>
+                        <optgroup label="UK Police Services">
+                          {policeServices.map((s) => (
+                            <option key={s} value={s}>
+                              {s}
+                            </option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="UK Ambulance Services">
+                          {ambulanceServices.map((s) => (
+                            <option key={s} value={s}>
+                              {s}
+                            </option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="Other">
+                          <option value="other">Other organisation</option>
+                        </optgroup>
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
                     </div>
+                    {errors.organisation && (
+                      <p className="mt-1.5 text-xs text-[#C9241A]">Please select your organisation</p>
+                    )}
+                  </div>
 
-                    {/* Message */}
-                    <div>
-                      <label htmlFor="contact-message" className={labelBase}>
-                        Message <span className="text-red-400">*</span>
-                      </label>
-                      <textarea
-                        id="contact-message"
-                        name="message"
+                  {/* Subject */}
+                  <div>
+                    <label htmlFor="contact-subject" className={labelBase}>
+                      Subject <span className="text-[#C9241A]">*</span>
+                    </label>
+                    <div className="relative">
+                      <select
+                        id="contact-subject"
+                        name="subject"
                         required
-                        rows={5}
-                        placeholder="Tell us how we can help..."
-                        className={`${inputBase} resize-none ${fieldClass('message')}`}
-                        onChange={() => setErrors((e) => ({ ...e, message: false }))}
-                      />
-                      {errors.message && (
-                        <p className="mt-1.5 text-xs text-red-400">Please enter a message</p>
-                      )}
+                        defaultValue=""
+                        className={`${selectBase} ${fieldClass('subject')}`}
+                        onChange={() => setErrors((e) => ({ ...e, subject: false }))}
+                      >
+                        <option value="" disabled>
+                          What can we help with?
+                        </option>
+                        {subjectOptions.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
                     </div>
+                    {errors.subject && (
+                      <p className="mt-1.5 text-xs text-[#C9241A]">Please choose a subject</p>
+                    )}
+                  </div>
 
-                    {/* Submit */}
-                    <button
-                      type="submit"
-                      disabled={sending}
-                      className="group inline-flex items-center gap-2.5 px-7 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 disabled:opacity-60 disabled:pointer-events-none cursor-pointer"
-                    >
-                      {sending ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          Sending...
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-4 h-4" />
-                          Send message
-                        </>
-                      )}
-                    </button>
-                  </form>
-                )}
-              </div>
-            </ScrollReveal>
+                  {/* Message */}
+                  <div>
+                    <label htmlFor="contact-message" className={labelBase}>
+                      Message <span className="text-[#C9241A]">*</span>
+                    </label>
+                    <textarea
+                      id="contact-message"
+                      name="message"
+                      required
+                      rows={5}
+                      placeholder="Tell us how we can help..."
+                      className={`${inputBase} resize-none ${fieldClass('message')}`}
+                      onChange={() => setErrors((e) => ({ ...e, message: false }))}
+                    />
+                    {errors.message && (
+                      <p className="mt-1.5 text-xs text-[#C9241A]">Please enter a message</p>
+                    )}
+                  </div>
+
+                  {/* Submit */}
+                  <button
+                    type="submit"
+                    disabled={sending}
+                    className="v5-glow group inline-flex items-center gap-2.5 px-7 h-12 ff-mono text-[13px] font-semibold uppercase tracking-[0.05em] bg-[#C9241A] text-white hover:bg-[#a91d14] transition-colors duration-200 disabled:opacity-60 disabled:pointer-events-none cursor-pointer"
+                  >
+                    {sending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        Send message
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+            </div>
 
             {/* ── Right: Map ── */}
-            <ScrollReveal delay={200}>
-              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] sticky top-28">
-                <iframe
-                  title="Command 360 HQ — Birmingham, UK"
-                  src="https://www.openstreetmap.org/export/embed.html?bbox=-1.9204%2C52.4662%2C-1.8604%2C52.5062&layer=mapnik&marker=52.4862%2C-1.8904"
-                  className="w-full h-[320px] lg:h-[380px] border-0 grayscale-[0.3] contrast-[1.1]"
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="px-5 py-4 border-t border-white/[0.06]">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-9 h-9 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
-                      <MapPin className="w-4 h-4 text-red-400" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">Command 360 HQ</p>
-                      <p className="text-xs text-white/40">Birmingham City Centre, UK</p>
-                    </div>
+            <div data-reveal className="border border-white/14 bg-white/[0.02] overflow-hidden sticky top-28">
+              <iframe
+                title="Command 360 HQ — Birmingham, UK"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=-1.9204%2C52.4662%2C-1.8604%2C52.5062&layer=mapnik&marker=52.4862%2C-1.8904"
+                className="w-full h-[320px] lg:h-[380px] border-0 grayscale-[0.3] contrast-[1.1]"
+                loading="lazy"
+                referrerPolicy="no-referrer"
+              />
+              <div className="px-5 py-4 border-t border-white/14">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-9 h-9 bg-[#C9241A]/12 flex items-center justify-center shrink-0">
+                    <MapPin className="w-4 h-4 text-[#C9241A]" />
                   </div>
-                  <a
-                    href="https://www.openstreetmap.org/?mlat=52.4862&mlon=-1.8904#map=14/52.4862/-1.8904"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-white/40 hover:text-white/60 transition-colors"
-                  >
-                    View larger map <ArrowRight className="w-3 h-3" />
-                  </a>
+                  <div>
+                    <p className="ff-display text-sm font-bold text-white">Command 360 HQ</p>
+                    <p className="text-xs text-white/40">Birmingham City Centre, UK</p>
+                  </div>
                 </div>
+                <a
+                  href="https://www.openstreetmap.org/?mlat=52.4862&mlon=-1.8904#map=14/52.4862/-1.8904"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 ff-mono text-[11px] uppercase tracking-[0.1em] text-white/40 hover:text-white/60 transition-colors"
+                >
+                  View larger map <ArrowRight className="w-3 h-3" />
+                </a>
               </div>
-            </ScrollReveal>
+            </div>
           </div>
-        </div>
-      </section>
+        </Container>
+      </DarkSection>
 
       {/* ── How to reach us ── */}
-      <section className="relative bg-[#07070a] overflow-hidden border-t border-border/50">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full bg-red-500/[0.04] blur-[120px] pointer-events-none" />
-        <div className="relative max-w-4xl mx-auto px-5 py-24">
-          <ScrollReveal>
-            <div className="text-center mb-16">
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-[10px] uppercase tracking-[0.15em] text-white/60 mb-6">
-                Reach Out
-              </span>
-              <h2 className="text-2xl md:text-4xl font-bold tracking-tight text-white">
-                How to{' '}
-                <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
-                  reach us
-                </span>
-              </h2>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal stagger>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-3xl mx-auto">
-              {[
-                {
-                  icon: Mail,
-                  title: 'Email',
-                  desc: 'hello@command360.co.uk',
-                  color: 'red' as const,
-                },
-                {
-                  icon: Phone,
-                  title: 'Phone',
-                  desc: '+44 121 000 0000',
-                  color: 'emerald' as const,
-                },
-                {
-                  icon: MapPin,
-                  title: 'Location',
-                  desc: 'Birmingham, West Midlands, UK',
-                  color: 'blue' as const,
-                },
-              ].map((item) => {
-                const colorMap = {
-                  red: 'bg-red-500/10 text-red-400',
-                  blue: 'bg-blue-500/10 text-blue-400',
-                  emerald: 'bg-emerald-500/10 text-emerald-400',
-                }
-                return (
-                  <div
-                    key={item.title}
-                    className="group relative rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 transition-all duration-300 hover:border-white/[0.12] hover:bg-white/[0.04] [box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset] text-center"
-                  >
-                    <div
-                      className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 mx-auto ${colorMap[item.color]}`}
-                    >
-                      <item.icon className="w-5 h-5" />
-                    </div>
-                    <p className="font-semibold text-white mb-1">{item.title}</p>
-                    <p className="text-sm text-white/45 leading-relaxed">{item.desc}</p>
-                  </div>
-                )
-              })}
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* ── CTA ── */}
-      <section className="relative bg-[#07070a] overflow-hidden border-t border-border/50">
-        <div
-          className="absolute inset-0 pointer-events-none opacity-[0.10]"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(220,38,38,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(220,38,38,0.35) 1px, transparent 1px)',
-            backgroundSize: '64px 64px',
-          }}
-        />
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_100%,rgba(220,38,38,0.15),transparent)]" />
-        </div>
-        <div className="relative max-w-3xl mx-auto px-5 py-28 text-center">
-          <ScrollReveal>
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-[10px] uppercase tracking-[0.15em] text-white/60 mb-8">
-              Get Started
-            </span>
-          </ScrollReveal>
-          <ScrollReveal delay={80}>
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight text-white mb-5">
-              Ready to transform your{' '}
-              <span className="bg-gradient-to-r from-red-400 via-red-500 to-orange-400 bg-clip-text text-transparent">
-                training
-              </span>
-              ?
-            </h2>
-          </ScrollReveal>
-          <ScrollReveal delay={140}>
-            <p className="text-white/40 text-base sm:text-lg mb-10">
-              Free to get started. No credit card required.
-            </p>
-          </ScrollReveal>
-          <ScrollReveal delay={200}>
-            <button
-              onClick={() => openAuth('register')}
-              className="group inline-flex items-center gap-2 px-7 h-12 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 cursor-pointer"
-            >
-              Start free trial{' '}
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </button>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* Keyframe animations for thank-you state */}
-      {/* eslint-disable-next-line react/no-unknown-property */}
-      <style>{`
-        @keyframes scale-in {
-          0% { transform: scale(0); opacity: 0; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes fade-in-up {
-          0% { transform: translateY(8px); opacity: 0; }
-          100% { transform: translateY(0); opacity: 1; }
-        }
-      `}</style>
-    </PublicLayout>
+      <DarkSection>
+        <Container className="relative">
+          <div className="max-w-[620px] mb-9">
+            <Eyebrow n="02">Reach Out</Eyebrow>
+            <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 text-white">How to reach us</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 border-t border-l border-white/14">
+            {CONTACT_CARDS.map((item) => (
+              <div key={item.title} data-reveal className="group v5-pop cursor-default relative p-[28px_26px] border-r border-b border-white/14">
+                <div className="w-[42px] h-[42px] flex items-center justify-center mb-5 bg-[#C9241A]/12">
+                  <item.icon className="w-5 h-5 text-[#C9241A]" />
+                </div>
+                <h3 className="ff-display font-bold text-[18px] tracking-[-0.01em] mb-2 text-white">{item.title}</h3>
+                <p className="text-[14px] text-[#9aa0a8] leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </DarkSection>
+    </SiteShell>
   )
 }

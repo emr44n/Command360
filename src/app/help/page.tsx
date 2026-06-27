@@ -1,10 +1,11 @@
-import { PublicLayout } from '@/components/layout/PublicLayout'
 import Link from 'next/link'
 import {
   BookOpen, Play, BarChart2, Users, Settings, HelpCircle,
   ChevronRight, Search,
 } from 'lucide-react'
 import type { Metadata } from 'next'
+import { SiteShell } from '@/components/site/SiteShell'
+import { PageHero, Eyebrow, DarkSection, LightSection, Container } from '@/components/site/primitives'
 
 export const metadata: Metadata = {
   title: 'Help Centre — Command 360',
@@ -52,62 +53,69 @@ const CATEGORIES = [
 
 export default function HelpPage() {
   return (
-    <PublicLayout>
-      {/* Hero */}
-      <section className="py-16 px-6 bg-muted/30">
-        <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-4xl font-bold tracking-tight">Help Centre</h1>
-          <p className="text-muted-foreground mt-3">
-            Find guides, tutorials, and answers to common questions.
-          </p>
-          <div className="mt-6 relative max-w-md mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search for help..."
-              className="w-full pl-11 pr-4 py-3 rounded-full bg-background border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-            />
-          </div>
+    <SiteShell>
+      <PageHero
+        eyebrow={<Eyebrow>Help Centre</Eyebrow>}
+        title={<>Find guides, tutorials, and <span className="text-[#C9241A]">answers</span></>}
+        lede="Find guides, tutorials, and answers to common questions."
+      >
+        <div className="relative w-full max-w-md">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#aab0b8]" />
+          <input
+            type="text"
+            placeholder="Search for help..."
+            className="w-full pl-11 pr-4 py-3.5 bg-white/[0.04] border border-white/22 text-sm text-white placeholder:text-[#aab0b8] focus:outline-none focus:border-white/40"
+          />
         </div>
-      </section>
+      </PageHero>
 
       {/* Categories */}
-      <section className="py-16 px-6">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {CATEGORIES.map((cat) => (
-            <div key={cat.title} className="bg-card border border-border rounded-2xl p-6 hover:border-primary/20 transition-colors">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                <cat.icon className="w-5 h-5 text-primary" />
+      <DarkSection>
+        <div className="absolute top-[-140px] right-[-100px] w-[780px] h-[560px] pointer-events-none" aria-hidden="true" style={{ background: 'radial-gradient(55% 65% at 70% 30%,rgba(201,36,26,.14),transparent 76%)', filter: 'blur(46px)' }} />
+        <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
+        <Container className="relative">
+          <div className="max-w-[620px] mb-9">
+            <Eyebrow n="01">Browse Topics</Eyebrow>
+            <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 text-white">Browse by category</h2>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 border-t border-l border-white/14">
+            {CATEGORIES.map((cat) => (
+              <div key={cat.title} data-reveal className="group v5-pop cursor-default relative p-[28px_26px] border-r border-b border-white/14">
+                <div className="w-[42px] h-[42px] flex items-center justify-center mb-5 bg-[#C9241A]/12">
+                  <cat.icon className="w-5 h-5 text-[#C9241A]" />
+                </div>
+                <h3 className="ff-display font-bold text-[18px] tracking-[-0.01em] mb-1.5 text-white">{cat.title}</h3>
+                <p className="text-[13px] text-[#9aa0a8] leading-relaxed mb-4">{cat.description}</p>
+                <ul className="space-y-1.5">
+                  {cat.articles.map((a) => (
+                    <li key={a}>
+                      <span className="flex items-center gap-1.5 text-[13px] text-[#9aa0a8] hover:text-white cursor-pointer transition-colors">
+                        <ChevronRight className="w-3 h-3 text-[#C9241A]" />
+                        {a}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <h3 className="font-semibold text-foreground mb-1">{cat.title}</h3>
-              <p className="text-xs text-muted-foreground mb-4">{cat.description}</p>
-              <ul className="space-y-1.5">
-                {cat.articles.map((a) => (
-                  <li key={a}>
-                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">
-                      <ChevronRight className="w-3 h-3" />
-                      {a}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </Container>
+      </DarkSection>
 
       {/* Still need help */}
-      <section className="py-12 px-6 bg-primary/5">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-xl font-bold">Still need help?</h2>
-          <p className="text-muted-foreground text-sm mt-2">
-            Our team is here to support you. Get in touch and we&apos;ll respond within 24 hours.
-          </p>
-          <Link href="/contact" className="inline-flex mt-4 px-6 py-2.5 text-sm font-medium bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors">
-            Contact support
-          </Link>
-        </div>
-      </section>
-    </PublicLayout>
+      <LightSection className="!py-[64px]">
+        <Container>
+          <div className="max-w-[640px]">
+            <h2 className="ff-display font-extrabold text-[clamp(26px,3.2vw,38px)] leading-[1.04] tracking-[-0.02em] text-[#16191E]">Still need help?</h2>
+            <p className="text-[15px] text-[#5a5f66] leading-relaxed mt-3">
+              Our team is here to support you. Get in touch and we&apos;ll respond within 24 hours.
+            </p>
+            <Link href="/contact" className="ff-mono text-[13px] font-semibold uppercase tracking-[0.05em] inline-flex mt-7 px-6 py-4 bg-[#16191E] text-white hover:bg-[#C9241A] transition-colors">
+              Contact support
+            </Link>
+          </div>
+        </Container>
+      </LightSection>
+    </SiteShell>
   )
 }
