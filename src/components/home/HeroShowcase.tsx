@@ -256,31 +256,25 @@ export function HeroShowcase() {
 
   return (
     <div
-      className="relative h-full flex flex-col bg-[#101319] overflow-hidden"
+      className="relative h-full flex flex-col overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* diagonal stripe field — semi-transparent, slowly drifting (micro-motion) */}
+      {/* Same surface as the rest of the hero — no panel fill. Just wide,
+          faint diagonal lines (grid-square spacing) to mark this as an area
+          of information, a soft green luminous glow, and grain for polish. */}
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(60% 50% at 78% 28%, rgba(46,158,99,0.10), transparent 72%)' }} />
       <motion.div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage:
-            'repeating-linear-gradient(135deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 1px, transparent 1px, transparent 13px)',
+            'repeating-linear-gradient(135deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 74px)',
         }}
-        animate={{ backgroundPosition: ['0px 0px', '-52px 52px'] }}
-        transition={{ duration: 14, ease: 'linear', repeat: Infinity }}
+        animate={{ backgroundPosition: ['0px 0px', '-74px 74px'] }}
+        transition={{ duration: 30, ease: 'linear', repeat: Infinity }}
       />
-      {/* depth shade + accent wash tied to the active feature */}
-      <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 26%, rgba(0,0,0,0.28) 100%)' }} />
-      <motion.div
-        aria-hidden="true"
-        className="absolute inset-0 pointer-events-none"
-        animate={{ background: `radial-gradient(70% 55% at 88% 6%, ${f.accent}22, transparent 70%)` }}
-        transition={{ duration: 0.6 }}
-      />
-      {/* thin top accent line in the active colour */}
-      <motion.div aria-hidden="true" className="absolute top-0 left-0 right-0 h-[2px] z-[2]" animate={{ background: f.accent }} transition={{ duration: 0.4 }} />
+      <div aria-hidden="true" className="absolute inset-0 v5-grain opacity-[0.12] mix-blend-overlay pointer-events-none" />
 
       {/* header */}
       <div className="relative z-[1] flex items-center justify-between px-6 py-[18px] border-b border-white/10">
@@ -383,7 +377,7 @@ export function HeroShowcase() {
       </div>
 
       {/* foot — live activity bar, anchored to the bottom */}
-      <div className="relative z-[1] flex items-center justify-between gap-3 px-6 py-[15px] border-t border-white/10 bg-black/20">
+      <div className="relative z-[1] flex items-center justify-between gap-3 px-6 py-[15px] border-t border-white/10">
         <div className="flex items-center gap-2.5">
           <span className="w-1.5 h-1.5 rounded-full bg-[#2E9E63] v5-pulse" />
           <span className="ff-mono text-[11px] tracking-[0.04em] text-[#9aa0a8]">32 connected</span>
