@@ -260,24 +260,14 @@ export function HeroShowcase() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Same surface as the rest of the hero — no panel fill. A faint square
-          grid (matching the page background) marks the area, a soft luminous
-          glow in the active feature's colour fades in the corner, and grain
-          adds polish. The glow changes with each panel; the grid stays put. */}
+      {/* Same surface as the rest of the hero — no panel fill, no grid. Just a
+          soft luminous glow in the active feature's colour fading in the
+          corner, plus grain for polish. The glow changes with each panel. */}
       <motion.div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
-        animate={{ background: `radial-gradient(58% 48% at 80% 22%, ${f.accent}24, transparent 72%)` }}
+        animate={{ background: `radial-gradient(58% 48% at 80% 22%, ${f.accent}1a, transparent 72%)` }}
         transition={{ duration: 0.6 }}
-      />
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,0.026) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.026) 1px, transparent 1px)',
-          backgroundSize: '74px 74px',
-        }}
       />
       <div aria-hidden="true" className="absolute inset-0 v5-grain opacity-[0.12] mix-blend-overlay pointer-events-none" />
 

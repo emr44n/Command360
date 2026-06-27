@@ -160,19 +160,19 @@ export default function LandingPage() {
                   <span className="w-[7px] h-[7px] bg-[#C9241A] v5-pulse" />
                   Interactive learning · UK emergency services
                 </div>
-                <h1 className="ff-display font-extrabold text-white mb-7 leading-[0.98] tracking-[-0.02em] text-[clamp(44px,5.4vw,74px)]" data-reveal>
+                <h1 className="ff-display font-extrabold text-white mb-7 leading-[0.98] tracking-[-0.02em] text-[clamp(44px,5.4vw,74px)] lg:pl-9" data-reveal>
                   Where emergency<br />teams{' '}
                   <RotatingWord words={['learn.', 'grow.', 'lead.']} className="text-[#C9241A]" />
                 </h1>
-                <p className="text-[18px] leading-[1.62] text-[#aab0b8] max-w-[500px] mb-9" data-reveal>
+                <p className="text-[18px] leading-[1.62] text-[#aab0b8] max-w-[500px] mb-9 lg:pl-9" data-reveal>
                   An interactive training environment that turns briefings, debriefs, and CPD into measured,
                   interactive learning — live polls, scored quizzes, and AI insight, with a full record for every session.
                 </p>
-                <div className="flex flex-wrap items-center gap-3 mb-8" data-reveal>
+                <div className="flex flex-wrap items-center gap-3 mb-8 lg:pl-9" data-reveal>
                   <V5AuthButton tab="register" label="Start free trial" variant="solid" />
                   <a href="#demo" className="ff-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-white border border-white/22 hover:bg-white/[0.06] hover:border-white/40 px-6 py-4 transition-colors">View demo</a>
                 </div>
-                <div id="hero-join" className="max-w-[400px]" data-reveal>
+                <div id="hero-join" className="max-w-[400px] lg:pl-9" data-reveal>
                   <div className="ff-mono text-[11px] font-medium tracking-[0.1em] uppercase text-[#7c828a] mb-2.5">Joining a session?</div>
                   <JoinCodeInput variant="v5" />
                   <div className="ff-mono text-[11px] text-white/35 mt-3 flex flex-wrap gap-x-4 gap-y-1">
@@ -432,7 +432,7 @@ export default function LandingPage() {
         </section>
 
         {/* ════════════ FAQ (dark) ════════════ */}
-        <section className="relative overflow-hidden bg-[#16191E] text-white py-[90px]">
+        <section className="relative overflow-hidden bg-[#0F1216] text-white py-[90px]">
           <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
           <div className="relative max-w-[820px] mx-auto px-5 sm:px-[30px]">
             <div className="text-center mb-10" data-reveal>
