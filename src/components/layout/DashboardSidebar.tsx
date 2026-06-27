@@ -126,19 +126,19 @@ export function DashboardSidebar() {
 
   return (
     <aside className={cn(
-      'relative bg-background border-r border-border flex flex-col h-full shrink-0 transition-all duration-300 ease-in-out',
+      'relative bg-[#0A0C0F] border-r border-white/12 flex flex-col h-full shrink-0 transition-all duration-300 ease-in-out',
       collapsed ? 'w-[68px]' : 'w-[220px]'
     )}>
-      {/* Subtle right-edge glow for dark mode */}
-      <div className="pointer-events-none absolute inset-y-0 -right-px w-px dark:shadow-[0_0_12px_1px_rgba(var(--primary-rgb,239,68,68),0.08)]" />
+      {/* Subtle right-edge red glow */}
+      <div className="pointer-events-none absolute inset-y-0 -right-px w-px shadow-[0_0_12px_1px_rgba(201,36,26,0.10)]" />
 
       {/* Logo */}
       <div className={cn('h-16 flex items-center', collapsed ? 'px-3 justify-center' : 'px-5')}>
-        <Link href="/dashboard" className="flex items-center gap-2.5 font-semibold text-sm text-foreground">
-          <div className="w-8 h-8 bg-red-600 rounded-xl flex items-center justify-center shrink-0 shadow-sm shadow-red-500/20">
-            <svg viewBox="0 0 24 24" className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+        <Link href="/dashboard" className="flex items-center gap-2.5 text-white">
+          <div className="w-8 h-8 bg-[#C9241A] flex items-center justify-center shrink-0">
+            <span className="ff-display text-base font-black leading-none text-white">C</span>
           </div>
-          {!collapsed && <span className="tracking-tight">Command 360</span>}
+          {!collapsed && <span className="ff-display text-[15px] font-extrabold tracking-tight uppercase">Command 360</span>}
         </Link>
       </div>
 
@@ -149,7 +149,7 @@ export function DashboardSidebar() {
           <button
             onClick={() => setShowNewDialog(true)}
             disabled={creatingPresentation}
-            className="w-full flex items-center justify-center p-2.5 rounded-xl bg-red-600 text-white hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 active:scale-95 group relative disabled:opacity-70"
+            className="v5-glow w-full flex items-center justify-center p-2.5 bg-[#C9241A] text-white hover:bg-[#dd2b20] transition-colors duration-200 active:scale-95 group relative disabled:opacity-70"
           >
             {creatingPresentation ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
           </button>
@@ -158,7 +158,7 @@ export function DashboardSidebar() {
           <button
             onClick={() => setShowNewDialog(true)}
             disabled={creatingPresentation}
-            className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-red-600 text-white text-[13px] font-semibold hover:bg-red-500 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 active:scale-[0.98] disabled:opacity-70"
+            className="v5-glow w-full flex items-center gap-2 px-3.5 py-2.5 bg-[#C9241A] text-white ff-mono text-[11px] font-medium uppercase tracking-[0.12em] hover:bg-[#dd2b20] transition-colors duration-200 active:scale-[0.98] disabled:opacity-70"
           >
             {creatingPresentation ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
             Create New
@@ -168,26 +168,26 @@ export function DashboardSidebar() {
 
       {/* New Presentation Type Dialog */}
       <Dialog open={showNewDialog} onOpenChange={(open) => { setShowNewDialog(open); if (!open) { setSelectedType(null); setNewTitle('') } }}>
-        <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden">
+        <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden border border-white/12 bg-[#16191E] text-white [&>button]:text-[#9aa0a8]" style={{ borderRadius: 0 }}>
           <DialogHeader className="px-6 pt-6 pb-4">
-            <DialogTitle className="text-lg font-semibold">Create New</DialogTitle>
-            <p className="text-sm text-muted-foreground mt-1">Choose what you want to create</p>
+            <DialogTitle className="ff-display text-lg font-extrabold uppercase tracking-tight text-white">Create New</DialogTitle>
+            <p className="ff-mono text-[11px] uppercase tracking-[0.12em] text-[#9aa0a8] mt-2">Choose what you want to create</p>
           </DialogHeader>
           <div className="px-6 pb-6 grid gap-3">
             <div className={cn(
-              'rounded-xl border bg-card transition-all duration-200 text-left overflow-hidden',
-              selectedType === 'presentation' ? 'border-primary/40 bg-primary/[0.04]' : 'border-border hover:border-primary/30 hover:bg-primary/[0.04]'
+              'border bg-[#0F1216] transition-all duration-200 text-left overflow-hidden',
+              selectedType === 'presentation' ? 'border-[#C9241A]/50 bg-[#C9241A]/[0.05]' : 'border-white/12 hover:border-[#C9241A]/40 hover:bg-white/[0.03]'
             )}>
               <button
                 onClick={() => { setSelectedType('presentation'); setNewTitle('') }}
                 className="group flex items-start gap-4 p-4 w-full text-left"
               >
-                <div className="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/[0.15] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-200">
-                  <Presentation className="w-5 h-5 text-blue-500" />
+                <div className="w-11 h-11 bg-blue-500/10 border border-blue-500/[0.25] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-200">
+                  <Presentation className="w-5 h-5 text-blue-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground">Command Classroom</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="ff-display text-sm font-bold text-white">Command Classroom</p>
+                  <p className="text-xs text-[#9aa0a8] mt-1 leading-relaxed">
                     Interactive sessions with polls, quizzes, word clouds, and live audience participation
                   </p>
                 </div>
@@ -201,12 +201,12 @@ export function DashboardSidebar() {
                     onChange={e => setNewTitle(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') createPresentation('presentation', newTitle) }}
                     placeholder="Untitled Session"
-                    className="flex-1 h-9 px-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="flex-1 h-9 px-3 border border-white/12 bg-[#16191E] text-sm text-white placeholder:text-[#9aa0a8] focus:outline-none focus:border-[#C9241A]/60"
                   />
                   <button
                     onClick={() => createPresentation('presentation', newTitle)}
                     disabled={creatingPresentation}
-                    className="h-9 px-4 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-500 transition-colors disabled:opacity-70"
+                    className="h-9 px-4 bg-[#C9241A] text-white ff-mono text-[11px] font-medium uppercase tracking-[0.1em] hover:bg-[#dd2b20] transition-colors disabled:opacity-70"
                   >
                     {creatingPresentation ? 'Creating...' : 'Create Session'}
                   </button>
@@ -214,19 +214,19 @@ export function DashboardSidebar() {
               )}
             </div>
             <div className={cn(
-              'rounded-xl border bg-card transition-all duration-200 text-left overflow-hidden',
-              selectedType === 'command_studio' ? 'border-primary/40 bg-primary/[0.04]' : 'border-border hover:border-primary/30 hover:bg-primary/[0.04]'
+              'border bg-[#0F1216] transition-all duration-200 text-left overflow-hidden',
+              selectedType === 'command_studio' ? 'border-[#C9241A]/50 bg-[#C9241A]/[0.05]' : 'border-white/12 hover:border-[#C9241A]/40 hover:bg-white/[0.03]'
             )}>
               <button
                 onClick={() => { setSelectedType('command_studio'); setNewTitle('') }}
                 className="group flex items-start gap-4 p-4 w-full text-left"
               >
-                <div className="w-11 h-11 rounded-xl bg-violet-500/10 border border-violet-500/[0.15] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-200">
-                  <Clapperboard className="w-5 h-5 text-violet-500" />
+                <div className="w-11 h-11 bg-violet-500/10 border border-violet-500/[0.25] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-200">
+                  <Clapperboard className="w-5 h-5 text-violet-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground">Command Studio</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="ff-display text-sm font-bold text-white">Command Studio</p>
+                  <p className="text-xs text-[#9aa0a8] mt-1 leading-relaxed">
                     Scene-based editor with canvas, timeline, layers, and timed events
                   </p>
                 </div>
@@ -240,12 +240,12 @@ export function DashboardSidebar() {
                     onChange={e => setNewTitle(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') createPresentation('command_studio', newTitle) }}
                     placeholder="Untitled Scene"
-                    className="flex-1 h-9 px-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="flex-1 h-9 px-3 border border-white/12 bg-[#16191E] text-sm text-white placeholder:text-[#9aa0a8] focus:outline-none focus:border-[#C9241A]/60"
                   />
                   <button
                     onClick={() => createPresentation('command_studio', newTitle)}
                     disabled={creatingPresentation}
-                    className="h-9 px-4 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-500 transition-colors disabled:opacity-70"
+                    className="h-9 px-4 bg-[#C9241A] text-white ff-mono text-[11px] font-medium uppercase tracking-[0.1em] hover:bg-[#dd2b20] transition-colors disabled:opacity-70"
                   >
                     {creatingPresentation ? 'Creating...' : 'Create Scene'}
                   </button>
@@ -258,7 +258,7 @@ export function DashboardSidebar() {
 
       {/* Separator */}
       <div className={cn('pt-3', collapsed ? 'px-4' : 'px-5')}>
-        <div className="h-px bg-border/60" />
+        <div className="h-px bg-white/12" />
       </div>
 
       {/* Navigation */}
@@ -279,24 +279,23 @@ export function DashboardSidebar() {
             <Link
               href={item.href}
               className={cn(
-                'relative flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-200 group',
+                'relative flex items-center gap-3 ff-mono text-[11px] font-medium uppercase tracking-[0.1em] transition-colors duration-200 group',
                 collapsed ? 'px-0 py-2.5 justify-center' : 'px-3 py-2.5',
                 active
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/80',
+                  ? 'bg-white/[0.05] text-white'
+                  : 'text-[#9aa0a8] hover:text-white hover:bg-white/[0.03]',
                 !active && isClassroom && 'border-l-2 border-blue-500/40',
                 !active && isStudio && 'border-l-2 border-violet-500/40',
               )}
             >
-              {/* Active indicator line */}
+              {/* Active red left-accent bar */}
               <div className={cn(
-                'absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-r-full bg-primary transition-all duration-300',
-                collapsed ? 'h-4' : 'h-5',
+                'absolute left-0 top-0 bottom-0 w-[3px] bg-[#C9241A] transition-all duration-300 origin-center',
                 active ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'
               )} />
 
               <item.icon className={cn(
-                'shrink-0 transition-all duration-200',
+                'shrink-0 transition-transform duration-200',
                 collapsed ? 'w-[18px] h-[18px]' : 'w-4 h-4',
                 active ? '' : 'group-hover:scale-110'
               )} />
@@ -304,19 +303,19 @@ export function DashboardSidebar() {
                 <>
                   <span className="flex-1">{item.label}</span>
                   {hasBadge && (
-                    <span className="flex items-center justify-center min-w-[20px] h-5 rounded-full bg-emerald-500 text-white text-[10px] font-bold px-1.5">
+                    <span className="flex items-center justify-center min-w-[20px] h-5 bg-emerald-500 text-white text-[10px] font-bold px-1.5">
                       {activeSessions}
                     </span>
                   )}
                   {hasNewBadge && (
-                    <span className="flex items-center justify-center h-4 rounded-full bg-red-500/15 text-red-500 text-[9px] font-bold px-1.5 uppercase tracking-wider">
+                    <span className="flex items-center justify-center h-4 bg-[#C9241A]/15 text-[#C9241A] text-[9px] font-bold px-1.5 uppercase tracking-wider">
                       New
                     </span>
                   )}
                 </>
               )}
               {collapsed && hasBadge && (
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-background" />
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#0A0C0F]" />
               )}
             </Link>
           )
@@ -325,7 +324,7 @@ export function DashboardSidebar() {
             <div key={item.href}>
               {showSeparator && (
                 <div className={cn('py-2', collapsed ? 'px-1.5' : 'px-2')}>
-                  <div className="h-px bg-border/60" />
+                  <div className="h-px bg-white/12" />
                 </div>
               )}
               {collapsed ? (
@@ -338,7 +337,7 @@ export function DashboardSidebar() {
 
       {/* Separator before controls */}
       <div className={cn(collapsed ? 'px-4' : 'px-5')}>
-        <div className="h-px bg-border/60" />
+        <div className="h-px bg-white/12" />
       </div>
 
       {/* Theme toggle + Collapse */}
@@ -346,18 +345,18 @@ export function DashboardSidebar() {
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={toggleTheme}
-          className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200 group relative"
+          className="p-2 text-[#9aa0a8] hover:text-white hover:bg-white/[0.05] transition-colors duration-200 group relative"
         >
           {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
         </TooltipTrigger><TooltipContent side="right">{theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}</TooltipContent></Tooltip>
         {!collapsed && (
-          <span className="text-[11px] text-muted-foreground flex-1">{theme === 'dark' ? 'Dark' : 'Light'}</span>
+          <span className="ff-mono text-[10px] uppercase tracking-[0.12em] text-[#9aa0a8] flex-1">{theme === 'dark' ? 'Dark' : 'Light'}</span>
         )}
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => setCollapsed(v => !v)}
-          className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200"
+          className="p-2 text-[#9aa0a8] hover:text-white hover:bg-white/[0.05] transition-colors duration-200"
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
@@ -365,7 +364,7 @@ export function DashboardSidebar() {
       </div>
 
       {/* User area */}
-      <div className={cn('border-t border-border shrink-0', collapsed ? 'p-2.5' : 'p-3 space-y-1')}>
+      <div className={cn('border-t border-white/12 shrink-0', collapsed ? 'p-2.5' : 'p-3 space-y-1')}>
         {collapsed ? (
           <>
             <Tooltip><TooltipTrigger asChild>
@@ -373,15 +372,15 @@ export function DashboardSidebar() {
               href="/dashboard/settings"
               className="flex items-center justify-center p-1.5 group relative"
             >
-              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors duration-200">
-                <span className="text-[11px] font-bold text-primary">{initials}</span>
+              <div className="w-9 h-9 bg-[#C9241A]/15 flex items-center justify-center shrink-0 group-hover:bg-[#C9241A]/25 transition-colors duration-200">
+                <span className="ff-display text-[11px] font-bold text-[#C9241A]">{initials}</span>
               </div>
             </Link>
             </TooltipTrigger><TooltipContent side="right">{userName || userEmail}</TooltipContent></Tooltip>
             <Tooltip><TooltipTrigger asChild>
             <button
               onClick={handleSignOut}
-              className="flex items-center justify-center p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/80 w-full transition-all duration-200 group relative"
+              className="flex items-center justify-center p-2 text-[#9aa0a8] hover:text-white hover:bg-white/[0.05] w-full transition-colors duration-200 group relative"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -390,18 +389,18 @@ export function DashboardSidebar() {
         ) : (
           <>
             {(userName || userEmail) && (
-              <Link href="/dashboard/settings" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-muted/80 transition-all duration-200 group">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors duration-200">
-                  <span className="text-[11px] font-bold text-primary">{initials}</span>
+              <Link href="/dashboard/settings" className="flex items-center gap-3 px-3 py-2.5 hover:bg-white/[0.05] transition-colors duration-200 group">
+                <div className="w-9 h-9 bg-[#C9241A]/15 flex items-center justify-center shrink-0 group-hover:bg-[#C9241A]/25 transition-colors duration-200">
+                  <span className="ff-display text-[11px] font-bold text-[#C9241A]">{initials}</span>
                 </div>
                 <div className="min-w-0 flex-1">
-                  {userName && <p className="text-[13px] font-medium text-foreground truncate">{userName}</p>}
-                  <p className="text-[11px] text-muted-foreground truncate">{userEmail}</p>
+                  {userName && <p className="text-[13px] font-medium text-white truncate">{userName}</p>}
+                  <p className="text-[11px] text-[#9aa0a8] truncate">{userEmail}</p>
                 </div>
               </Link>
             )}
             <button onClick={handleSignOut}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/80 w-full transition-all duration-200">
+              className="flex items-center gap-3 px-3 py-2.5 ff-mono text-[11px] font-medium uppercase tracking-[0.1em] text-[#9aa0a8] hover:text-white hover:bg-white/[0.05] w-full transition-colors duration-200">
               <LogOut className="w-4 h-4" />
               Sign out
             </button>
