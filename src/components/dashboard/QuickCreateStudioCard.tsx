@@ -54,19 +54,18 @@ export function QuickCreateStudioCard() {
   }
 
   return (
-    <button onClick={handleClick} disabled={creating} className="group text-left w-full">
-      <div className="relative bg-red-500/5 border border-red-500/20 rounded-2xl p-5 hover:bg-red-500/10 hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/5 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer overflow-hidden dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
-        {/* Top accent line */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent" />
-        <div className="w-10 h-10 rounded-xl bg-red-500/15 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+    <button onClick={handleClick} disabled={creating} className="group text-left w-full h-full">
+      <div className="v5-pop relative h-full bg-[#16191E] border border-white/12 p-5 hover:border-[#C9241A]/50 cursor-pointer overflow-hidden">
+        {/* Square colour accent */}
+        <div className="w-10 h-10 bg-[#C9241A]/15 flex items-center justify-center mb-3">
           {creating ? (
-            <Loader2 className="w-5 h-5 text-red-500 animate-spin" />
+            <Loader2 className="w-5 h-5 text-[#C9241A] animate-spin" />
           ) : (
-            <Monitor className="w-5 h-5 text-red-500" />
+            <Monitor className="w-5 h-5 text-[#C9241A]" />
           )}
         </div>
-        <h3 className="text-sm font-semibold text-foreground group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">Command Studio</h3>
-        <p className="text-xs text-muted-foreground mt-0.5">Interactive scenario</p>
+        <h3 className="ff-display text-sm font-semibold text-white group-hover:text-[#C9241A] transition-colors">Command Studio</h3>
+        <p className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#9aa0a8] mt-1">Interactive scenario</p>
       </div>
     </button>
   )

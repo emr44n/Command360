@@ -41,28 +41,28 @@ export function TrialBanner({ createdAt }: TrialBannerProps) {
 
   if (expired) {
     return (
-      <div className="relative overflow-hidden bg-gradient-to-r from-amber-500/10 via-red-500/10 to-amber-500/10 border border-red-500/20 rounded-2xl p-5 dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
-        {/* Top accent line */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent" />
+      <div className="relative overflow-hidden bg-[#16191E] border border-[#C9241A]/40 p-5">
+        {/* Left accent bar */}
+        <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-[#C9241A]" />
         <button
           onClick={() => setDismissed(true)}
-          className="absolute top-3 right-3 p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="absolute top-3 right-3 p-1 text-[#9aa0a8] hover:text-white hover:bg-white/10 transition-colors"
         >
           <X className="w-4 h-4" />
         </button>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-red-500/15 flex items-center justify-center shrink-0">
-            <Clock className="w-5 h-5 text-red-500" />
+          <div className="w-10 h-10 bg-[#C9241A]/15 flex items-center justify-center shrink-0">
+            <Clock className="w-5 h-5 text-[#C9241A]" />
           </div>
           <div className="flex-1">
-            <h3 className="text-sm font-semibold text-foreground">Your free trial has ended</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <h3 className="ff-display text-sm font-semibold text-white">Your free trial has ended</h3>
+            <p className="ff-body text-xs text-[#9aa0a8] mt-0.5">
               Upgrade to continue using all features and keep your training sessions running.
             </p>
           </div>
           <Link
             href="/pricing"
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-500/25 hover:-translate-y-0.5 shrink-0"
+            className="ff-mono uppercase tracking-[0.1em] inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold bg-[#C9241A] text-white hover:bg-[#e02d22] transition-colors shrink-0"
           >
             Upgrade now <ArrowRight className="w-3.5 h-3.5" />
           </Link>

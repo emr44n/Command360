@@ -58,7 +58,7 @@ export function DashboardCreateNewButton() {
       <Button
         onClick={() => setShowDialog(true)}
         disabled={creating}
-        className="rounded-full gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+        className="ff-mono uppercase tracking-[0.1em] gap-2 bg-[#C9241A] hover:bg-[#e02d22] text-white rounded-none"
       >
         {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
         Create New
@@ -72,19 +72,19 @@ export function DashboardCreateNewButton() {
           </DialogHeader>
           <div className="px-6 pb-6 grid gap-3">
             <div className={cn(
-              'rounded-xl border bg-card transition-all duration-200 text-left overflow-hidden',
-              selectedType === 'presentation' ? 'border-primary/40 bg-primary/[0.04]' : 'border-border hover:border-primary/30 hover:bg-primary/[0.04]'
+              'border bg-[#16191E] transition-colors duration-200 text-left overflow-hidden',
+              selectedType === 'presentation' ? 'border-[#C9241A]/50 bg-[#C9241A]/[0.06]' : 'border-white/12 hover:border-white/25'
             )}>
               <button
                 onClick={() => { setSelectedType('presentation'); setNewTitle('') }}
                 className="group flex items-start gap-4 p-4 w-full text-left"
               >
-                <div className="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/[0.15] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-200">
-                  <Presentation className="w-5 h-5 text-blue-500" />
+                <div className="w-11 h-11 bg-[#3E6DC4]/10 border border-[#3E6DC4]/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-200">
+                  <Presentation className="w-5 h-5 text-[#3E6DC4]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground">Command Classroom</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="ff-display text-sm font-semibold text-white">Command Classroom</p>
+                  <p className="ff-body text-xs text-[#9aa0a8] mt-0.5">
                     Interactive sessions with polls, quizzes, word clouds, and live audience participation
                   </p>
                 </div>
@@ -98,12 +98,12 @@ export function DashboardCreateNewButton() {
                     onChange={e => setNewTitle(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') createPresentation('presentation', newTitle) }}
                     placeholder="Untitled Session"
-                    className="flex-1 h-9 px-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="flex-1 h-9 px-3 border border-white/12 bg-[#0F1216] text-sm text-white placeholder:text-[#9aa0a8] focus:outline-none focus:border-[#C9241A]/50"
                   />
                   <button
                     onClick={() => createPresentation('presentation', newTitle)}
                     disabled={creating}
-                    className="h-9 px-4 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-500 transition-colors disabled:opacity-70"
+                    className="h-9 px-4 bg-[#C9241A] text-white text-sm font-semibold hover:bg-[#e02d22] transition-colors disabled:opacity-70"
                   >
                     {creating ? 'Creating...' : 'Create Session'}
                   </button>
@@ -111,19 +111,19 @@ export function DashboardCreateNewButton() {
               )}
             </div>
             <div className={cn(
-              'rounded-xl border bg-card transition-all duration-200 text-left overflow-hidden',
-              selectedType === 'command_studio' ? 'border-primary/40 bg-primary/[0.04]' : 'border-border hover:border-primary/30 hover:bg-primary/[0.04]'
+              'border bg-[#16191E] transition-colors duration-200 text-left overflow-hidden',
+              selectedType === 'command_studio' ? 'border-[#C9241A]/50 bg-[#C9241A]/[0.06]' : 'border-white/12 hover:border-white/25'
             )}>
               <button
                 onClick={() => { setSelectedType('command_studio'); setNewTitle('') }}
                 className="group flex items-start gap-4 p-4 w-full text-left"
               >
-                <div className="w-11 h-11 rounded-xl bg-violet-500/10 border border-violet-500/[0.15] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-200">
-                  <Clapperboard className="w-5 h-5 text-violet-500" />
+                <div className="w-11 h-11 bg-[#6a5ea8]/10 border border-[#6a5ea8]/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-200">
+                  <Clapperboard className="w-5 h-5 text-[#6a5ea8]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground">Command Studio</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="ff-display text-sm font-semibold text-white">Command Studio</p>
+                  <p className="ff-body text-xs text-[#9aa0a8] mt-0.5">
                     Scene-based editor with canvas, timeline, layers, and timed events
                   </p>
                 </div>
@@ -137,12 +137,12 @@ export function DashboardCreateNewButton() {
                     onChange={e => setNewTitle(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') createPresentation('command_studio', newTitle) }}
                     placeholder="Untitled Scene"
-                    className="flex-1 h-9 px-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="flex-1 h-9 px-3 border border-white/12 bg-[#0F1216] text-sm text-white placeholder:text-[#9aa0a8] focus:outline-none focus:border-[#C9241A]/50"
                   />
                   <button
                     onClick={() => createPresentation('command_studio', newTitle)}
                     disabled={creating}
-                    className="h-9 px-4 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-500 transition-colors disabled:opacity-70"
+                    className="h-9 px-4 bg-[#C9241A] text-white text-sm font-semibold hover:bg-[#e02d22] transition-colors disabled:opacity-70"
                   >
                     {creating ? 'Creating...' : 'Create Scene'}
                   </button>

@@ -58,7 +58,7 @@ export function QuickCreate() {
 
   return (
     <div>
-      <h2 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-3">Quick Create by Type</h2>
+      <h2 className="ff-mono text-[10px] uppercase tracking-[0.15em] font-semibold text-[#9aa0a8] mb-3">Quick Create by Type</h2>
       <div className="flex items-center gap-2 flex-wrap">
         {SLIDE_TYPES.map((item) => {
           const isCreating = creating === item.type
@@ -68,11 +68,9 @@ export function QuickCreate() {
               onClick={() => handleQuickCreate(item.type, item.label)}
               disabled={!!creating}
               className={`
-                group/btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium
-                border border-border transition-all duration-200
-                hover:shadow-md ${item.glowColor}
-                hover:-translate-y-0.5
-                ${item.bg}
+                v5-pop group/btn inline-flex items-center gap-1.5 px-3 py-1.5 ff-mono text-[11px] uppercase tracking-[0.1em] font-medium text-white
+                bg-[#16191E] border border-white/12 transition-colors duration-200
+                hover:border-white/25
                 ${isCreating ? 'opacity-70' : ''}
                 ${creating && !isCreating ? 'opacity-40' : ''}
               `}
@@ -88,7 +86,7 @@ export function QuickCreate() {
         })}
         <button
           onClick={() => router.push('/dashboard/templates')}
-          className="group/btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-dashed border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-sm transition-all duration-200"
+          className="v5-pop group/btn inline-flex items-center gap-1.5 px-3 py-1.5 ff-mono text-[11px] uppercase tracking-[0.1em] font-medium border border-dashed border-white/20 text-[#9aa0a8] hover:text-white hover:border-white/40 transition-colors duration-200"
         >
           <Plus className="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform duration-200" />
           Template

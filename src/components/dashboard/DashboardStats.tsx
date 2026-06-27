@@ -38,41 +38,25 @@ const STATS_CONFIG = [
     key: 'presentations',
     label: 'Classrooms',
     icon: Presentation,
-    gradient: 'from-primary/10 to-primary/5',
-    iconBg: 'bg-primary/15',
-    iconColor: 'text-primary',
-    valueColor: 'text-primary',
-    accentColor: 'via-primary/40',
+    accent: '#C9241A',
   },
   {
     key: 'sessions',
     label: 'Activity Runs',
     icon: Activity,
-    gradient: 'from-blue-500/10 to-blue-500/5',
-    iconBg: 'bg-blue-500/15',
-    iconColor: 'text-blue-500',
-    valueColor: 'text-blue-600 dark:text-blue-400',
-    accentColor: 'via-blue-500/40',
+    accent: '#3E6DC4',
   },
   {
     key: 'participants',
     label: 'Participants',
     icon: Users,
-    gradient: 'from-emerald-500/10 to-emerald-500/5',
-    iconBg: 'bg-emerald-500/15',
-    iconColor: 'text-emerald-500',
-    valueColor: 'text-emerald-600 dark:text-emerald-400',
-    accentColor: 'via-emerald-500/40',
+    accent: '#2E9E63',
   },
   {
     key: 'responses',
     label: 'Responses',
     icon: MessageSquare,
-    gradient: 'from-amber-500/10 to-amber-500/5',
-    iconBg: 'bg-amber-500/15',
-    iconColor: 'text-amber-500',
-    valueColor: 'text-amber-600 dark:text-amber-400',
-    accentColor: 'via-amber-500/40',
+    accent: '#c98a2a',
   },
 ]
 
@@ -85,33 +69,30 @@ export function DashboardStats({ totalPresentations, totalSessions, totalPartici
   }
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-4 bg-[#16191E] border-t border-l border-white/12">
       {STATS_CONFIG.map((stat) => (
         <div
           key={stat.key}
-          className={`relative overflow-hidden bg-gradient-to-br ${stat.gradient} border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-md hover:border-border/80 hover:-translate-y-0.5 group dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]`}
+          className="v5-pop relative overflow-hidden border-r border-b border-white/12 p-5 group"
         >
-          {/* Top accent line */}
-          <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent ${stat.accentColor} to-transparent`} />
-
           <div className="flex items-center justify-between mb-3">
-            <div className={`w-10 h-10 rounded-xl ${stat.iconBg} flex items-center justify-center transition-transform group-hover:scale-110 duration-200`}>
-              <stat.icon className={`w-[18px] h-[18px] ${stat.iconColor}`} />
+            <div className="w-10 h-10 flex items-center justify-center" style={{ backgroundColor: `${stat.accent}26` }}>
+              <stat.icon className="w-[18px] h-[18px]" style={{ color: stat.accent }} />
             </div>
             {stat.key === 'sessions' && activeSessions > 0 && (
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold">
+              <span className="ff-mono inline-flex items-center gap-1.5 px-2 py-0.5 bg-[#2E9E63]/10 text-[#2E9E63] text-[10px] font-bold uppercase tracking-[0.1em]">
                 <span className="relative flex h-1.5 w-1.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+                  <span className="animate-ping absolute inline-flex h-full w-full bg-[#2E9E63] opacity-75" />
+                  <span className="relative inline-flex h-1.5 w-1.5 bg-[#2E9E63]" />
                 </span>
                 {activeSessions} live
               </span>
             )}
           </div>
-          <p className={`text-2xl font-bold ${stat.valueColor} tabular-nums`}>
+          <p className="ff-display text-3xl font-extrabold text-white tabular-nums">
             <AnimatedCounter target={values[stat.key]} />
           </p>
-          <p className="text-[10px] uppercase tracking-[0.15em] font-medium text-muted-foreground mt-1">{stat.label}</p>
+          <p className="ff-mono text-[10px] uppercase tracking-[0.15em] font-medium text-[#9aa0a8] mt-1">{stat.label}</p>
         </div>
       ))}
     </div>

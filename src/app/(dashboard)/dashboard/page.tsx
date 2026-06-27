@@ -147,14 +147,14 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 bg-[#0F1216] text-white min-h-screen">
       {/* Welcome header with time-aware greeting */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            {getGreeting()}, <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text" style={{ WebkitTextFillColor: 'transparent' }}>{displayName}</span>
+          <h1 className="ff-display text-2xl font-extrabold tracking-tight text-white">
+            {getGreeting()}, <span className="text-[#C9241A]">{displayName}</span>
           </h1>
-          <p className="text-muted-foreground text-sm mt-1">
+          <p className="ff-mono text-[11px] uppercase tracking-[0.15em] text-[#9aa0a8] mt-2">
             Manage your classrooms, scenes, and training sessions
           </p>
         </div>
@@ -175,37 +175,36 @@ export default async function DashboardPage() {
 
       {/* Active sessions banner (if any) */}
       {activeSessionsList.length > 0 && (
-        <div className="relative bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-5 overflow-hidden">
-          {/* Pulsing glow behind the banner */}
-          <div className="absolute -top-10 -left-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl animate-pulse pointer-events-none" />
-          <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-emerald-400/8 rounded-full blur-3xl animate-pulse pointer-events-none" style={{ animationDelay: '1s' }} />
+        <div className="relative bg-[#16191E] border border-[#2E9E63]/40 p-5 overflow-hidden">
+          {/* Left accent bar */}
+          <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-[#2E9E63]" />
 
           <div className="relative flex items-center gap-2 mb-3">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+              <span className="animate-ping absolute inline-flex h-full w-full bg-[#2E9E63] opacity-75" />
+              <span className="relative inline-flex h-2.5 w-2.5 bg-[#2E9E63]" />
             </span>
-            <h3 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-emerald-700 dark:text-emerald-400">Live Sessions</h3>
+            <h3 className="ff-mono text-[10px] uppercase tracking-[0.15em] font-semibold text-[#2E9E63]">Live Sessions</h3>
           </div>
           <div className="relative grid gap-2">
             {activeSessionsList.slice(0, 3).map((session) => (
               <Link
                 key={session.id}
                 href={`/present/${session.id}`}
-                className="flex items-center justify-between bg-background/60 dark:[box-shadow:0_-20px_80px_-20px_rgba(16,185,129,0.05)_inset] rounded-xl px-4 py-3 hover:bg-background border border-transparent hover:border-emerald-500/20 transition-all duration-200 group"
+                className="v5-pop flex items-center justify-between bg-[#0F1216] px-4 py-3 border border-white/12 hover:border-[#2E9E63]/50 transition-colors duration-200 group"
               >
                 <div className="flex items-center gap-3">
-                  <Radio className="w-4 h-4 text-emerald-500" />
+                  <Radio className="w-4 h-4 text-[#2E9E63]" />
                   <div>
-                    <p className="text-sm font-medium text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                    <p className="ff-display text-sm font-semibold text-white group-hover:text-[#2E9E63] transition-colors">
                       {presTitleMap[session.presentation_id] || 'Untitled'}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      Code: <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{session.room_code}</span>
+                    <p className="ff-mono text-xs text-[#9aa0a8]">
+                      Code: <span className="font-bold text-[#2E9E63]">{session.room_code}</span>
                     </p>
                   </div>
                 </div>
-                <span className="text-xs text-muted-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors flex items-center gap-1">
+                <span className="ff-mono text-xs uppercase tracking-[0.1em] text-[#9aa0a8] group-hover:text-[#2E9E63] transition-colors flex items-center gap-1">
                   Resume <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                 </span>
               </Link>
@@ -216,30 +215,28 @@ export default async function DashboardPage() {
 
       {/* Quick Actions — section header + 3 prominent cards */}
       <div>
-        <h2 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-3">Quick Create</h2>
+        <h2 className="ff-mono text-[10px] uppercase tracking-[0.15em] font-semibold text-[#9aa0a8] mb-3">Quick Create</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <QuickCreatePresentationCard />
           <QuickCreateStudioCard />
           <Link href="/dashboard/templates" className="group">
-            <div className="relative bg-violet-500/5 border border-violet-500/20 rounded-2xl p-5 hover:bg-violet-500/10 hover:border-violet-500/30 hover:shadow-lg hover:shadow-violet-500/5 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer overflow-hidden dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
-              {/* Top accent line */}
-              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
-              <div className="w-10 h-10 rounded-xl bg-violet-500/15 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
-                <LayoutTemplate className="w-5 h-5 text-violet-500" />
+            <div className="v5-pop relative h-full bg-[#16191E] border border-white/12 p-5 hover:border-[#6a5ea8]/50 cursor-pointer overflow-hidden">
+              {/* Square colour accent */}
+              <div className="w-10 h-10 bg-[#6a5ea8]/15 flex items-center justify-center mb-3">
+                <LayoutTemplate className="w-5 h-5 text-[#6a5ea8]" />
               </div>
-              <h3 className="text-sm font-semibold text-foreground group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">Use a Template</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">10 ready-made templates</p>
+              <h3 className="ff-display text-sm font-semibold text-white group-hover:text-[#8a7fd0] transition-colors">Use a Template</h3>
+              <p className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#9aa0a8] mt-1">10 ready-made templates</p>
             </div>
           </Link>
           <Link href="/dashboard/sessions" className="group">
-            <div className="relative bg-blue-500/5 border border-blue-500/20 rounded-2xl p-5 hover:bg-blue-500/10 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer overflow-hidden dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]">
-              {/* Top accent line */}
-              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
-              <div className="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
-                <Radio className="w-5 h-5 text-blue-500" />
+            <div className="v5-pop relative h-full bg-[#16191E] border border-white/12 p-5 hover:border-[#3E6DC4]/50 cursor-pointer overflow-hidden">
+              {/* Square colour accent */}
+              <div className="w-10 h-10 bg-[#3E6DC4]/15 flex items-center justify-center mb-3">
+                <Radio className="w-5 h-5 text-[#3E6DC4]" />
               </div>
-              <h3 className="text-sm font-semibold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">View Activity</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">Manage live & past activity</p>
+              <h3 className="ff-display text-sm font-semibold text-white group-hover:text-[#5a87de] transition-colors">View Activity</h3>
+              <p className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#9aa0a8] mt-1">Manage live & past activity</p>
             </div>
           </Link>
         </div>
@@ -261,20 +258,20 @@ export default async function DashboardPage() {
       )}
 
       {/* Divider */}
-      <div className="border-t border-border/50" />
+      <div className="border-t border-white/12" />
 
       {/* My Presentations */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground">All Classrooms</h2>
-            <p className="text-xs text-muted-foreground/70 mt-1">
+            <h2 className="ff-mono text-[10px] uppercase tracking-[0.15em] font-semibold text-[#9aa0a8]">All Classrooms</h2>
+            <p className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#9aa0a8]/70 mt-1">
               {enrichedPresentations.length} classroom{enrichedPresentations.length !== 1 ? 's' : ''} total
             </p>
           </div>
           <Link
             href="/dashboard/templates"
-            className="text-xs text-primary font-medium hover:underline flex items-center gap-1 group"
+            className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#C9241A] font-medium hover:underline flex items-center gap-1 group"
           >
             Browse templates <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
           </Link>
