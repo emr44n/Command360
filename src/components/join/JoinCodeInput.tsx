@@ -38,12 +38,12 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
           placeholder="Enter code"
           maxLength={6}
           autoCapitalize="characters"
-          className="w-[140px] text-center text-sm font-mono font-semibold tracking-widest px-3 h-10 rounded-xl border border-border bg-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:tracking-normal placeholder:text-sm"
+          className="w-[140px] text-center text-sm font-mono font-semibold tracking-widest px-3 h-10 rounded-none border border-border bg-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:tracking-normal placeholder:text-sm"
         />
         <button
           type="submit"
           disabled={code.trim().length < 4 || joining}
-          className="h-10 w-10 flex items-center justify-center rounded-xl bg-primary text-primary-foreground disabled:opacity-40 transition-all hover:bg-primary/90 btn-animated shrink-0"
+          className="h-10 w-10 flex items-center justify-center rounded-none bg-primary text-primary-foreground disabled:opacity-40 transition-all hover:bg-primary/90 btn-animated shrink-0"
         >
           {joining ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
         </button>
@@ -100,7 +100,7 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
             maxLength={6}
             autoFocus
             autoCapitalize="characters"
-            className="w-full text-center text-3xl font-mono font-semibold tracking-[0.4em] h-16 rounded-2xl border border-border bg-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 code-glow transition-all placeholder:text-muted-foreground/30 placeholder:text-xl placeholder:tracking-widest"
+            className="w-full text-center text-3xl font-mono font-semibold tracking-[0.4em] h-16 rounded-none border border-border bg-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 code-glow transition-all placeholder:text-muted-foreground/30 placeholder:text-xl placeholder:tracking-widest"
           />
           <button
             type="button"
@@ -111,7 +111,7 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
                 if (cleaned) setCode(cleaned)
               } catch {}
             }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-md text-[11px] font-medium bg-red-600 text-white border border-red-500/30 hover:bg-red-500 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-none text-[11px] font-medium bg-red-600 text-white border border-red-500/30 hover:bg-red-500 transition-colors"
           >
             Paste
           </button>
@@ -119,7 +119,7 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
         <button
           type="submit"
           disabled={code.trim().length < 4 || joining}
-          className="w-full h-12 rounded-full gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-base inline-flex items-center justify-center btn-animated disabled:opacity-40 disabled:pointer-events-none"
+          className="w-full h-12 rounded-none gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-base inline-flex items-center justify-center btn-animated disabled:opacity-40 disabled:pointer-events-none"
         >
           {joining ? (
             <>
@@ -148,7 +148,7 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
           placeholder="Room code"
           maxLength={6}
           autoCapitalize="characters"
-          className="w-40 text-center text-sm font-mono font-semibold tracking-widest pl-3 pr-14 py-2.5 rounded-full border border-border bg-background/80 backdrop-blur-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 code-glow transition-all placeholder:text-muted-foreground/40 placeholder:font-normal placeholder:tracking-normal"
+          className="w-40 text-center text-sm font-mono font-semibold tracking-widest pl-3 pr-14 py-2.5 rounded-none border border-border bg-background/80 backdrop-blur-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 code-glow transition-all placeholder:text-muted-foreground/40 placeholder:font-normal placeholder:tracking-normal"
         />
         <button
           type="button"
@@ -159,7 +159,7 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
               if (cleaned) setCode(cleaned)
             } catch {}
           }}
-          className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-md text-[11px] font-medium bg-red-600 text-white border border-red-500/30 hover:bg-red-500 transition-colors"
+          className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-none text-[11px] font-medium bg-red-600 text-white border border-red-500/30 hover:bg-red-500 transition-colors"
         >
           Paste
         </button>
@@ -167,7 +167,7 @@ export function JoinCodeInput({ variant = 'hero', className = '' }: Props) {
       <button
         type="submit"
         disabled={code.trim().length < 4 || joining}
-        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-foreground text-background text-sm font-medium disabled:opacity-40 transition-all hover:bg-foreground/90 btn-animated"
+        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-none bg-foreground text-background text-sm font-medium disabled:opacity-40 transition-all hover:bg-foreground/90 btn-animated"
       >
         {joining ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <>Join <ArrowRight className="w-3.5 h-3.5" /></>}
       </button>
