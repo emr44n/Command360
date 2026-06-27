@@ -60,20 +60,22 @@ export function AuthSlideOver({ isOpen, onClose, defaultTab = 'login', required 
         aria-hidden="true"
       />
 
-      {/* Panel */}
+      {/* Panel — rigid v5: square corners, red accent line, mono labels */}
       <div
-        className={`fixed inset-y-0 right-0 z-[101] w-full max-w-md bg-[#0c0c10] border-l border-white/[0.06] shadow-2xl shadow-black/40 transition-transform duration-300 ease-out flex flex-col ${
+        className={`v5 fixed inset-y-0 right-0 z-[101] w-full max-w-md bg-[#0F1216] border-l border-white/12 shadow-2xl shadow-black/50 transition-transform duration-300 ease-out flex flex-col ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         role="dialog"
         aria-modal="true"
         aria-label={tab === 'login' ? 'Sign in' : 'Create account'}
       >
+        <div aria-hidden="true" className="absolute top-0 left-0 right-0 h-[2px] bg-[#C9241A]" />
+        <div aria-hidden="true" className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" />
         {/* Close button — hidden when auth is required (middleware redirect) */}
         {!required && (
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-lg text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition-colors cursor-pointer z-10"
+            className="absolute top-4 right-4 p-2 text-white/35 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer z-10"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -81,35 +83,27 @@ export function AuthSlideOver({ isOpen, onClose, defaultTab = 'login', required 
         )}
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto px-8 py-10">
+        <div className="relative flex-1 overflow-y-auto px-8 py-10">
           {/* Logo */}
-          <div className="flex items-center gap-2.5 mb-10">
-            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/20">
-              <svg viewBox="0 0 24 24" className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-white tracking-tight">Command 360</span>
+          <div className="flex items-center gap-3 mb-9">
+            <span className="ff-display w-[30px] h-[30px] bg-[#C9241A] flex items-center justify-center text-base font-black text-white">C</span>
+            <span className="ff-display font-extrabold text-[16px] text-white tracking-[0.01em]">COMMAND 360</span>
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-1 p-1 rounded-xl bg-white/[0.04] border border-white/[0.06] mb-8">
+          <div className="grid grid-cols-2 border border-white/12 mb-8">
             <button
               onClick={() => setTab('login')}
-              className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all cursor-pointer ${
-                tab === 'login'
-                  ? 'bg-white/[0.08] text-white shadow-sm'
-                  : 'text-white/40 hover:text-white/60'
+              className={`ff-mono py-2.5 text-[12px] font-semibold uppercase tracking-[0.06em] transition-colors cursor-pointer border-r border-white/12 ${
+                tab === 'login' ? 'bg-[#C9241A] text-white' : 'text-white/45 hover:text-white/75'
               }`}
             >
               Sign In
             </button>
             <button
               onClick={() => setTab('register')}
-              className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all cursor-pointer ${
-                tab === 'register'
-                  ? 'bg-white/[0.08] text-white shadow-sm'
-                  : 'text-white/40 hover:text-white/60'
+              className={`ff-mono py-2.5 text-[12px] font-semibold uppercase tracking-[0.06em] transition-colors cursor-pointer ${
+                tab === 'register' ? 'bg-[#C9241A] text-white' : 'text-white/45 hover:text-white/75'
               }`}
             >
               Sign Up
@@ -119,33 +113,33 @@ export function AuthSlideOver({ isOpen, onClose, defaultTab = 'login', required 
           {/* Form content */}
           {showForgotPassword ? (
             <div>
-              <div className="space-y-1 mb-6">
-                <h2 className="text-xl font-semibold tracking-tight text-white">Reset password</h2>
-                <p className="text-white/40 text-sm">Enter your email and we&apos;ll send a reset link</p>
+              <div className="space-y-1.5 mb-6">
+                <h2 className="ff-display text-[22px] font-bold tracking-[-0.01em] text-white">Reset password</h2>
+                <p className="text-white/45 text-sm">Enter your email and we&apos;ll send a reset link</p>
               </div>
               <ForgotPasswordForm />
               <div className="mt-6 text-center text-sm">
-                <button onClick={() => setShowForgotPassword(false)} className="text-white/25 hover:text-white/50 transition-colors text-xs cursor-pointer">
+                <button onClick={() => setShowForgotPassword(false)} className="ff-mono text-white/30 hover:text-white/60 transition-colors text-[11px] uppercase tracking-[0.05em] cursor-pointer">
                   &larr; Back to sign in
                 </button>
               </div>
             </div>
           ) : tab === 'login' ? (
             <div>
-              <div className="space-y-1 mb-6">
-                <h2 className="text-xl font-semibold tracking-tight text-white">Welcome back</h2>
-                <p className="text-white/40 text-sm">Enter your credentials to continue</p>
+              <div className="space-y-1.5 mb-6">
+                <h2 className="ff-display text-[22px] font-bold tracking-[-0.01em] text-white">Welcome back</h2>
+                <p className="text-white/45 text-sm">Enter your credentials to continue</p>
               </div>
               <LoginForm />
               <div className="mt-6 space-y-3 text-center text-sm">
-                <p className="text-white/40">
+                <p className="text-white/45">
                   Don&apos;t have an account?{' '}
-                  <button onClick={() => setTab('register')} className="text-red-400 hover:text-red-300 font-medium transition-colors cursor-pointer">
+                  <button onClick={() => setTab('register')} className="text-[#e0564d] hover:text-[#C9241A] font-medium transition-colors cursor-pointer">
                     Sign up free
                   </button>
                 </p>
                 <p>
-                  <button onClick={() => setShowForgotPassword(true)} className="text-white/25 hover:text-white/50 transition-colors text-xs cursor-pointer">
+                  <button onClick={() => setShowForgotPassword(true)} className="ff-mono text-white/30 hover:text-white/60 transition-colors text-[11px] uppercase tracking-[0.05em] cursor-pointer">
                     Forgot your password?
                   </button>
                 </p>
@@ -153,15 +147,15 @@ export function AuthSlideOver({ isOpen, onClose, defaultTab = 'login', required 
             </div>
           ) : (
             <div>
-              <div className="space-y-1 mb-6">
-                <h2 className="text-xl font-semibold tracking-tight text-white">Create your account</h2>
-                <p className="text-white/40 text-sm">Start your free trial in seconds</p>
+              <div className="space-y-1.5 mb-6">
+                <h2 className="ff-display text-[22px] font-bold tracking-[-0.01em] text-white">Create your account</h2>
+                <p className="text-white/45 text-sm">Start your free trial in seconds</p>
               </div>
               <RegisterForm />
               <div className="mt-6 text-center text-sm">
-                <p className="text-white/40">
+                <p className="text-white/45">
                   Already have an account?{' '}
-                  <button onClick={() => setTab('login')} className="text-red-400 hover:text-red-300 font-medium transition-colors cursor-pointer">
+                  <button onClick={() => setTab('login')} className="text-[#e0564d] hover:text-[#C9241A] font-medium transition-colors cursor-pointer">
                     Sign in
                   </button>
                 </p>
