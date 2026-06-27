@@ -66,14 +66,14 @@ export function SurveyResultsDisplay({ slide, sessionId }: { slide: Slide; sessi
     <div className="space-y-4 max-h-96 overflow-y-auto pr-1">
       <p className="text-muted-foreground text-sm">{totalResponses} {totalResponses === 1 ? 'response' : 'responses'}</p>
       {results.map((r, i) => (
-        <div key={i} className="bg-muted/50 rounded-xl p-4 border border-border">
+        <div key={i} className="bg-muted/50 rounded-none p-4 border border-border">
           <p className="text-foreground text-sm font-medium mb-3">{r.question.text}</p>
           {r.question.type === 'text' && (
             <div className="space-y-1.5 max-h-32 overflow-y-auto">
               {r.textResponses.length === 0 ? (
                 <p className="text-muted-foreground text-xs">No text responses</p>
               ) : r.textResponses.map((t, j) => (
-                <p key={j} className="text-foreground/80 text-xs bg-muted rounded px-2 py-1">"{t}"</p>
+                <p key={j} className="text-foreground/80 text-xs bg-muted rounded-none px-2 py-1">"{t}"</p>
               ))}
             </div>
           )}
@@ -91,8 +91,8 @@ export function SurveyResultsDisplay({ slide, sessionId }: { slide: Slide; sessi
                 return (
                   <div key={opt.id} className="flex items-center gap-3">
                     <span className="text-foreground/80 text-xs w-24 truncate">{opt.text}</span>
-                    <div className="flex-1 bg-muted rounded-full h-2">
-                      <div className="bg-primary h-2 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                    <div className="flex-1 bg-muted rounded-none h-2">
+                      <div className="bg-primary h-2 rounded-none transition-all" style={{ width: `${pct}%` }} />
                     </div>
                     <span className="text-muted-foreground text-xs w-10 text-right">{pct}%</span>
                   </div>

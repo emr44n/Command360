@@ -97,20 +97,20 @@ export function QnADisplay({ slide, session }: { slide: Slide; session: Session 
       {moderationEnabled && pendingQuestions.length > 0 && (
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
-            <ShieldCheck className="w-4 h-4 text-amber-500" />
-            <span className="text-xs font-medium text-amber-500 uppercase tracking-wide">Pending Approval ({pendingQuestions.length})</span>
+            <ShieldCheck className="w-4 h-4 text-[#c98a2a]" />
+            <span className="text-xs font-medium text-[#c98a2a] uppercase tracking-wide">Pending Approval ({pendingQuestions.length})</span>
           </div>
           <div className="space-y-2">
             {pendingQuestions.map((q) => (
-              <div key={q.id} className="bg-amber-500/5 rounded-lg p-3 border border-amber-500/20">
+              <div key={q.id} className="bg-[#c98a2a]/5 rounded-none p-3 border border-[#c98a2a]/20">
                 <p className="text-foreground text-sm">{q.question_text}</p>
                 <div className="flex items-center gap-2 mt-2">
                   <Button size="sm" variant="ghost" onClick={() => approveQuestion(q.id)}
-                    className="gap-1.5 text-emerald-500 hover:text-emerald-400 text-xs h-7 px-2">
+                    className="gap-1.5 text-[#2E9E63] hover:text-[#2E9E63]/80 text-xs h-7 px-2">
                     <Eye className="w-3 h-3" />Approve
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => hideQuestion(q.id)}
-                    className="gap-1.5 text-red-500 hover:text-red-400 text-xs h-7 px-2">
+                    className="gap-1.5 text-[#C9241A] hover:text-[#C9241A]/80 text-xs h-7 px-2">
                     <EyeOff className="w-3 h-3" />Reject
                   </Button>
                 </div>
@@ -121,19 +121,19 @@ export function QnADisplay({ slide, session }: { slide: Slide; session: Session 
         </div>
       )}
       {questions.map((q) => (
-        <div key={q.id} className={`bg-muted/50 rounded-xl p-4 border ${q.is_answered ? 'border-emerald-700/50 opacity-60' : 'border-border'}`}>
+        <div key={q.id} className={`bg-muted/50 rounded-none p-4 border ${q.is_answered ? 'border-[#2E9E63]/50 opacity-60' : 'border-border'}`}>
           <div className="flex items-start justify-between gap-3">
             <p className="text-foreground text-sm flex-1">{q.question_text}</p>
             <div className="flex items-center gap-1 shrink-0">
-              <span className="flex items-center gap-1 text-xs text-muted-foreground bg-muted rounded-full px-2 py-0.5">
+              <span className="flex items-center gap-1 text-xs text-muted-foreground bg-muted rounded-none px-2 py-0.5">
                 <ThumbsUp className="w-3 h-3" />
                 {q.upvote_count}
               </span>
-              {q.is_answered && <Badge variant="secondary" className="text-xs bg-emerald-800 text-emerald-200">Answered</Badge>}
+              {q.is_answered && <Badge variant="secondary" className="text-xs bg-[#2E9E63] text-white">Answered</Badge>}
             </div>
           </div>
           {suggestions[q.id] && (
-            <div className="mt-3 bg-primary/10 border border-primary/20 rounded-lg p-3 text-sm text-foreground">
+            <div className="mt-3 bg-primary/10 border border-primary/20 rounded-none p-3 text-sm text-foreground">
               <div className="flex items-center gap-1.5 text-xs text-primary mb-1.5">
                 <Sparkles className="w-3 h-3" />AI Suggestion
               </div>
@@ -149,7 +149,7 @@ export function QnADisplay({ slide, session }: { slide: Slide; session: Session 
                 {suggestingFor === q.id ? 'Thinking...' : 'AI Suggest'}
               </Button>
               <Button size="sm" variant="ghost" onClick={() => markAnswered(q.id)}
-                className="gap-1.5 text-emerald-500 hover:text-emerald-400 text-xs h-7 px-2">
+                className="gap-1.5 text-[#2E9E63] hover:text-[#2E9E63]/80 text-xs h-7 px-2">
                 <CheckCircle2 className="w-3 h-3" />Mark Answered
               </Button>
               <Button size="sm" variant="ghost" onClick={() => hideQuestion(q.id)}

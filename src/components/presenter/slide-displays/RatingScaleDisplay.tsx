@@ -68,7 +68,7 @@ export function RatingScaleDisplay({ slide, sessionId }: { slide: Slide; session
                 )}
                 <div className="w-full relative" style={{ height: '80px' }}>
                   <div
-                    className={`absolute bottom-0 w-full rounded-t transition-all duration-700 ease-out ${
+                    className={`absolute bottom-0 w-full rounded-none transition-all duration-700 ease-out ${
                       isNearAvg ? 'bg-primary' : 'bg-white/20'
                     }`}
                     style={{ height: `${height}%`, minHeight: count > 0 ? '3px' : '0' }}

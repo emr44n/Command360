@@ -906,7 +906,7 @@ export function StudioGallery({
                 {layer.name === 'Circle' ? <div className="w-4 h-4 rounded-full shrink-0" style={{ backgroundColor: layer.color || '#666' }} />
                   : layer.name === 'Triangle' ? <div className="w-4 h-4 shrink-0" style={{ backgroundColor: layer.color || '#666', clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)' }} />
                   : layer.name === 'Line' ? <div className="shrink-0" style={{ backgroundColor: layer.color || '#666', width: 16, height: 2 }} />
-                  : <div className="w-4 h-3 rounded-sm shrink-0" style={{ backgroundColor: layer.color || '#666' }} />}
+                  : <div className="w-4 h-3 rounded-none shrink-0" style={{ backgroundColor: layer.color || '#666' }} />}
                 <span className="flex-1 truncate text-[#9aa0a8]">{layer.name}</span>
                 {layer.maskMode === 'mask' && <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" title="Mask" />}
                 {layer.maskMode === 'multi-layer-mask' && <div className="w-2 h-2 rounded-full bg-amber-500 shrink-0" title="Multi-Mask" />}

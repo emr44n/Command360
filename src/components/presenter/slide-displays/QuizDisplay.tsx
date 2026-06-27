@@ -66,24 +66,24 @@ export function QuizDisplay({ slide, sessionId }: { slide: Slide; sessionId: str
           <ResponsiveContainer width="100%" height={Math.max(160, results.length * 52)}>
             <BarChart data={results} layout="vertical" margin={{ left: 8, right: 60, top: 4, bottom: 4 }}>
               <XAxis type="number" hide domain={[0, 'dataMax']} />
-              <YAxis type="category" dataKey="text" width={140} tick={{ fill: '#6b7280', fontSize: 13 }} />
-              <Bar dataKey="count" radius={[0, 6, 6, 0]} maxBarSize={40} isAnimationActive={true} animationDuration={600}>
+              <YAxis type="category" dataKey="text" width={140} tick={{ fill: '#9aa0a8', fontSize: 13 }} />
+              <Bar dataKey="count" radius={[0, 0, 0, 0]} maxBarSize={40} isAnimationActive={true} animationDuration={600}>
                 {results.map((r, i) => (
-                  <Cell key={i} fill={r.is_correct ? '#10b981' : COLORS[i % COLORS.length]} />
+                  <Cell key={i} fill={r.is_correct ? '#2E9E63' : COLORS[i % COLORS.length]} />
                 ))}
-                <LabelList dataKey="count" position="right" style={{ fill: '#9ca3af', fontSize: 13 }} />
+                <LabelList dataKey="count" position="right" style={{ fill: '#9aa0a8', fontSize: 13 }} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
           <p className="text-muted-foreground text-sm">{totalResponses} {totalResponses === 1 ? 'response' : 'responses'}</p>
           {content.explanation && (
-            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 text-sm text-emerald-700 dark:text-emerald-300">
+            <div className="bg-[#2E9E63]/10 border border-[#2E9E63]/30 rounded-none p-3 text-sm text-[#2E9E63]">
               {content.explanation}
             </div>
           )}
           {leaderboard.length > 0 && (
-            <div className="bg-muted/50 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-3 text-sm font-medium text-amber-500">
+            <div className="bg-muted/50 rounded-none p-4">
+              <div className="flex items-center gap-2 mb-3 text-sm font-medium text-[#c98a2a]">
                 <Trophy className="w-4 h-4" />
                 Leaderboard
               </div>
