@@ -102,7 +102,7 @@ const TRUST = [
 const SOFTWARE_JSONLD = {
   '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: 'Command 360',
   applicationCategory: 'PresentationApplication',
-  description: 'Interactive training and briefing platform for emergency services.',
+  description: 'Interactive command training for UK emergency services.',
   operatingSystem: 'Web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'GBP' },
 }
 const FAQ_JSONLD = {
@@ -162,15 +162,15 @@ export default function LandingPage() {
               <div className="pb-14 lg:py-[56px] lg:pr-12 lg:border-r border-white/10">
                 <div className="flex items-center gap-3 ff-mono text-[12px] font-medium tracking-[0.14em] uppercase text-[#9aa0a8] mb-7 lg:pl-9" data-reveal>
                   <span className="w-[7px] h-[7px] bg-[#C9241A] v5-pulse" />
-                  Interactive learning · UK emergency services
+                  Interactive command learning · UK emergency services
                 </div>
                 <h1 className="ff-display font-extrabold text-white mb-7 leading-[0.98] tracking-[-0.02em] text-[clamp(44px,5.4vw,74px)] lg:pl-9" data-reveal>
                   Where emergency<br />teams{' '}
-                  <RotatingWord words={['learn.', 'grow.', 'lead.']} className="text-[#C9241A] underline decoration-[3px] underline-offset-[10px] decoration-[#C9241A]/45" />
+                  <RotatingWord words={['train.', 'decide.', 'improve.']} className="text-[#C9241A] underline decoration-[3px] underline-offset-[10px] decoration-[#C9241A]/45" />
                 </h1>
                 <p className="text-[18px] leading-[1.62] text-[#aab0b8] max-w-[500px] mb-9 lg:pl-9" data-reveal>
-                  An interactive training environment that turns briefings, debriefs, and CPD into measured,
-                  interactive learning — live polls, scored quizzes, and AI insight, with a full record for every session.
+                  Command 360 turns briefings, live decisions, and debriefs into structured learning,
+                  with interactive questions, AI insight, and a full record of every session.
                 </p>
                 <div className="flex flex-wrap items-center gap-3 mb-8 lg:pl-9" data-reveal>
                   <V5AuthButton tab="register" label="Start free trial" variant="solid" />

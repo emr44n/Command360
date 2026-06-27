@@ -43,7 +43,7 @@ export function SiteFooter() {
               <span className="ff-display w-[30px] h-[30px] bg-[#C9241A] flex items-center justify-center text-base font-black text-white">C</span>
               <span className="ff-display font-extrabold text-[18px] text-white tracking-[0.01em]">COMMAND 360</span>
             </div>
-            <p className="text-[14px] leading-[1.6] mb-5 max-w-[300px]">Interactive training platform for UK emergency services. UK-hosted, GDPR ready, built for those who serve.</p>
+            <p className="text-[14px] leading-[1.6] mb-5 max-w-[300px]">Interactive command training for UK emergency services. UK-hosted, GDPR ready, built for those who serve.</p>
             <div className="flex gap-2.5">
               {['in', 'X', '@'].map((s) => <span key={s} className="w-9 h-9 border border-white/15 flex items-center justify-center ff-mono text-[12px] text-[#9aa0a8] hover:border-white/45 hover:text-white transition-colors cursor-pointer">{s}</span>)}
             </div>

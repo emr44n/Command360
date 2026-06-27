@@ -42,33 +42,34 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://command360.co.uk'),
   title: {
-    default: 'Command 360 — Interactive Training for Emergency Services',
+    default: 'Command 360 — Interactive Command Training for UK Emergency Services',
     template: '%s | Command 360',
   },
   description:
-    'Interactive training platform for emergency services. Live polls, quizzes, word clouds and AI insights — purpose-built for Fire, Police, Ambulance and Armed Forces teams.',
+    'Interactive command training for UK emergency services. Command 360 turns briefings, live decisions, and debriefs into structured learning — with interactive questions, AI insight, and a full record of every session.',
   keywords: [
-    'interactive presentation',
+    'command training',
+    'emergency services training',
+    'interactive briefings',
+    'tactical decision exercises',
     'live polling',
-    'word cloud',
-    'quiz maker',
-    'audience engagement',
-    'mentimeter alternative',
-    'AI presentations',
+    'incident debrief',
+    'AI training insights',
   ],
   openGraph: {
     type: 'website',
     locale: 'en_GB',
     siteName: 'Command 360',
-    title: 'Command 360 — AI-Powered Interactive Presentations',
+    title: 'Command 360 — Interactive Command Training for UK Emergency Services',
     description:
-      'Live polls, word clouds, quizzes and Q&A with real-time AI insights.',
+      'Interactive command training for UK emergency services — briefings, live decisions, and debriefs turned into structured learning with AI insight.',
     images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Command 360' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Command 360 — AI-Powered Interactive Presentations',
-    description: 'Live polls, word clouds, quizzes and Q&A with real-time AI insights.',
+    title: 'Command 360 — Interactive Command Training for UK Emergency Services',
+    description:
+      'Interactive command training for UK emergency services — briefings, live decisions, and debriefs turned into structured learning with AI insight.',
     images: ['/og-image.png'],
   },
   robots: { index: true, follow: true },
