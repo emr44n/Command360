@@ -657,7 +657,7 @@ export function StudioGallery({
                 key={asset.id}
                 role="button"
                 tabIndex={0}
-                className="group relative aspect-video overflow-hidden rounded border border-[#3f4147] bg-[#383a40] hover:border-zinc-500 cursor-grab active:cursor-grabbing"
+                className="group relative aspect-video overflow-hidden rounded-none border border-[#3f4147] bg-[#383a40] hover:border-zinc-500 cursor-grab active:cursor-grabbing"
                 draggable onDragStart={(e) => handleAssetDragStart(e, asset)}
                 onClick={() => addImageToCanvas(asset)}
               >
@@ -667,7 +667,7 @@ export function StudioGallery({
                 </div>
                 <Tooltip><TooltipTrigger asChild>
                 <button
-                  className="absolute top-0.5 right-0.5 p-0.5 rounded bg-red-600/80 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 z-10"
+                  className="absolute top-0.5 right-0.5 p-0.5 rounded-none bg-red-600/80 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 z-10"
                   onClick={(e) => { e.stopPropagation(); onDeleteLayer?.(asset.id); setImages(prev => prev.filter(a => a.id !== asset.id)) }}
                 >
                   <Trash2Icon className="size-2.5" />
@@ -743,11 +743,11 @@ export function StudioGallery({
                 key={asset.id}
                 role="button"
                 tabIndex={0}
-                className="group flex items-center gap-2 px-1.5 py-1 rounded hover:bg-[#35363c] cursor-pointer transition-colors"
+                className="group flex items-center gap-2 px-1.5 py-1 rounded-none hover:bg-[#35363c] cursor-pointer transition-colors"
                 onClick={() => addVideoToCanvas(asset)}
                 draggable onDragStart={(e) => handleAssetDragStart(e, asset)}
               >
-                <div className="w-8 h-6 shrink-0 rounded overflow-hidden"><VideoThumbnail src={asset.url} className="w-full h-full object-cover" /></div>
+                <div className="w-8 h-6 shrink-0 rounded-none overflow-hidden"><VideoThumbnail src={asset.url} className="w-full h-full object-cover" /></div>
                 <span className="text-[9px] text-[#9aa0a8] truncate flex-1">{asset.name}</span>
                 <button
                   className="p-0.5 text-[#9aa0a8] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -761,7 +761,7 @@ export function StudioGallery({
                 key={asset.id}
                 role="button"
                 tabIndex={0}
-                className="group relative aspect-video overflow-hidden rounded border border-[#3f4147] bg-[#383a40] hover:border-zinc-500 cursor-grab active:cursor-grabbing"
+                className="group relative aspect-video overflow-hidden rounded-none border border-[#3f4147] bg-[#383a40] hover:border-zinc-500 cursor-grab active:cursor-grabbing"
                 draggable onDragStart={(e) => handleAssetDragStart(e, asset)}
                 onClick={() => addVideoToCanvas(asset)}
               >
@@ -771,7 +771,7 @@ export function StudioGallery({
                 </div>
                 <Tooltip><TooltipTrigger asChild>
                 <button
-                  className="absolute top-0.5 right-0.5 p-0.5 rounded bg-red-600/80 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 z-10"
+                  className="absolute top-0.5 right-0.5 p-0.5 rounded-none bg-red-600/80 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 z-10"
                   onClick={(e) => { e.stopPropagation(); onDeleteLayer?.(asset.id); setVideos(prev => prev.filter(a => a.id !== asset.id)) }}
                 >
                   <Trash2Icon className="size-2.5" />
@@ -800,7 +800,7 @@ export function StudioGallery({
                   setDragLayerIdx(null)
                 }}
                 onDragEnd={() => setDragLayerIdx(null)}
-                className={`flex w-full items-center gap-1.5 rounded px-1.5 py-1.5 text-left text-xs cursor-pointer transition-colors ${
+                className={`flex w-full items-center gap-1.5 rounded-none px-1.5 py-1.5 text-left text-xs cursor-pointer transition-colors ${
                   selectedLayerId === layer.id ? 'bg-red-500/20 border-l-2 border-red-500 text-white' : 'text-[#9aa0a8] hover:bg-[#2b2d31]'
                 } ${dragLayerIdx === idx ? 'opacity-50' : ''}`}
                 onClick={() => onSelectLayer(layer.id)}

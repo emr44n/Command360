@@ -47,8 +47,8 @@ export function OpenTextDisplay({ slide, sessionId }: { slide: Slide; sessionId:
           {responses.length} response{responses.length !== 1 ? 's' : ''}
         </span>
         {content.show_responses_live && (
-          <span className="text-xs text-emerald-400 flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-xs text-[#2E9E63] flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#2E9E63] animate-pulse" />
             Live
           </span>
         )}
@@ -61,7 +61,7 @@ export function OpenTextDisplay({ slide, sessionId }: { slide: Slide; sessionId:
           {responses.map((r, i) => (
             <div
               key={i}
-              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3"
+              className="bg-white/5 border border-white/10 rounded-none px-4 py-3"
               style={{ animation: i === 0 ? 'fadeInScale 0.3s ease-out forwards' : undefined }}
             >
               <p className="text-white/80 text-sm whitespace-pre-wrap leading-relaxed">{r.text}</p>

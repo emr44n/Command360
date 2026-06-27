@@ -497,12 +497,12 @@ function ToolbarBtn({ icon: Icon, label, shortcut, onClick, active, activeColor 
   return (
     <div className="relative">
       <button onClick={onClick} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}
-        className={cn('w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95',
+        className={cn('w-9 h-9 rounded-none flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95',
           active ? `${activeColor || 'text-primary'} bg-muted` : 'text-muted-foreground hover:text-foreground hover:bg-muted')}>
         <Icon className="w-4 h-4" />
       </button>
       {showTooltip && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 bg-popover text-popover-foreground text-[10px] font-medium rounded-lg whitespace-nowrap shadow-lg border border-border z-10 pointer-events-none"
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 bg-popover text-popover-foreground text-[10px] font-medium rounded-none whitespace-nowrap shadow-lg border border-border z-10 pointer-events-none"
           style={{ animation: 'fadeIn 0.15s ease-out forwards' }}>
           {label}{shortcut && <span className="ml-1.5 opacity-50">({shortcut})</span>}
         </div>
@@ -519,7 +519,7 @@ function HotkeyRow({ keys, action }: { keys: string; action: string }) {
   return (
     <div className="flex items-center justify-between text-sm">
       <span className="text-muted-foreground">{action}</span>
-      <kbd className="bg-muted rounded px-2 py-0.5 text-xs font-mono text-muted-foreground border border-border">{keys}</kbd>
+      <kbd className="bg-muted rounded-none px-2 py-0.5 text-xs font-mono text-muted-foreground border border-border">{keys}</kbd>
     </div>
   )
 }
