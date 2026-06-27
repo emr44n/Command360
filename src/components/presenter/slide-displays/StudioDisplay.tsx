@@ -351,7 +351,7 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => setShowEventsPanel(v => !v)}
-          className="shrink-0 w-5 flex items-center justify-center bg-[#1e1f22] hover:bg-[#2b2d31] text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer border-l border-[#1e1f22]"
+          className="shrink-0 w-5 flex items-center justify-center bg-[#16191E] hover:bg-white/10 text-[#9aa0a8] hover:text-white transition-colors cursor-pointer border-l border-[#16191E]"
         >
           <ChevronRight className={`w-3 h-3 transition-transform ${showEventsPanel ? '' : 'rotate-180'}`} />
         </button>
@@ -366,7 +366,7 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
             <Tooltip><TooltipTrigger asChild>
             <button
               onClick={handleResetAll}
-              className="flex items-center gap-1 text-[9px] font-medium text-muted-foreground hover:text-foreground transition-colors px-1.5 py-0.5 rounded hover:bg-muted"
+              className="flex items-center gap-1 text-[9px] font-medium text-muted-foreground hover:text-foreground transition-colors px-1.5 py-0.5 rounded-none hover:bg-muted"
             >
               <RotateCcw className="w-2.5 h-2.5" />
               Reset
@@ -720,7 +720,7 @@ function CctvDisplayView({
             </div>
             {/* Scene label */}
             {label && (
-              <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 bg-black/70 rounded text-[10px] font-semibold text-white/80 backdrop-blur-sm">
+              <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 bg-black/70 rounded-none text-[10px] font-semibold text-white/80 backdrop-blur-sm">
                 {label}
               </div>
             )}
@@ -774,7 +774,7 @@ function CctvDisplayView({
   return (
     <div className="w-full h-full flex flex-col">
       <div
-        className="flex-1 relative overflow-hidden rounded-lg"
+        className="flex-1 relative overflow-hidden rounded-none"
         style={{
           aspectRatio: '16 / 9',
           ...gridStyle(),
@@ -826,7 +826,7 @@ function CctvDisplayView({
         )}
       </div>
       {/* Join URL bar */}
-      <div className="flex items-center justify-center gap-3 mt-2 py-1.5 bg-muted/30 rounded-lg">
+      <div className="flex items-center justify-center gap-3 mt-2 py-1.5 bg-muted/30 rounded-none">
         <QrCode className="w-3.5 h-3.5 text-muted-foreground" />
         <span className="text-xs font-mono font-semibold text-foreground tracking-wide">{joinUrl}</span>
         <span className="text-xs text-muted-foreground">|</span>

@@ -581,7 +581,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
 
   /* ═══════════════════════ RENDER ═══════════════════════ */
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-[#0a0a0b]" style={{ border: '3px solid #dc2626' }}>
+    <div className="fixed inset-0 z-[100] flex flex-col bg-[#0a0a0b]" style={{ border: '3px solid #C9241A' }}>
       {/* ─── Top Bar ─── */}
       <div className="h-10 bg-[#1a1a1c] border-b border-red-500/30 flex items-center justify-between px-4 shrink-0">
         <div className="flex items-center gap-3">
@@ -595,7 +595,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 text-[10px] text-zinc-500"><Radio className="w-3 h-3" />Code: <span className="font-mono font-bold text-white">{session.room_code}</span></div>
-          <button onClick={() => setShowEndConfirm(true)} className="px-3 py-1 rounded-lg bg-red-600 hover:bg-red-500 text-white text-[11px] font-medium transition-colors flex items-center gap-1.5"><Square className="w-3 h-3" /> End Exercise</button>
+          <button onClick={() => setShowEndConfirm(true)} className="px-3 py-1 rounded-none bg-[#C9241A] hover:bg-[#a81d15] text-white text-[11px] font-medium transition-colors flex items-center gap-1.5"><Square className="w-3 h-3" /> End Exercise</button>
         </div>
       </div>
 
@@ -650,10 +650,10 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                 {/* IMAGES */}
                 {assetSub === 'images' && (<>
                   <input ref={imageInputRef} type="file" accept="image/*" multiple className="hidden" onChange={e => { if (e.target.files) doUpload(e.target.files, 'image', setImages); e.target.value = '' }} />
-                  <button onClick={() => imageInputRef.current?.click()} disabled={uploading} className="w-full flex items-center justify-center gap-1 py-1.5 text-[9px] font-medium rounded-md border border-dashed border-zinc-600 bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] disabled:opacity-50 transition-colors mb-2">
+                  <button onClick={() => imageInputRef.current?.click()} disabled={uploading} className="w-full flex items-center justify-center gap-1 py-1.5 text-[9px] font-medium rounded-none border border-dashed border-zinc-600 bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] disabled:opacity-50 transition-colors mb-2">
                     {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />} {uploading ? `${uploadProgress}%` : 'Upload Image'}
                   </button>
-                  {uploading && <div className="h-0.5 w-full rounded-full bg-zinc-800 overflow-hidden mb-2"><div className="h-0.5 bg-red-500 rounded-full transition-all" style={{ width: `${uploadProgress}%` }} /></div>}
+                  {uploading && <div className="h-0.5 w-full rounded-none bg-zinc-800 overflow-hidden mb-2"><div className="h-0.5 bg-[#C9241A] rounded-none transition-all" style={{ width: `${uploadProgress}%` }} /></div>}
                   {uploadError && <p className="text-[8px] text-red-400 mb-2">{uploadError}</p>}
                   {images.length === 0 ? <p className="text-[9px] text-zinc-600 text-center py-4">No images yet</p> : (
                     <div className="grid grid-cols-2 gap-1">{images.map(a => <AssetThumb key={a.id} asset={a} onDragStart={handleAssetDragStart} onClick={() => addAssetToCanvas(a)} />)}</div>
@@ -664,10 +664,10 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                 {assetSub === 'videos' && (<>
                   <input ref={videoInputRef} type="file" accept="video/mp4,video/webm" multiple className="hidden" onChange={e => { if (e.target.files) doUpload(e.target.files, 'video', setVideos); e.target.value = '' }} />
                   <div className="flex gap-1 mb-2">
-                    <button onClick={() => videoInputRef.current?.click()} disabled={uploading} className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[9px] font-medium rounded-md border border-dashed border-zinc-600 bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] disabled:opacity-50 transition-colors">
+                    <button onClick={() => videoInputRef.current?.click()} disabled={uploading} className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[9px] font-medium rounded-none border border-dashed border-zinc-600 bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] disabled:opacity-50 transition-colors">
                       {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />} {uploading ? `${uploadProgress}%` : 'Upload'}
                     </button>
-                    <button onClick={() => setShowYoutubeInput(v => !v)} className={`flex items-center justify-center gap-1 px-2 py-1.5 text-[9px] font-medium rounded-md border transition-colors ${showYoutubeInput ? 'border-red-500 bg-red-500/10 text-red-400' : 'border-dashed border-zinc-600 bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c]'}`}>
+                    <button onClick={() => setShowYoutubeInput(v => !v)} className={`flex items-center justify-center gap-1 px-2 py-1.5 text-[9px] font-medium rounded-none border transition-colors ${showYoutubeInput ? 'border-red-500 bg-red-500/10 text-red-400' : 'border-dashed border-zinc-600 bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c]'}`}>
                       <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.8 3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
                       YT
                     </button>
@@ -676,8 +676,8 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                   {showYoutubeInput && (
                     <div className="mb-2 animate-in slide-in-from-top-1 duration-200">
                       <div className="flex gap-1">
-                        <input type="text" value={youtubeUrl} onChange={e => setYoutubeUrl(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addYoutubeVideo() }} placeholder="Paste YouTube URL..." className="flex-1 h-7 px-2 text-[9px] rounded-md border border-zinc-600 bg-[#1e1f22] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-red-500" />
-                        <button onClick={addYoutubeVideo} disabled={!extractYoutubeId(youtubeUrl)} className="h-7 px-2 text-[8px] font-bold rounded-md bg-red-600 hover:bg-red-500 disabled:opacity-30 text-white transition-colors">Add</button>
+                        <input type="text" value={youtubeUrl} onChange={e => setYoutubeUrl(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addYoutubeVideo() }} placeholder="Paste YouTube URL..." className="flex-1 h-7 px-2 text-[9px] rounded-none border border-zinc-600 bg-[#1e1f22] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-red-500" />
+                        <button onClick={addYoutubeVideo} disabled={!extractYoutubeId(youtubeUrl)} className="h-7 px-2 text-[8px] font-bold rounded-none bg-[#C9241A] hover:bg-[#a81d15] disabled:opacity-30 text-white transition-colors">Add</button>
                       </div>
                     </div>
                   )}
@@ -687,7 +687,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                         <AssetThumb asset={a} onDragStart={handleAssetDragStart} onClick={() => addAssetToCanvas(a)} />
                         {/* YouTube overlay icon */}
                         {a.url.includes('img.youtube.com') && (
-                          <div className="absolute top-1 left-1 bg-red-600 rounded-sm px-1 py-0.5 text-[6px] font-bold text-white pointer-events-none">YT</div>
+                          <div className="absolute top-1 left-1 bg-[#C9241A] rounded-none px-1 py-0.5 text-[6px] font-bold text-white pointer-events-none">YT</div>
                         )}
                       </div>
                     ))}</div>
@@ -697,13 +697,13 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                 {/* AUDIO */}
                 {assetSub === 'audio' && (<>
                   <input ref={audioInputRef} type="file" accept="audio/*" multiple className="hidden" onChange={e => { if (e.target.files) doUpload(e.target.files, 'audio', setAudios); e.target.value = '' }} />
-                  <button onClick={() => audioInputRef.current?.click()} disabled={uploading} className="w-full flex items-center justify-center gap-1 py-1.5 text-[9px] font-medium rounded-md border border-dashed border-zinc-600 bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] disabled:opacity-50 transition-colors mb-2">
+                  <button onClick={() => audioInputRef.current?.click()} disabled={uploading} className="w-full flex items-center justify-center gap-1 py-1.5 text-[9px] font-medium rounded-none border border-dashed border-zinc-600 bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] disabled:opacity-50 transition-colors mb-2">
                     {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />} {uploading ? `${uploadProgress}%` : 'Upload Audio'}
                   </button>
                   {audios.length === 0 ? <p className="text-[9px] text-zinc-600 text-center py-4">No audio yet</p> : (
                     <div className="space-y-0.5">{audios.map(a => (
                       <div key={a.id} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-[#35363c] cursor-pointer transition-colors" onClick={() => addAssetToCanvas(a)} draggable onDragStart={e => handleAssetDragStart(e, a)}>
-                        <Volume2 className="w-3 h-3 text-emerald-400 shrink-0" /><span className="text-[9px] text-zinc-300 truncate flex-1">{a.name}</span><Plus className="w-3 h-3 text-zinc-600" />
+                        <Volume2 className="w-3 h-3 text-[#2E9E63] shrink-0" /><span className="text-[9px] text-zinc-300 truncate flex-1">{a.name}</span><Plus className="w-3 h-3 text-zinc-600" />
                       </div>
                     ))}</div>
                   )}
@@ -712,7 +712,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                 {/* TEXT */}
                 {assetSub === 'text' && (
                   <div>
-                    <button onClick={addTextLayer} className="w-full flex items-center justify-center gap-1.5 py-2.5 text-[10px] font-medium rounded-lg border border-dashed border-zinc-600 bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">
+                    <button onClick={addTextLayer} className="w-full flex items-center justify-center gap-1.5 py-2.5 text-[10px] font-medium rounded-none border border-dashed border-zinc-600 bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">
                       <Plus className="w-3.5 h-3.5" /> Add Text
                     </button>
                     {/* List of text layers */}
@@ -720,7 +720,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                       <div className="mt-2 space-y-0.5">
                         <p className="text-[7px] text-zinc-600 uppercase tracking-wider px-1 mb-1">Text Layers</p>
                         {layers.filter(l => l.type === 'text').map(l => (
-                          <div key={l.id} className={`flex items-center gap-1.5 px-2 py-1 rounded-md cursor-pointer transition-colors ${selectedLayerId === l.id ? 'bg-red-500/15 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`} onClick={() => setSelectedLayerId(l.id)}>
+                          <div key={l.id} className={`flex items-center gap-1.5 px-2 py-1 rounded-none cursor-pointer transition-colors ${selectedLayerId === l.id ? 'bg-red-500/15 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`} onClick={() => setSelectedLayerId(l.id)}>
                             <Type className="w-3 h-3 text-zinc-400 shrink-0" />
                             <span className="flex-1 text-[9px] truncate">{l.text || l.name}</span>
                             <button onClick={e => { e.stopPropagation(); deleteLayer(l.id) }} className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors"><Trash2 className="w-2.5 h-2.5" /></button>
@@ -737,7 +737,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                     <div className="grid grid-cols-2 gap-1.5">
                       {SHAPE_PRESETS.map(p => (
                         <button key={p.name} onClick={() => { if (p.name === 'Polygon') { setPolygonDrawing(true); setPolygonPoints([]) } else addShapeLayer(p) }}
-                          className="flex flex-col items-center gap-1.5 py-3 rounded-lg border border-[#3f4147] bg-[#2b2d31] hover:bg-[#35363c] hover:border-zinc-500 transition-colors"
+                          className="flex flex-col items-center gap-1.5 py-3 rounded-none border border-[#3f4147] bg-[#2b2d31] hover:bg-[#35363c] hover:border-zinc-500 transition-colors"
                           draggable onDragStart={e => { e.dataTransfer.setData('studio/asset-type', 'shape'); e.dataTransfer.setData('studio/asset-name', p.name); e.dataTransfer.effectAllowed = 'copy' }}
                         >
                           <div className="w-6 h-6 bg-zinc-500" style={{ borderRadius: p.name === 'Circle' ? '50%' : 2, width: p.name === 'Line' ? 24 : p.name === 'Rectangle' ? 28 : undefined, height: p.name === 'Line' ? 2 : p.name === 'Rectangle' ? 16 : undefined, clipPath: p.name === 'Triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : p.name === 'Polygon' ? 'polygon(30% 0%, 70% 0%, 100% 40%, 80% 100%, 20% 100%, 0% 40%)' : undefined }} />
@@ -750,8 +750,8 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                       <div className="mt-3 space-y-0.5">
                         <p className="text-[7px] text-zinc-600 uppercase tracking-wider px-1 mb-1">Placed Shapes</p>
                         {layers.filter(l => l.type === 'shape').map(l => (
-                          <div key={l.id} className={`flex items-center gap-1.5 px-2 py-1 rounded-md cursor-pointer transition-colors ${selectedLayerId === l.id ? 'bg-red-500/15 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`} onClick={() => setSelectedLayerId(l.id)}>
-                            <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: l.color || '#666', borderRadius: l.name === 'Circle' ? '50%' : 2 }} />
+                          <div key={l.id} className={`flex items-center gap-1.5 px-2 py-1 rounded-none cursor-pointer transition-colors ${selectedLayerId === l.id ? 'bg-red-500/15 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`} onClick={() => setSelectedLayerId(l.id)}>
+                            <div className="w-3 h-3 rounded-none shrink-0" style={{ backgroundColor: l.color || '#666', borderRadius: l.name === 'Circle' ? '50%' : 2 }} />
                             <span className="flex-1 text-[9px] truncate">{l.name}{l.maskMode && l.maskMode !== 'none' ? ` (${l.maskMode === 'mask' ? 'Mask' : 'Multi-Mask'})` : ''}</span>
                             <button onClick={e => { e.stopPropagation(); deleteLayer(l.id) }} className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors"><Trash2 className="w-2.5 h-2.5" /></button>
                           </div>
@@ -775,7 +775,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                     const isSelected = selectedLayerId === layer.id
                     return (
                       <div key={layer.id}
-                        className={`flex items-center gap-1.5 px-1.5 py-1 rounded-md text-[9px] cursor-pointer transition-all ${isSelected ? 'bg-red-500/15 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`}
+                        className={`flex items-center gap-1.5 px-1.5 py-1 rounded-none text-[9px] cursor-pointer transition-all ${isSelected ? 'bg-red-500/15 text-white' : 'text-zinc-300 hover:bg-[#35363c]'}`}
                         onClick={() => setSelectedLayerId(layer.id)}
                         draggable
                         onDragStart={() => { dragLayerIdxRef.current = vi }}
@@ -783,22 +783,22 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                         onDrop={() => { if (dragLayerIdxRef.current !== null) { reorderLayers(dragLayerIdxRef.current, vi); dragLayerIdxRef.current = null } }}
                       >
                         <GripVertical className="w-2.5 h-2.5 text-zinc-600 shrink-0 cursor-grab" />
-                        {layer.type === 'image' && <ImageIcon className="w-3 h-3 text-blue-400 shrink-0" />}
-                        {layer.type === 'video' && <VideoIcon className="w-3 h-3 text-purple-400 shrink-0" />}
+                        {layer.type === 'image' && <ImageIcon className="w-3 h-3 text-[#3E6DC4] shrink-0" />}
+                        {layer.type === 'video' && <VideoIcon className="w-3 h-3 text-[#6a5ea8] shrink-0" />}
                         {layer.type === 'text' && <Type className="w-3 h-3 text-white shrink-0" />}
                         {layer.type === 'shape' && <Square className="w-3 h-3 text-zinc-400 shrink-0" />}
-                        {layer.type === 'audio' && <Volume2 className="w-3 h-3 text-emerald-400 shrink-0" />}
+                        {layer.type === 'audio' && <Volume2 className="w-3 h-3 text-[#2E9E63] shrink-0" />}
                         <span className="flex-1 truncate">{layer.name}</span>
                         <button onClick={e => { e.stopPropagation(); updateLayer(layer.id, { visible: !state?.visible }) }}
                           className="p-0.5 text-zinc-600 hover:text-white transition-colors" title="Toggle visibility">
                           {state?.visible ? <Eye className="w-2.5 h-2.5" /> : <EyeOff className="w-2.5 h-2.5" />}
                         </button>
                         <button onClick={e => { e.stopPropagation(); updateLayer(layer.id, { locked: !layer.locked }) }}
-                          className={`p-0.5 transition-colors ${layer.locked ? 'text-amber-400' : 'text-zinc-600 hover:text-white'}`} title="Lock/unlock">
+                          className={`p-0.5 transition-colors ${layer.locked ? 'text-[#c98a2a]' : 'text-zinc-600 hover:text-white'}`} title="Lock/unlock">
                           {layer.locked ? <Lock className="w-2.5 h-2.5" /> : <Unlock className="w-2.5 h-2.5" />}
                         </button>
                         <button onClick={e => { e.stopPropagation(); updateLayer(layer.id, { maskImmune: !layer.maskImmune }) }}
-                          className={`p-0.5 transition-colors ${layer.maskImmune ? 'text-blue-400' : 'text-zinc-600 hover:text-white'}`} title="Mask immune">
+                          className={`p-0.5 transition-colors ${layer.maskImmune ? 'text-[#3E6DC4]' : 'text-zinc-600 hover:text-white'}`} title="Mask immune">
                           {layer.maskImmune ? <Shield className="w-2.5 h-2.5" /> : <ShieldOff className="w-2.5 h-2.5" />}
                         </button>
                         <button onClick={e => { e.stopPropagation(); deleteLayer(layer.id) }}
@@ -843,7 +843,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
               </defs>
             </svg>
             <div ref={canvasRef}
-              className={`relative overflow-hidden rounded-lg ${isDragOver ? 'ring-2 ring-red-500 ring-offset-2 ring-offset-[#111113]' : ''}`}
+              className={`relative overflow-hidden rounded-none ${isDragOver ? 'ring-2 ring-[#C9241A] ring-offset-2 ring-offset-[#111113]' : ''}`}
               style={{ width: 'min(72rem, calc((100vh - 8rem) * 16 / 9))', aspectRatio: '16/9', backgroundColor: canvas.backgroundColor, transform: `scale(${canvasZoom / 100})`, transformOrigin: 'center center', transition: 'transform 0.15s ease-out' }}
               onClick={handleCanvasClick} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
             >
@@ -896,7 +896,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                     {distortMode === layer.id && layer.type === 'shape' && (() => {
                       const dp = layer.distortPoints || { tl: { x: 0, y: 0 }, tr: { x: 100, y: 0 }, bl: { x: 0, y: 100 }, br: { x: 100, y: 100 } }
                       return Object.entries(dp).map(([corner, pt]) => (
-                        <div key={corner} className="absolute w-3 h-3 bg-yellow-400 border-2 border-yellow-600 rounded-full z-30 cursor-move"
+                        <div key={corner} className="absolute w-3 h-3 bg-[#c98a2a] border-2 border-[#8a7d3a] rounded-full z-30 cursor-move"
                           style={{ left: `${pt.x}%`, top: `${pt.y}%`, transform: 'translate(-50%,-50%)' }}
                           onMouseDown={e => {
                             e.stopPropagation(); e.preventDefault()
@@ -915,29 +915,29 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                       ))
                     })()}
                     {isSel && (<>
-                      <div className="absolute inset-0 border-2 border-blue-500 border-dashed pointer-events-none rounded" />
-                      {['tl', 'tr', 'bl', 'br'].map(h => (<div key={h} className="absolute w-2.5 h-2.5 bg-white border-2 border-blue-500 rounded-sm z-10" style={{ top: h.includes('t') ? -5 : undefined, bottom: h.includes('b') ? -5 : undefined, left: h.includes('l') ? -5 : undefined, right: h.includes('r') ? -5 : undefined, cursor: h === 'tl' || h === 'br' ? 'nwse-resize' : 'nesw-resize' }} onMouseDown={e => handleResizeMouseDown(e, layer.id, h)} />))}
-                      <button className="absolute -top-3 -right-3 z-20 w-5 h-5 bg-red-600 hover:bg-red-500 rounded-full flex items-center justify-center shadow-lg transition-colors" onClick={e => { e.stopPropagation(); deleteLayer(layer.id) }}><Trash2 className="w-2.5 h-2.5 text-white" /></button>
+                      <div className="absolute inset-0 border-2 border-[#3E6DC4] border-dashed pointer-events-none rounded-none" />
+                      {['tl', 'tr', 'bl', 'br'].map(h => (<div key={h} className="absolute w-2.5 h-2.5 bg-white border-2 border-[#3E6DC4] rounded-none z-10" style={{ top: h.includes('t') ? -5 : undefined, bottom: h.includes('b') ? -5 : undefined, left: h.includes('l') ? -5 : undefined, right: h.includes('r') ? -5 : undefined, cursor: h === 'tl' || h === 'br' ? 'nwse-resize' : 'nesw-resize' }} onMouseDown={e => handleResizeMouseDown(e, layer.id, h)} />))}
+                      <button className="absolute -top-3 -right-3 z-20 w-5 h-5 bg-[#C9241A] hover:bg-[#a81d15] rounded-full flex items-center justify-center shadow-lg transition-colors" onClick={e => { e.stopPropagation(); deleteLayer(layer.id) }}><Trash2 className="w-2.5 h-2.5 text-white" /></button>
                     </>)}
                   </div>
                 )
               })}
-              {isDragOver && <div className="absolute inset-0 flex items-center justify-center bg-red-500/10 pointer-events-none z-50"><div className="px-4 py-2 bg-red-600 rounded-lg text-white text-xs font-bold uppercase tracking-wider">Drop to add</div></div>}
+              {isDragOver && <div className="absolute inset-0 flex items-center justify-center bg-[#C9241A]/10 pointer-events-none z-50"><div className="px-4 py-2 bg-[#C9241A] rounded-none text-white text-xs font-bold uppercase tracking-wider">Drop to add</div></div>}
               {/* Polygon drawing mode */}
               {polygonDrawing && (
                 <svg className="absolute inset-0 w-full h-full pointer-events-none z-40">
                   {polygonPoints.map((p, i) => (
                     <React.Fragment key={i}>
-                      {i > 0 && <line x1={`${polygonPoints[i - 1].x}%`} y1={`${polygonPoints[i - 1].y}%`} x2={`${p.x}%`} y2={`${p.y}%`} stroke="#ef4444" strokeWidth="2" strokeDasharray="4" />}
-                      <circle cx={`${p.x}%`} cy={`${p.y}%`} r={i === 0 && polygonPoints.length >= 3 ? '6' : '4'} fill={i === 0 && polygonPoints.length >= 3 ? '#ef4444' : '#ffffff'} stroke="#ef4444" strokeWidth="2" />
+                      {i > 0 && <line x1={`${polygonPoints[i - 1].x}%`} y1={`${polygonPoints[i - 1].y}%`} x2={`${p.x}%`} y2={`${p.y}%`} stroke="#C9241A" strokeWidth="2" strokeDasharray="4" />}
+                      <circle cx={`${p.x}%`} cy={`${p.y}%`} r={i === 0 && polygonPoints.length >= 3 ? '6' : '4'} fill={i === 0 && polygonPoints.length >= 3 ? '#C9241A' : '#ffffff'} stroke="#C9241A" strokeWidth="2" />
                     </React.Fragment>
                   ))}
                 </svg>
               )}
-              {polygonDrawing && <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 px-3 py-1 bg-red-600 rounded-full text-[10px] text-white font-bold">Click to add points • Click first point to close</div>}
+              {polygonDrawing && <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 px-3 py-1 bg-[#C9241A] rounded-none text-[10px] text-white font-bold">Click to add points • Click first point to close</div>}
             </div>
             {/* Zoom controls */}
-            <div className="absolute bottom-4 right-4 flex items-center gap-1 bg-[#1e1f22] border border-[#3f4147] rounded-lg px-1.5 py-1 shadow-xl z-10">
+            <div className="absolute bottom-4 right-4 flex items-center gap-1 bg-[#1e1f22] border border-[#3f4147] rounded-none px-1.5 py-1 shadow-xl z-10">
               <button onClick={() => setCanvasZoom(p => Math.max(25, p - 25))} className="p-1 text-zinc-400 hover:text-white transition-colors"><ZoomOut className="w-3.5 h-3.5" /></button>
               <button onClick={() => setCanvasZoom(100)} className="px-1.5 text-[10px] font-mono text-zinc-300 hover:text-white transition-colors min-w-[36px] text-center">{canvasZoom}%</button>
               <button onClick={() => setCanvasZoom(p => Math.min(200, p + 25))} className="p-1 text-zinc-400 hover:text-white transition-colors"><ZoomIn className="w-3.5 h-3.5" /></button>
@@ -986,12 +986,12 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
       {/* ─── End Confirm ─── */}
       {showEndConfirm && (
         <div className="fixed inset-0 z-[200] bg-black/70 backdrop-blur-sm flex items-center justify-center">
-          <div className="bg-[#1e1f22] border border-[#3f4147] rounded-xl p-6 max-w-sm w-full shadow-2xl">
+          <div className="bg-[#1e1f22] border border-[#3f4147] rounded-none p-6 max-w-sm w-full shadow-2xl">
             <h3 className="text-sm font-semibold text-white mb-2">End this exercise?</h3>
             <p className="text-[11px] text-zinc-400 mb-4">All participants will see the exercise has ended. Session data will be saved for reporting.</p>
             <div className="flex gap-2 justify-end">
-              <button onClick={() => setShowEndConfirm(false)} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
-              <button onClick={handleEndExercise} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors">End Exercise</button>
+              <button onClick={() => setShowEndConfirm(false)} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
+              <button onClick={handleEndExercise} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#C9241A] text-white hover:bg-[#a81d15] transition-colors">End Exercise</button>
             </div>
           </div>
         </div>
@@ -1000,12 +1000,12 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
       {/* Delete layer confirmation */}
       {confirmDeleteId && (
         <div className="fixed inset-0 z-[200] bg-black/70 backdrop-blur-sm flex items-center justify-center" onClick={() => setConfirmDeleteId(null)}>
-          <div className="bg-[#1e1f22] border border-[#3f4147] rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-[#1e1f22] border border-[#3f4147] rounded-none p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
             <h3 className="text-sm font-semibold text-white mb-2">Delete this layer?</h3>
             <p className="text-[11px] text-zinc-400 mb-4">This will remove the layer from the canvas. This cannot be undone.</p>
             <div className="flex gap-2 justify-end">
-              <button onClick={() => setConfirmDeleteId(null)} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
-              <button onClick={() => { deleteLayer(confirmDeleteId); setConfirmDeleteId(null) }} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors">Delete</button>
+              <button onClick={() => setConfirmDeleteId(null)} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
+              <button onClick={() => { deleteLayer(confirmDeleteId); setConfirmDeleteId(null) }} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#C9241A] text-white hover:bg-[#a81d15] transition-colors">Delete</button>
             </div>
           </div>
         </div>
@@ -1018,7 +1018,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
 
 function AssetThumb({ asset, onDragStart, onClick }: { asset: AssetItem; onDragStart: (e: React.DragEvent<HTMLElement>, a: AssetItem) => void; onClick: () => void }) {
   return (
-    <div className="group relative aspect-video overflow-hidden rounded border border-[#3f4147] bg-[#383a40] hover:border-red-500/50 cursor-grab active:cursor-grabbing transition-colors"
+    <div className="group relative aspect-video overflow-hidden rounded-none border border-[#3f4147] bg-[#383a40] hover:border-[#C9241A]/50 cursor-grab active:cursor-grabbing transition-colors"
       draggable onDragStart={e => onDragStart(e, asset)} onClick={onClick}>
       {asset.type === 'image' ? <img src={asset.url} alt={asset.name} className="h-full w-full object-cover pointer-events-none" />
         : <video src={asset.url} className="h-full w-full object-cover pointer-events-none" muted preload="metadata" />}
@@ -1030,12 +1030,12 @@ function AssetThumb({ asset, onDragStart, onClick }: { asset: AssetItem; onDragS
 
 function EventBtn({ event, triggered, animating, onTrigger, onRedo }: { event: import('@/types/slide').StudioEvent; triggered: boolean; animating: boolean; onTrigger: () => void; onRedo: () => void }) {
   return (
-    <div className={`flex items-center gap-1 rounded-md px-2 py-1.5 text-[10px] mb-0.5 transition-all ${animating ? 'bg-amber-500/20 text-amber-300' : triggered ? 'bg-zinc-800/50 text-zinc-500' : 'bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c]'}`}>
-      <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: event.color || '#6366f1' }} />
+    <div className={`flex items-center gap-1 rounded-none px-2 py-1.5 text-[10px] mb-0.5 transition-all ${animating ? 'bg-[#c98a2a]/20 text-[#c98a2a]' : triggered ? 'bg-zinc-800/50 text-zinc-500' : 'bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c]'}`}>
+      <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: event.color || '#6a5ea8' }} />
       <span className="flex-1 truncate">{event.name}</span>
       {event.actions.length > 0 && <span className="text-[8px] bg-zinc-700/50 text-zinc-500 px-1 rounded">{event.actions.length}</span>}
-      {triggered && <button onClick={e => { e.stopPropagation(); onRedo() }} className="p-0.5 text-zinc-600 hover:text-amber-400 transition-colors"><RotateCcw className="w-2.5 h-2.5" /></button>}
-      <button onClick={onTrigger} disabled={animating} className="p-0.5 text-zinc-600 hover:text-emerald-400 disabled:opacity-30 transition-colors"><Play className="w-2.5 h-2.5 fill-current" /></button>
+      {triggered && <button onClick={e => { e.stopPropagation(); onRedo() }} className="p-0.5 text-zinc-600 hover:text-[#c98a2a] transition-colors"><RotateCcw className="w-2.5 h-2.5" /></button>}
+      <button onClick={onTrigger} disabled={animating} className="p-0.5 text-zinc-600 hover:text-[#2E9E63] disabled:opacity-30 transition-colors"><Play className="w-2.5 h-2.5 fill-current" /></button>
     </div>
   )
 }
