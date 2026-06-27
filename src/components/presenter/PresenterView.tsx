@@ -395,12 +395,12 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
       <div className="h-14 backdrop-blur-xl bg-white/5 border-t border-white/10 flex items-center justify-between px-4 shrink-0">
         <div className="flex items-center gap-2">
           <Button size="sm" variant="ghost" onClick={() => handleNavigate('prev')} disabled={currentSlideIndex === 0}
-            className="text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-20 h-9 w-9 p-0 rounded-xl">
+            className="text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-20 h-9 w-9 p-0 rounded-none">
             <ChevronLeft className="w-5 h-5" />
           </Button>
           <span className="text-sm text-muted-foreground font-mono min-w-[60px] text-center tabular-nums">{currentSlideIndex + 1} / {slides.length}</span>
           <Button size="sm" variant="ghost" onClick={() => handleNavigate('next')} disabled={currentSlideIndex === slides.length - 1}
-            className="text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-20 h-9 w-9 p-0 rounded-xl">
+            className="text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-20 h-9 w-9 p-0 rounded-none">
             <ChevronRight className="w-5 h-5" />
           </Button>
           {currentSlideIndex < slides.length - 1 && (
@@ -409,9 +409,9 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
             </span>
           )}
         </div>
-        <div className="flex items-center gap-0.5 backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-1">
+        <div className="flex items-center gap-0.5 backdrop-blur-xl bg-white/5 border border-white/10 rounded-none p-1">
           <ToolbarBtn icon={isFullscreen ? Minimize : Maximize} label="Fullscreen" shortcut="F" onClick={toggleFullscreen} />
-          <ToolbarBtn icon={session.voting_open ? Square : Play} label={session.voting_open ? 'Close voting' : 'Open voting'} shortcut="C" onClick={handleToggleVoting} active={session.voting_open} activeColor="text-emerald-500" />
+          <ToolbarBtn icon={session.voting_open ? Square : Play} label={session.voting_open ? 'Close voting' : 'Open voting'} shortcut="C" onClick={handleToggleVoting} active={session.voting_open} activeColor="text-[#2E9E63]" />
           <ToolbarBtn icon={showResults ? Eye : EyeOff} label="Results" shortcut="H" onClick={() => setShowResults((v) => !v)} active={showResults} />
           <ToolbarBtn icon={QrCode} label="QR code" shortcut="L" onClick={() => { showQR ? handleCloseQR() : setShowQR(true) }} active={showQR} />
           {currentSlide?.slide_type !== 'studio' && (
@@ -424,13 +424,13 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
         </div>
         <div className="flex items-center gap-3">
           {session.voting_open && (
-            <div className={cn('flex items-center gap-1.5 text-xs text-emerald-500 fade-in', votingPulse && 'voting-pulse')}>
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <div className={cn('flex items-center gap-1.5 text-xs text-[#2E9E63] fade-in', votingPulse && 'voting-pulse')}>
+              <div className="w-1.5 h-1.5 rounded-full bg-[#2E9E63] animate-pulse" />
               <BarChart2 className="w-3.5 h-3.5" /><span className="tabular-nums font-medium">{responseCount}</span>
             </div>
           )}
           <button onClick={handleEndSession}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-red-600 text-white hover:bg-red-500 text-xs font-medium transition-all">
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-none bg-[#C9241A] text-white hover:bg-[#a81d15] text-xs font-medium transition-all">
             <OctagonX className="w-3.5 h-3.5" />End session
           </button>
         </div>
