@@ -19,6 +19,7 @@ interface Stat {
 interface Feature {
   key: string
   tab: string
+  pillar: string
   caption: string
   accent: string
   stats: [Stat, Stat]
@@ -26,6 +27,15 @@ interface Feature {
 }
 
 const RED = '#C9241A'
+
+/* The three core areas of Command 360:
+   · Command Classroom — interactive tools (polls, quizzes, word clouds, Q&A,
+     AI) used to run tactical decision-making exercises (TDEs).
+   · Command Live — running scenario-based training exercises live.
+   · Command Studio — building the visual scenarios and effects. */
+const CLASSROOM = 'Command Classroom'
+const LIVE = 'Command Live'
+const STUDIO = 'Command Studio'
 
 function Bar({ label, pct, lead }: { label: string; pct: number; lead?: boolean }) {
   return (
@@ -51,6 +61,7 @@ const FEATURES: Feature[] = [
   {
     key: 'poll',
     tab: 'Poll',
+    pillar: CLASSROOM,
     caption: 'Live poll · Protocol applied',
     accent: RED,
     stats: [
@@ -68,6 +79,7 @@ const FEATURES: Feature[] = [
   {
     key: 'quiz',
     tab: 'Quiz',
+    pillar: CLASSROOM,
     caption: 'Scored quiz · Triage order',
     accent: '#3E6DC4',
     stats: [
@@ -101,6 +113,7 @@ const FEATURES: Feature[] = [
   {
     key: 'cloud',
     tab: 'Cloud',
+    pillar: CLASSROOM,
     caption: 'Word cloud · One word for today',
     accent: '#2E9E63',
     stats: [
@@ -135,6 +148,7 @@ const FEATURES: Feature[] = [
   {
     key: 'qna',
     tab: 'Q&A',
+    pillar: CLASSROOM,
     caption: 'Anonymous Q&A · Upvoted',
     accent: '#2592a3',
     stats: [
@@ -165,6 +179,7 @@ const FEATURES: Feature[] = [
   {
     key: 'ai',
     tab: 'AI',
+    pillar: CLASSROOM,
     caption: 'AI summary ready · 2 actions flagged',
     accent: '#6a5ea8',
     stats: [
@@ -208,9 +223,44 @@ const FEATURES: Feature[] = [
     ),
   },
   {
+    key: 'live',
+    tab: 'Live',
+    pillar: LIVE,
+    caption: 'Command Live · Tactical decision exercise',
+    accent: '#c98a2a',
+    stats: [
+      { label: 'Decision', value: '02', sub: '/05' },
+      { label: 'Time left', value: '00:18' },
+    ],
+    content: (
+      <div className="w-full flex flex-col gap-2">
+        <div className="ff-mono text-[11px] tracking-[0.04em] text-[#8a9098] mb-1">Crew on scene — next action?</div>
+        {[
+          ['Establish cordon & assess', true],
+          ['Commit crew to interior', false],
+          ['Request additional pumps', false],
+        ].map(([opt, lead], i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 + i * 0.12 }}
+            className={`flex items-center justify-between ff-mono text-[12px] px-3 py-2.5 border ${
+              lead ? 'border-[#c98a2a] text-white bg-[#c98a2a]/12' : 'border-white/12 text-[#aab0b8]'
+            }`}
+          >
+            <span>{opt as string}</span>
+            {lead ? <span className="text-[#c98a2a] font-semibold">48%</span> : null}
+          </motion.div>
+        ))}
+      </div>
+    ),
+  },
+  {
     key: 'studio',
     tab: 'Studio',
-    caption: 'Command Studio · Incident running',
+    pillar: STUDIO,
+    caption: 'Command Studio · Building the scenario',
     accent: RED,
     stats: [
       { label: 'Scenario', value: 'LIVE' },
@@ -248,7 +298,7 @@ export function HeroShowcase() {
   useEffect(() => {
     if (paused) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const id = setInterval(() => setActive((v) => (v + 1) % FEATURES.length), 3400)
+    const id = setInterval(() => setActive((v) => (v + 1) % FEATURES.length), 3600)
     return () => clearInterval(id)
   }, [paused])
 
@@ -260,32 +310,39 @@ export function HeroShowcase() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Same surface as the rest of the hero — no panel fill, no grid. Just a
-          soft luminous glow in the active feature's colour fading in the
-          corner, plus grain for polish. The glow changes with each panel. */}
+      {/* Same surface as the rest of the hero — no panel fill, no grid (the
+          page's own grid shows faintly through). A soft luminous glow in the
+          active feature's colour fades in the corner; a black fade sits on top
+          of it so the colour emerges from black; grain adds polish. initial=
+          false stops any first-load flash. */}
       <motion.div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
-        animate={{ background: `radial-gradient(58% 48% at 80% 22%, ${f.accent}1a, transparent 72%)` }}
-        transition={{ duration: 0.6 }}
+        initial={false}
+        animate={{ background: `radial-gradient(56% 46% at 80% 26%, ${f.accent}15, transparent 72%)` }}
+        transition={{ duration: 0.8 }}
       />
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-[46%] pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.34) 42%, transparent 100%)' }} />
       <div aria-hidden="true" className="absolute inset-0 v5-grain opacity-[0.12] mix-blend-overlay pointer-events-none" />
 
-      {/* header */}
+      {/* header — shows the active core area (pillar) */}
       <div className="relative z-[1] flex items-center justify-between px-6 py-[18px] border-b border-white/10">
-        <span className="ff-mono text-[11px] font-semibold tracking-[0.12em] uppercase text-[#9aa0a8]">Session · Live</span>
-        <span className="ff-mono text-[11px] font-semibold tracking-[0.06em] text-[#C9241A] flex items-center gap-1.5">
+        <span className="flex items-center gap-2 min-w-0">
+          <span className="ff-mono text-[11px] font-semibold tracking-[0.1em] uppercase text-white whitespace-nowrap">{f.pillar}</span>
+          <span className="ff-mono text-[10px] tracking-[0.12em] uppercase text-[#6f757d] hidden sm:inline">· Live</span>
+        </span>
+        <span className="ff-mono text-[11px] font-semibold tracking-[0.06em] text-[#C9241A] flex items-center gap-1.5 shrink-0">
           <span className="w-1.5 h-1.5 rounded-full bg-[#C9241A] v5-pulse" />REC
         </span>
       </div>
 
       {/* feature tab strip */}
-      <div className="relative z-[1] grid grid-cols-6 border-b border-white/10">
+      <div className="relative z-[1] grid grid-cols-7 border-b border-white/10">
         {FEATURES.map((feat, i) => (
           <button
             key={feat.key}
             onClick={() => setActive(i)}
-            className={`ff-mono text-[10px] font-semibold tracking-[0.04em] uppercase py-2.5 border-r border-white/10 last:border-r-0 transition-colors cursor-pointer relative ${
+            className={`ff-mono text-[9.5px] font-semibold tracking-[0.03em] uppercase py-2.5 border-r border-white/10 last:border-r-0 transition-colors cursor-pointer relative ${
               i === active ? 'text-white bg-white/[0.04]' : 'text-[#6f757d] hover:text-[#aab0b8]'
             }`}
           >

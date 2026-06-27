@@ -13,6 +13,7 @@ import { HeroShowcase } from '@/components/home/HeroShowcase'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 import { FaqAccordion } from '@/components/home/FaqAccordion'
 import { FloatingJoinDock } from '@/components/join/FloatingJoinDock'
+import { FooterWordmark } from '@/components/home/FooterWordmark'
 
 /* ── DATA (canonical Command 360 copy) ── */
 
@@ -134,14 +135,15 @@ export default function LandingPage() {
       <main>
         {/* ════════════ HERO ════════════ */}
         <header className="relative overflow-hidden bg-[#0F1216] text-white" aria-label="Introduction">
-          {/* pure-black fade from the very top down into the hero */}
-          <div className="absolute top-0 left-0 right-0 h-[60%] pointer-events-none" aria-hidden="true"
-            style={{ background: 'linear-gradient(180deg, #000 0%, rgba(0,0,0,0.45) 22%, rgba(0,0,0,0.12) 55%, transparent 100%)' }} />
+          {/* pure-black fade from the very top (under the black ticker bar)
+              down into the hero, so it eases into the grid below */}
+          <div className="absolute top-0 left-0 right-0 h-[66%] pointer-events-none" aria-hidden="true"
+            style={{ background: 'linear-gradient(180deg, #000 0%, #000 6%, rgba(0,0,0,0.55) 28%, rgba(0,0,0,0.16) 60%, transparent 100%)' }} />
           <div className="absolute bottom-[-180px] left-1/2 -translate-x-1/2 w-[1280px] h-[720px] pointer-events-none" aria-hidden="true"
             style={{ background: 'radial-gradient(60% 80% at 50% 100%,rgba(201,36,26,.22),rgba(201,36,26,.06) 48%,transparent 78%)', filter: 'blur(38px)' }} />
           <div className="absolute inset-0 v5-grain opacity-[0.16] mix-blend-overlay pointer-events-none" aria-hidden="true" />
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true"
-            style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px)', backgroundSize: '74px 74px', maskImage: 'radial-gradient(1100px 700px at 18% 0%,#000,transparent 86%)', WebkitMaskImage: 'radial-gradient(1100px 700px at 18% 0%,#000,transparent 86%)' }} />
+            style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px)', backgroundSize: '74px 74px', maskImage: 'radial-gradient(1600px 920px at 32% 2%,#000,transparent 88%)', WebkitMaskImage: 'radial-gradient(1600px 920px at 32% 2%,#000,transparent 88%)' }} />
 
           {/* rotating seal */}
           <div className="hidden lg:flex absolute top-[96px] right-[38px] z-[4] w-[104px] h-[104px] items-center justify-center" aria-hidden="true">
@@ -162,7 +164,7 @@ export default function LandingPage() {
                 </div>
                 <h1 className="ff-display font-extrabold text-white mb-7 leading-[0.98] tracking-[-0.02em] text-[clamp(44px,5.4vw,74px)] lg:pl-9" data-reveal>
                   Where emergency<br />teams{' '}
-                  <RotatingWord words={['learn.', 'grow.', 'lead.']} className="text-[#C9241A]" />
+                  <RotatingWord words={['learn.', 'grow.', 'lead.']} className="text-[#C9241A] underline decoration-[3px] underline-offset-[10px] decoration-[#C9241A]/45" />
                 </h1>
                 <p className="text-[18px] leading-[1.62] text-[#aab0b8] max-w-[500px] mb-9 lg:pl-9" data-reveal>
                   An interactive training environment that turns briefings, debriefs, and CPD into measured,
@@ -182,7 +184,7 @@ export default function LandingPage() {
               </div>
 
               {/* Right — live session panel that cycles every feature */}
-              <div className="relative min-h-[560px]" data-reveal>
+              <div className="relative min-h-[560px]">
                 <HeroShowcase />
               </div>
             </div>
@@ -433,6 +435,8 @@ export default function LandingPage() {
 
         {/* ════════════ FAQ (dark) ════════════ */}
         <section className="relative overflow-hidden bg-[#0F1216] text-white py-[90px]">
+          {/* black fade into the section from the top, easing to nothing */}
+          <div className="absolute inset-x-0 top-0 h-[180px] pointer-events-none" aria-hidden="true" style={{ background: 'linear-gradient(180deg, #000 0%, transparent 100%)' }} />
           <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
           <div className="relative max-w-[820px] mx-auto px-5 sm:px-[30px]">
             <div className="text-center mb-10" data-reveal>
@@ -462,10 +466,10 @@ export default function LandingPage() {
 
       {/* ════════════ FOOTER ════════════ */}
       <footer id="about" className="relative overflow-hidden bg-[#0A0C0F] text-[#8a9098] pt-20 pb-[92px] md:pb-[188px]">
-        {/* C360 wordmark — subtle gray, fades/eases in once on scroll, no glow, no float */}
-        <div aria-hidden="true" className="absolute left-0 right-0 bottom-0 translate-y-[42%] flex items-end justify-center pointer-events-none overflow-hidden">
-          <span data-reveal className="ff-display font-black leading-[0.8] tracking-[-0.02em] whitespace-nowrap text-[clamp(120px,27vw,360px)] text-white/[0.055] select-none">C360</span>
-        </div>
+        {/* roundish glow easing outwards from the top, black-to-transparent feel */}
+        <div aria-hidden="true" className="absolute left-1/2 top-[-120px] -translate-x-1/2 w-[1200px] h-[520px] pointer-events-none" style={{ background: 'radial-gradient(50% 60% at 50% 0%, rgba(201,36,26,0.10), rgba(201,36,26,0.03) 42%, transparent 74%)', filter: 'blur(36px)' }} />
+        {/* C360 wordmark — gray, scroll-parallax + faint sticker breathe */}
+        <FooterWordmark />
         <div className="relative max-w-[1280px] mx-auto px-5 sm:px-[30px]">
           <div className="grid md:grid-cols-2 gap-10 items-end pb-11 border-b border-white/10">
             <div>
