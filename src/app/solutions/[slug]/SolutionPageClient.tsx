@@ -706,11 +706,11 @@ export function SolutionPageClient({ slug }: { slug: string }) {
       <DarkSection>
         <div className="absolute top-[-140px] right-[-100px] w-[700px] h-[520px] pointer-events-none" aria-hidden="true" style={{ background: `radial-gradient(55% 65% at 70% 30%, ${glowColor(service.heroGlow, 0.1)}, transparent 76%)`, filter: 'blur(46px)' }} />
         <Container className="relative">
-          <div className="max-w-[640px] mb-9">
-            <Eyebrow n="06">FAQ</Eyebrow>
-            <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 text-white">Common questions</h2>
+          <div className="max-w-[820px] mx-auto text-center mb-10">
+            <div className="ff-mono text-[12px] font-semibold tracking-[0.12em] uppercase text-[#C9241A] mb-4">Briefing notes</div>
+            <h2 className="ff-display font-extrabold text-[clamp(28px,3.4vw,42px)] leading-[1.02] tracking-[-0.02em] text-white">Common questions</h2>
           </div>
-          <div className="max-w-[760px]">
+          <div className="max-w-[820px] mx-auto">
             <FaqAccordion items={faqItems} />
           </div>
         </Container>

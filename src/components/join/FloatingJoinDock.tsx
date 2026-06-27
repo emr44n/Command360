@@ -17,25 +17,29 @@ export function FloatingJoinDock() {
   useEffect(() => {
     const heroJoin = document.getElementById('hero-join')
     const footer = document.querySelector('footer')
-    const observers: IntersectionObserver[] = []
+    const cleanups: Array<() => void> = []
 
+    // Reveal once the hero join block (home) has scrolled away; on pages
+    // without one, reveal after a short scroll.
     if (heroJoin) {
       const heroObs = new IntersectionObserver(([entry]) => setVisible(!entry.isIntersecting), { threshold: 0 })
       heroObs.observe(heroJoin)
-      observers.push(heroObs)
+      cleanups.push(() => heroObs.disconnect())
     } else {
       const handleScroll = () => setVisible(window.scrollY > 400)
+      handleScroll()
       window.addEventListener('scroll', handleScroll, { passive: true })
-      return () => window.removeEventListener('scroll', handleScroll)
+      cleanups.push(() => window.removeEventListener('scroll', handleScroll))
     }
 
+    // Always hide again once the footer comes into view — on every page.
     if (footer) {
       const footerObs = new IntersectionObserver(([entry]) => setAtFooter(entry.isIntersecting), { threshold: 0 })
       footerObs.observe(footer)
-      observers.push(footerObs)
+      cleanups.push(() => footerObs.disconnect())
     }
 
-    return () => observers.forEach((o) => o.disconnect())
+    return () => cleanups.forEach((fn) => fn())
   }, [])
 
   const shouldShow = visible && !atFooter

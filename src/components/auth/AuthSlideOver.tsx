@@ -70,7 +70,13 @@ export function AuthSlideOver({ isOpen, onClose, defaultTab = 'login', required 
         aria-label={tab === 'login' ? 'Sign in' : 'Create account'}
       >
         <div aria-hidden="true" className="absolute top-0 left-0 right-0 h-[2px] bg-[#C9241A]" />
-        <div aria-hidden="true" className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" />
+        {/* v5 depth — same language as the main page: faint grid, a soft red
+            glow in the top corner, a dark black-to-transparent silhouette from
+            the foot, and grain over the top */}
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px)', backgroundSize: '74px 74px', maskImage: 'radial-gradient(120% 70% at 80% 0%,#000,transparent 80%)', WebkitMaskImage: 'radial-gradient(120% 70% at 80% 0%,#000,transparent 80%)' }} />
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(70% 38% at 92% 2%, rgba(201,36,26,0.16), transparent 64%)' }} />
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(100% 55% at 50% 100%, rgba(0,0,0,0.55), transparent 70%)' }} />
+        <div aria-hidden="true" className="absolute inset-0 v5-grain opacity-[0.12] mix-blend-overlay pointer-events-none" />
         {/* Close button — hidden when auth is required (middleware redirect) */}
         {!required && (
           <button
