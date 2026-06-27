@@ -35,7 +35,7 @@ export function TopBar() {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 z-[61] h-9 bg-[#0A0C0F] border-b border-white/[0.08] transition-transform duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-[61] h-9 bg-black border-b border-white/[0.08] transition-transform duration-300 ${
         hidden ? '-translate-y-full' : 'translate-y-0'
       }`}
     >

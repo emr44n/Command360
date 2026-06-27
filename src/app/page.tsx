@@ -461,7 +461,7 @@ export default function LandingPage() {
       </main>
 
       {/* ════════════ FOOTER ════════════ */}
-      <footer id="about" className="relative overflow-hidden bg-[#0A0C0F] text-[#8a9098] pt-20 pb-[188px]">
+      <footer id="about" className="relative overflow-hidden bg-[#0A0C0F] text-[#8a9098] pt-20 pb-[92px] md:pb-[188px]">
         {/* C360 wordmark — subtle gray, fades/eases in once on scroll, no glow, no float */}
         <div aria-hidden="true" className="absolute left-0 right-0 bottom-0 translate-y-[42%] flex items-end justify-center pointer-events-none overflow-hidden">
           <span data-reveal className="ff-display font-black leading-[0.8] tracking-[-0.02em] whitespace-nowrap text-[clamp(120px,27vw,360px)] text-white/[0.055] select-none">C360</span>
@@ -498,7 +498,8 @@ export default function LandingPage() {
             <div className="md:col-span-2">
               <div className="ff-mono text-[11px] font-semibold tracking-[0.1em] uppercase text-white mb-[18px]">Platform</div>
               <div className="flex flex-col gap-2.5 text-[13.5px]">
-                <a href="#capabilities" className="hover:text-white transition-colors">Capabilities</a>
+                <a href="#capabilities" className="hover:text-white transition-colors">How it works</a>
+                <a href="#services" className="hover:text-white transition-colors">Services</a>
                 <a href="#demo" className="hover:text-white transition-colors">Live demo</a>
                 <Link href="/command-studio" className="hover:text-white transition-colors">Command Studio</Link>
                 <a href="#deploy" className="hover:text-white transition-colors">Deployment</a>
@@ -514,6 +515,9 @@ export default function LandingPage() {
                 <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
                 <Link href="/help" className="hover:text-white transition-colors">Help centre</Link>
                 <Link href="/contact" className="hover:text-white transition-colors">Book a demo</Link>
+                <Link href="/join" className="hover:text-white transition-colors">Join a session</Link>
+                <Link href="/login" className="hover:text-white transition-colors">Sign in</Link>
+                <Link href="/register" className="hover:text-white transition-colors">Start free trial</Link>
               </div>
             </div>
             <div className="md:col-span-2">

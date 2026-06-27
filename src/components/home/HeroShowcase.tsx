@@ -260,19 +260,24 @@ export function HeroShowcase() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Same surface as the rest of the hero — no panel fill. Just wide,
-          faint diagonal lines (grid-square spacing) to mark this as an area
-          of information, a soft green luminous glow, and grain for polish. */}
-      <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(60% 50% at 78% 28%, rgba(46,158,99,0.10), transparent 72%)' }} />
+      {/* Same surface as the rest of the hero — no panel fill. A faint square
+          grid (matching the page background) marks the area, a soft luminous
+          glow in the active feature's colour fades in the corner, and grain
+          adds polish. The glow changes with each panel; the grid stays put. */}
       <motion.div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        animate={{ background: `radial-gradient(58% 48% at 80% 22%, ${f.accent}24, transparent 72%)` }}
+        transition={{ duration: 0.6 }}
+      />
+      <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage:
-            'repeating-linear-gradient(135deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 74px)',
+            'linear-gradient(rgba(255,255,255,0.026) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.026) 1px, transparent 1px)',
+          backgroundSize: '74px 74px',
         }}
-        animate={{ backgroundPosition: ['0px 0px', '-74px 74px'] }}
-        transition={{ duration: 30, ease: 'linear', repeat: Infinity }}
       />
       <div aria-hidden="true" className="absolute inset-0 v5-grain opacity-[0.12] mix-blend-overlay pointer-events-none" />
 

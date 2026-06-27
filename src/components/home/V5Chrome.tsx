@@ -117,12 +117,32 @@ export function V5Nav() {
           >
             Sign in
           </button>
+          {/* Desktop primary: start trial. */}
           <button
             onClick={() => openAuth('register')}
-            className="ff-mono text-[12.5px] font-semibold tracking-[0.05em] uppercase text-white bg-[#C9241A] hover:bg-[#a91d14] v5-glow px-5 py-2.5 transition-colors cursor-pointer"
+            className="ff-mono hidden sm:inline-flex items-center text-[12.5px] font-semibold tracking-[0.05em] uppercase text-white bg-[#C9241A] hover:bg-[#a91d14] v5-glow px-5 py-2.5 transition-colors cursor-pointer"
           >
             Start trial
           </button>
+          {/* Mobile primary: join a session — getting crew into a session is
+              the first thing they need, so this leads instead of start-trial. */}
+          <div className="relative sm:hidden">
+            <button
+              onClick={() => setJoinOpen((v) => !v)}
+              className="ff-mono inline-flex items-center gap-1.5 text-[12.5px] font-semibold tracking-[0.05em] uppercase text-white bg-[#C9241A] hover:bg-[#a91d14] v5-glow px-4 py-2.5 transition-colors cursor-pointer"
+            >
+              Join
+            </button>
+            {joinOpen && (
+              <>
+                <div className="fixed inset-0 z-[70]" onClick={() => setJoinOpen(false)} />
+                <div className="absolute right-0 top-[calc(100%+12px)] z-[80] w-[270px] bg-[#0F1216] border border-white/12 p-4 shadow-2xl shadow-black/50">
+                  <div className="ff-mono text-[10px] tracking-[0.1em] uppercase text-white/45 mb-2.5">Enter your join code</div>
+                  <JoinCodeInput variant="v5" />
+                </div>
+              </>
+            )}
+          </div>
           <button className="lg:hidden text-white p-1 cursor-pointer" onClick={() => setOpen((v) => !v)} aria-label="Menu">
             {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -143,8 +163,10 @@ export function V5Nav() {
             )
           )}
           <div className="pt-3 mt-2 border-t border-white/10 space-y-3">
+            <div className="ff-mono text-[10px] tracking-[0.1em] uppercase text-white/45">Joining a session? Enter your code</div>
             <JoinCodeInput variant="v5" />
             <button onClick={() => { setOpen(false); openAuth('login') }} className="ff-mono block w-full text-center py-3 text-sm uppercase tracking-[0.04em] text-white/70 hover:text-white cursor-pointer">Sign in</button>
+            <button onClick={() => { setOpen(false); openAuth('register') }} className="ff-mono block w-full text-center py-3 text-sm uppercase tracking-[0.04em] text-white border border-white/22 hover:bg-white/[0.06] cursor-pointer">Start free trial</button>
           </div>
         </div>
       )}
