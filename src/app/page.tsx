@@ -182,7 +182,7 @@ export default function LandingPage() {
               </div>
 
               {/* Right — live session panel that cycles every feature */}
-              <div className="relative" data-reveal>
+              <div className="relative min-h-[560px]" data-reveal>
                 <HeroShowcase />
               </div>
             </div>

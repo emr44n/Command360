@@ -45,7 +45,7 @@ export function TopBar() {
           <a href="mailto:enquiries@command360.co.uk" className="hidden sm:flex items-center gap-1.5 whitespace-nowrap hover:text-white transition-colors"><Mail className="w-3.5 h-3.5" /> enquiries@command360.co.uk</a>
         </div>
         <div className="flex items-center gap-5 min-w-0">
-          <div className="relative h-9 overflow-hidden hidden md:block w-[330px]" aria-live="off">
+          <div className="relative h-9 overflow-hidden hidden lg:block w-[480px]" aria-live="off">
             <AnimatePresence mode="wait" initial={false}>
               <motion.span
                 key={i}
@@ -53,7 +53,7 @@ export function TopBar() {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -14, opacity: 0 }}
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute inset-0 flex items-center justify-end ff-mono text-[11px] tracking-[0.02em] text-[#aab0b8] text-right"
+                className="absolute inset-0 flex items-center justify-end ff-mono text-[11px] tracking-[0.02em] text-[#aab0b8] text-right whitespace-nowrap"
               >
                 <span className="w-1.5 h-1.5 bg-[#C9241A] mr-2 shrink-0" />
                 {TICKER[i]}

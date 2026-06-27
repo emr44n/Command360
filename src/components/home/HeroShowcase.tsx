@@ -256,12 +256,34 @@ export function HeroShowcase() {
 
   return (
     <div
-      className="relative"
+      className="relative h-full flex flex-col bg-[#101319] overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
+      {/* diagonal stripe field — semi-transparent, slowly drifting (micro-motion) */}
+      <motion.div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(135deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 1px, transparent 1px, transparent 13px)',
+        }}
+        animate={{ backgroundPosition: ['0px 0px', '-52px 52px'] }}
+        transition={{ duration: 14, ease: 'linear', repeat: Infinity }}
+      />
+      {/* depth shade + accent wash tied to the active feature */}
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 26%, rgba(0,0,0,0.28) 100%)' }} />
+      <motion.div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        animate={{ background: `radial-gradient(70% 55% at 88% 6%, ${f.accent}22, transparent 70%)` }}
+        transition={{ duration: 0.6 }}
+      />
+      {/* thin top accent line in the active colour */}
+      <motion.div aria-hidden="true" className="absolute top-0 left-0 right-0 h-[2px] z-[2]" animate={{ background: f.accent }} transition={{ duration: 0.4 }} />
+
       {/* header */}
-      <div className="flex items-center justify-between px-6 py-[18px] border-b border-white/10">
+      <div className="relative z-[1] flex items-center justify-between px-6 py-[18px] border-b border-white/10">
         <span className="ff-mono text-[11px] font-semibold tracking-[0.12em] uppercase text-[#9aa0a8]">Session · Live</span>
         <span className="ff-mono text-[11px] font-semibold tracking-[0.06em] text-[#C9241A] flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-[#C9241A] v5-pulse" />REC
@@ -269,7 +291,7 @@ export function HeroShowcase() {
       </div>
 
       {/* feature tab strip */}
-      <div className="grid grid-cols-6 border-b border-white/10">
+      <div className="relative z-[1] grid grid-cols-6 border-b border-white/10">
         {FEATURES.map((feat, i) => (
           <button
             key={feat.key}
@@ -287,7 +309,7 @@ export function HeroShowcase() {
       </div>
 
       {/* stat row — white numbers stand out */}
-      <div className="grid grid-cols-2">
+      <div className="relative z-[1] grid grid-cols-2">
         {f.stats.map((s, i) => (
           <div key={s.label} className={`px-6 py-[20px] border-b border-white/10 ${i === 0 ? 'border-r' : ''}`}>
             <div className="ff-mono text-[10.5px] tracking-[0.1em] uppercase text-[#7c828a] mb-2">{s.label}</div>
@@ -309,7 +331,7 @@ export function HeroShowcase() {
       </div>
 
       {/* main feature content */}
-      <div className="px-6 py-[24px] border-b border-white/10 min-h-[176px] flex items-center">
+      <div className="relative z-[1] px-6 py-[24px] border-b border-white/10 min-h-[176px] flex items-center">
         <AnimatePresence mode="wait">
           <motion.div
             key={f.key}
@@ -325,7 +347,7 @@ export function HeroShowcase() {
       </div>
 
       {/* caption status line */}
-      <div className="px-6 py-[16px] flex items-center gap-3 overflow-hidden">
+      <div className="relative z-[1] px-6 py-[16px] flex items-center gap-3 overflow-hidden border-b border-white/10">
         <span className="w-1.5 h-1.5 shrink-0" style={{ background: f.accent }} />
         <AnimatePresence mode="wait">
           <motion.span
@@ -339,6 +361,45 @@ export function HeroShowcase() {
             {f.caption}
           </motion.span>
         </AnimatePresence>
+      </div>
+
+      {/* filler region — keeps the panel fully covered down to the foot, with a
+          progress dot-row showing which feature is live (micro-motion) */}
+      <div className="relative z-[1] flex-1 min-h-[64px] flex items-center px-6 py-5">
+        <div className="flex items-center gap-2">
+          {FEATURES.map((feat, i) => (
+            <button
+              key={feat.key}
+              onClick={() => setActive(i)}
+              aria-label={feat.tab}
+              className="h-1.5 transition-all duration-500"
+              style={{
+                width: i === active ? 26 : 7,
+                background: i === active ? f.accent : 'rgba(255,255,255,0.18)',
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* foot — live activity bar, anchored to the bottom */}
+      <div className="relative z-[1] flex items-center justify-between gap-3 px-6 py-[15px] border-t border-white/10 bg-black/20">
+        <div className="flex items-center gap-2.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#2E9E63] v5-pulse" />
+          <span className="ff-mono text-[11px] tracking-[0.04em] text-[#9aa0a8]">32 connected</span>
+        </div>
+        <div className="flex items-end gap-[3px] h-3" aria-hidden="true">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <motion.span
+              key={i}
+              className="w-[3px]"
+              style={{ background: f.accent }}
+              animate={{ height: ['25%', '100%', '45%', '85%', '30%'] }}
+              transition={{ duration: 1.4, ease: 'easeInOut', repeat: Infinity, delay: i * 0.16 }}
+            />
+          ))}
+        </div>
+        <span className="ff-mono text-[11px] tracking-[0.04em] text-[#7c828a]">command360.co.uk</span>
       </div>
     </div>
   )
