@@ -639,11 +639,11 @@ export function StudioGallery({
                 key={asset.id}
                 role="button"
                 tabIndex={0}
-                className="group flex items-center gap-2 px-1.5 py-1 rounded hover:bg-[#35363c] cursor-pointer transition-colors"
+                className="group flex items-center gap-2 px-1.5 py-1 rounded-none hover:bg-[#35363c] cursor-pointer transition-colors"
                 onClick={() => addImageToCanvas(asset)}
                 draggable onDragStart={(e) => handleAssetDragStart(e, asset)}
               >
-                <img src={asset.url} alt={asset.name} className="w-8 h-6 object-cover rounded shrink-0" />
+                <img src={asset.url} alt={asset.name} className="w-8 h-6 object-cover rounded-none shrink-0" />
                 <span className="text-[9px] text-[#9aa0a8] truncate flex-1">{asset.name}</span>
                 <button
                   className="p-0.5 text-[#9aa0a8] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -944,7 +944,7 @@ export function StudioGallery({
                 onChange={(e) => setNewEventName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleAddEvent() }}
                 placeholder="New event..."
-                className="h-5 flex-1 border-zinc-700/50 bg-[#2b2d31]/50 text-[10px] text-[#9aa0a8] placeholder:text-[#9aa0a8]"
+                className="h-5 flex-1 border-[#3f4147]/50 bg-[#2b2d31]/50 text-[10px] text-[#9aa0a8] placeholder:text-[#9aa0a8]"
               />
               <Button
                 variant="ghost" size="sm"

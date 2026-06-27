@@ -439,12 +439,12 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
       {/* Hotkeys modal */}
       {showHotkeys && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4 fade-in" onClick={() => setShowHotkeys(false)}>
-          <div className="bg-card rounded-2xl border border-border p-6 w-full max-w-lg shadow-2xl fade-in-scale" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-card rounded-none border border-border p-6 w-full max-w-lg shadow-2xl fade-in-scale" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
                 <Keyboard className="w-4 h-4 text-primary" />Keyboard Shortcuts
               </h2>
-              <button onClick={() => setShowHotkeys(false)} className="text-muted-foreground hover:text-foreground transition-all p-1 rounded-lg hover:bg-muted">
+              <button onClick={() => setShowHotkeys(false)} className="text-muted-foreground hover:text-foreground transition-all p-1 rounded-none hover:bg-muted">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -472,14 +472,14 @@ export function PresenterView({ session: initialSession, slides }: PresenterView
       {/* End session confirmation modal */}
       {showEndConfirm && (
         <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1e1f22] border border-[#3f4147] rounded-xl p-5 max-w-xs w-full shadow-2xl">
+          <div className="bg-[#16191E] border border-white/14 rounded-none p-5 max-w-xs w-full shadow-2xl">
             <h3 className="text-sm font-semibold text-white mb-2">End this session?</h3>
-            <p className="text-[11px] text-zinc-400 mb-4">All participants will be disconnected. This cannot be undone.</p>
+            <p className="text-[11px] text-[#9aa0a8] mb-4">All participants will be disconnected. This cannot be undone.</p>
             <div className="flex gap-2 justify-end">
-              <button onClick={() => setShowEndConfirm(false)} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">
+              <button onClick={() => setShowEndConfirm(false)} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-white/5 text-[#9aa0a8] hover:bg-white/10 transition-colors">
                 Cancel
               </button>
-              <button onClick={confirmEndSession} className="px-3 py-1.5 text-[11px] font-medium rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors">
+              <button onClick={confirmEndSession} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#C9241A] text-white hover:bg-[#a81d15] transition-colors">
                 End Session
               </button>
             </div>
