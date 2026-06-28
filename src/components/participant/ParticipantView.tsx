@@ -128,7 +128,7 @@ export function ParticipantView({ session: initialSession, slides, participantId
           {/* Branding */}
           <div className="flex flex-col items-center gap-3">
             <BrandMark size={64} />
-            <span className="text-sm font-bold text-[#9aa0a8] tracking-widest uppercase">Command 360</span>
+            <span className="ff-wordmark text-sm text-[#9aa0a8] tracking-widest uppercase">Command 360</span>
           </div>
 
           {/* Heading */}
@@ -193,7 +193,7 @@ export function ParticipantView({ session: initialSession, slides, participantId
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <BrandMark size={28} />
-              <span className="text-sm font-bold text-foreground tracking-tight">Command 360</span>
+              <span className="ff-wordmark text-sm text-foreground tracking-tight">Command 360</span>
             </div>
             {score > 0 && (
               <div className="flex items-center gap-1.5 text-primary font-mono font-bold text-sm bg-primary/10 px-3 py-1 rounded-none">

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Geist_Mono, Archivo, IBM_Plex_Sans, IBM_Plex_Mono } from 'next/font/google'
+import { Inter, Geist_Mono, Archivo, IBM_Plex_Sans, IBM_Plex_Mono, Orbitron } from 'next/font/google'
 import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -36,6 +36,14 @@ const plexMono = IBM_Plex_Mono({
   variable: '--font-plex-mono',
   subsets: ['latin'],
   weight: ['400', '500', '600'],
+  display: 'swap',
+})
+
+// Wordmark — "COMMAND 360" lockup
+const orbitron = Orbitron({
+  variable: '--font-orbitron',
+  subsets: ['latin'],
+  weight: ['500', '600', '700', '800', '900'],
   display: 'swap',
 })
 
@@ -89,7 +97,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} ${geistMono.variable} ${archivo.variable} ${plexSans.variable} ${plexMono.variable} antialiased overflow-x-hidden`}>
+      <body className={`${inter.variable} ${geistMono.variable} ${archivo.variable} ${plexSans.variable} ${plexMono.variable} ${orbitron.variable} antialiased overflow-x-hidden`}>
         <TooltipProvider>
           <AuthSlideOverProvider>
             {children}

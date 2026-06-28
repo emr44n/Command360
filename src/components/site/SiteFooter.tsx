@@ -42,7 +42,7 @@ export function SiteFooter() {
           <div className="col-span-2 md:col-span-3">
             <div className="flex items-center gap-3 mb-4">
               <BrandMark size={30} />
-              <span className="ff-display font-extrabold text-[18px] text-white tracking-[0.01em]">COMMAND 360</span>
+              <span className="ff-wordmark text-[18px] text-white tracking-[0.01em]">COMMAND 360</span>
             </div>
             <p className="text-[14px] leading-[1.6] mb-5 max-w-[300px]">Interactive command training for UK emergency services. UK-hosted, GDPR ready, built for those who serve.</p>
             <div className="flex gap-2.5">

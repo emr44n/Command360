@@ -94,7 +94,7 @@ export function AuthSlideOver({ isOpen, onClose, defaultTab = 'login', required 
           {/* Logo */}
           <div className="flex items-center gap-3 mb-9">
             <BrandMark size={30} />
-            <span className="ff-display font-extrabold text-[16px] text-white tracking-[0.01em]">COMMAND 360</span>
+            <span className="ff-wordmark text-[16px] text-white tracking-[0.01em]">COMMAND 360</span>
           </div>
 
           {/* Tabs */}

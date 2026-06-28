@@ -137,7 +137,7 @@ export function DashboardSidebar() {
       <div className={cn('h-16 flex items-center', collapsed ? 'px-3 justify-center' : 'px-5')}>
         <Link href="/dashboard" className="flex items-center gap-2.5 text-white">
           <BrandMark size={32} />
-          {!collapsed && <span className="ff-display text-[15px] font-extrabold tracking-tight uppercase">Command 360</span>}
+          {!collapsed && <span className="ff-wordmark text-[15px] tracking-tight uppercase">Command 360</span>}
         </Link>
       </div>
 

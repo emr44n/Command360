@@ -41,7 +41,7 @@ export default function JoinRoomPage() {
       <header className="p-5">
         <Link href="/" className="flex items-center gap-2 font-semibold text-foreground w-fit">
           <BrandMark size={28} />
-          Command 360
+          <span className="ff-wordmark">Command 360</span>
         </Link>
       </header>
       <main className="flex-1 flex items-center justify-center px-5">

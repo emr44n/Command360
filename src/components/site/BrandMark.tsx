@@ -8,10 +8,14 @@ import Image from 'next/image'
 export function BrandMark({ size = 30, className = '' }: { size?: number; className?: string }) {
   return (
     <Image
-      src="/logo.webp"
+      src="/logo.png"
       alt="Command 360"
       width={size}
       height={size}
+      // Serve the full-res lossless PNG and let the browser downscale it —
+      // crisp at any size (next/image's small generated variants looked soft).
+      unoptimized
+      quality={100}
       className={`shrink-0 select-none ${className}`}
       draggable={false}
     />

@@ -22,7 +22,7 @@ export default function JoinPage() {
       <header className="relative z-10 p-5 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 font-semibold text-white">
           <BrandMark size={32} />
-          <span className="ff-display font-extrabold text-sm tracking-[0.01em]">Command 360</span>
+          <span className="ff-wordmark text-sm tracking-[0.01em]">Command 360</span>
         </Link>
         <Link href="/" className="ff-mono inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.1em] text-[#7c828a] hover:text-white transition-colors">
           <ArrowLeft className="w-3.5 h-3.5" />
