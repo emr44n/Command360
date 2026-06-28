@@ -52,7 +52,8 @@ export function ScenarioCarousel() {
   useEffect(() => {
     if (paused) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const id = setInterval(() => setActive((v) => (v + 1) % SCENES.length), 4200)
+    // dwell slowed ~60% (4200 → 6700ms) for a calmer transition cadence
+    const id = setInterval(() => setActive((v) => (v + 1) % SCENES.length), 6700)
     return () => clearInterval(id)
   }, [paused])
 
@@ -85,14 +86,16 @@ export function ScenarioCarousel() {
           <motion.img
             key={s.src}
             src={s.src}
-            alt={`${s.label} — ${s.scenario}, a Command 360 training scenario`}
+            alt={`${s.label} — ${s.scenario}, built in Command 360`}
             draggable={false}
             loading={active === 0 ? 'eager' : 'lazy'}
-            className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
-            initial={{ opacity: 0, scale: 1.04 }}
-            animate={{ opacity: 1, scale: 1 }}
+            // 15% larger, centred (safe zone), no ken-burns pan
+            className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
+            style={{ scale: 1.15 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ opacity: { duration: 0.7, ease: 'easeInOut' }, scale: { duration: 5.5, ease: 'linear' } }}
+            transition={{ opacity: { duration: 1.1, ease: 'easeInOut' } }}
           />
         </AnimatePresence>
 
@@ -113,7 +116,7 @@ export function ScenarioCarousel() {
             </motion.span>
           </AnimatePresence>
           <span className="ff-mono text-[10px] font-semibold tracking-[0.1em] uppercase text-white bg-black/45 backdrop-blur-sm border border-white/12 px-2.5 py-1.5">
-            Scenario {active + 1} / {SCENES.length}
+            Example scene
           </span>
         </div>
 
@@ -121,7 +124,7 @@ export function ScenarioCarousel() {
         <div className="absolute bottom-0 inset-x-0 px-3.5 pb-3.5 pt-10 z-[2]">
           <AnimatePresence mode="wait">
             <motion.div key={s.scenario} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.34 }} className="mb-2.5">
-              <div className="ff-mono text-[9.5px] tracking-[0.14em] uppercase mb-1" style={{ color: s.c }}>Interactive scenario</div>
+              <div className="ff-mono text-[9.5px] tracking-[0.14em] uppercase mb-1" style={{ color: s.c }}>Built in Command Studio</div>
               <div className="ff-display font-bold text-white text-[clamp(15px,1.6vw,19px)] leading-tight tracking-[-0.01em]">{s.scenario}</div>
             </motion.div>
           </AnimatePresence>
