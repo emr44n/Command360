@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Command 360 — Naming & Structure Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0A0B0E;--ink-2:#0E1014;--panel:#14171D;--card:#181C23;--card-2:#1E232B;
+  --line:rgba(255,255,255,.08);--line-strong:rgba(255,255,255,.18);--frame:rgba(255,255,255,.24);
+  --text:#ECEDEF;--muted:#969CA6;--muted-2:#6E747E;
+  --ember:#FFB02E;--signal:#FF4F3D;--cyan:#5BD2FF;--ok:#54D88B;--violet:#B79CFF;
+  --r:16px;--maxw:1060px;--ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--text);font-family:"Inter",-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(900px 500px at 84% -10%,rgba(255,176,46,.10),transparent 60%),radial-gradient(760px 460px at -8% 8%,rgba(91,210,255,.07),transparent 55%);background-attachment:fixed;}
+h1,h2,h3,h4{font-family:"Space Grotesk",sans-serif;font-weight:600;letter-spacing:-.018em;line-height:1.13;margin:0}
+p{margin:0}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.mono{font-family:"JetBrains Mono",monospace;font-weight:500;letter-spacing:.02em}
+.eyebrow{font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--ember);display:inline-flex;align-items:center;gap:9px}
+.eyebrow::before{content:"";width:22px;height:1px;background:linear-gradient(90deg,var(--ember),transparent)}
+.pill{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.08em;padding:3px 8px;border-radius:6px;border:1px solid var(--line-strong);color:var(--muted);display:inline-block}
+
+.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(10,11,14,.74);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:58px}
+.brand{display:flex;align-items:center;gap:11px;font-family:"Space Grotesk";font-weight:600;font-size:15.5px}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:var(--ember);box-shadow:0 0 0 4px rgba(255,176,46,.16)}
+.navlinks{display:flex;gap:18px;font-size:13px;color:var(--muted)}
+.navlinks a{color:inherit;text-decoration:none}.navlinks a:hover{color:var(--text)}
+@media(max-width:860px){.navlinks{display:none}}
+
+.hero{padding:70px 0 40px}
+.hero h1{font-size:clamp(30px,4.6vw,46px);margin:18px 0 0;max-width:18ch}
+.hero h1 .em{color:var(--ember)}
+.hero .lede{color:var(--muted);font-size:17px;max-width:56ch;margin-top:18px}
+
+section{padding:58px 0;border-top:1px solid var(--line)}
+.s-head h2{font-size:clamp(23px,3vw,32px);margin-top:12px}
+.s-head .sub{color:var(--muted);font-size:16px;margin-top:12px;max-width:62ch}
+
+/* taxonomy tree */
+.tree{margin-top:34px;display:grid;gap:14px}
+.node{border:2px solid var(--frame);border-radius:var(--r);background:var(--panel);padding:18px 22px;display:flex;align-items:center;gap:16px}
+.node.lvl0{border-color:var(--ember);background:linear-gradient(180deg,rgba(255,176,46,.08),transparent)}
+.node .tag{font-family:"JetBrains Mono";font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);flex:none;width:80px}
+.node .nm{font-family:"Space Grotesk";font-weight:600;font-size:18px}
+.node .nm small{display:block;font-family:"Inter";font-weight:400;font-size:13px;color:var(--muted);margin-top:3px;letter-spacing:0}
+.branch{margin-left:28px;display:grid;gap:14px;position:relative}
+.branch::before{content:"";position:absolute;left:-14px;top:-8px;bottom:30px;width:2px;background:var(--line-strong)}
+.kids{margin-left:28px;margin-top:4px}
+.kids .pill{margin:0 6px 6px 0}
+
+/* mapping table */
+.scroll-x{overflow-x:auto;margin-top:30px}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;min-width:640px}
+.tbl thead th{text-align:left;font-family:"JetBrains Mono";font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);padding:12px 15px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--line);font-weight:600}
+.tbl td{padding:11px 15px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.x{color:var(--muted-2);font-family:"JetBrains Mono";font-size:12.5px}
+.tbl td.n{color:var(--ember);font-family:"Space Grotesk";font-weight:600}
+.tbl td .s{color:var(--muted);font-size:12.5px}
+
+/* inject structure */
+.diagram{margin-top:30px;border:2px solid var(--frame);border-radius:var(--r);background:var(--panel);padding:24px}
+.diagram .lab{font-family:"JetBrains Mono";font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2);margin-bottom:16px}
+
+/* step catalog */
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:30px}
+.chip{border:1px solid var(--line-strong);border-radius:10px;padding:9px 14px;font-family:"Space Grotesk";font-weight:600;font-size:14px;background:var(--card)}
+.chip span{font-family:"JetBrains Mono";font-weight:400;font-size:10px;color:var(--muted-2);margin-left:7px}
+.chip.new{border-color:rgba(91,210,255,.4);color:var(--cyan)}
+
+.grid{display:grid;gap:13px;margin-top:30px}
+.g3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:780px){.g3{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.card h3{font-size:15.5px;margin-bottom:7px}
+.card .m{font-family:"JetBrains Mono";font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2);margin-bottom:10px;display:block}
+.card p{color:var(--muted);font-size:13.5px}
+
+.note{display:flex;gap:13px;margin-top:24px;padding:16px 18px;border:1px solid rgba(255,176,46,.28);border-radius:14px;background:linear-gradient(180deg,rgba(255,176,46,.05),transparent)}
+.note .i{flex:none;color:var(--ember);font-family:"Space Grotesk";font-weight:700}.note p{font-size:14px}
+
+.modes{display:flex;align-items:center;gap:14px;margin-top:30px;flex-wrap:wrap}
+.mode{flex:1;min-width:160px;border:2px solid var(--frame);border-radius:14px;padding:18px;text-align:center;background:var(--card)}
+.mode .nm{font-family:"Space Grotesk";font-weight:600;font-size:17px}
+.mode .d{font-size:12.5px;color:var(--muted);margin-top:5px}
+.arrow{color:var(--muted-2);font-size:20px;flex:none}
+
+footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted-2);font-size:12.5px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="wrap">
+  <div class="brand"><span class="dot"></span>Command 360 <span class="mono" style="font-size:10px;color:var(--muted-2);letter-spacing:.1em;margin-left:4px">NAMING MAP</span></div>
+  <div class="navlinks"><a href="#tree">Taxonomy</a><a href="#units">Units</a><a href="#vocab">From XVR</a><a href="#inject">Injects</a><a href="#modes">Modes</a><a href="#extra">New ideas</a></div>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow">The canonical naming & structure</span>
+  <h1>One platform. Two ways to deliver. Every word the <span class="em">industry's own</span>.</h1>
+  <p class="lede">The locked naming system for Command 360 — and the vocabulary we took from the XVR On Scene manual and made our own. Keep this beside you.</p>
+</div></header>
+
+<!-- TAXONOMY -->
+<section id="tree"><div class="wrap">
+  <div class="s-head"><span class="eyebrow">The shape of it</span><h2>Command 360 → build it, then deliver it two ways.</h2></div>
+  <div class="tree">
+    <div class="node lvl0"><span class="tag">Platform</span><div class="nm">Command 360<small>the brand — lead with it, never bolt "360" onto the modules</small></div></div>
+    <div class="branch">
+      <div class="node"><span class="tag">Build</span><div class="nm">Command Studio<small>the authoring tool — imagery, video, effects, scenes (the Fire Studio analog). A tool, not a mode.</small></div></div>
+      <div class="node"><span class="tag">Teach</span><div class="nm" style="color:var(--cyan)">Command Classroom<small>group, taught, interactive delivery — the Menti/Slido side</small></div></div>
+      <div class="kids"><span class="pill">unit ▸ TDE</span><span class="pill">polls</span><span class="pill">quizzes</span><span class="pill">word clouds</span><span class="pill">Q&amp;A</span><span class="pill">surveys</span><span class="pill">content</span><span class="pill">ratings</span></div>
+      <div class="node"><span class="tag">Run</span><div class="nm" style="color:var(--ember)">Command Live<small>live, individual/crew, real-time immersive assessment — the On Scene / Hydra analog</small></div></div>
+      <div class="kids"><span class="pill">unit ▸ Scenario</span><span class="pill">Phases</span><span class="pill">Injects</span><span class="pill">Steps</span><span class="pill">layers from Studio</span></div>
+    </div>
+  </div>
+  <div class="note"><span class="i">✓</span><p>Why "Command" leads everything: it's the industry's own root word. ETC's ADMS sells <strong>Incident Command</strong>, <strong>Command Post</strong> and <strong>Command Simulation</strong>; XVR and Hydra use the same register. "Command Classroom / Command Live" belongs in that lexicon — you're speaking their language, not inventing one.</p></div>
+</div></section>
+
+<!-- UNITS -->
+<section id="units"><div class="wrap">
+  <div class="s-head"><span class="eyebrow">The two units</span><h2>A TDE for the classroom. A Scenario for live.</h2>
+    <p class="sub">Both names are the industry's own — and deliberately not "presentation," which invites the "just a PowerPoint" perception. Everything runs as an assessment; there's no separate training/assessment split.</p></div>
+  <div class="grid g3" style="grid-template-columns:1fr 1fr">
+    <div class="card"><span class="m">Command Classroom</span><h3>TDE — Tactical Decision Exercise</h3><p>The recognised term (Effective Command, Hydra, College of Policing). Assembled from blocks: polls, quizzes, word clouds, Q&amp;A, surveys, content, rating scales, open text. The blocks stay generically named — they're the materials, not the unit.</p></div>
+    <div class="card"><span class="m">Command Live</span><h3>Scenario</h3><p>The industry default (XVR, Fire Studio, ADMS). Assembled from Phases → Injects → Steps, using layers built in Command Studio. Optionally labelled by level — Bronze (operational) / Silver (tactical) / Gold (strategic) — for categorising.</p></div>
+  </div>
+</div></section>
+
+<!-- VOCAB FROM XVR -->
+<section id="vocab"><div class="wrap">
+  <div class="s-head"><span class="eyebrow">What we took from the XVR manual</span><h2>The same logic, renamed to be ours.</h2>
+    <p class="sub">XVR On Scene is entirely event-driven: the operator fires Events made of Actions; linked actions play together, unlinked in sequence, a Wait inserts a gap. We keep the logic and rename almost everything.</p></div>
+  <div class="scroll-x">
+    <table class="tbl">
+      <thead><tr><th>XVR On Scene</th><th>Command 360</th><th>What it is</th></tr></thead>
+      <tbody>
+        <tr><td class="x">Event</td><td class="n">Inject</td><td><span class="s">The triggerable unit the instructor fires</span></td></tr>
+        <tr><td class="x">Action</td><td class="n">Step</td><td><span class="s">One step inside an inject</span></td></tr>
+        <tr><td class="x">Linked actions</td><td class="n">linked / "play together"</td><td><span class="s">Steps that fire simultaneously (replaces "Beat")</span></td></tr>
+        <tr><td class="x">Wait action</td><td class="n">Wait</td><td><span class="s">A timed pause before the next step</span></td></tr>
+        <tr><td class="x">Event category</td><td class="n">Phase</td><td><span class="s">A folder of injects — Arrival · Develop · Escalate · Resolve</span></td></tr>
+        <tr><td class="x">Task</td><td class="n">Tasking</td><td><span class="s">A crew order assigned to a member chosen live</span></td></tr>
+        <tr><td class="x">Trigger</td><td class="n">Hotspot</td><td><span class="s">A clickable region on the candidate's screen</span></td></tr>
+        <tr><td class="x">Object library</td><td class="n">Library</td><td><span class="s">The asset shelf (thumbnails, grid/list)</span></td></tr>
+        <tr><td class="x">State</td><td class="n">Look</td><td><span class="s">A saved visual variant of a layer (incl. live filters)</span></td></tr>
+        <tr><td class="x">Connectors</td><td class="n">Attachments</td><td><span class="s">A layer pinned to another</span></td></tr>
+        <tr><td class="x">Locations</td><td class="n">Positions</td><td><span class="s">Saved positions for a layer</span></td></tr>
+        <tr><td class="x">Change properties</td><td class="n">FX / Effects</td><td><span class="s">Brightness, contrast, colour, blur…</span></td></tr>
+        <tr><td class="x">Show pop-up</td><td class="n">Card</td><td><span class="s">Image/video/text overlay to a chosen audience</span></td></tr>
+        <tr><td class="x">Multiple-choice pop-up</td><td class="n">Question</td><td><span class="s">Branching — each answer chains its own inject</span></td></tr>
+        <tr><td class="x">Adjust weather/water</td><td class="n">Atmosphere</td><td><span class="s">Scene-wide rain, fog, night, blue-light</span></td></tr>
+        <tr><td class="x">Heat source / thermal</td><td class="n">Thermal</td><td><span class="s">A thermal-camera (TIC) view</span></td></tr>
+        <tr><td class="x">Event action</td><td class="n">Chain</td><td><span class="s">Start/reset another inject (branch + reuse)</span></td></tr>
+        <tr><td class="x">Connect (layers as one)</td><td class="n">Combo</td><td><span class="s">Fire + smoke saved and fired as a single object</span></td></tr>
+        <tr><td class="x">Completed events</td><td class="n">Played</td><td><span class="s">Injects already fired</span></td></tr>
+        <tr><td class="x">Skills</td><td class="n">Objectives</td><td><span class="s">Assessment criteria / marking points</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div></section>
+
+<!-- INJECT STRUCTURE -->
+<section id="inject"><div class="wrap">
+  <div class="s-head"><span class="eyebrow">Inside a Scenario</span><h2>Phase → Inject → Step.</h2>
+    <p class="sub">Steps run top-to-bottom. <strong>Link</strong> them to play together; leave them unlinked to run in order; drop a <strong>Wait</strong> for a gap. That single rule choreographs an incident.</p></div>
+  <div class="diagram">
+    <div class="lab">Phase · ESCALATE — "Fire breaks through the front window"</div>
+    <svg viewBox="0 0 900 250" style="width:100%;height:auto;overflow:visible" role="img" aria-label="A phase contains an inject; the inject is a run of steps, two linked to play together, then a wait, then more steps">
+      <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="6" refY="4.5" orient="auto"><path d="M0 0 L8 4.5 L0 9 z" fill="#6E747E"/></marker></defs>
+      <rect x="0" y="0" width="900" height="40" rx="9" fill="rgba(255,176,46,.08)" stroke="#FFB02E"/><text x="14" y="20" font-family="Space Grotesk" font-weight="600" font-size="13" fill="#fff">INJECT</text><text x="78" y="20" font-family="Inter" font-size="12" fill="#cfd3d9">Fire breaks through front window</text><text x="14" y="34" font-family="JetBrains Mono" font-size="9" fill="#969ca6">one tap to fire, live</text>
+      <g transform="translate(0 64)">
+        <rect x="0" width="230" height="80" rx="9" fill="#181C23" stroke="rgba(255,79,61,.45)"/><text x="12" y="18" font-family="JetBrains Mono" font-size="9" fill="#FF4F3D">LINKED · play together</text>
+        <g transform="translate(12 26)"><rect width="96" height="20" rx="5" fill="rgba(255,176,46,.1)" stroke="rgba(255,176,46,.4)"/><text x="9" y="14" font-family="Inter" font-size="10.5" fill="#FFB02E">Reveal · Fire</text></g>
+        <g transform="translate(116 26)"><rect width="102" height="20" rx="5" fill="rgba(150,156,166,.1)" stroke="rgba(150,156,166,.4)"/><text x="9" y="14" font-family="Inter" font-size="10.5" fill="#cfd3d9">Reveal · Smoke</text></g>
+        <g transform="translate(12 52)"><rect width="206" height="18" rx="5" fill="rgba(91,210,255,.08)" stroke="rgba(91,210,255,.35)"/><text x="9" y="13" font-family="Inter" font-size="10" fill="#5BD2FF">Sound · Glass + roar</text></g>
+      </g>
+      <line x1="230" y1="104" x2="270" y2="104" stroke="#6E747E" stroke-width="1.5" marker-end="url(#ar)"/>
+      <g transform="translate(274 64)"><rect width="110" height="80" rx="9" fill="#14171D" stroke="rgba(255,255,255,.18)" stroke-dasharray="4 4"/><text x="55" y="40" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="18" fill="#969ca6">WAIT</text><text x="55" y="58" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#969ca6">6 sec</text></g>
+      <line x1="384" y1="104" x2="424" y2="104" stroke="#6E747E" stroke-width="1.5" marker-end="url(#ar)"/>
+      <g transform="translate(428 64)"><rect width="200" height="80" rx="9" fill="#181C23" stroke="rgba(255,176,46,.4)"/><text x="12" y="18" font-family="JetBrains Mono" font-size="9" fill="#FFB02E">STEP</text><g transform="translate(12 26)"><rect width="176" height="20" rx="5" fill="rgba(255,176,46,.1)" stroke="rgba(255,176,46,.4)"/><text x="9" y="14" font-family="Inter" font-size="10.5" fill="#FFB02E">Tween · Fire grows</text></g><g transform="translate(12 52)"><rect width="176" height="18" rx="5" fill="rgba(183,156,255,.1)" stroke="rgba(183,156,255,.4)"/><text x="9" y="13" font-family="Inter" font-size="10" fill="#B79CFF">Card · Casualty popup</text></g></g>
+      <line x1="628" y1="104" x2="668" y2="104" stroke="#6E747E" stroke-width="1.5" marker-end="url(#ar)"/>
+      <g transform="translate(672 64)"><rect width="200" height="80" rx="9" fill="#181C23" stroke="rgba(84,216,139,.4)"/><text x="12" y="18" font-family="JetBrains Mono" font-size="9" fill="#54D88B">STEP · waits for candidate</text><g transform="translate(12 26)"><rect width="176" height="20" rx="5" fill="rgba(84,216,139,.1)" stroke="rgba(84,216,139,.4)"/><text x="9" y="14" font-family="Inter" font-size="10.5" fill="#54D88B">Question · offensive?</text></g><g transform="translate(12 52)"><rect width="176" height="18" rx="5" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.2)"/><text x="9" y="13" font-family="Inter" font-size="10" fill="#cfd3d9">Chain → next inject</text></g></g>
+    </svg>
+  </div>
+  <div class="s-head" style="margin-top:40px"><h2 style="font-size:21px">The step catalogue</h2><p class="sub">XVR's 17 actions, translated to a flat world.</p></div>
+  <div class="chips">
+    <div class="chip">Reveal</div><div class="chip">Hide</div><div class="chip">Move</div><div class="chip">Place<span>teleport</span></div><div class="chip">Rotate</div><div class="chip">Tween<span>animate</span></div><div class="chip new">Switch Look<span>state</span></div><div class="chip">Adjust<span>properties</span></div><div class="chip">Wait</div><div class="chip">Sound</div><div class="chip">Chain<span>event action</span></div><div class="chip">Fire Hotspot<span>trigger</span></div><div class="chip">Card<span>pop-up</span></div><div class="chip">Question<span>branch</span></div><div class="chip">Atmosphere<span>weather</span></div><div class="chip new">Thermal<span>heat</span></div><div class="chip">Pin<span>connect</span></div>
+  </div>
+</div></section>
+
+<!-- MODES -->
+<section id="modes"><div class="wrap">
+  <div class="s-head"><span class="eyebrow">The three modes</span><h2>Build → Run → Debrief.</h2>
+    <p class="sub">The flow you liked from XVR (Build / Train / Review), in our words.</p></div>
+  <div class="modes">
+    <div class="mode"><div class="nm">Build</div><div class="d">author the scenario in Command Studio</div></div>
+    <span class="arrow">→</span>
+    <div class="mode" style="border-color:var(--ember)"><div class="nm" style="color:var(--ember)">Run / Live</div><div class="d">fire injects live as the candidate decides</div></div>
+    <span class="arrow">→</span>
+    <div class="mode" style="border-color:var(--cyan)"><div class="nm" style="color:var(--cyan)">Debrief</div><div class="d">replay, decision log, AI summary, scorecard</div></div>
+  </div>
+  <div class="note"><span class="i">⌥</span><p>Object operations on any selected layer — the toolbar XVR buries in menus, one click away: <span class="mono" style="font-size:12.5px">Show/Hide · Lock · Disable · Duplicate · Delete · reorder.</span></p></div>
+</div></section>
+
+<!-- EXTRA -->
+<section id="extra"><div class="wrap">
+  <div class="s-head"><span class="eyebrow">Beyond XVR</span><h2>The bits that make it 2026, not a 3D simulator.</h2></div>
+  <div class="grid g3">
+    <div class="card"><span class="m">Multi-angle</span><h3>Views</h3><p>Front · rear · side · from the cab. Switchable plates the instructor cuts between when the candidate moves — "I want the rear."</p></div>
+    <div class="card"><span class="m">Phone companion</span><h3>Second screen</h3><p>An on-screen QR opens a page on the candidate's phone (no app). Push maps, cards and 999 footage live — session-scoped, expiring, watermarked.</p></div>
+    <div class="card"><span class="m">Live filters</span><h3>Looks &amp; FX</h3><p>Real-time colour, contrast, blur, thermal — no re-render. AI generates structural variants (damaged, flooded, injured).</p></div>
+    <div class="card"><span class="m">Firefighter-only</span><h3>Thermal view</h3><p>A thermal-camera (TIC) view as a one-tap Look — a differentiator almost no flat tool offers.</p></div>
+    <div class="card"><span class="m">It writes itself</span><h3>Debrief analytics</h3><p>Every inject and decision timestamped → a decision-log timeline, an AI summary that narrates the log, and a scorecard.</p></div>
+    <div class="card"><span class="m">Where you sit</span><h3>Premium tier</h3><p>Priced with XVR (£thousands), not SimsUShare ($75). You're a live assessment platform, not a solo sim builder.</p></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <span>Command 360 · naming &amp; structure map · locked June 2026</span>
+  <span class="mono">Command 360 → Studio · Classroom (TDEs) · Live (Scenarios)</span>
+</div></footer>
+
+</body>
+</html>

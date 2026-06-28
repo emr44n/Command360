@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Command 360 — Studio Feel · Second Screen · Debrief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0A0B0E;--ink-2:#0E1014;--panel:#14171D;--card:#181C23;--card-2:#1E232B;
+  --line:rgba(255,255,255,.08);--line-strong:rgba(255,255,255,.18);--frame:rgba(255,255,255,.24);
+  --text:#ECEDEF;--muted:#969CA6;--muted-2:#6E747E;
+  --ember:#FFB02E;--ember-deep:#C87C16;--signal:#FF4F3D;--cyan:#5BD2FF;--ok:#54D88B;--violet:#B79CFF;
+  --r:16px;--maxw:1080px;--ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--text);font-family:"Inter",-apple-system,"Segoe UI",sans-serif;font-size:16.5px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(900px 500px at 84% -10%,rgba(255,176,46,.10),transparent 60%),radial-gradient(760px 460px at -8% 8%,rgba(91,210,255,.07),transparent 55%);background-attachment:fixed;}
+h1,h2,h3,h4{font-family:"Space Grotesk",sans-serif;font-weight:600;letter-spacing:-.018em;line-height:1.13;margin:0}
+p{margin:0}a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--ember);outline-offset:3px;border-radius:4px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.mono{font-family:"JetBrains Mono",monospace;font-weight:500;letter-spacing:.02em}
+.eyebrow{font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--ember);display:inline-flex;align-items:center;gap:9px}
+.eyebrow::before{content:"";width:22px;height:1px;background:linear-gradient(90deg,var(--ember),transparent)}
+.pill{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:6px;border:1px solid var(--line-strong);color:var(--muted);display:inline-block}
+.pill.ok{color:var(--ok);border-color:rgba(84,216,139,.5)}
+.pill.warn{color:var(--signal);border-color:rgba(255,79,61,.5)}
+.pill.new{color:var(--cyan);border-color:rgba(91,210,255,.45)}
+
+.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(10,11,14,.74);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{display:flex;align-items:center;gap:11px;font-family:"Space Grotesk";font-weight:600;font-size:16px}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:var(--ember);box-shadow:0 0 0 4px rgba(255,176,46,.16);position:relative}
+.brand .dot::after{content:"";position:absolute;inset:-7px;border-radius:50%;border:1px solid rgba(255,176,46,.3)}
+.navlinks{display:flex;gap:18px;font-size:13.5px;color:var(--muted)}
+.navlinks a:hover{color:var(--text)}
+@media(max-width:920px){.navlinks{display:none}}
+
+.hero{padding:78px 0 50px}
+.hero h1{font-size:clamp(33px,5.2vw,52px);margin:20px 0 0;max-width:18ch}
+.hero h1 .em{color:var(--ember)}.hero h1 .cy{color:var(--cyan)}
+.hero .lede{color:var(--muted);font-size:18px;max-width:60ch;margin-top:22px}
+.hero .credit{margin-top:18px;font-size:13px;color:var(--muted-2);font-family:"JetBrains Mono";letter-spacing:.02em}
+
+section{padding:70px 0;border-top:1px solid var(--line)}
+.s-head{max-width:64ch}
+.s-head h2{font-size:clamp(25px,3.5vw,36px);margin-top:14px}
+.s-head .sub{color:var(--muted);font-size:17px;margin-top:14px}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* framed panel — the "thick frame" look */
+.framed{border:2px solid var(--frame);border-radius:var(--r);background:var(--panel);box-shadow:inset 0 1px 0 rgba(255,255,255,.04), 0 24px 60px -30px rgba(0,0,0,.8)}
+.glow{box-shadow:0 0 0 1px rgba(255,176,46,.4), 0 0 24px -6px rgba(255,176,46,.4)}
+
+.grid{display:grid;gap:14px;margin-top:30px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:880px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;transition:border-color .25s,transform .25s}
+.card:hover{border-color:var(--line-strong);transform:translateY(-2px)}
+.card h3{font-size:16px;margin-bottom:7px}
+.card .meta{font-family:"JetBrains Mono";font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2);margin-bottom:11px;display:block}
+.card p{color:var(--muted);font-size:13.5px}
+
+/* design tokens row */
+.tokens{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.tok{border:2px solid var(--frame);border-radius:13px;padding:16px 18px;background:var(--card);flex:1;min-width:160px}
+.tok .sw{height:30px;border-radius:8px;margin-bottom:12px}
+.tok .nm{font-family:"Space Grotesk";font-weight:600;font-size:14px}
+.tok .hx{font-family:"JetBrains Mono";font-size:10.5px;color:var(--muted-2);margin-top:3px}
+
+/* naming menu */
+.naming{display:grid;gap:12px;margin-top:30px}
+.nrow{display:grid;grid-template-columns:230px 1fr;gap:16px;border:1px solid var(--line);border-radius:14px;padding:18px 20px;background:var(--card);align-items:center}
+@media(max-width:760px){.nrow{grid-template-columns:1fr;gap:12px}}
+.nrow .what{font-size:13.5px;color:var(--muted)}
+.nrow .what b{display:block;color:var(--muted-2);font-family:"JetBrains Mono";font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.opts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.opt{font-family:"Space Grotesk";font-weight:600;font-size:15px;padding:6px 13px;border-radius:9px;border:1px solid var(--line-strong);color:var(--muted)}
+.opt.win{color:var(--ink);background:var(--ember);border-color:var(--ember)}
+.opts .arrow{color:var(--muted-2)}.opts .expl{flex-basis:100%;font-size:13px;color:var(--muted);margin-top:4px}
+
+/* mock chrome */
+.mock{margin-top:30px}
+.mockbar{display:flex;align-items:center;gap:8px;padding:11px 16px;border-bottom:2px solid var(--frame);background:rgba(255,255,255,.02);border-radius:14px 14px 0 0}
+.mockbar .d{width:10px;height:10px;border-radius:50%}.mockbar .t{margin-left:10px;font-family:"JetBrains Mono";font-size:11px;color:var(--muted);letter-spacing:.08em}
+
+.note{display:flex;gap:13px;margin-top:22px;padding:16px 18px;border:1px solid rgba(91,210,255,.3);border-radius:14px;background:linear-gradient(180deg,rgba(91,210,255,.05),transparent)}
+.note .i{flex:none;color:var(--cyan);font-family:"Space Grotesk";font-weight:700}.note p{font-size:14px;color:var(--text)}
+.note.amber{border-color:rgba(255,176,46,.28);background:linear-gradient(180deg,rgba(255,176,46,.05),transparent)}.note.amber .i{color:var(--ember)}
+.note.warn{border-color:rgba(255,79,61,.32);background:linear-gradient(180deg,rgba(255,79,61,.06),transparent)}.note.warn .i{color:var(--signal)}
+
+/* phone */
+.phonewrap{display:flex;gap:30px;align-items:center;margin-top:30px;flex-wrap:wrap}
+.phone{width:230px;flex:none;border:8px solid #1a1d22;border-radius:34px;background:#0a0a0c;box-shadow:0 30px 60px -24px rgba(0,0,0,.9);overflow:hidden;position:relative}
+.phone .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:90px;height:20px;background:#1a1d22;border-radius:0 0 12px 12px;z-index:5}
+.phone .scr{height:430px;position:relative;background:linear-gradient(180deg,#0E1014,#0a0a0c)}
+.phone .hd{padding:26px 16px 10px;font-family:"JetBrains Mono";font-size:9px;color:var(--muted-2);letter-spacing:.1em;display:flex;justify-content:space-between}
+.pushcard{margin:8px 14px;border:1px solid var(--violet);border-radius:12px;overflow:hidden;background:#1E232B;opacity:0;transform:translateY(16px);animation:pushin 5s var(--ease) infinite}
+@keyframes pushin{0%,8%{opacity:0;transform:translateY(16px)}16%,80%{opacity:1;transform:translateY(0)}90%,100%{opacity:0;transform:translateY(-8px)}}
+.pushcard .img{height:120px;background:linear-gradient(135deg,#1b2230,#10141b);position:relative;overflow:hidden}
+.pushcard .img .pin{position:absolute;left:46%;top:38%;width:14px;height:14px;border-radius:50% 50% 50% 0;background:var(--signal);transform:rotate(-45deg)}
+.pushcard .img .road{position:absolute;left:0;right:0;top:60%;height:3px;background:rgba(91,210,255,.4)}
+.pushcard .cap{padding:9px 11px;font-size:11px;color:#cfd3d9}
+.wm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-family:"JetBrains Mono";font-size:8px;color:rgba(255,255,255,.12);transform:rotate(-30deg);letter-spacing:.1em;line-height:2.4}
+.phone .ft{position:absolute;bottom:0;left:0;right:0;padding:9px;text-align:center;font-family:"JetBrains Mono";font-size:8px;color:var(--muted-2);border-top:1px solid var(--line)}
+
+/* scenes */
+.scenes{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+.scene{flex:1;min-width:150px;border:2px solid var(--frame);border-radius:13px;overflow:hidden;background:var(--card);cursor:default;transition:border-color .25s}
+.scene.active{border-color:var(--ember)}
+.scene .pv{height:90px;position:relative;background:linear-gradient(180deg,#1b1712,#0e0c0a 62%,#0a0908)}
+.scene .pv .f{position:absolute;left:40%;bottom:0;width:30%;height:50%;background:radial-gradient(ellipse at 50% 90%,rgba(255,180,40,.8),transparent 70%);mix-blend-mode:screen}
+.scene .lb{padding:9px 11px;font-size:12.5px;font-weight:600;font-family:"Space Grotesk"}
+.scene .lb span{display:block;font-family:"JetBrains Mono";font-size:9px;color:var(--muted-2);font-weight:400;margin-top:2px}
+
+.close{padding:72px 0 88px;text-align:center}
+.close h2{font-size:clamp(25px,3.5vw,34px);max-width:24ch;margin:16px auto 0}
+.close p{color:var(--muted);max-width:58ch;margin:16px auto 0;font-size:16px}
+.cta{display:inline-flex;align-items:center;gap:9px;margin-top:28px;padding:13px 22px;border-radius:11px;background:var(--ember);color:var(--ink);font-weight:600;font-family:"Space Grotesk";font-size:15px;border:1px solid var(--ember)}
+footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted-2);font-size:12.5px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+@media(prefers-reduced-motion:reduce){.pushcard{animation:none;opacity:1;transform:none}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="wrap">
+  <div class="brand"><span class="dot"></span>Command 360 <span class="mono" style="font-size:10px;color:var(--muted-2);letter-spacing:.1em;margin-left:4px">PART III</span></div>
+  <div class="navlinks">
+    <a href="#look">Design</a><a href="#inspector">Inspector</a><a href="#layers">Layers</a><a href="#names">Naming</a><a href="#scenes">Views</a><a href="#phone">Second screen</a><a href="#debrief">Debrief</a>
+  </div>
+</div></nav>
+
+<header class="hero"><div class="wrap reveal">
+  <span class="eyebrow">Studio feel · second screen · debrief</span>
+  <h1>Make it feel like a <span class="em">pro tool</span> — and let the candidate's <span class="cy">phone</span> join in.</h1>
+  <p class="lede">You've seen XVR's back end — capable, but a cluttered grey panel from another era. This is the opposite direction: a modern, thick-framed, FX-lit studio that borrows its feel from Premiere, After Effects and Framer, not from XVR. Plus the genuinely new bits — the object inspector, a real layers panel, multi-angle scenes, a phone second-screen, and an AI debrief.</p>
+  <p class="credit">Studied your 5 XVR screenshots · researched second-screen + screenshot-blocking for the honest answers below.</p>
+</div></header>
+
+<!-- DESIGN LANGUAGE -->
+<section id="look"><div class="wrap">
+  <div class="s-head reveal">
+    <span class="eyebrow">The feel, not the layout</span>
+    <h2>Don't copy XVR. Borrow from the tools editors already love.</h2>
+    <p class="sub">No copyright worry and a far better product if the <em>look</em> comes from modern creative software, not a 2010s simulator. The reference points: <strong>Premiere / After Effects</strong> for the timeline and layer logic, <strong>Framer / Linear</strong> for the clean dark surfaces and thick rounded frames, <strong>Figma / Photoshop</strong> for the canvas, layers and inspector. The signature: heavy, confident panel frames; generous space; and FX glow that lights up only what's live.</p>
+  </div>
+  <div class="tokens reveal">
+    <div class="tok"><div class="sw" style="background:#0A0B0E;border:1px solid var(--line)"></div><div class="nm">Deep surface</div><div class="hx">near-black, never pure</div></div>
+    <div class="tok"><div class="sw" style="background:var(--frame)"></div><div class="nm">Thick frames</div><div class="hx">2px borders + inset light</div></div>
+    <div class="tok"><div class="sw" style="background:linear-gradient(90deg,#FFB02E,#C87C16)"></div><div class="nm">Ember — command</div><div class="hx">#FFB02E primary</div></div>
+    <div class="tok"><div class="sw" style="background:#FF4F3D"></div><div class="nm">Signal — live/danger</div><div class="hx">#FF4F3D, small doses</div></div>
+    <div class="tok"><div class="sw" style="background:#5BD2FF"></div><div class="nm">Cyan — digital/FX</div><div class="hx">#5BD2FF</div></div>
+  </div>
+  <div class="grid g3">
+    <div class="card reveal"><span class="meta">From After Effects</span><h3>Layers + a real timeline</h3><p>A track per layer, clips you trim, keyframes for movement and opacity. Familiar to anyone who's touched motion software.</p></div>
+    <div class="card reveal"><span class="meta">From Framer / Linear</span><h3>Calm, framed, fast</h3><p>Dark, thick-bordered panels, crisp type, snappy interactions, no visual noise. It should feel expensive and quiet.</p></div>
+    <div class="card reveal"><span class="meta">From Figma / Photoshop</span><h3>Canvas · layers · inspector</h3><p>The three-pane grammar everyone already knows — so an instructor needs no training to feel at home.</p></div>
+  </div>
+</div></section>
+
+<!-- INSPECTOR -->
+<section id="inspector"><div class="wrap">
+  <div class="s-head reveal">
+    <span class="eyebrow">Click anything → its details, right</span>
+    <h2>The Inspector — XVR's object panel, modernised.</h2>
+    <p class="sub">In XVR, selecting the casualty opens a long grey panel: States, Connectors, Thermal properties, Animation, Triggers, Locations. Same idea, cleaner names and a better layout. Whatever's selected on the Stage, its settings live here on the right — collapsible sections, real controls.</p>
+  </div>
+  <div class="framed mock reveal">
+    <div class="mockbar"><span class="d" style="background:#FF5F57"></span><span class="d" style="background:#FEBC2E"></span><span class="d" style="background:#28C840"></span><span class="t">INSPECTOR — Casualty (selected)</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+      <div style="padding:22px;border-right:1px solid var(--line)">
+        <div style="font-family:JetBrains Mono;font-size:10px;letter-spacing:.12em;color:var(--muted-2);margin-bottom:12px">IDENTITY &amp; BEHAVIOUR</div>
+        <div style="font-size:13.5px;color:#cfd3d9;line-height:2.1">
+          Name · <span class="mono" style="color:#fff">Casualty 1</span><br>
+          Behaviour · <span class="mono" style="color:var(--ember)">Waving / calling ▾</span><br>
+          Move speed · <span class="mono" style="color:#fff">4.3 mph</span><br>
+          Allow interaction · <span class="mono" style="color:var(--ok)">on</span>
+        </div>
+        <div style="font-family:JetBrains Mono;font-size:10px;letter-spacing:.12em;color:var(--muted-2);margin:20px 0 12px">LOOKS <span style="color:var(--violet)">(was "States")</span></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="pill" style="color:#fff;border-color:var(--frame)">Calm</span>
+          <span class="pill ok">Distressed ✓</span>
+          <span class="pill warn">Injured</span>
+          <span class="pill" style="color:var(--cyan);border-color:rgba(91,210,255,.4)">+ Save look</span>
+        </div>
+        <div style="font-family:JetBrains Mono;font-size:10px;letter-spacing:.12em;color:var(--muted-2);margin:20px 0 12px">ATTACHMENTS <span style="color:var(--violet)">(was "Connectors")</span></div>
+        <div style="font-size:13px;color:#cfd3d9">Right hand · <span class="mono" style="color:#fff">Smartphone</span> ✕<br><span style="color:var(--muted-2)">+ add to hand / body</span></div>
+      </div>
+      <div style="padding:22px">
+        <div style="font-family:JetBrains Mono;font-size:10px;letter-spacing:.12em;color:var(--muted-2);margin-bottom:12px">FX / EFFECTS</div>
+        <div style="font-size:12.5px;color:#cfd3d9">
+          Brightness<div style="height:5px;border-radius:3px;background:#23272e;margin:5px 0 11px"><div style="width:62%;height:100%;border-radius:3px;background:var(--cyan)"></div></div>
+          Contrast<div style="height:5px;border-radius:3px;background:#23272e;margin:5px 0 11px"><div style="width:48%;height:100%;border-radius:3px;background:var(--cyan)"></div></div>
+          Tint / colour<div style="height:5px;border-radius:3px;background:linear-gradient(90deg,#5BD2FF,#FFB02E,#FF4F3D);margin:5px 0 11px"></div>
+          Heat (thermal)<div style="height:5px;border-radius:3px;background:#23272e;margin:5px 0 11px"><div style="width:40%;height:100%;border-radius:3px;background:var(--signal)"></div></div>
+        </div>
+        <div style="font-family:JetBrains Mono;font-size:10px;letter-spacing:.12em;color:var(--muted-2);margin:16px 0 10px">CASUALTY CARD</div>
+        <div style="border:1px solid var(--line);border-radius:9px;padding:11px;background:var(--ink-2);font-size:12px;color:#cfd3d9">Triage · <span style="color:var(--signal)">P1</span> · breathing 28 · resp distress<br><span style="color:var(--cyan);font-size:11px">Edit casualty profile →</span></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+          <span class="pill" style="border-color:var(--frame)">🔊 Sounds</span>
+          <span class="pill" style="border-color:var(--frame)">◎ Triggers</span>
+          <span class="pill" style="border-color:var(--frame)">📍 Positions</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="note amber reveal"><span class="i">↳</span><p>Renames that read better: <strong>States → Looks</strong>, <strong>Connectors → Attachments</strong>, <strong>Locations → Positions</strong>, <strong>Change properties → FX / Effects</strong>. Keep <strong>Sounds</strong>, <strong>Triggers</strong> and the casualty card — they're already clear and domain-true.</p></div>
+</div></section>
+
+<!-- LAYERS -->
+<section id="layers"><div class="wrap">
+  <div class="s-head reveal">
+    <span class="eyebrow">Find the thing that's buried</span>
+    <h2>A real Layers panel — straight from Photoshop.</h2>
+    <p class="sub">XVR's "Placed items" is a grey tree with tiny locate icons. Yours should be the Layers panel everyone already knows: grouped, searchable, each row a thumbnail with show / lock / locate, drag to reorder front-to-back. When a layer's hidden under ten others, you find it in a second.</p>
+  </div>
+  <div class="framed mock reveal" style="max-width:420px">
+    <div class="mockbar"><span class="d" style="background:#FF5F57"></span><span class="d" style="background:#FEBC2E"></span><span class="d" style="background:#28C840"></span><span class="t">LAYERS</span></div>
+    <div style="padding:14px">
+      <div style="border:1px solid var(--line);border-radius:8px;padding:8px 11px;font-size:12px;color:var(--muted-2);margin-bottom:12px;background:var(--ink-2)">🔍 Find a layer…</div>
+      <!-- group -->
+      <div style="font-family:JetBrains Mono;font-size:10px;letter-spacing:.1em;color:var(--ember);margin:4px 0 6px">▾ FIRE &amp; SMOKE</div>
+      <div style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;background:rgba(255,176,46,.06);border:1px solid rgba(255,176,46,.25);margin-bottom:5px">
+        <div style="width:28px;height:22px;border-radius:5px;background:#221c16;position:relative;flex:none"><div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 90%,rgba(255,180,40,.8),transparent 70%);mix-blend-mode:screen"></div></div>
+        <span style="font-size:13px;flex:1">Fire — window</span><span style="color:var(--ember)">👁</span><span style="color:var(--muted-2)">🔓</span><span style="color:var(--muted-2)">⌖</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;margin-bottom:5px">
+        <div style="width:28px;height:22px;border-radius:5px;background:#1a1c20;flex:none"></div>
+        <span style="font-size:13px;flex:1">Smoke — drift</span><span style="color:var(--muted)">👁</span><span style="color:var(--muted-2)">🔓</span><span style="color:var(--muted-2)">⌖</span>
+      </div>
+      <div style="font-family:JetBrains Mono;font-size:10px;letter-spacing:.1em;color:var(--cyan);margin:14px 0 6px">▾ CREW &amp; CASUALTY</div>
+      <div style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;margin-bottom:5px">
+        <div style="width:28px;height:22px;border-radius:5px;background:#16191e;flex:none"></div>
+        <span style="font-size:13px;flex:1">BA crew 1 + 2</span><span style="color:var(--muted)">👁</span><span style="color:var(--muted-2)">🔒</span><span style="color:var(--muted-2)">⌖</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px">
+        <div style="width:28px;height:22px;border-radius:5px;background:#1a1620;flex:none"></div>
+        <span style="font-size:13px;flex:1">Casualty 1</span><span style="color:var(--muted)">👁</span><span style="color:var(--muted-2)">🔓</span><span style="color:var(--muted-2)">⌖</span>
+      </div>
+      <div style="font-family:JetBrains Mono;font-size:9px;color:var(--muted-2);margin-top:12px">👁 show · 🔒 lock · ⌖ locate on stage · drag to reorder</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- NAMING -->
+<section id="names"><div class="wrap">
+  <div class="s-head reveal">
+    <span class="eyebrow">Two more names you asked for</span>
+    <h2>The fire-plus-smoke thing, and the two training types.</h2>
+    <p class="sub">Same approach as before — options with plain explainers, my pick highlighted.</p>
+  </div>
+  <div class="naming">
+    <div class="nrow reveal"><div class="what"><b>Fire + smoke saved as one</b>Two layers that look great together, joined so they drop in and play as a single thing.</div>
+      <div class="opts"><span class="opt win">Combo</span><span class="arrow">·</span><span class="opt">Rig</span><span class="arrow">·</span><span class="opt">Set</span><span class="arrow">·</span><span class="opt">Bundle</span><span class="expl">↳ <b>Combo</b> — "drop in the window-fire combo." Plain and obvious. <b>Rig</b> if you want the film/VFX feel; <b>Set</b> or <b>Bundle</b> for something neutral. A Combo can carry its own Look and play its layers linked.</span></div></div>
+
+    <div class="nrow reveal"><div class="what"><b>Self-led, not real-time</b>No instructor present — the candidate works through injects and questions, gets stats at the end.</div>
+      <div class="opts"><span class="opt win">Drill</span><span class="arrow">·</span><span class="opt">Solo</span><span class="arrow">·</span><span class="opt">Open Assessment</span><span class="expl">↳ <b>Drill</b> — "send them a drill to complete." Self-paced, branching, scored. (This is the module your spec calls the questions-and-stats type.)</span></div></div>
+
+    <div class="nrow reveal"><div class="what"><b>Live, instructor-driven</b>Real-time — the instructor fires injects as the candidate makes decisions. This whole tool.</div>
+      <div class="opts"><span class="opt win">Live Exercise</span><span class="arrow">·</span><span class="opt">Hot Seat</span><span class="arrow">·</span><span class="opt">Command Studio</span><span class="expl">↳ <b>Live Exercise</b> is clear; <b>Hot Seat</b> is the authentic command-training term for the candidate in the decision seat. Keep <b>Command Studio</b> as the builder's name.</span></div></div>
+  </div>
+</div></section>
+
+<!-- SCENES -->
+<section id="scenes"><div class="wrap">
+  <div class="s-head reveal">
+    <span class="eyebrow">"I want to go to the rear"</span>
+    <h2>One incident, several Views — front, rear, side, from the cab.</h2>
+    <p class="sub">A house fire isn't one picture. Build a scenario as a set of <strong>Views</strong> — each its own base plate with its own layers and injects — and the instructor cuts between them when the candidate moves: "rear of the property" switches the Stage to the rear View. Authoring feels like building slides, but each View is a live, layered scene you can drop fire and crews onto.</p>
+  </div>
+  <div class="scenes reveal">
+    <div class="scene active"><div class="pv"><div class="f"></div></div><div class="lb">Front<span>arrival · main fire</span></div></div>
+    <div class="scene"><div class="pv" style="background:linear-gradient(180deg,#171712,#0c0c0a 62%,#080806)"><div class="f" style="left:55%;width:22%"></div></div><div class="lb">Rear<span>casualty · escape</span></div></div>
+    <div class="scene"><div class="pv" style="background:linear-gradient(180deg,#15161a,#0b0c0e 62%,#080809)"></div><div class="lb">Side / Alley<span>access · hydrant</span></div></div>
+    <div class="scene"><div class="pv" style="background:linear-gradient(180deg,#101418,#0a0c0f)"></div><div class="lb">From the cab<span>on approach</span></div></div>
+  </div>
+  <div class="note reveal"><span class="i">✦</span><p><strong>How instructors build them:</strong> like a slide deck, but spatial — add a View, drop in its plate, place the fire/smoke/crews, attach injects. For a true walk-around moment, that's where the World-Labs 3D "step inside" button slots in later — but for the live flow, switchable flat Views are faster, cheaper and reproducible.</p></div>
+</div></section>
+
+<!-- SECOND SCREEN -->
+<section id="phone"><div class="wrap">
+  <div class="s-head reveal">
+    <span class="eyebrow">The phone as a second screen</span>
+    <h2>Scan once. The instructor pushes things to their hand.</h2>
+    <p class="sub">This is a genuinely classy, current idea — and it's how live events and broadcasts already work in 2026: an on-screen QR opens a companion page in the phone's browser, <strong>no app to download</strong>, and the operator pushes content to it live, in sync with the main screen. For you that means maps, incident boards, and 999 bystander footage landing on the candidate's phone the moment you decide.</p>
+  </div>
+  <div class="phonewrap">
+    <div class="phone reveal">
+      <div class="notch"></div>
+      <div class="scr">
+        <div class="hd"><span>COMMAND 360 · LIVE</span><span>●REC</span></div>
+        <div class="pushcard">
+          <div class="img"><div class="road"></div><div class="pin"></div>
+            <div class="wm">CASUALTY1 · 14:32 · SESSION 8841 CASUALTY1 · 14:32 · SESSION 8841 CASUALTY1 · 14:32</div>
+          </div>
+          <div class="cap">📍 Incident map — pushed by instructor</div>
+        </div>
+        <div class="ft">expires when the session ends · watermarked to candidate</div>
+      </div>
+    </div>
+    <div style="flex:1;min-width:260px">
+      <div class="grid" style="margin-top:0;gap:12px">
+        <div class="card reveal"><span class="meta">Use it for</span><h3>Maps · boards · 999 footage</h3><p>Push the incident map so they can pan it on their phone. Drop a board or card to study. Play bystander 999 video on their device during the "journey" to the scene. Each one appears on cue, exactly when you trigger it.</p></div>
+        <div class="card reveal"><span class="meta">When the session ends</span><h3>It vanishes — reliably</h3><p>The page is tied to a one-time, session-scoped token. End the session (or close the card) and the server revokes it; the phone goes blank. This part is rock-solid because it's controlled server-side, not on the device.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note warn reveal"><span class="i">!</span><p><strong>The honest screenshot answer you asked for:</strong> in a normal mobile <em>browser</em> you <strong>cannot</strong> reliably stop a screenshot — that's a hard platform limit even Netflix can't beat without DRM. Screen-capture blocking is only guaranteed in a <strong>native app</strong> (Android's FLAG_SECURE blocks it outright; iOS uses FairPlay DRM and screenshot detection).</p></div>
+  <div class="grid g3">
+    <div class="card reveal"><span class="meta">Tier 1 · web, now</span><h3>Expire + watermark</h3><p>Frictionless QR page, content revoked on session end, with the candidate's name + timestamp burned across it. Can't stop a screenshot, but it's worthless to share and traceable. Ships first.</p></div>
+    <div class="card reveal"><span class="meta">Tier 2 · web, partial</span><h3>Detect &amp; blank</h3><p>Where the platform allows, blur or blank the card on a screenshot/recording or when the app loses focus. Partial coverage — a deterrent, not a guarantee.</p></div>
+    <div class="card reveal"><span class="meta">Tier 3 · native app</span><h3>True screenshot-proof</h3><p>If a service demands hard protection, a small companion app makes it genuinely impossible to capture. Build it only if a buyer requires it.</p></div>
+  </div>
+  <div class="note reveal"><span class="i">✦</span><p><strong>Beyond maps and video — what else the phone unlocks:</strong> it can be the candidate's private channel for a confidential SITREP or casualty card; a quick-response pad for the <em>Question</em> inject (they tap their decision, it drives the branch); a personal radio-log they keep; or a silent "request resources" panel. The phone becomes the candidate's tactical device while the big screen stays the scene.</p></div>
+</div></section>
+
+<!-- DEBRIEF -->
+<section id="debrief"><div class="wrap">
+  <div class="s-head reveal">
+    <span class="eyebrow">Where the learning lands</span>
+    <h2>Every decision, timestamped — then summarised by AI.</h2>
+    <p class="sub">Your spec wants debrief and analytics, and your code already records the session. Surface it as a proper Debrief: a timeline of what was injected and when, the candidate's decisions against the scenario clock, the objectives they hit or missed, and an AI write-up that turns the log into plain-English feedback an assessor can sign off.</p>
+  </div>
+  <div class="framed mock reveal">
+    <div class="mockbar"><span class="d" style="background:#FF5F57"></span><span class="d" style="background:#FEBC2E"></span><span class="d" style="background:#28C840"></span><span class="t">DEBRIEF — Structure fire · Candidate: Watch Cmdr A · 18:42</span></div>
+    <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:0">
+      <div style="padding:22px;border-right:1px solid var(--line)">
+        <div style="font-family:JetBrains Mono;font-size:10px;letter-spacing:.12em;color:var(--muted-2);margin-bottom:14px">TIMELINE · decisions vs injects</div>
+        <div style="display:flex;flex-direction:column;gap:0">
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line)"><span class="mono" style="color:var(--ember);font-size:11px;flex:none;width:48px">00:14</span><span style="font-size:13px">Arrived · 360 size-up <span style="color:var(--ok)">✓ objective</span></span></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line)"><span class="mono" style="color:var(--cyan);font-size:11px;flex:none;width:48px">00:41</span><span style="font-size:13px">Inject fired · <em>Fire develops</em></span></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line)"><span class="mono" style="color:var(--ember);font-size:11px;flex:none;width:48px">01:20</span><span style="font-size:13px">Decision · committed BA, offensive <span style="color:var(--ok)">✓</span></span></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line)"><span class="mono" style="color:var(--signal);font-size:11px;flex:none;width:48px">02:55</span><span style="font-size:13px">Inject · <em>Flashover</em> — tactics not switched <span style="color:var(--signal)">⚠ missed</span></span></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:9px 0"><span class="mono" style="color:var(--ember);font-size:11px;flex:none;width:48px">03:30</span><span style="font-size:13px">Decision · cordon + triage set <span style="color:var(--ok)">✓</span></span></div>
+        </div>
+      </div>
+      <div style="padding:22px">
+        <div style="font-family:JetBrains Mono;font-size:10px;letter-spacing:.12em;color:var(--muted-2);margin-bottom:12px">AI SUMMARY</div>
+        <p style="font-size:13px;color:#cfd3d9;line-height:1.6">Confident, structured size-up and early BA commitment. Sectorisation and cordon control were timely. <span style="color:var(--signal)">Key development point:</span> did not move from offensive to defensive when flashover indicators appeared at 02:55 — review dynamic risk assessment triggers.</p>
+        <div style="font-family:JetBrains Mono;font-size:10px;letter-spacing:.12em;color:var(--muted-2);margin:18px 0 10px">SCORECARD</div>
+        <div style="font-size:12.5px;color:#cfd3d9;line-height:2">
+          Time to first action · <span class="mono" style="color:var(--ok)">14s</span><br>
+          Objectives met · <span class="mono" style="color:var(--ember)">4 / 5</span><br>
+          Decisions logged · <span class="mono" style="color:#fff">7</span><br>
+          Injects fired · <span class="mono" style="color:#fff">9</span>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"><span class="pill" style="border-color:var(--frame)">Export PDF</span><span class="pill" style="border-color:var(--frame)">Replay ▸</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="note reveal"><span class="i">✦</span><p>Because every trigger and decision is already timestamped to the session, the metrics fall out for free: time-to-first-action, decisions per minute, objectives hit/missed, and the full replay scrubber. The AI just turns that log into language — it never invents; it summarises what the timeline already proves.</p></div>
+</div></section>
+
+<div class="close wrap">
+  <span class="eyebrow" style="justify-content:center">Where this leaves us</span>
+  <h2>A pro-tool feel, a phone in the loop, and a debrief that writes itself.</h2>
+  <p>None of this is exotic: the inspector and layers panel are standard editor patterns, the second screen is a session-scoped web page pushed live (with an honest screenshot story), Views are switchable plates, and the debrief is your existing recording, surfaced and summarised. It all sits on what you've already built — and it's distinctly yours, not XVR's.</p>
+  <a class="cta" href="#look">Back to the design ↑</a>
+</div>
+
+<footer><div class="wrap">
+  <span>Command 360 · Studio feel · second screen · debrief · Part III · June 2026</span>
+  <span class="mono">References, not copies · names are yours</span>
+</div></footer>
+
+<script>
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

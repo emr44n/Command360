@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Command 360 — The Inject Engine (v2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0B0C0F;--ink-2:#0E1014;--panel:#14171D;--card:#181C23;--card-2:#1E232B;
+  --line:rgba(255,255,255,.08);--line-strong:rgba(255,255,255,.16);
+  --text:#ECEDEF;--muted:#969CA6;--muted-2:#6E747E;
+  --ember:#FFB02E;--ember-deep:#C87C16;--signal:#FF4F3D;--cyan:#5BD2FF;--ok:#54D88B;--violet:#B79CFF;
+  --r:14px;--maxw:1080px;--ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--text);font-family:"Inter",-apple-system,"Segoe UI",sans-serif;font-size:16.5px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(880px 480px at 84% -10%,rgba(255,176,46,.10),transparent 60%),radial-gradient(740px 440px at -8% 8%,rgba(91,210,255,.07),transparent 55%);background-attachment:fixed;}
+h1,h2,h3,h4{font-family:"Space Grotesk",sans-serif;font-weight:600;letter-spacing:-.018em;line-height:1.13;margin:0}
+p{margin:0}a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--ember);outline-offset:3px;border-radius:4px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.mono{font-family:"JetBrains Mono",monospace;font-weight:500;letter-spacing:.02em}
+.eyebrow{font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--ember);display:inline-flex;align-items:center;gap:9px}
+.eyebrow::before{content:"";width:22px;height:1px;background:linear-gradient(90deg,var(--ember),transparent)}
+.pill{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:6px;border:1px solid var(--line-strong);color:var(--muted);white-space:nowrap;display:inline-block}
+.pill.pick{color:var(--ok);border-color:rgba(84,216,139,.5);background:rgba(84,216,139,.08)}
+.pill.new{color:var(--cyan);border-color:rgba(91,210,255,.45)}
+.pill.adapt{color:var(--ember);border-color:rgba(255,176,46,.45)}
+.pill.drop{color:var(--muted-2)}
+
+.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(11,12,15,.72);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{display:flex;align-items:center;gap:11px;font-family:"Space Grotesk";font-weight:600;font-size:16px}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:var(--ember);box-shadow:0 0 0 4px rgba(255,176,46,.16);position:relative}
+.brand .dot::after{content:"";position:absolute;inset:-7px;border-radius:50%;border:1px solid rgba(255,176,46,.3)}
+.navlinks{display:flex;gap:20px;font-size:13.5px;color:var(--muted)}
+.navlinks a:hover{color:var(--text)}
+@media(max-width:880px){.navlinks{display:none}}
+
+.hero{padding:78px 0 50px}
+.hero h1{font-size:clamp(33px,5.2vw,54px);margin:20px 0 0;max-width:17ch}
+.hero h1 .em{color:var(--ember)}
+.hero .lede{color:var(--muted);font-size:18px;max-width:60ch;margin-top:22px}
+.hero .credit{margin-top:18px;font-size:13px;color:var(--muted-2);font-family:"JetBrains Mono";letter-spacing:.02em}
+
+section{padding:70px 0;border-top:1px solid var(--line)}
+.s-head{max-width:64ch}
+.s-head h2{font-size:clamp(25px,3.5vw,36px);margin-top:14px}
+.s-head .sub{color:var(--muted);font-size:17px;margin-top:14px}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* naming menu */
+.naming{margin-top:32px;display:grid;gap:12px}
+.nrow{display:grid;grid-template-columns:200px 1fr;gap:16px;border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;background:var(--card);align-items:center}
+@media(max-width:760px){.nrow{grid-template-columns:1fr;gap:12px}}
+.nrow .what{font-size:13.5px;color:var(--muted)}
+.nrow .what b{display:block;color:var(--muted-2);font-family:"JetBrains Mono";font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.opts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.opt{font-family:"Space Grotesk";font-weight:600;font-size:15px;padding:6px 13px;border-radius:9px;border:1px solid var(--line-strong);color:var(--muted)}
+.opt.win{color:var(--ink);background:var(--ember);border-color:var(--ember)}
+.opts .arrow{color:var(--muted-2)}
+.opts .expl{flex-basis:100%;font-size:13px;color:var(--muted);margin-top:4px}
+
+.star{margin-top:30px;border:1px solid rgba(255,176,46,.35);border-radius:18px;padding:26px;background:linear-gradient(180deg,rgba(255,176,46,.07),transparent)}
+.star .h{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.star .badge{font-family:"JetBrains Mono";font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ember);border:1px solid rgba(255,176,46,.4);padding:4px 10px;border-radius:6px}
+.star h3{font-size:21px}.star p{color:var(--text);font-size:15px;margin-top:6px}
+
+/* catalog */
+.grid{display:grid;gap:13px;margin-top:30px}
+.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1fr 1fr}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:880px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.g3,.g4,.g2{grid-template-columns:1fr}}
+.cue{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;transition:border-color .25s,transform .25s}
+.cue:hover{border-color:var(--line-strong);transform:translateY(-2px)}
+.cue .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.cue .ic{width:32px;height:32px;border-radius:9px;border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center}
+.cue h4{font-size:14.5px;margin-bottom:4px}
+.cue .from{font-family:"JetBrains Mono";font-size:9.5px;color:var(--muted-2);letter-spacing:.04em;text-transform:uppercase}
+.cue p{color:var(--muted);font-size:13px;margin-top:5px}
+
+/* animated inject player */
+.player{margin-top:32px;border:1px solid var(--line-strong);border-radius:18px;overflow:hidden;background:var(--ink-2)}
+.player .bar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02)}
+.player .bar .ttl{font-family:"Space Grotesk";font-weight:600;font-size:14px}
+.player .bar .sub2{font-family:"JetBrains Mono";font-size:10px;color:var(--muted-2);letter-spacing:.08em}
+.playbtn{margin-left:auto;display:inline-flex;align-items:center;gap:8px;background:var(--ember);color:var(--ink);font-family:"Space Grotesk";font-weight:600;font-size:13px;border:none;border-radius:9px;padding:8px 16px;cursor:pointer}
+.player .body{display:grid;grid-template-columns:1.1fr .9fr}
+@media(max-width:760px){.player .body{grid-template-columns:1fr}}
+.stage{position:relative;background:#0a0a0c;min-height:280px;border-right:1px solid var(--line);overflow:hidden}
+@media(max-width:760px){.stage{border-right:0;border-bottom:1px solid var(--line)}}
+.stage .plate{position:absolute;inset:0;background:linear-gradient(180deg,#1b1712 0%,#151210 62%,#0e0c0a 62%,#0a0908 100%)}
+.stage .bldg{position:absolute;left:14%;top:18%;width:72%;height:46%;background:#221c16;border:1px solid rgba(255,255,255,.05);border-radius:3px}
+.stage .win{position:absolute;left:34%;top:30%;width:14%;height:16%;background:#0c0a08;border:1px solid rgba(255,255,255,.06)}
+.layer{position:absolute;opacity:0;transition:opacity .9s var(--ease),transform 1.2s var(--ease)}
+.layer.smoke{left:24%;top:8%;width:52%;height:46%;background:radial-gradient(ellipse at 50% 70%,rgba(170,176,185,.45),transparent 70%);filter:blur(6px)}
+.layer.fire{left:31%;top:30%;width:20%;height:24%;background:radial-gradient(ellipse at 50% 80%,rgba(255,180,40,.9),rgba(255,90,20,.5) 55%,transparent 75%);mix-blend-mode:screen;transform:scale(.7)}
+.layer.fire.big{transform:scale(1.25)}
+.popup{position:absolute;left:50%;top:54%;transform:translate(-50%,20px);width:54%;background:#1E232B;border:1px solid var(--violet);border-radius:10px;padding:10px;opacity:0;transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.popup.show{opacity:1;transform:translate(-50%,0)}
+.popup .ph{height:64px;background:#0E1014;border-radius:5px;position:relative;overflow:hidden}
+.popup .ph .c{position:absolute;left:30px;top:14px;width:26px;height:26px;border-radius:50%;background:rgba(183,156,255,.4)}
+.popup .cap{font-size:11px;color:#cfd3d9;margin-top:6px}
+.flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 70%,rgba(255,120,40,.25),transparent 60%);opacity:0;pointer-events:none}
+.waitbadge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.8);background:rgba(11,12,15,.85);border:1px dashed rgba(255,255,255,.3);border-radius:10px;padding:8px 16px;font-family:"Space Grotesk";font-weight:700;color:var(--muted);opacity:0;transition:opacity .3s}
+.waitbadge.show{opacity:1}
+/* step list */
+.steps{padding:16px}
+.step{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);margin-bottom:8px;background:var(--card);position:relative;transition:border-color .3s,background .3s,box-shadow .3s}
+.step.active{border-color:var(--ember);background:rgba(255,176,46,.08);box-shadow:0 0 0 1px rgba(255,176,46,.3)}
+.step.done{opacity:.55}
+.step .si{width:26px;height:26px;border-radius:7px;border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;flex:none;font-size:13px}
+.step .sn{font-size:13.5px;font-weight:500;font-family:"Space Grotesk"}
+.step .sd{font-family:"JetBrains Mono";font-size:9.5px;color:var(--muted-2);margin-top:1px}
+.step .linkmark{position:absolute;left:-7px;top:-9px;font-family:"JetBrains Mono";font-size:8.5px;color:var(--cyan);background:var(--ink);padding:1px 6px;border-radius:5px;border:1px solid rgba(91,210,255,.4)}
+.step.wait{border-style:dashed;background:transparent}
+
+/* editor mock */
+.mock{margin-top:30px;border:1px solid var(--line-strong);border-radius:18px;overflow:hidden;background:var(--ink-2)}
+.mockbar{display:flex;align-items:center;gap:8px;padding:11px 16px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02)}
+.mockbar .d{width:10px;height:10px;border-radius:50%}.mockbar .t{margin-left:10px;font-family:"JetBrains Mono";font-size:11px;color:var(--muted);letter-spacing:.08em}
+
+/* note */
+.note{display:flex;gap:13px;margin-top:22px;padding:16px 18px;border:1px solid rgba(91,210,255,.3);border-radius:var(--r);background:linear-gradient(180deg,rgba(91,210,255,.05),transparent)}
+.note .i{flex:none;color:var(--cyan);font-family:"Space Grotesk";font-weight:700}.note p{font-size:14px;color:var(--text)}
+.note.amber{border-color:rgba(255,176,46,.28);background:linear-gradient(180deg,rgba(255,176,46,.05),transparent)}.note.amber .i{color:var(--ember)}
+
+/* looks chips */
+.looks{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.look{border:1px solid var(--line-strong);border-radius:11px;overflow:hidden;width:150px;background:var(--card)}
+.look .sw{height:80px;position:relative;background:linear-gradient(180deg,#2a2118,#14110d)}
+.look .sw .f{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:60px;height:48px;background:radial-gradient(ellipse at 50% 90%,rgba(255,180,40,.9),transparent 70%);mix-blend-mode:screen}
+.look.thermal .sw{filter:invert(1) hue-rotate(150deg) saturate(2.2) contrast(1.2)}
+.look.night .sw{filter:brightness(.45) saturate(.6) hue-rotate(190deg)}
+.look.cctv .sw{filter:grayscale(.8) contrast(1.3) brightness(.9)}
+.look.dmg .sw{filter:sepia(.4) contrast(1.2) brightness(.8)}
+.look .lb{padding:8px 10px;font-size:12px;font-weight:600;font-family:"Space Grotesk"}
+.look .lb span{display:block;font-family:"JetBrains Mono";font-size:9px;color:var(--muted-2);font-weight:400;margin-top:2px}
+
+.scroll-x{overflow-x:auto;margin-top:28px}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;min-width:600px}
+.tbl thead th{text-align:left;font-family:"JetBrains Mono";font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);padding:13px 16px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--line);font-weight:600}
+.tbl td{padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td .s{color:var(--muted);font-size:13px}.tbl td.new{color:var(--ember);font-family:"Space Grotesk";font-weight:600}
+
+.close{padding:72px 0 88px;text-align:center}
+.close h2{font-size:clamp(25px,3.5vw,34px);max-width:22ch;margin:16px auto 0}
+.close p{color:var(--muted);max-width:56ch;margin:16px auto 0;font-size:16px}
+.cta{display:inline-flex;align-items:center;gap:9px;margin-top:28px;padding:13px 22px;border-radius:11px;background:var(--ember);color:var(--ink);font-weight:600;font-family:"Space Grotesk";font-size:15px;border:1px solid var(--ember)}
+footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted-2);font-size:12.5px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+@media(prefers-reduced-motion:reduce){.layer,.popup,.step{transition:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="wrap">
+  <div class="brand"><span class="dot"></span>Command 360 <span class="mono" style="font-size:10px;color:var(--muted-2);letter-spacing:.1em;margin-left:4px">INJECT ENGINE v2</span></div>
+  <div class="navlinks">
+    <a href="#names">Naming</a><a href="#demo">How it plays</a><a href="#catalog">Step types</a><a href="#looks">Looks</a><a href="#thermal">Thermal</a><a href="#popups">Pop-ups</a><a href="#editor">The editor</a>
+  </div>
+</div></nav>
+
+<header class="hero"><div class="wrap reveal">
+  <span class="eyebrow">Command Studio · event engine · revision 2</span>
+  <h1>Don't fire an "Event". Fire an <span class="em">Inject</span>.</h1>
+  <p class="lede">I went back into the XVR manual and read the settings, not just the surface — all seventeen action types, States, heat sources, the pop-up logic. This rewrite gives you naming <em>choices</em> with plain explainers, every step type translated to your flat world, the firefighter-only thermal view, and ideas XVR can't do because it's 3D and you have AI. With an animated demo of an inject actually playing.</p>
+  <p class="credit">Read deep: XVR §14 object ops · §42.12 heat sources · §49 all actions · §56 States.</p>
+</div></header>
+
+<!-- NAMING -->
+<section id="names"><div class="wrap">
+  <div class="s-head reveal">
+    <span class="eyebrow">Pick your words</span>
+    <h2>Naming menu — say it and you know what it means.</h2>
+    <p class="sub">No "Beat", no jargon. For each thing, here are two or three honest options with a one-line explainer, and my pick highlighted. Choose what feels right — they're yours to set.</p>
+  </div>
+  <div class="naming">
+    <div class="nrow reveal"><div class="what"><b>What the instructor fires</b>A scripted moment dropped into the running exercise.</div>
+      <div class="opts"><span class="opt win">Inject</span><span class="arrow">·</span><span class="opt">Event</span><span class="arrow">·</span><span class="opt">Trigger</span><span class="expl">↳ <b>Inject</b> is the real word emergency-exercise designers use. "Fire the casualty inject." Instantly understood by your buyers.</span></div></div>
+
+    <div class="nrow reveal"><div class="what"><b>One step inside an inject</b>A single thing that happens — show smoke, play a radio call.</div>
+      <div class="opts"><span class="opt win">Step</span><span class="arrow">·</span><span class="opt">Action</span><span class="arrow">·</span><span class="opt">Cue</span><span class="expl">↳ <b>Step</b> is the plainest. "An inject is a list of steps." (Drops the "Cue/Q" you weren't sure about.)</span></div></div>
+
+    <div class="nrow reveal"><div class="what"><b>Steps that happen together</b>Smoke + fire + sound, all at once.</div>
+      <div class="opts"><span class="opt win">Linked steps</span><span class="arrow">·</span><span class="opt">Group</span><span class="arrow">·</span><span class="opt">Stack</span><span class="expl">↳ Skip the noun entirely — just <b>link</b> steps so they "play together". Un-linked steps run one after another. (Replaces "Beat".)</span></div></div>
+
+    <div class="nrow reveal"><div class="what"><b>A timed pause</b>Let it breathe before the next thing.</div>
+      <div class="opts"><span class="opt win">Wait</span><span class="arrow">·</span><span class="opt">Hold</span><span class="arrow">·</span><span class="opt">Delay</span><span class="expl">↳ <b>Wait</b> — same word XVR uses, and it's already obvious.</span></div></div>
+
+    <div class="nrow reveal"><div class="what"><b>A folder of injects</b>Groups injects by stage of the incident.</div>
+      <div class="opts"><span class="opt win">Phase</span><span class="arrow">·</span><span class="opt">Folder</span><span class="arrow">·</span><span class="opt">Chapter</span><span class="expl">↳ <b>Phase</b> reads as incident stages — Arrival, Develop, Escalate, Resolve. Use <b>Folder</b> if you want it plain.</span></div></div>
+
+    <div class="nrow reveal"><div class="what"><b>A saved visual variant of a layer</b>Fire as "smouldering" vs "roaring"; scene as "thermal".</div>
+      <div class="opts"><span class="opt win">Look</span><span class="arrow">·</span><span class="opt">Variant</span><span class="arrow">·</span><span class="opt">Preset</span><span class="expl">↳ <b>Look</b> — "switch the fire to its roaring look." Replaces XVR's "State" / the "levels" you didn't like.</span></div></div>
+
+    <div class="nrow reveal"><div class="what"><b>An order to a crew member, chosen live</b>"You — set up the cordon."</div>
+      <div class="opts"><span class="opt win">Tasking</span><span class="arrow">·</span><span class="opt">Crew Order</span><span class="arrow">·</span><span class="opt">Assignment</span><span class="expl">↳ <b>Tasking</b> is the real fireground word. (Replaces XVR's "Task".)</span></div></div>
+
+    <div class="nrow reveal"><div class="what"><b>A clickable region on the candidate's screen</b>They click the window → something happens.</div>
+      <div class="opts"><span class="opt win">Hotspot</span><span class="arrow">·</span><span class="opt">Tap zone</span><span class="arrow">·</span><span class="opt">Reactive area</span><span class="expl">↳ <b>Hotspot</b> — universally understood. (Replaces XVR's 3D "Trigger".)</span></div></div>
+
+    <div class="nrow reveal"><div class="what"><b>The asset shelf</b>Fire, smoke, water, people, PNGs, clips.</div>
+      <div class="opts"><span class="opt win">Library</span><span class="arrow">·</span><span class="opt">Gallery</span><span class="arrow">·</span><span class="opt">Assets</span><span class="expl">↳ <b>Library</b> or <b>Gallery</b> — both fine. Library scales better as it grows into thousands of items.</span></div></div>
+
+    <div class="nrow reveal"><div class="what"><b>Assessment criteria</b>What you're marking the candidate against.</div>
+      <div class="opts"><span class="opt win">Objectives</span><span class="arrow">·</span><span class="opt">Marking points</span><span class="arrow">·</span><span class="opt">Checks</span><span class="expl">↳ <b>Objectives</b> (learning objectives) or <b>Marking points</b> for live scoring. (Replaces "Competencies".)</span></div></div>
+
+    <div class="nrow reveal"><div class="what"><b>Injects already fired</b>Greyed on the board, can be re-fired.</div>
+      <div class="opts"><span class="opt win">Played</span><span class="arrow">·</span><span class="opt">Done</span><span class="arrow">·</span><span class="opt">Used</span><span class="expl">↳ <b>Played</b> — "this inject has been played." (Replaces "Spent".)</span></div></div>
+
+    <div class="nrow reveal"><div class="what"><b>The three modes</b>Author it · run it · review it.</div>
+      <div class="opts"><span class="opt win">Studio</span><span class="arrow">/</span><span class="opt win">Stage</span><span class="arrow">/</span><span class="opt win">Debrief</span><span class="expl">↳ Keep these — you liked them, and they're clear. (Use "Control" for the live operator screen if you prefer.)</span></div></div>
+  </div>
+
+  <div class="star reveal">
+    <div class="h"><span class="badge">The one to take</span><h3>Call them Injects, and the whole product clicks into place</h3></div>
+    <p>"The instructor injects events as the candidate makes decisions" — that's the literal language of exercise design. Your live board becomes <strong>Injects ready to fire</strong>; the build screen becomes the <strong>Inject builder</strong>; the scenario is a <strong>library of injects</strong>. It's distinct from XVR, it's authentic to the job, and nobody needs it explained.</p>
+  </div>
+</div></section>
+
+<!-- ANIMATED DEMO -->
+<section id="demo"><div class="wrap">
+  <div class="s-head reveal">
+    <span class="eyebrow">How an inject plays</span>
+    <h2>Watch one fire — steps in sequence, some together, a wait between.</h2>
+    <p class="sub">This is the borrowed XVR logic made visual. Steps run top to bottom. Linked steps fire together. A Wait buys timed space. Hit play.</p>
+  </div>
+  <div class="player reveal">
+    <div class="bar"><span class="ttl">Inject — Fire breaks through the front window</span><span class="sub2">PHASE · ESCALATE</span><button class="playbtn" id="playBtn"><span id="playIcon">▶</span> <span id="playLbl">Play inject</span></button></div>
+    <div class="body">
+      <div class="stage" id="stage">
+        <div class="plate"></div>
+        <div class="bldg"></div><div class="win"></div>
+        <div class="flash" id="flash"></div>
+        <div class="layer smoke" id="lSmoke"></div>
+        <div class="layer fire" id="lFire"></div>
+        <div class="popup" id="lPopup"><div class="ph"><div class="c"></div></div><div class="cap">⚠ Casualty — first-floor window</div></div>
+        <div class="waitbadge" id="waitB">WAIT · 6s</div>
+      </div>
+      <div class="steps" id="stepList">
+        <div class="step" data-s="0"><div class="si" style="color:var(--muted)">⏱</div><div><div class="sn">Reveal · Smoke</div><div class="sd">fade in · drifts</div></div></div>
+        <div class="step" data-s="1"><span class="linkmark">⛓ together</span><div class="si" style="color:var(--ember)">🔥</div><div><div class="sn">Reveal · Fire</div><div class="sd">additive · pop in</div></div></div>
+        <div class="step" data-s="2"><div class="si" style="color:var(--cyan)">🔊</div><div><div class="sn">Sound · Glass + roar</div><div class="sd">one-shot</div></div></div>
+        <div class="step wait" data-s="3"><div class="si" style="color:var(--muted)">⏸</div><div><div class="sn">Wait</div><div class="sd">6 seconds</div></div></div>
+        <div class="step" data-s="4"><div class="si" style="color:var(--ember)">⤢</div><div><div class="sn">Tween · Fire grows</div><div class="sd">scale up over 2s</div></div></div>
+        <div class="step" data-s="5"><div class="si" style="color:var(--violet)">🖼</div><div><div class="sn">Card · Casualty popup</div><div class="sd">slide in · dismiss</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="note amber reveal"><span class="i">↳</span><p>That single rule — <strong>link to play together, leave un-linked to run in order, drop a Wait for a gap</strong> — is the entire timing model. It's all you need to choreograph an incident, and it's far simpler to teach than a video editor's tracks (which you still get as a bonus underneath).</p></div>
+</div></section>
+
+<!-- STEP CATALOG -->
+<section id="catalog"><div class="wrap">
+  <div class="s-head reveal">
+    <span class="eyebrow">Every step type</span>
+    <h2>XVR's 17 actions, translated to a flat, layered world.</h2>
+    <p class="sub">Some map straight across, some get reshaped for 2D, a few of XVR's are pure 3D and get dropped — and a few are brand new because you have filters and AI that a game engine doesn't. <span class="pill adapt">adapted</span> <span class="pill new">new to you</span> <span class="pill drop">dropped (3D-only)</span></p>
+  </div>
+  <div class="grid g4">
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--ember)">▣</div></div><h4>Reveal</h4><div class="from">≈ hide→show</div><p>Bring a layer on with fade / slide / pop.</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--muted)">▢</div></div><h4>Hide</h4><div class="from">XVR · Hide object</div><p>Take a layer off with an out-transition.</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--ember)">⤢</div></div><h4>Move</h4><div class="from">XVR · Move object</div><p>Slide a layer to a new spot over time.</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--muted)">⤓</div></div><h4>Place</h4><div class="from">XVR · Teleport</div><p>Jump a layer instantly, no animation.</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--ember)">↻</div></div><h4>Rotate</h4><div class="from">XVR · Rotate</div><p>Turn a layer, instant or over time.</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--ember)">⤢</div></div><h4>Tween</h4><div class="from">XVR · Animate object</div><p>Smoothly change size or any property over a set time.</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--violet)">◑</div><span class="pill new">new</span></div><h4>Switch Look</h4><div class="from">XVR · State change</div><p>Flip a layer to a saved look — smouldering → roaring.</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--cyan)">⚙</div></div><h4>Adjust</h4><div class="from">XVR · Change properties</div><p>Nudge opacity, colour, blur, a filter — instantly.</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--muted)">⏱</div></div><h4>Wait</h4><div class="from">XVR · Wait</div><p>A timed gap before the next step.</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--cyan)">🔊</div></div><h4>Sound</h4><div class="from">XVR · Play sound</div><p>Radio call, glass, roar, crowd. Play / loop / stop.</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--ember)">▷</div></div><h4>Chain</h4><div class="from">XVR · Event action</div><p>Fire or reset another inject. Branch and reuse.</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--cyan)">◎</div></div><h4>Fire Hotspot</h4><div class="from">XVR · Activate trigger</div><p>Arm or trip a clickable area on the candidate's screen.</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--violet)">🖼</div></div><h4>Card</h4><div class="from">XVR · Show pop-up</div><p>Image / text / video overlay, to a chosen audience.</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--ok)">☑</div></div><h4>Question</h4><div class="from">XVR · MC pop-up</div><p>Multiple choice — each answer chains its own inject.</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--cyan)">🌧</div><span class="pill adapt">adapted</span></div><h4>Atmosphere</h4><div class="from">XVR · Weather/water</div><p>Scene-wide rain, fog, night tint, blue-light flicker.</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--signal)">🌡</div><span class="pill new">new</span></div><h4>Thermal</h4><div class="from">XVR · Heat source</div><p>Switch the scene to a thermal-camera view (below).</p></div>
+    <div class="cue reveal"><div class="top"><div class="ic" style="color:var(--muted)">⛓</div></div><h4>Pin</h4><div class="from">XVR · Connect</div><p>Attach a layer to another so they move as one.</p></div>
+    <div class="cue reveal" style="opacity:.6"><div class="top"><div class="ic" style="color:var(--muted-2)">✕</div><span class="pill drop">3D-only</span></div><h4>Teleport-to-object · Pathfinding</h4><div class="from">XVR · 3D nav</div><p>Not needed — there's no 3D world to navigate.</p></div>
+  </div>
+</div></section>
+
+<!-- LOOKS -->
+<section id="looks"><div class="wrap">
+  <div class="s-head reveal">
+    <span class="eyebrow">Looks — XVR's "States", reimagined</span>
+    <h2>One layer, many looks — and you tweak them live.</h2>
+    <p class="sub">In XVR a "State" is a baked snapshot. You can do better: a <strong>Look</strong> is a layer's saved visual treatment — colour, contrast, brightness, blur, a filter — applied in real time, so it's endlessly tweakable and costs nothing to re-render. Save a few looks per layer (or per whole scene) and switch them with a step.</p>
+  </div>
+  <div class="looks reveal">
+    <div class="look"><div class="sw"><div class="f"></div></div><div class="lb">Normal<span>as shot</span></div></div>
+    <div class="look thermal"><div class="sw"><div class="f"></div></div><div class="lb">Thermal<span>invert + heat LUT</span></div></div>
+    <div class="look night"><div class="sw"><div class="f"></div></div><div class="lb">Night<span>dim + cool tint</span></div></div>
+    <div class="look cctv"><div class="sw"><div class="f"></div></div><div class="lb">CCTV<span>grey + grain</span></div></div>
+    <div class="look dmg"><div class="sw"><div class="f"></div></div><div class="lb">Smoke-logged<span>warm + murky</span></div></div>
+  </div>
+  <div class="note reveal"><span class="i">✦</span><p><strong>Where AI comes in:</strong> filters handle colour and mood instantly, but for a true structural variant — the same building <em>damaged</em>, the same room <em>flooded</em>, the same person <em>injured</em> — generate that look once at authoring time with AI, save it as a Look, and switch to it live. XVR could never do this; you can, because you're working with images, not fixed 3D models.</p></div>
+</div></section>
+
+<!-- THERMAL -->
+<section id="thermal"><div class="wrap">
+  <div class="s-head reveal">
+    <span class="eyebrow">The firefighter feature</span>
+    <h2>Thermal view — the one only a fire service asks for.</h2>
+    <p class="sub">XVR has heat sources, heat containers and a temperature slider per object, all visible only in thermal-camera mode. Translated to 2D, it's genuinely simple — and a standout selling point, because a TIC (thermal imaging camera) view is core to modern firefighting and almost nobody's flat tool offers it.</p>
+  </div>
+  <div class="grid g3">
+    <div class="cue reveal" style="padding:20px"><div class="ic" style="color:var(--signal);margin-bottom:12px">🌡</div><h4 style="font-size:16px">How it looks</h4><p style="font-size:13.5px">Tap thermal and the scene flips to a heat view — the base goes cool and inverted, fire and bodies glow white-hot, cooled areas read dark. Exactly your instinct: a negative-style base with warm highlights on top.</p></div>
+    <div class="cue reveal" style="padding:20px"><div class="ic" style="color:var(--ember);margin-bottom:12px">◉</div><h4 style="font-size:16px">How it's built</h4><p style="font-size:13.5px">Cheap way: a real-time filter on the scene (invert + heat gradient) plus warm radial-glow PNGs over the hot bits. Crisp way: a pre-rendered thermal version of the plate as a Look. Each layer carries a <em>heat value</em> so it knows how to glow.</p></div>
+    <div class="cue reveal" style="padding:20px"><div class="ic" style="color:var(--cyan);margin-bottom:12px">◎</div><h4 style="font-size:16px">How it's used</h4><p style="font-size:13.5px">A Thermal step flips the whole scene; or a Hotspot lets the candidate "raise the camera" on a chosen area — click the door, see the heat bleeding through it. Place heat sources in an inject as the fire develops.</p></div>
+  </div>
+  <div class="mock reveal" style="margin-top:24px">
+    <div class="mockbar"><span class="d" style="background:#FF4F3D"></span><span class="t">THERMAL VIEW — same scene, two looks</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)">
+      <div style="background:#0a0a0c;height:170px;position:relative">
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,#1b1712,#0e0c0a 62%,#0a0908)"></div>
+        <div style="position:absolute;left:30%;top:34%;width:24%;height:30%;background:radial-gradient(ellipse at 50% 80%,rgba(255,180,40,.9),transparent 70%);mix-blend-mode:screen"></div>
+        <div style="position:absolute;left:12px;bottom:8px;font-family:JetBrains Mono;font-size:10px;color:#6E747E">NORMAL</div>
+      </div>
+      <div style="background:#0a0a0c;height:170px;position:relative;filter:invert(1) hue-rotate(150deg) saturate(2) contrast(1.15)">
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,#1b1712,#0e0c0a 62%,#0a0908)"></div>
+        <div style="position:absolute;left:30%;top:34%;width:30%;height:38%;background:radial-gradient(ellipse at 50% 70%,rgba(255,255,255,.95),rgba(255,180,40,.6) 50%,transparent 75%)"></div>
+        <div style="position:absolute;left:62%;top:48%;width:10%;height:18%;background:radial-gradient(circle,rgba(255,210,120,.8),transparent 70%)"></div>
+      </div>
+    </div>
+  </div>
+  <p style="text-align:center;font-family:JetBrains Mono;font-size:10px;color:var(--muted-2);margin-top:8px">right panel is the left one with a live thermal filter — no second image needed</p>
+</div></section>
+
+<!-- POPUPS -->
+<section id="popups"><div class="wrap">
+  <div class="s-head reveal">
+    <span class="eyebrow">Pop-ups, done properly</span>
+    <h2>A Card to show something. A Question to branch on it.</h2>
+    <p class="sub">XVR's two pop-up actions are richer than they first look, and both translate beautifully. A Card targets <em>who</em> sees it and how it's laid out; a Question puts choices to the candidate where <strong>each answer fires its own inject</strong> — which is your branching, self-led-training engine in one feature.</p>
+  </div>
+  <div class="grid g2">
+    <div class="cue reveal" style="padding:22px"><h4 style="font-size:17px;margin-bottom:10px">🖼 Card</h4>
+      <p style="font-size:14px">Push an <strong>image, a video (file or YouTube), text, or a mix</strong> onto the screen. Set the audience (just the candidate · everyone · only the instructor), the layout, and entrance / dwell / exit (fade · slide · cut). Add a link to open a document. The candidate reacts; you close it when the point lands. Perfect for a casualty close-up, a hazmat label, body-cam footage, a map.</p>
+    </div>
+    <div class="cue reveal" style="padding:22px"><h4 style="font-size:17px;margin-bottom:10px">☑ Question <span class="pill new" style="vertical-align:middle">branching</span></h4>
+      <p style="font-size:14px">Show a multiple-choice prompt (single or multi-select, up to 8 options, optional image). The hidden power: <strong>each answer chains to a different inject</strong>. "Offensive" plays one path; "Defensive" plays another. Runs instructor-led, or fully <strong>self-led</strong> with no instructor present — the candidate's choices drive the whole scenario. Your <span class="mono" style="font-size:12px">voteOptions</span> + branch-manager already do most of this.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- EDITOR UI -->
+<section id="editor"><div class="wrap">
+  <div class="s-head reveal">
+    <span class="eyebrow">The build screen, 2026</span>
+    <h2>Big setup on the left. Whatever you click, its details on the right.</h2>
+    <p class="sub">Exactly the layout you described, built the way modern tools are: a left rail for the big moves (Library, Layers, Injects, Atmosphere), the Stage in the middle, and a context Inspector on the right that always shows the settings of whatever's selected. The Library uses real thumbnails with hover-preview — grid or list — not XVR's flat icon list.</p>
+  </div>
+  <div class="mock reveal">
+    <div class="mockbar"><span class="d" style="background:#FF5F57"></span><span class="d" style="background:#FEBC2E"></span><span class="d" style="background:#28C840"></span><span class="t">COMMAND STUDIO — INJECT BUILDER</span></div>
+    <svg viewBox="0 0 920 430" style="width:100%;height:auto;display:block" role="img" aria-label="Three-pane editor: left rail with library tabs and a thumbnail grid, centre stage canvas with a layers strip and timeline, right inspector with the selected layer's settings">
+      <rect width="920" height="430" fill="#0E1014"/>
+      <!-- left rail -->
+      <rect x="0" y="0" width="210" height="430" fill="#14171D"/><line x1="210" y1="0" x2="210" y2="430" stroke="rgba(255,255,255,.08)"/>
+      <!-- left tabs -->
+      <g font-family="JetBrains Mono" font-size="10" letter-spacing="1">
+        <rect x="12" y="14" width="186" height="26" rx="7" fill="rgba(255,176,46,.12)" stroke="rgba(255,176,46,.4)"/><text x="22" y="31" fill="#FFB02E">▦ LIBRARY</text>
+        <text x="22" y="58" fill="#6E747E">▤ LAYERS</text><text x="100" y="58" fill="#6E747E">▷ INJECTS</text>
+      </g>
+      <!-- search + filter -->
+      <rect x="12" y="68" width="186" height="22" rx="6" fill="#0E1014" stroke="rgba(255,255,255,.12)"/><text x="22" y="83" font-family="Inter" font-size="10" fill="#6E747E">🔍 search assets…</text>
+      <g font-family="Inter" font-size="9">
+        <rect x="12" y="96" width="38" height="18" rx="9" fill="rgba(255,176,46,.15)" stroke="rgba(255,176,46,.4)"/><text x="20" y="108" fill="#FFB02E">Fire</text>
+        <rect x="54" y="96" width="46" height="18" rx="9" fill="#1E232B"/><text x="62" y="108" fill="#9aa0aa">Smoke</text>
+        <rect x="104" y="96" width="44" height="18" rx="9" fill="#1E232B"/><text x="112" y="108" fill="#9aa0aa">People</text>
+        <rect x="152" y="96" width="34" height="18" rx="9" fill="#1E232B"/><text x="159" y="108" fill="#9aa0aa">FX</text>
+      </g>
+      <!-- grid/list toggle -->
+      <rect x="160" y="120" width="38" height="16" rx="5" fill="#1E232B"/><rect x="161" y="121" width="18" height="14" rx="4" fill="rgba(255,176,46,.3)"/><text x="166" y="131" font-family="Inter" font-size="8" fill="#FFB02E">▦</text><text x="184" y="131" font-family="Inter" font-size="8" fill="#6E747E">≡</text>
+      <!-- thumbnail grid -->
+      <g>
+        <rect x="12" y="142" width="58" height="48" rx="6" fill="#221c16" stroke="rgba(255,176,46,.4)"/><ellipse cx="41" cy="176" rx="18" ry="12" fill="rgba(255,176,40,.7)" style="mix-blend-mode:screen"/><text x="16" y="186" font-family="Inter" font-size="7.5" fill="#fff">fire_01 ▸</text>
+        <rect x="76" y="142" width="58" height="48" rx="6" fill="#1a1c20"/><ellipse cx="105" cy="166" rx="20" ry="13" fill="rgba(170,176,185,.4)"/><text x="80" y="186" font-family="Inter" font-size="7.5" fill="#cfd3d9">smoke_a</text>
+        <rect x="140" y="142" width="58" height="48" rx="6" fill="#16191e"/><circle cx="169" cy="162" r="8" fill="rgba(236,237,239,.4)"/><rect x="164" y="170" width="10" height="12" rx="3" fill="rgba(236,237,239,.3)"/><text x="144" y="186" font-family="Inter" font-size="7.5" fill="#cfd3d9">crew_01</text>
+        <rect x="12" y="196" width="58" height="48" rx="6" fill="#1a1620"/><circle cx="41" cy="216" r="9" fill="rgba(183,156,255,.4)"/><text x="16" y="240" font-family="Inter" font-size="7.5" fill="#cfd3d9">casualty</text>
+        <rect x="76" y="196" width="58" height="48" rx="6" fill="#0d1a1e"/><path d="M95 212 q10 -10 20 0" stroke="rgba(91,210,255,.5)" stroke-width="2" fill="none"/><text x="80" y="240" font-family="Inter" font-size="7.5" fill="#cfd3d9">water</text>
+        <rect x="140" y="196" width="58" height="48" rx="6" fill="#1e1a14"/><rect x="156" y="208" width="26" height="18" rx="2" fill="rgba(255,176,46,.2)"/><text x="144" y="240" font-family="Inter" font-size="7.5" fill="#cfd3d9">hazmat.png</text>
+      </g>
+      <text x="12" y="262" font-family="JetBrains Mono" font-size="8.5" fill="#6E747E">hover a clip → it previews · drag → onto stage</text>
+
+      <!-- big actions bottom-left -->
+      <g transform="translate(12 280)">
+        <rect width="186" height="24" rx="7" fill="rgba(84,216,139,.1)" stroke="rgba(84,216,139,.4)"/><text x="12" y="16" font-family="Space Grotesk" font-weight="600" font-size="10.5" fill="#54D88B">+ New inject</text>
+        <rect y="30" width="90" height="22" rx="6" fill="#1E232B"/><text x="10" y="45" font-family="Inter" font-size="9.5" fill="#9aa0aa">+ Phase</text>
+        <rect x="96" y="30" width="90" height="22" rx="6" fill="#1E232B"/><text x="106" y="45" font-family="Inter" font-size="9.5" fill="#9aa0aa">⌁ Atmosphere</text>
+      </g>
+
+      <!-- centre stage -->
+      <rect x="224" y="14" width="468" height="248" rx="8" fill="#0a0a0c" stroke="rgba(255,255,255,.1)"/>
+      <!-- layer toolbar -->
+      <g transform="translate(232 22)" font-family="Inter" font-size="11">
+        <rect width="20" height="18" rx="4" fill="#1E232B"/><text x="5" y="13" fill="#FFB02E">👁</text>
+        <rect x="24" width="20" height="18" rx="4" fill="#1E232B"/><text x="29" y="13" fill="#9aa0aa">🔒</text>
+        <rect x="48" width="20" height="18" rx="4" fill="#1E232B"/><text x="53" y="13" fill="#9aa0aa">⊘</text>
+        <rect x="72" width="20" height="18" rx="4" fill="#1E232B"/><text x="77" y="13" fill="#9aa0aa">⧉</text>
+        <rect x="96" width="20" height="18" rx="4" fill="rgba(255,79,61,.12)"/><text x="101" y="13" fill="#FF4F3D">🗑</text>
+        <text x="126" y="13" font-family="JetBrains Mono" font-size="8.5" fill="#6E747E">show · lock · disable · duplicate · delete</text>
+      </g>
+      <!-- scene -->
+      <rect x="244" y="48" width="428" height="170" rx="4" fill="#161310"/>
+      <rect x="244" y="160" width="428" height="58" fill="#0f0d0b"/>
+      <ellipse cx="380" cy="170" rx="60" ry="30" fill="rgba(255,176,46,.32)" style="mix-blend-mode:screen"/>
+      <ellipse cx="500" cy="130" rx="54" ry="36" fill="rgba(170,176,185,.18)"/>
+      <rect x="340" y="120" width="80" height="56" fill="none" stroke="#FFB02E" stroke-dasharray="4 3"/>
+      <circle cx="340" cy="120" r="4" fill="#FFB02E"/><circle cx="420" cy="120" r="4" fill="#FFB02E"/><circle cx="340" cy="176" r="4" fill="#FFB02E"/><circle cx="420" cy="176" r="4" fill="#FFB02E"/>
+      <!-- timeline -->
+      <rect x="224" y="270" width="468" height="150" fill="#0c0d10"/><line x1="224" y1="270" x2="692" y2="270" stroke="rgba(255,255,255,.08)"/>
+      <text x="234" y="288" font-family="JetBrains Mono" font-size="9" fill="#6E747E" letter-spacing="1">TIMELINE · inject steps</text>
+      <g transform="translate(234 296)">
+        <text x="0" y="12" font-family="Inter" font-size="9" fill="#9aa0aa">Smoke</text><rect x="56" y="3" width="150" height="13" rx="3" fill="rgba(170,176,185,.4)"/>
+        <text x="0" y="32" font-family="Inter" font-size="9" fill="#9aa0aa">Fire</text><rect x="56" y="23" width="120" height="13" rx="3" fill="rgba(255,176,46,.5)"/>
+        <text x="0" y="52" font-family="Inter" font-size="9" fill="#9aa0aa">Sound</text><rect x="56" y="43" width="40" height="13" rx="3" fill="rgba(91,210,255,.4)"/>
+        <text x="0" y="72" font-family="Inter" font-size="9" fill="#9aa0aa">Card</text><rect x="300" y="63" width="120" height="13" rx="3" fill="rgba(183,156,255,.4)"/>
+        <line x1="200" y1="-4" x2="200" y2="86" stroke="#FFB02E" stroke-width="1.5"/><circle cx="200" cy="-4" r="3" fill="#FFB02E"/>
+        <rect x="56" y="98" width="384" height="6" rx="3" fill="#16191e"/>
+      </g>
+
+      <!-- right inspector -->
+      <rect x="692" y="0" width="228" height="430" fill="#14171D"/><line x1="692" y1="0" x2="692" y2="430" stroke="rgba(255,255,255,.08)"/>
+      <text x="708" y="26" font-family="JetBrains Mono" font-size="10" fill="#969ca6" letter-spacing="1">INSPECTOR · Fire layer</text>
+      <g font-family="Inter" font-size="10.5" fill="#cfd3d9">
+        <text x="708" y="52" font-family="JetBrains Mono" font-size="9" fill="#6E747E">TRANSFORM</text>
+        <text x="708" y="72">X 340  Y 120  ∠ 0°</text>
+        <rect x="708" y="80" width="196" height="5" rx="2" fill="#23272e"/><rect x="708" y="80" width="120" height="5" rx="2" fill="#FFB02E"/>
+        <text x="708" y="108" font-family="JetBrains Mono" font-size="9" fill="#6E747E">LOOK</text>
+        <rect x="708" y="114" width="196" height="20" rx="5" fill="#1E232B" stroke="rgba(255,255,255,.12)"/><text x="716" y="128" fill="#FFB02E" font-size="10">Roaring ▾</text>
+        <text x="708" y="154" font-family="JetBrains Mono" font-size="9" fill="#6E747E">EFFECTS</text>
+        <text x="708" y="172">Brightness</text><rect x="708" y="178" width="196" height="5" rx="2" fill="#23272e"/><rect x="708" y="178" width="140" height="5" rx="2" fill="#5BD2FF"/>
+        <text x="708" y="200">Contrast</text><rect x="708" y="206" width="196" height="5" rx="2" fill="#23272e"/><rect x="708" y="206" width="96" height="5" rx="2" fill="#5BD2FF"/>
+        <text x="708" y="228">Heat (thermal)</text><rect x="708" y="234" width="196" height="5" rx="2" fill="#23272e"/><rect x="708" y="234" width="170" height="5" rx="2" fill="#FF4F3D"/>
+        <text x="708" y="256" font-family="JetBrains Mono" font-size="9" fill="#6E747E">BLEND</text>
+        <rect x="708" y="262" width="196" height="20" rx="5" fill="#1E232B" stroke="rgba(255,255,255,.12)"/><text x="716" y="276" fill="#5BD2FF" font-size="10">Additive (lighter) ▾</text>
+        <text x="708" y="304" font-family="JetBrains Mono" font-size="9" fill="#6E747E">TRANSITION</text>
+        <rect x="708" y="310" width="196" height="20" rx="5" fill="#1E232B" stroke="rgba(255,255,255,.12)"/><text x="716" y="324" fill="#fff" font-size="10">Fade in · 0.8s ▾</text>
+      </g>
+      <rect x="708" y="344" width="196" height="28" rx="8" fill="rgba(255,176,46,.15)" stroke="#FFB02E"/><text x="806" y="362" text-anchor="middle" font-family="Space Grotesk" font-weight="600" font-size="11" fill="#FFB02E">+ Add as step to inject</text>
+    </svg>
+  </div>
+  <div class="grid g3" style="margin-top:8px">
+    <div class="cue reveal"><h4 style="margin-bottom:6px">Library → thumbnails</h4><p>Grid of real previews, video clips autoplay on hover, grid/list toggle, search and type filters, favourites and recent. The modern asset-manager pattern — drag straight to the Stage.</p></div>
+    <div class="cue reveal"><h4 style="margin-bottom:6px">Layers panel</h4><p>A Photoshop-style stack of everything on the scene — each row a thumbnail with show / lock / ⋯, drag to reorder front-to-back. (XVR's "placed objects", modernised.)</p></div>
+    <div class="cue reveal"><h4 style="margin-bottom:6px">Object toolbar</h4><p>Select a layer and the top bar gives you show · lock · disable · duplicate · delete · order — the operations XVR buries in menus, one click away.</p></div>
+  </div>
+</div></section>
+
+<div class="close wrap">
+  <span class="eyebrow" style="justify-content:center">Where to start</span>
+  <h2>Lock the names, then build one inject end to end.</h2>
+  <p>Decide your words from the menu — I'd take Inject · Step · link-to-play-together · Wait · Phase · Look · Tasking · Hotspot. Then wire the link toggle and a Wait step, add Reveal / Hide / Card / Question, and author "fire breaks through the front window". That one inject proves the engine, the Looks, and the live loop — and most of it is already in your code.</p>
+  <a class="cta" href="#names">Back to the naming menu ↑</a>
+</div>
+
+<footer><div class="wrap">
+  <span>Command 360 · Inject engine v2 · adapted from XVR On Scene · June 2026</span>
+  <span class="mono">Names are yours to set</span>
+</div></footer>
+
+<script>
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+// ---- animated inject player ----
+const stepsEl=[...document.querySelectorAll('#stepList .step')];
+const lSmoke=document.getElementById('lSmoke'), lFire=document.getElementById('lFire'),
+      lPopup=document.getElementById('lPopup'), waitB=document.getElementById('waitB'),
+      flash=document.getElementById('flash');
+const btn=document.getElementById('playBtn'), icon=document.getElementById('playIcon'), lbl=document.getElementById('playLbl');
+let timers=[], running=false;
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function reset(){
+  timers.forEach(clearTimeout); timers=[];
+  stepsEl.forEach(s=>s.classList.remove('active','done'));
+  lSmoke.style.opacity=0; lFire.style.opacity=0; lFire.classList.remove('big');
+  lPopup.classList.remove('show'); waitB.classList.remove('show'); flash.style.opacity=0;
+}
+function activate(i){ stepsEl[i].classList.add('active'); }
+function done(i){ stepsEl[i].classList.remove('active'); stepsEl[i].classList.add('done'); }
+function at(ms,fn){ timers.push(setTimeout(fn,ms)); }
+
+function run(){
+  reset(); running=true; icon.textContent='⏹'; lbl.textContent='Stop';
+  // Beat 1: smoke + fire + sound together (steps 0,1,2 linked)
+  at(200,()=>{ [0,1,2].forEach(activate); lSmoke.style.opacity=1; });
+  at(500,()=>{ lFire.style.opacity=1; flash.style.opacity=1; });
+  at(800,()=>{ flash.style.opacity=0; });
+  at(1900,()=>{ [0,1,2].forEach(done); });
+  // Wait (step 3)
+  at(2000,()=>{ activate(3); waitB.classList.add('show'); });
+  at(3500,()=>{ waitB.classList.remove('show'); done(3); });
+  // Tween: fire grows (step 4)
+  at(3650,()=>{ activate(4); lFire.classList.add('big'); flash.style.opacity=.6; });
+  at(4100,()=>{ flash.style.opacity=0; });
+  at(5400,()=>{ done(4); });
+  // Card popup (step 5)
+  at(5550,()=>{ activate(5); lPopup.classList.add('show'); });
+  at(7200,()=>{ done(5); });
+  // loop
+  at(8600,()=>{ if(running) run(); });
+}
+function stop(){ running=false; icon.textContent='▶'; lbl.textContent='Play inject'; reset(); }
+
+btn.addEventListener('click',()=>{ running ? stop() : run(); });
+
+// show a static end-ish state if reduced motion
+if(reduce){ lSmoke.style.transition='none'; lFire.style.transition='none'; }
+</script>
+</body>
+</html>
