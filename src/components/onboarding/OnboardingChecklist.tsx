@@ -74,7 +74,7 @@ export function OnboardingChecklist() {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 w-72">
-      <div className="bg-card border border-border rounded-2xl shadow-xl overflow-hidden">
+      <div className="bg-card border border-border rounded-2xl shadow-xl overflow-hidden dash-card-elev">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 bg-primary/5 border-b border-border">
           <button onClick={() => setExpanded(v => !v)} className="flex items-center gap-2 text-sm font-semibold text-foreground">

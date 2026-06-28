@@ -35,9 +35,9 @@ const TYPE_ICON_MAP: Record<string, React.ElementType> = {
   survey: ClipboardList, content: FileText, rating_scale: Star, open_text: AlignLeft,
 }
 const TYPE_COLOR_MAP: Record<string, string> = {
-  poll: 'text-primary', word_cloud: 'text-[#3E6DC4]', quiz: 'text-[#2E9E63]',
-  qna: 'text-[#c98a2a]', survey: 'text-[#C9241A]', content: 'text-muted-foreground',
-  rating_scale: 'text-[#c98a2a]', open_text: 'text-[#3E6DC4]',
+  poll: 'text-primary', word_cloud: 'text-[#3E6DC4] dash-light:text-[#3360BC]', quiz: 'text-[#2E9E63] dash-light:text-[#1F8F54]',
+  qna: 'text-[#c98a2a] dash-light:text-[#A8741F]', survey: 'text-[#C9241A]', content: 'text-muted-foreground',
+  rating_scale: 'text-[#c98a2a] dash-light:text-[#A8741F]', open_text: 'text-[#3E6DC4] dash-light:text-[#3360BC]',
 }
 const TYPE_LABEL_MAP: Record<string, string> = {
   poll: 'Poll', word_cloud: 'Word Cloud', quiz: 'Quiz', qna: 'Q&A',
@@ -297,7 +297,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
               <div
                 key={pres.id}
                 className={`
-                  group relative bg-card border border-border rounded-none overflow-hidden
+                  group relative bg-card border border-border rounded-none overflow-hidden dash-card-elev
                   transition-all duration-300 ease-out
                   hover:shadow-lg hover:shadow-black/5 hover:-translate-y-0.5 hover:border-primary/20
                   dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]
@@ -485,7 +485,7 @@ export function PresentationGrid({ presentations }: { presentations: Presentatio
               <div
                 key={pres.id}
                 className={`
-                  group relative flex items-center gap-4 bg-card border border-border rounded-none p-4 overflow-hidden
+                  group relative flex items-center gap-4 bg-card border border-border rounded-none p-4 overflow-hidden dash-card-elev
                   transition-all duration-300 ease-out
                   hover:shadow-md hover:shadow-black/5 hover:border-primary/20 hover:-translate-y-0.5
                   dark:[box-shadow:0_-20px_80px_-20px_rgba(255,255,255,0.03)_inset]

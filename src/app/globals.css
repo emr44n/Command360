@@ -4,6 +4,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Dashboard-only LIGHT theme.
+   The whole app is dark; `.c360-light` is applied to the dashboard shell
+   (server-rendered from a cookie, toggled client-side) to opt that subtree
+   into a light "regimental" variant. `dash-light:` is an additive Tailwind
+   variant so components keep their dark classes byte-for-byte and only add
+   light overrides — the dark view can never regress. Scoped to the dashboard
+   subtree, so the marketing site and the rest of the app are untouched. */
+@custom-variant dash-light (&:is(.c360-light *));
+
 /* Prevent horizontal scroll on all pages.
    Use `clip` (not `hidden`): `overflow-x: hidden` computes overflow-y to
    `auto`, turning html/body into scroll containers and breaking
@@ -101,6 +110,63 @@ html, body {
   --sidebar-border: #262b32;
   --sidebar-ring: #C9241A;
 }
+
+/* ──────────────────────────────────────────
+   DASHBOARD LIGHT THEME  (.c360-light)
+   "Regimental, but light" — neutral off-white canvas, near-white cards,
+   a subtly warm cream nav rail, near-black ink (never pure black), dark
+   hairline grids, brand red, agency colours deepened for contrast on light.
+   These redefine the design tokens for the dashboard subtree only, so
+   shadcn/token-based widgets (dialogs, tooltips, inputs) follow the theme.
+   Hardcoded-hex dashboard components opt in via `dash-light:` overrides.
+   ────────────────────────────────────────── */
+.c360-light {
+  --background: #F4F4F2;        /* neutral off-white canvas — not pure white */
+  --foreground: #16191E;        /* near-black ink */
+  --card: #FFFFFF;              /* raised surface; elevation via soft shadow */
+  --card-foreground: #16191E;
+  --popover: #FFFFFF;
+  --popover-foreground: #16191E;
+  --primary: #C9241A;
+  --primary-foreground: #ffffff;
+  --secondary: #ECEAE3;
+  --secondary-foreground: #16191E;
+  --muted: #ECEAE3;
+  --muted-foreground: #5B6169;  /* mid-grey secondary text */
+  --accent: #ECEAE3;
+  --accent-foreground: #16191E;
+  --destructive: #C9241A;
+  --border: rgba(20, 25, 30, 0.12);   /* dark hairline, low alpha */
+  --input: rgba(20, 25, 30, 0.16);
+  --ring: #C9241A;
+  --chart-1: #C9241A;
+  --chart-2: #3360BC;
+  --chart-3: #1F8F54;
+  --chart-4: #A8741F;
+  --chart-5: #5B4F98;
+  --sidebar: #ECEAE3;           /* warm cream nav rail */
+  --sidebar-foreground: #16191E;
+  --sidebar-primary: #C9241A;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #E2DFD6;
+  --sidebar-accent-foreground: #16191E;
+  --sidebar-border: rgba(20, 25, 30, 0.12);
+  --sidebar-ring: #C9241A;
+  /* dashboard-local helpers used by dash-light: overrides + .dash-grid */
+  --grid-line: rgba(20, 25, 30, 0.5);
+}
+
+/* Theme-aware regimental grid wash for the dashboard canvas. Defaults to the
+   white-on-dark lines; .c360-light swaps to dark-on-light via --grid-line. */
+.dash-grid {
+  background-image:
+    linear-gradient(to right, var(--grid-line, rgba(255,255,255,0.5)) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line, rgba(255,255,255,0.5)) 1px, transparent 1px);
+  background-size: 74px 74px;
+}
+
+/* Light-mode card elevation — soft shadow does the lifting on a light canvas. */
+.c360-light .dash-card-elev { box-shadow: 0 1px 2px rgba(15,17,21,0.05), 0 10px 30px -16px rgba(15,17,21,0.14); }
 
 /* ── BASE ── */
 @layer base {

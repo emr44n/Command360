@@ -69,18 +69,18 @@ export function DashboardStats({ totalPresentations, totalSessions, totalPartici
   }
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 bg-[#16191E] border-t border-l border-white/12">
+    <div className="grid grid-cols-2 lg:grid-cols-4 bg-[#16191E] dash-light:bg-white dash-card-elev border-t border-l border-white/12 dash-light:border-black/10">
       {STATS_CONFIG.map((stat) => (
         <div
           key={stat.key}
-          className="v5-pop relative overflow-hidden border-r border-b border-white/12 p-5 group"
+          className="v5-pop relative overflow-hidden border-r border-b border-white/12 dash-light:border-black/10 p-5 group"
         >
           <div className="flex items-center justify-between mb-3">
             <div className="w-10 h-10 flex items-center justify-center" style={{ backgroundColor: `${stat.accent}26` }}>
               <stat.icon className="w-[18px] h-[18px]" style={{ color: stat.accent }} />
             </div>
             {stat.key === 'sessions' && activeSessions > 0 && (
-              <span className="ff-mono inline-flex items-center gap-1.5 px-2 py-0.5 bg-[#2E9E63]/10 text-[#2E9E63] text-[10px] font-bold uppercase tracking-[0.1em]">
+              <span className="ff-mono inline-flex items-center gap-1.5 px-2 py-0.5 bg-[#2E9E63]/10 text-[#2E9E63] dash-light:text-[#1F8F54] text-[10px] font-bold uppercase tracking-[0.1em]">
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="animate-ping absolute inline-flex h-full w-full bg-[#2E9E63] opacity-75" />
                   <span className="relative inline-flex h-1.5 w-1.5 bg-[#2E9E63]" />
@@ -89,10 +89,10 @@ export function DashboardStats({ totalPresentations, totalSessions, totalPartici
               </span>
             )}
           </div>
-          <p className="ff-display text-3xl font-extrabold text-white tabular-nums">
+          <p className="ff-display text-3xl font-extrabold text-white dash-light:text-[#16191E] tabular-nums">
             <AnimatedCounter target={values[stat.key]} />
           </p>
-          <p className="ff-mono text-[10px] uppercase tracking-[0.15em] font-medium text-[#9aa0a8] mt-1">{stat.label}</p>
+          <p className="ff-mono text-[10px] uppercase tracking-[0.15em] font-medium text-[#9aa0a8] dash-light:text-[#5B6169] mt-1">{stat.label}</p>
         </div>
       ))}
     </div>

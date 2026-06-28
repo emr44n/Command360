@@ -147,14 +147,14 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 bg-[#0F1216] text-white min-h-screen">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 bg-[#0F1216] dash-light:bg-[#F4F4F2] text-white dash-light:text-[#16191E] min-h-screen">
       {/* Welcome header with time-aware greeting */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="ff-display text-2xl font-extrabold tracking-tight text-white">
+          <h1 className="ff-display text-2xl font-extrabold tracking-tight text-white dash-light:text-[#16191E]">
             {getGreeting()}, <span className="text-[#C9241A]">{displayName}</span>
           </h1>
-          <p className="ff-mono text-[11px] uppercase tracking-[0.15em] text-[#9aa0a8] mt-2">
+          <p className="ff-mono text-[11px] uppercase tracking-[0.15em] text-[#9aa0a8] dash-light:text-[#5B6169] mt-2">
             Manage your classrooms, scenes, and training sessions
           </p>
         </div>
@@ -175,7 +175,7 @@ export default async function DashboardPage() {
 
       {/* Active sessions banner (if any) */}
       {activeSessionsList.length > 0 && (
-        <div className="relative bg-[#16191E] border border-[#2E9E63]/40 p-5 overflow-hidden">
+        <div className="relative bg-[#16191E] dash-light:bg-white dash-card-elev border border-[#2E9E63]/40 dash-light:border-[#1F8F54]/45 p-5 overflow-hidden">
           {/* Left accent bar */}
           <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-[#2E9E63]" />
 
@@ -184,27 +184,27 @@ export default async function DashboardPage() {
               <span className="animate-ping absolute inline-flex h-full w-full bg-[#2E9E63] opacity-75" />
               <span className="relative inline-flex h-2.5 w-2.5 bg-[#2E9E63]" />
             </span>
-            <h3 className="ff-mono text-[10px] uppercase tracking-[0.15em] font-semibold text-[#2E9E63]">Live Sessions</h3>
+            <h3 className="ff-mono text-[10px] uppercase tracking-[0.15em] font-semibold text-[#2E9E63] dash-light:text-[#1F8F54]">Live Sessions</h3>
           </div>
           <div className="relative grid gap-2">
             {activeSessionsList.slice(0, 3).map((session) => (
               <Link
                 key={session.id}
                 href={`/present/${session.id}`}
-                className="v5-pop flex items-center justify-between bg-[#0F1216] px-4 py-3 border border-white/12 hover:border-[#2E9E63]/50 transition-colors duration-200 group"
+                className="v5-pop flex items-center justify-between bg-[#0F1216] dash-light:bg-[#F6F5F2] px-4 py-3 border border-white/12 dash-light:border-black/10 hover:border-[#2E9E63]/50 transition-colors duration-200 group"
               >
                 <div className="flex items-center gap-3">
-                  <Radio className="w-4 h-4 text-[#2E9E63]" />
+                  <Radio className="w-4 h-4 text-[#2E9E63] dash-light:text-[#1F8F54]" />
                   <div>
-                    <p className="ff-display text-sm font-semibold text-white group-hover:text-[#2E9E63] transition-colors">
+                    <p className="ff-display text-sm font-semibold text-white dash-light:text-[#16191E] group-hover:text-[#2E9E63] transition-colors">
                       {presTitleMap[session.presentation_id] || 'Untitled'}
                     </p>
-                    <p className="ff-mono text-xs text-[#9aa0a8]">
-                      Code: <span className="font-bold text-[#2E9E63]">{session.room_code}</span>
+                    <p className="ff-mono text-xs text-[#9aa0a8] dash-light:text-[#5B6169]">
+                      Code: <span className="font-bold text-[#2E9E63] dash-light:text-[#1F8F54]">{session.room_code}</span>
                     </p>
                   </div>
                 </div>
-                <span className="ff-mono text-xs uppercase tracking-[0.1em] text-[#9aa0a8] group-hover:text-[#2E9E63] transition-colors flex items-center gap-1">
+                <span className="ff-mono text-xs uppercase tracking-[0.1em] text-[#9aa0a8] dash-light:text-[#5B6169] group-hover:text-[#2E9E63] transition-colors flex items-center gap-1">
                   Resume <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                 </span>
               </Link>
@@ -215,28 +215,28 @@ export default async function DashboardPage() {
 
       {/* Quick Actions — section header + 3 prominent cards */}
       <div>
-        <h2 className="ff-mono text-[10px] uppercase tracking-[0.15em] font-semibold text-[#9aa0a8] mb-3">Quick Create</h2>
+        <h2 className="ff-mono text-[10px] uppercase tracking-[0.15em] font-semibold text-[#9aa0a8] dash-light:text-[#5B6169] mb-3">Quick Create</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <QuickCreatePresentationCard />
           <QuickCreateStudioCard />
           <Link href="/dashboard/templates" className="group">
-            <div className="v5-pop relative h-full bg-[#16191E] border border-white/12 p-5 hover:border-[#6a5ea8]/50 cursor-pointer overflow-hidden">
+            <div className="v5-pop relative h-full bg-[#16191E] dash-light:bg-white dash-card-elev border border-white/12 dash-light:border-black/10 p-5 hover:border-[#6a5ea8]/50 cursor-pointer overflow-hidden">
               {/* Square colour accent */}
               <div className="w-10 h-10 bg-[#6a5ea8]/15 flex items-center justify-center mb-3">
-                <LayoutTemplate className="w-5 h-5 text-[#6a5ea8]" />
+                <LayoutTemplate className="w-5 h-5 text-[#6a5ea8] dash-light:text-[#5B4F98]" />
               </div>
-              <h3 className="ff-display text-sm font-semibold text-white group-hover:text-[#8a7fd0] transition-colors">Use a Template</h3>
-              <p className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#9aa0a8] mt-1">10 ready-made templates</p>
+              <h3 className="ff-display text-sm font-semibold text-white dash-light:text-[#16191E] group-hover:text-[#8a7fd0] transition-colors">Use a Template</h3>
+              <p className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#9aa0a8] dash-light:text-[#5B6169] mt-1">10 ready-made templates</p>
             </div>
           </Link>
           <Link href="/dashboard/sessions" className="group">
-            <div className="v5-pop relative h-full bg-[#16191E] border border-white/12 p-5 hover:border-[#3E6DC4]/50 cursor-pointer overflow-hidden">
+            <div className="v5-pop relative h-full bg-[#16191E] dash-light:bg-white dash-card-elev border border-white/12 dash-light:border-black/10 p-5 hover:border-[#3E6DC4]/50 cursor-pointer overflow-hidden">
               {/* Square colour accent */}
               <div className="w-10 h-10 bg-[#3E6DC4]/15 flex items-center justify-center mb-3">
-                <Radio className="w-5 h-5 text-[#3E6DC4]" />
+                <Radio className="w-5 h-5 text-[#3E6DC4] dash-light:text-[#3360BC]" />
               </div>
-              <h3 className="ff-display text-sm font-semibold text-white group-hover:text-[#5a87de] transition-colors">View Activity</h3>
-              <p className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#9aa0a8] mt-1">Manage live & past activity</p>
+              <h3 className="ff-display text-sm font-semibold text-white dash-light:text-[#16191E] group-hover:text-[#5a87de] transition-colors">View Activity</h3>
+              <p className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#9aa0a8] dash-light:text-[#5B6169] mt-1">Manage live & past activity</p>
             </div>
           </Link>
         </div>
@@ -258,14 +258,14 @@ export default async function DashboardPage() {
       )}
 
       {/* Divider */}
-      <div className="border-t border-white/12" />
+      <div className="border-t border-white/12 dash-light:border-black/10" />
 
       {/* My Presentations */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="ff-mono text-[10px] uppercase tracking-[0.15em] font-semibold text-[#9aa0a8]">All Classrooms</h2>
-            <p className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#9aa0a8]/70 mt-1">
+            <h2 className="ff-mono text-[10px] uppercase tracking-[0.15em] font-semibold text-[#9aa0a8] dash-light:text-[#5B6169]">All Classrooms</h2>
+            <p className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#9aa0a8]/70 dash-light:text-[#5B6169]/70 mt-1">
               {enrichedPresentations.length} classroom{enrichedPresentations.length !== 1 ? 's' : ''} total
             </p>
           </div>

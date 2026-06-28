@@ -41,12 +41,12 @@ export function TrialBanner({ createdAt }: TrialBannerProps) {
 
   if (expired) {
     return (
-      <div className="relative overflow-hidden bg-[#16191E] border border-[#C9241A]/40 p-5">
+      <div className="relative overflow-hidden bg-[#16191E] dash-light:bg-white dash-card-elev border border-[#C9241A]/40 p-5">
         {/* Left accent bar */}
         <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-[#C9241A]" />
         <button
           onClick={() => setDismissed(true)}
-          className="absolute top-3 right-3 p-1 text-[#9aa0a8] hover:text-white hover:bg-white/10 transition-colors"
+          className="absolute top-3 right-3 p-1 text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] hover:bg-white/10 dash-light:hover:bg-black/[0.06] transition-colors"
         >
           <X className="w-4 h-4" />
         </button>
@@ -55,8 +55,8 @@ export function TrialBanner({ createdAt }: TrialBannerProps) {
             <Clock className="w-5 h-5 text-[#C9241A]" />
           </div>
           <div className="flex-1">
-            <h3 className="ff-display text-sm font-semibold text-white">Your free trial has ended</h3>
-            <p className="ff-body text-xs text-[#9aa0a8] mt-0.5">
+            <h3 className="ff-display text-sm font-semibold text-white dash-light:text-[#16191E]">Your free trial has ended</h3>
+            <p className="ff-body text-xs text-[#9aa0a8] dash-light:text-[#5B6169] mt-0.5">
               Upgrade to continue using all features and keep your training sessions running.
             </p>
           </div>
@@ -75,12 +75,12 @@ export function TrialBanner({ createdAt }: TrialBannerProps) {
   const accent = isLow ? '#c98a2a' : '#C9241A'
 
   return (
-    <div className="relative overflow-hidden bg-[#16191E] border p-5" style={{ borderColor: `${accent}66` }}>
+    <div className="relative overflow-hidden bg-[#16191E] dash-light:bg-white dash-card-elev border p-5" style={{ borderColor: `${accent}66` }}>
       {/* Left accent bar */}
       <div className="absolute top-0 left-0 bottom-0 w-[3px]" style={{ backgroundColor: accent }} />
       <button
         onClick={() => setDismissed(true)}
-        className="absolute top-3 right-3 p-1 text-[#9aa0a8] hover:text-white hover:bg-white/10 transition-colors"
+        className="absolute top-3 right-3 p-1 text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] hover:bg-white/10 dash-light:hover:bg-black/[0.06] transition-colors"
       >
         <X className="w-4 h-4" />
       </button>
@@ -89,10 +89,10 @@ export function TrialBanner({ createdAt }: TrialBannerProps) {
           <Sparkles className="w-5 h-5" style={{ color: accent }} />
         </div>
         <div className="flex-1">
-          <h3 className="ff-display text-sm font-semibold text-white">
+          <h3 className="ff-display text-sm font-semibold text-white dash-light:text-[#16191E]">
             {isLow ? 'Trial ending soon' : 'Free trial active'}
           </h3>
-          <p className="ff-body text-xs text-[#9aa0a8] mt-0.5">
+          <p className="ff-body text-xs text-[#9aa0a8] dash-light:text-[#5B6169] mt-0.5">
             {timeLeft.days > 0
               ? `${timeLeft.days} day${timeLeft.days !== 1 ? 's' : ''}, ${timeLeft.hours}h ${timeLeft.minutes}m remaining`
               : `${timeLeft.hours}h ${timeLeft.minutes}m remaining`
@@ -110,12 +110,12 @@ export function TrialBanner({ createdAt }: TrialBannerProps) {
           ].map((unit) => (
             <div key={unit.label} className="text-center">
               <div
-                className="ff-display w-12 h-12 border flex items-center justify-center text-lg font-bold text-white"
+                className="ff-display w-12 h-12 border flex items-center justify-center text-lg font-bold text-white dash-light:text-[#16191E]"
                 style={{ backgroundColor: `${accent}1a`, borderColor: `${accent}33` }}
               >
                 {String(unit.value).padStart(2, '0')}
               </div>
-              <span className="ff-mono text-[10px] uppercase tracking-[0.1em] text-[#9aa0a8] mt-1 block">{unit.label}</span>
+              <span className="ff-mono text-[10px] uppercase tracking-[0.1em] text-[#9aa0a8] dash-light:text-[#5B6169] mt-1 block">{unit.label}</span>
             </div>
           ))}
         </div>

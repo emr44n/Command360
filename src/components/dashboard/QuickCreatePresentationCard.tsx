@@ -55,7 +55,7 @@ export function QuickCreatePresentationCard() {
   return (
     <>
       <button onClick={() => setShowDialog(true)} disabled={creating} className="group text-left w-full h-full">
-        <div className="v5-pop relative h-full bg-[#16191E] border border-white/12 p-5 hover:border-[#C9241A]/50 cursor-pointer overflow-hidden">
+        <div className="v5-pop relative h-full bg-[#16191E] dash-light:bg-white dash-card-elev border border-white/12 dash-light:border-black/10 p-5 hover:border-[#C9241A]/50 cursor-pointer overflow-hidden">
           {/* Square colour accent */}
           <div className="w-10 h-10 bg-[#C9241A]/15 flex items-center justify-center mb-3">
             {creating ? (
@@ -64,8 +64,8 @@ export function QuickCreatePresentationCard() {
               <Plus className="w-5 h-5 text-[#C9241A]" />
             )}
           </div>
-          <h3 className="ff-display text-sm font-semibold text-white group-hover:text-[#C9241A] transition-colors">Create New</h3>
-          <p className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#9aa0a8] mt-1">Classroom or Studio</p>
+          <h3 className="ff-display text-sm font-semibold text-white dash-light:text-[#16191E] group-hover:text-[#C9241A] transition-colors">Create New</h3>
+          <p className="ff-mono text-[11px] uppercase tracking-[0.1em] text-[#9aa0a8] dash-light:text-[#5B6169] mt-1">Classroom or Studio</p>
         </div>
       </button>
 

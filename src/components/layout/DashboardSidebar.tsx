@@ -45,7 +45,10 @@ export function DashboardSidebar() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light')
+      // Dashboard theme is owned by the `.c360-light` scope on the shell root
+      // (applied server-side from the c360_theme cookie). Reflect it here.
+      const root = document.querySelector('[data-dash-root]')
+      setTheme(root?.classList.contains('c360-light') ? 'light' : 'dark')
     }
 
     supabase.auth.getUser().then(({ data }) => {
@@ -68,8 +71,12 @@ export function DashboardSidebar() {
   function toggleTheme() {
     const next = theme === 'dark' ? 'light' : 'dark'
     setTheme(next)
-    document.documentElement.classList.toggle('dark', next === 'dark')
-    localStorage.setItem('theme', next)
+    // Flip the dashboard-scoped light theme and persist via cookie so the
+    // server applies it (no flash) on the next load. Only the dashboard
+    // subtree is affected — the rest of the app stays dark.
+    document.querySelector('[data-dash-root]')?.classList.toggle('c360-light', next === 'light')
+    document.cookie = `c360_theme=${next}; path=/; max-age=31536000; samesite=lax`
+    localStorage.setItem('c360_theme', next)
   }
 
   async function handleSignOut() {
@@ -127,7 +134,7 @@ export function DashboardSidebar() {
 
   return (
     <aside className={cn(
-      'relative bg-[#0A0C0F] border-r border-white/12 flex flex-col h-full shrink-0 transition-all duration-300 ease-in-out',
+      'relative bg-[#0A0C0F] dash-light:bg-[#ECEAE3] border-r border-white/12 dash-light:border-black/10 flex flex-col h-full shrink-0 transition-all duration-300 ease-in-out',
       collapsed ? 'w-[68px]' : 'w-[220px]'
     )}>
       {/* Subtle right-edge red glow */}
@@ -135,7 +142,7 @@ export function DashboardSidebar() {
 
       {/* Logo */}
       <div className={cn('h-16 flex items-center', collapsed ? 'px-3 justify-center' : 'px-5')}>
-        <Link href="/dashboard" className="flex items-center gap-2.5 text-white">
+        <Link href="/dashboard" className="flex items-center gap-2.5 text-white dash-light:text-[#16191E]">
           <BrandMark size={32} />
           {!collapsed && <span className="ff-wordmark text-[15px] tracking-tight uppercase">Command 360</span>}
         </Link>
@@ -257,7 +264,7 @@ export function DashboardSidebar() {
 
       {/* Separator */}
       <div className={cn('pt-3', collapsed ? 'px-4' : 'px-5')}>
-        <div className="h-px bg-white/12" />
+        <div className="h-px bg-white/12 dash-light:bg-black/10" />
       </div>
 
       {/* Navigation */}
@@ -281,8 +288,8 @@ export function DashboardSidebar() {
                 'relative flex items-center gap-3 ff-mono text-[11px] font-medium uppercase tracking-[0.1em] transition-colors duration-200 group',
                 collapsed ? 'px-0 py-2.5 justify-center' : 'px-3 py-2.5',
                 active
-                  ? 'bg-white/[0.05] text-white'
-                  : 'text-[#9aa0a8] hover:text-white hover:bg-white/[0.03]',
+                  ? 'bg-white/[0.05] dash-light:bg-black/[0.06] text-white dash-light:text-[#16191E]'
+                  : 'text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] hover:bg-white/[0.03] dash-light:hover:bg-black/[0.04]',
                 !active && isClassroom && 'border-l-2 border-blue-500/40',
                 !active && isStudio && 'border-l-2 border-violet-500/40',
               )}
@@ -314,7 +321,7 @@ export function DashboardSidebar() {
                 </>
               )}
               {collapsed && hasBadge && (
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#0A0C0F]" />
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#0A0C0F] dash-light:border-[#ECEAE3]" />
               )}
             </Link>
           )
@@ -323,7 +330,7 @@ export function DashboardSidebar() {
             <div key={item.href}>
               {showSeparator && (
                 <div className={cn('py-2', collapsed ? 'px-1.5' : 'px-2')}>
-                  <div className="h-px bg-white/12" />
+                  <div className="h-px bg-white/12 dash-light:bg-black/10" />
                 </div>
               )}
               {collapsed ? (
@@ -336,7 +343,7 @@ export function DashboardSidebar() {
 
       {/* Separator before controls */}
       <div className={cn(collapsed ? 'px-4' : 'px-5')}>
-        <div className="h-px bg-white/12" />
+        <div className="h-px bg-white/12 dash-light:bg-black/10" />
       </div>
 
       {/* Theme toggle + Collapse */}
@@ -344,18 +351,18 @@ export function DashboardSidebar() {
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={toggleTheme}
-          className="p-2 text-[#9aa0a8] hover:text-white hover:bg-white/[0.05] transition-colors duration-200 group relative"
+          className="p-2 text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] hover:bg-white/[0.05] dash-light:hover:bg-black/[0.05] transition-colors duration-200 group relative"
         >
           {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
         </TooltipTrigger><TooltipContent side="right">{theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}</TooltipContent></Tooltip>
         {!collapsed && (
-          <span className="ff-mono text-[10px] uppercase tracking-[0.12em] text-[#9aa0a8] flex-1">{theme === 'dark' ? 'Dark' : 'Light'}</span>
+          <span className="ff-mono text-[10px] uppercase tracking-[0.12em] text-[#9aa0a8] dash-light:text-[#5B6169] flex-1">{theme === 'dark' ? 'Dark' : 'Light'}</span>
         )}
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => setCollapsed(v => !v)}
-          className="p-2 text-[#9aa0a8] hover:text-white hover:bg-white/[0.05] transition-colors duration-200"
+          className="p-2 text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] hover:bg-white/[0.05] dash-light:hover:bg-black/[0.05] transition-colors duration-200"
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
@@ -363,7 +370,7 @@ export function DashboardSidebar() {
       </div>
 
       {/* User area */}
-      <div className={cn('border-t border-white/12 shrink-0', collapsed ? 'p-2.5' : 'p-3 space-y-1')}>
+      <div className={cn('border-t border-white/12 dash-light:border-black/10 shrink-0', collapsed ? 'p-2.5' : 'p-3 space-y-1')}>
         {collapsed ? (
           <>
             <Tooltip><TooltipTrigger asChild>
@@ -379,7 +386,7 @@ export function DashboardSidebar() {
             <Tooltip><TooltipTrigger asChild>
             <button
               onClick={handleSignOut}
-              className="flex items-center justify-center p-2 text-[#9aa0a8] hover:text-white hover:bg-white/[0.05] w-full transition-colors duration-200 group relative"
+              className="flex items-center justify-center p-2 text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] hover:bg-white/[0.05] dash-light:hover:bg-black/[0.05] w-full transition-colors duration-200 group relative"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -388,18 +395,18 @@ export function DashboardSidebar() {
         ) : (
           <>
             {(userName || userEmail) && (
-              <Link href="/dashboard/settings" className="flex items-center gap-3 px-3 py-2.5 hover:bg-white/[0.05] transition-colors duration-200 group">
+              <Link href="/dashboard/settings" className="flex items-center gap-3 px-3 py-2.5 hover:bg-white/[0.05] dash-light:hover:bg-black/[0.05] transition-colors duration-200 group">
                 <div className="w-9 h-9 bg-[#C9241A]/15 flex items-center justify-center shrink-0 group-hover:bg-[#C9241A]/25 transition-colors duration-200">
                   <span className="ff-display text-[11px] font-bold text-[#C9241A]">{initials}</span>
                 </div>
                 <div className="min-w-0 flex-1">
-                  {userName && <p className="text-[13px] font-medium text-white truncate">{userName}</p>}
-                  <p className="text-[11px] text-[#9aa0a8] truncate">{userEmail}</p>
+                  {userName && <p className="text-[13px] font-medium text-white dash-light:text-[#16191E] truncate">{userName}</p>}
+                  <p className="text-[11px] text-[#9aa0a8] dash-light:text-[#5B6169] truncate">{userEmail}</p>
                 </div>
               </Link>
             )}
             <button onClick={handleSignOut}
-              className="flex items-center gap-3 px-3 py-2.5 ff-mono text-[11px] font-medium uppercase tracking-[0.1em] text-[#9aa0a8] hover:text-white hover:bg-white/[0.05] w-full transition-colors duration-200">
+              className="flex items-center gap-3 px-3 py-2.5 ff-mono text-[11px] font-medium uppercase tracking-[0.1em] text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] hover:bg-white/[0.05] dash-light:hover:bg-black/[0.05] w-full transition-colors duration-200">
               <LogOut className="w-4 h-4" />
               Sign out
             </button>
