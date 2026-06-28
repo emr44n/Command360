@@ -486,7 +486,7 @@ export function StudioGallery({
     switch (type) {
       case 'image': return <ImageIcon className="size-3.5 text-red-400" />
       case 'video': return <VideoIcon className="size-3.5 text-[#6a5ea8]" />
-      case 'text': return <span className="text-xs font-bold text-amber-400">T</span>
+      case 'text': return <span className="text-xs font-bold text-amber-400 dash-light:text-[#A8741F]">T</span>
       case 'shape': return <span className="text-xs text-[#2E9E63]">&#9632;</span>
       case 'audio': return <Volume2 className="size-3.5 text-[#3E6DC4]" />
       default: return null

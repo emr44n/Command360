@@ -80,7 +80,7 @@ export function TemplateGallery({
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-[#3f4147] dash-light:border-black/10">
         <div className="flex items-center gap-1.5">
-          <Layout className="w-3.5 h-3.5 text-amber-400" />
+          <Layout className="w-3.5 h-3.5 text-amber-400 dash-light:text-[#A8741F]" />
           <span className="text-xs font-medium text-white dash-light:text-[#16191E]">Templates</span>
         </div>
         {onClose && (
@@ -98,7 +98,7 @@ export function TemplateGallery({
             onClick={() => setActiveCategory(cat)}
             className={`px-2 py-0.5 rounded-none text-[10px] font-medium transition-colors whitespace-nowrap ${
               activeCategory === cat
-                ? 'bg-amber-500/20 text-amber-300'
+                ? 'bg-amber-500/20 text-amber-300 dash-light:text-[#8a5e10]'
                 : 'text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] hover:bg-[#2b2d31] dash-light:hover:bg-black/[0.05]'
             }`}
           >

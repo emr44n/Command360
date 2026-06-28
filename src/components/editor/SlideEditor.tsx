@@ -627,7 +627,10 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           </div>
 
           <span className="text-[10px] uppercase tracking-[0.15em] text-zinc-500 dash-light:text-[#5B6169] font-medium">Command Studio</span>
-          <span className="text-[9px] uppercase tracking-wider font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-none">Build Mode</span>
+          {/* On light the faint green-on-cream washes out, so the badge flips
+              to a solid dark chip with bright green text + border (high
+              contrast, stands out) — see globals.css contrast notes. */}
+          <span className="text-[9px] uppercase tracking-wider font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 dash-light:text-emerald-300 dash-light:bg-[#16191E] dash-light:border-emerald-400/70 px-2 py-0.5 rounded-none">Build Mode</span>
           <div className="relative group/title flex items-center">
             <input
               type="text"
@@ -639,7 +642,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             <svg className="w-3 h-3 text-zinc-600 dash-light:text-[#5B6169] group-hover/title:text-zinc-400 transition-colors -ml-5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
           </div>
           <div className="flex-1" />
-          <span className={`text-[10px] transition-opacity ${saveStatus === 'saved' ? 'text-emerald-400 opacity-100' : saveStatus === 'saving' ? 'text-zinc-500 dash-light:text-[#5B6169] opacity-100' : 'opacity-0'}`}>
+          <span className={`text-[10px] transition-opacity ${saveStatus === 'saved' ? 'text-emerald-400 dash-light:text-[#157045] opacity-100' : saveStatus === 'saving' ? 'text-zinc-500 dash-light:text-[#5B6169] opacity-100' : 'opacity-0'}`}>
             {saveStatus === 'saving' ? 'Saving...' : 'Saved'}
           </span>
 
@@ -909,8 +912,8 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             <span className="text-[11px] text-muted-foreground">Saving</span>
           </>}
           {saveStatus === 'saved' && <>
-            <Check className="w-3 h-3 text-emerald-500" />
-            <span className="text-[11px] text-emerald-500">Saved</span>
+            <Check className="w-3 h-3 text-emerald-500 dash-light:text-[#157045]" />
+            <span className="text-[11px] text-emerald-500 dash-light:text-[#157045]">Saved</span>
           </>}
           {saveStatus === 'error' && <>
             <AlertCircle className="w-3 h-3 text-destructive" />
@@ -1153,7 +1156,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                 <div className="bg-card border-t border-border shrink-0" style={{ height: 220 }}>
                   <div className="flex items-center justify-between px-4 py-2 border-b border-border">
                     <div className="flex items-center gap-2">
-                      <StickyNote className="w-4 h-4 text-amber-500" />
+                      <StickyNote className="w-4 h-4 text-amber-500 dash-light:text-[#A8741F]" />
                       <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Speaker Notes</span>
                       <span className="text-[10px] text-muted-foreground/50 ml-1">(only visible to you)</span>
                     </div>

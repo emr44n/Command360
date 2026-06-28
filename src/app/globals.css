@@ -652,6 +652,22 @@ html, body {
 .c360-light .settings-scroll::-webkit-scrollbar-thumb:hover,
 .c360-light .canvas-scroll::-webkit-scrollbar-thumb:hover { background: #b6af9d; }
 
+/* Studio canvas workspace backdrop (the dotted area around the artboard).
+   Dark by default; on light it becomes a warm cream with darker-cream DOTS
+   (kept — no grid) and a soft red fade top-right, matching the dashboard. */
+.studio-canvas-bg {
+  background-color: #141416;
+  background-image: radial-gradient(circle, #1e1f22 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+.c360-light .studio-canvas-bg {
+  background-color: #ECE9E1;
+  background-image:
+    radial-gradient(circle, rgba(120, 108, 78, 0.6) 1px, transparent 1px),
+    radial-gradient(ellipse 70% 60% at 80% 6%, rgba(201, 36, 26, 0.09), transparent 66%);
+  background-size: 16px 16px, 100% 100%;
+}
+
 .slide-dragging {
   opacity: 0.85;
   transform: scale(0.97);

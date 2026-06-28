@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import {
   FolderOpen, Type, Shapes, Film, Sparkles, Settings2,
   Play, Square, SkipBack, Layers, Plus, Trash2 as Trash2Icon, Copy, Monitor,
-  Pencil, Image, Undo2, Redo2, Layout, Save, LayoutList,
+  Pencil, Image, Undo2, Redo2, Layout, Save, LayoutList, Sun, Moon,
 } from 'lucide-react'
 import type {
   Slide,
@@ -619,6 +619,21 @@ export function StudioEditor({
   // Panel visibility
   const [showLeftPanel, setShowLeftPanel] = useState(true)
   const [showProperties, setShowProperties] = useState(true)
+  // Dashboard light/dark theme — the sidebar toggle is hidden behind the
+  // full-screen Studio, so mirror it here on the rail. Flips `.c360-light`
+  // on the dashboard shell root and persists via cookie (same mechanism).
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark')
+  useEffect(() => {
+    const root = document.querySelector('[data-dash-root]')
+    setTheme(root?.classList.contains('c360-light') ? 'light' : 'dark')
+  }, [])
+  const toggleTheme = useCallback(() => {
+    const next = theme === 'dark' ? 'light' : 'dark'
+    setTheme(next)
+    document.querySelector('[data-dash-root]')?.classList.toggle('c360-light', next === 'light')
+    document.cookie = `c360_theme=${next}; path=/; max-age=31536000; samesite=lax`
+    localStorage.setItem('c360_theme', next)
+  }, [theme])
   const [showTemplateName, setShowTemplateName] = useState(false)
   const [confirmDeleteLayerId, setConfirmDeleteLayerId] = useState<string | null>(null)
   const [templateNameInput, setTemplateNameInput] = useState('')
@@ -757,6 +772,20 @@ export function StudioEditor({
           <span className="text-[7px] leading-none font-medium">Time</span>
         </button>
         </TooltipTrigger><TooltipContent side="right">Timeline</TooltipContent></Tooltip>
+
+        {/* Divider */}
+        <div className="w-6 h-px bg-zinc-700/50 dash-light:bg-black/10 mb-1" />
+
+        {/* Light / dark theme toggle — mirrors the dashboard sidebar toggle */}
+        <Tooltip><TooltipTrigger asChild>
+        <button
+          onClick={toggleTheme}
+          className="w-10 h-10 rounded-none flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer text-zinc-500 dash-light:text-[#5B6169] hover:text-zinc-200 dash-light:hover:text-[#16191E] hover:bg-[#35363c] dash-light:hover:bg-black/[0.05]"
+        >
+          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          <span className="text-[7px] leading-none font-medium">{theme === 'dark' ? 'Light' : 'Dark'}</span>
+        </button>
+        </TooltipTrigger><TooltipContent side="right">{theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}</TooltipContent></Tooltip>
       </div>
 
       {/* Main area */}
@@ -886,7 +915,7 @@ export function StudioEditor({
           <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#313338] dash-light:bg-[#ECE9E1]">
             {content.cctvLayout ? (
               /* CCTV: live grid preview of assigned scenes */
-              <div className="flex-1 min-h-0 flex items-center justify-center p-4" style={{ background: '#141416', backgroundImage: 'radial-gradient(circle, #1e1f22 1px, transparent 1px)', backgroundSize: '16px 16px' }}>
+              <div className="studio-canvas-bg flex-1 min-h-0 flex items-center justify-center p-4">
                 <CctvLivePreview
                   content={content}
                   slides={slides || []}
@@ -1495,7 +1524,7 @@ function TextPanel({
               }`}
               onClick={() => onSelectLayer(layer.id)}
             >
-              <Type className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <Type className="w-3.5 h-3.5 text-amber-400 dash-light:text-[#A8741F] shrink-0" />
               <span className="flex-1 truncate">{layer.name}</span>
               <span className="text-[10px] text-zinc-600 dash-light:text-[#8A9098] truncate max-w-[80px]">{layer.text}</span>
               <Tooltip><TooltipTrigger asChild>
@@ -1742,7 +1771,7 @@ function SceneProperties({
             </button>
             <button
               onClick={() => onOpenPanel('events')}
-              className="h-8 rounded-none border border-[#3f4147] dash-light:border-black/10 hover:border-amber-500/50 text-zinc-400 dash-light:text-[#5B6169] hover:text-amber-400 flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
+              className="h-8 rounded-none border border-[#3f4147] dash-light:border-black/10 hover:border-amber-500/50 text-zinc-400 dash-light:text-[#5B6169] hover:text-amber-400 dash-light:text-[#A8741F] flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
             >
               <Sparkles className="w-3 h-3" />
               Add Event

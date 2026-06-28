@@ -798,11 +798,8 @@ export function StudioCanvas({
   return (
     <div
       ref={containerRef}
-      className="relative flex h-full w-full items-center justify-center overflow-hidden"
+      className="studio-canvas-bg relative flex h-full w-full items-center justify-center overflow-hidden"
       style={{
-        background: '#141416',
-        backgroundImage: 'radial-gradient(circle, #1e1f22 1px, transparent 1px)',
-        backgroundSize: '16px 16px',
         cursor: objectSelectionMode === 'waiting' ? 'crosshair' : undefined,
       }}
       onClick={(e) => { if (e.target === containerRef.current) onSelectLayer?.(null) }}

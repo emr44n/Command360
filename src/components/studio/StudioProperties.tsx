@@ -326,7 +326,7 @@ export function StudioProperties({
           </div>
           <div className="flex items-center gap-2">
             {layer.locked ? (
-              <LockIcon className="size-3.5 text-amber-400" />
+              <LockIcon className="size-3.5 text-amber-400 dash-light:text-[#A8741F]" />
             ) : (
               <UnlockIcon className="size-3.5 text-[#9aa0a8] dash-light:text-[#5B6169]" />
             )}

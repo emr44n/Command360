@@ -101,7 +101,7 @@ function layerIcon(type: StudioLayer['type']) {
   switch (type) {
     case 'image': return <ImageIcon className="size-3.5 text-red-400" />
     case 'video': return <Video className="size-3.5 text-[#6a5ea8] dash-light:text-[#5B4F98]" />
-    case 'text': return <Type className="size-3.5 text-amber-400" />
+    case 'text': return <Type className="size-3.5 text-amber-400 dash-light:text-[#A8741F]" />
     case 'shape': return <Square className="size-3.5 text-[#2E9E63] dash-light:text-[#1F8F54]" />
     case 'audio': return <Music className="size-3.5 text-[#3E6DC4] dash-light:text-[#3360BC]" />
     default: return null
@@ -429,7 +429,7 @@ export function StudioEventSettings({
                   {layerIcon(getLayerType(action.layerId))}
                   <span className="text-[#9aa0a8] dash-light:text-[#5B6169] truncate">{getLayerName(action.layerId)}</span>
                   <span className="text-[#9aa0a8] dash-light:text-[#5B6169]">·</span>
-                  <span className="text-amber-400 font-medium">{action.property}</span>
+                  <span className="text-amber-400 dash-light:text-[#A8741F] font-medium">{action.property}</span>
                   <span className="text-[#9aa0a8] dash-light:text-[#5B6169] ml-auto whitespace-nowrap">
                     {String(action.fromValue ?? 'auto')} → {String(action.toValue)}
                   </span>

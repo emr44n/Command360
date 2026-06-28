@@ -47,7 +47,7 @@ export function QuizSlideForm({ slide, onChange }: Props) {
                 className="shrink-0"
               >
                 {opt.is_correct
-                  ? <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                  ? <CheckCircle2 className="w-5 h-5 text-emerald-500 dash-light:text-[#157045]" />
                   : <Circle className="w-5 h-5 text-muted-foreground hover:text-foreground" />}
               </button>
               <Input
