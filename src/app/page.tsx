@@ -165,7 +165,7 @@ export default function LandingPage() {
                   <span className="w-[7px] h-[7px] bg-[#C9241A] v5-pulse" />
                   Interactive command learning · UK emergency services
                 </div>
-                <h1 className="ff-wordmark text-white mb-7 leading-[1.04] tracking-[-0.01em] text-[clamp(34px,4.3vw,58px)] lg:pl-9" data-reveal>
+                <h1 className="ff-display font-extrabold text-white mb-7 leading-[0.98] tracking-[-0.02em] text-[clamp(44px,5.4vw,74px)] lg:pl-9" data-reveal>
                   Where emergency<br />teams{' '}
                   <RotatingWord words={['train.', 'decide.', 'improve.']} className="text-[#C9241A] underline decoration-[3px] underline-offset-[10px] decoration-[#C9241A]/45" />
                 </h1>

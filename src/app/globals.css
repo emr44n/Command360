@@ -609,8 +609,8 @@ html, body {
 .ff-display { font-family: var(--font-archivo), 'Archivo', system-ui, sans-serif; }
 .ff-mono { font-family: var(--font-plex-mono), 'IBM Plex Mono', ui-monospace, monospace; }
 .ff-body { font-family: var(--font-plex-sans), 'IBM Plex Sans', system-ui, sans-serif; }
-/* "COMMAND 360" wordmark — Orbitron, extra bold */
-.ff-wordmark { font-family: var(--font-orbitron), 'Orbitron', var(--font-archivo), system-ui, sans-serif; font-weight: 800; }
+/* "COMMAND 360" wordmark — Archivo extra bold (reverted from Orbitron) */
+.ff-wordmark { font-family: var(--font-archivo), 'Archivo', system-ui, sans-serif; font-weight: 800; }
 
 /* Grain texture layer (apply to an absolutely-positioned child). */
 .v5-grain { background-image: var(--v5-grain); }
