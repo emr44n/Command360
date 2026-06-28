@@ -89,9 +89,10 @@ export function ScenarioCarousel() {
             alt={`${s.label} — ${s.scenario}, built in Command 360`}
             draggable={false}
             loading={active === 0 ? 'eager' : 'lazy'}
-            // 15% larger, centred (safe zone), no ken-burns pan
-            className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
-            style={{ scale: 1.15 }}
+            // ~32% larger, anchored to the left so the subject grows toward the
+            // left and stays in the safe zone; no ken-burns pan
+            className="absolute inset-0 w-full h-full object-cover object-left select-none pointer-events-none"
+            style={{ scale: 1.32, transformOrigin: 'left center' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
