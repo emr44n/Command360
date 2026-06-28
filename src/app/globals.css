@@ -959,6 +959,18 @@ html, body {
   -webkit-mask-image: radial-gradient(ellipse 75% 75% at 50% 45%, black 35%, transparent 80%);
   mask-image: radial-gradient(ellipse 75% 75% at 50% 45%, black 35%, transparent 80%);
 }
+.mask-fade-x {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+/* Studio player demo — animated rain overlay (toggled by opacity). */
+@keyframes cs-rain { to { background-position: 0 220px; } }
+.cs-rain {
+  background-image: repeating-linear-gradient(100deg, transparent 0 9px, rgba(174,194,224,0.22) 9px 10px);
+  animation: cs-rain 0.5s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) { .cs-rain { animation: none; } }
 
 /* Device/browser frame shadow for the product showcase. */
 .device-shadow {
