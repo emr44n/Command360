@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { BrandMark } from '@/components/site/BrandMark'
 import {
   LayoutDashboard, LogOut, LayoutTemplate, Settings,
   Radio, BarChart2, Users, ChevronLeft, ChevronRight, Plus, Moon, Sun, Monitor, FileText, Share2, ShieldCheck, TrendingUp,
@@ -135,9 +136,7 @@ export function DashboardSidebar() {
       {/* Logo */}
       <div className={cn('h-16 flex items-center', collapsed ? 'px-3 justify-center' : 'px-5')}>
         <Link href="/dashboard" className="flex items-center gap-2.5 text-white">
-          <div className="w-8 h-8 bg-[#C9241A] flex items-center justify-center shrink-0">
-            <span className="ff-display text-base font-black leading-none text-white">C</span>
-          </div>
+          <BrandMark size={32} />
           {!collapsed && <span className="ff-display text-[15px] font-extrabold tracking-tight uppercase">Command 360</span>}
         </Link>
       </div>

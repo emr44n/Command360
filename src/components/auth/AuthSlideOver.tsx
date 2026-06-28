@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { X } from 'lucide-react'
+import { BrandMark } from '@/components/site/BrandMark'
 import { LoginForm } from './LoginForm'
 import { RegisterForm } from './RegisterForm'
 import { ForgotPasswordForm } from './ForgotPasswordForm'
@@ -92,7 +93,7 @@ export function AuthSlideOver({ isOpen, onClose, defaultTab = 'login', required 
         <div className="relative flex-1 overflow-y-auto px-8 py-10">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-9">
-            <span className="ff-display w-[30px] h-[30px] bg-[#C9241A] flex items-center justify-center text-base font-black text-white">C</span>
+            <BrandMark size={30} />
             <span className="ff-display font-extrabold text-[16px] text-white tracking-[0.01em]">COMMAND 360</span>
           </div>
 

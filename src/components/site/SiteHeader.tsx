@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
+import { BrandMark } from '@/components/site/BrandMark'
 
 /**
  * Shared v5 site header — the rigid/regimental nav used across every
@@ -41,7 +42,7 @@ export function SiteHeader() {
     >
       <nav className="max-w-[1280px] mx-auto px-5 sm:px-[30px] h-[66px] flex items-center gap-7">
         <Link href="/" className="flex items-center gap-3 text-white shrink-0">
-          <span className="ff-display w-[30px] h-[30px] bg-[#C9241A] flex items-center justify-center text-base font-black text-white">C</span>
+          <BrandMark size={30} />
           <span className="ff-display font-extrabold text-[18px] tracking-[0.01em] whitespace-nowrap">COMMAND&nbsp;360</span>
         </Link>
 

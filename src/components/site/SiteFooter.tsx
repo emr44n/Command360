@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { FooterWordmark } from '@/components/home/FooterWordmark'
+import { BrandMark } from '@/components/site/BrandMark'
 
 /**
  * Shared v5 site footer — identical to the home page footer, used across
@@ -40,7 +41,7 @@ export function SiteFooter() {
         <div className="grid grid-cols-2 md:grid-cols-12 gap-x-8 gap-y-10 py-12 border-b border-white/10">
           <div className="col-span-2 md:col-span-3">
             <div className="flex items-center gap-3 mb-4">
-              <span className="ff-display w-[30px] h-[30px] bg-[#C9241A] flex items-center justify-center text-base font-black text-white">C</span>
+              <BrandMark size={30} />
               <span className="ff-display font-extrabold text-[18px] text-white tracking-[0.01em]">COMMAND 360</span>
             </div>
             <p className="text-[14px] leading-[1.6] mb-5 max-w-[300px]">Interactive command training for UK emergency services. UK-hosted, GDPR ready, built for those who serve.</p>
