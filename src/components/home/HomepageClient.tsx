@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Menu, X, LogIn, Moon, Sun } from 'lucide-react'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
+import { BrandMark } from '@/components/site/BrandMark'
 
 const NAV_LINKS = [
   { href: '#how-it-works', label: 'How It Works' },
@@ -58,11 +59,7 @@ export function HomepageClient() {
       <nav className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className={`flex items-center gap-2.5 font-semibold transition-colors ${onHero ? 'text-white' : 'text-foreground'}`}>
-          <div className="w-7 h-7 bg-red-600 rounded-lg flex items-center justify-center">
-            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-          </div>
+          <BrandMark size={28} />
           <span className="text-sm tracking-tight">Command 360</span>
         </Link>
 

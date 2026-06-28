@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { BrandMark } from '@/components/site/BrandMark'
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,11 +12,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
 
         <Link href="/" className="relative flex items-center gap-2.5 font-semibold text-lg">
-          <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
-            <svg viewBox="0 0 24 24" className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-          </div>
+          <BrandMark size={32} />
           Command 360
         </Link>
         <div className="relative space-y-5">
@@ -47,11 +44,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         {/* Mobile header */}
         <header className="lg:hidden p-5 border-b border-white/[0.06] relative z-10">
           <Link href="/" className="flex items-center gap-2 font-semibold text-white w-fit">
-            <div className="w-7 h-7 bg-red-600 rounded-lg flex items-center justify-center">
-              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-            </div>
+            <BrandMark size={28} />
             Command 360
           </Link>
         </header>

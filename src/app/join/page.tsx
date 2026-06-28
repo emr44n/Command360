@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { ShieldAlert, ArrowLeft, QrCode, Users, Zap } from 'lucide-react'
+import { BrandMark } from '@/components/site/BrandMark'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 
 export default function JoinPage() {
@@ -20,9 +21,7 @@ export default function JoinPage() {
       {/* Header */}
       <header className="relative z-10 p-5 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 font-semibold text-white">
-          <span className="ff-display w-8 h-8 bg-[#C9241A] flex items-center justify-center">
-            <ShieldAlert className="w-4 h-4 text-white" />
-          </span>
+          <BrandMark size={32} />
           <span className="ff-display font-extrabold text-sm tracking-[0.01em]">Command 360</span>
         </Link>
         <Link href="/" className="ff-mono inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.1em] text-[#7c828a] hover:text-white transition-colors">

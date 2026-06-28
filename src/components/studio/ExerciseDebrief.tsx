@@ -1,4 +1,5 @@
 'use client'
+import { BrandMark } from '@/components/site/BrandMark'
 
 export interface ExerciseStats {
   duration: number
@@ -17,8 +18,8 @@ export function ExerciseDebrief({ stats, onReturn }: { stats: ExerciseStats; onR
     <div className="fixed inset-0 z-[100] bg-[#0a0a0b] flex items-center justify-center">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_30%,rgba(201,36,26,0.1),transparent)] pointer-events-none" />
       <div className="relative text-center max-w-lg mx-auto px-6">
-        <div className="w-14 h-14 bg-red-600 rounded-none flex items-center justify-center mx-auto mb-4">
-          <svg viewBox="0 0 24 24" className="w-7 h-7 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+        <div className="mx-auto mb-4 w-fit">
+          <BrandMark size={56} />
         </div>
         <p className="text-[10px] uppercase tracking-[0.2em] text-[#9aa0a8] font-medium mb-2">Command 360</p>
         <h1 className="text-2xl font-bold text-white mb-2">Exercise Complete</h1>

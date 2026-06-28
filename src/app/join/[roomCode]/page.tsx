@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import { ArrowRight, Loader2, ShieldAlert } from 'lucide-react'
+import { ArrowRight, Loader2 } from 'lucide-react'
+import { BrandMark } from '@/components/site/BrandMark'
 import Link from 'next/link'
 
 export default function JoinRoomPage() {
@@ -39,9 +40,7 @@ export default function JoinRoomPage() {
     <div className="min-h-screen bg-background flex flex-col">
       <header className="p-5">
         <Link href="/" className="flex items-center gap-2 font-semibold text-foreground w-fit">
-          <div className="w-7 h-7 bg-red-600 rounded-xl flex items-center justify-center">
-            <ShieldAlert className="w-3.5 h-3.5 text-primary-foreground" />
-          </div>
+          <BrandMark size={28} />
           Command 360
         </Link>
       </header>

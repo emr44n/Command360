@@ -13,7 +13,8 @@ import { SurveyInput } from './slide-inputs/SurveyInput'
 import { RatingScaleInput } from './slide-inputs/RatingScaleInput'
 import { OpenTextInput } from './slide-inputs/OpenTextInput'
 import { StudioInput } from './slide-inputs/StudioInput'
-import { CheckCircle2, Trophy, ShieldAlert } from 'lucide-react'
+import { CheckCircle2, Trophy } from 'lucide-react'
+import { BrandMark } from '@/components/site/BrandMark'
 import { toast } from 'sonner'
 
 interface ParticipantViewProps {
@@ -126,9 +127,7 @@ export function ParticipantView({ session: initialSession, slides, participantId
         <div className="text-center space-y-8 px-6 animate-in fade-in zoom-in-95 duration-500 relative z-10">
           {/* Branding */}
           <div className="flex flex-col items-center gap-3">
-            <div className="w-16 h-16 bg-primary rounded-none flex items-center justify-center shadow-lg shadow-primary/20">
-              <ShieldAlert className="w-8 h-8 text-primary-foreground" />
-            </div>
+            <BrandMark size={64} />
             <span className="text-sm font-bold text-[#9aa0a8] tracking-widest uppercase">Command 360</span>
           </div>
 
@@ -182,9 +181,7 @@ export function ParticipantView({ session: initialSession, slides, participantId
         /* Thin header for studio — scene title centered */
         <div className="bg-card/80 backdrop-blur-sm border-b border-border px-4 py-1.5 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 bg-primary rounded-none flex items-center justify-center">
-              <ShieldAlert className="w-3 h-3 text-primary-foreground" />
-            </div>
+            <BrandMark size={20} />
           </div>
           <span className="text-sm font-semibold text-foreground truncate">{currentSlide.title}</span>
           <div className="w-5" />
@@ -195,9 +192,7 @@ export function ParticipantView({ session: initialSession, slides, participantId
           {/* Top row: Logo */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 bg-primary rounded-none flex items-center justify-center">
-                <ShieldAlert className="w-4 h-4 text-primary-foreground" />
-              </div>
+              <BrandMark size={28} />
               <span className="text-sm font-bold text-foreground tracking-tight">Command 360</span>
             </div>
             {score > 0 && (

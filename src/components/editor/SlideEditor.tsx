@@ -29,6 +29,7 @@ import {
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { BrandMark } from '@/components/site/BrandMark'
 
 interface Presentation {
   id: string
@@ -582,9 +583,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <div className="w-5 h-5 bg-primary rounded-none flex items-center justify-center">
-              <svg viewBox="0 0 24 24" className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-            </div>
+            <BrandMark size={20} />
           </button>
           <div className="w-px h-5 bg-zinc-700" />
 

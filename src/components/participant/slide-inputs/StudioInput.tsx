@@ -6,6 +6,7 @@ import { Monitor, CheckCircle2, Maximize2, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { BrandMark } from '@/components/site/BrandMark'
 
 interface Props {
   slide: Slide
@@ -225,8 +226,8 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
     const formatDuration = (s: number) => `${Math.floor(s / 60)}m ${s % 60}s`
     return (
       <div className="text-center py-12 space-y-4 animate-in fade-in zoom-in-95 duration-500">
-        <div className="w-14 h-14 bg-[#C9241A] rounded-none flex items-center justify-center mx-auto">
-          <svg viewBox="0 0 24 24" className="w-7 h-7 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+        <div className="mx-auto w-fit">
+          <BrandMark size={56} />
         </div>
         <p className="text-[10px] uppercase tracking-[0.2em] text-[#9aa0a8] font-medium">Command 360</p>
         <h2 className="text-xl font-bold">Exercise Ended</h2>
