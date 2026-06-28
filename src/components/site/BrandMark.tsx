@@ -1,23 +1,23 @@
-import Image from 'next/image'
-
 /**
  * The Command 360 brand mark (aperture logo). One source of truth — used in
- * the header, footer, auth, dashboard and in-app chrome. The asset keeps its
- * own slightly-rounded square; everything around it stays rigid.
+ * the header, footer, auth, dashboard and in-app chrome.
+ *
+ * Rendered as a plain <img> of the full-resolution PNG so the browser does the
+ * downscaling itself (crisp at every size). next/image's generated variants
+ * looked soft, so we deliberately bypass it here.
  */
 export function BrandMark({ size = 30, className = '' }: { size?: number; className?: string }) {
   return (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
       src="/logo.png"
       alt="Command 360"
       width={size}
       height={size}
-      // Serve the full-res lossless PNG and let the browser downscale it —
-      // crisp at any size (next/image's small generated variants looked soft).
-      unoptimized
-      quality={100}
-      className={`shrink-0 select-none ${className}`}
+      decoding="async"
       draggable={false}
+      className={`shrink-0 select-none ${className}`}
+      style={{ width: size, height: size }}
     />
   )
 }
