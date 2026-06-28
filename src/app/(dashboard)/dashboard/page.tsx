@@ -147,7 +147,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 bg-[#0F1216] dash-light:bg-[#F4F4F2] text-white dash-light:text-[#16191E] min-h-screen">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 text-white dash-light:text-[#16191E] min-h-screen">
       {/* Welcome header with time-aware greeting */}
       <div className="flex items-start justify-between gap-4">
         <div>

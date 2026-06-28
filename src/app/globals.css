@@ -121,7 +121,7 @@ html, body {
    Hardcoded-hex dashboard components opt in via `dash-light:` overrides.
    ────────────────────────────────────────── */
 .c360-light {
-  --background: #F4F4F2;        /* neutral off-white canvas — not pure white */
+  --background: #F6F4EF;        /* warm light off-white canvas — not pure white */
   --foreground: #16191E;        /* near-black ink */
   --card: #FFFFFF;              /* raised surface; elevation via soft shadow */
   --card-foreground: #16191E;
@@ -155,7 +155,7 @@ html, body {
   /* dashboard-local helpers used by dash-light: overrides + .dash-grid.
      A *darker version of the cream* (warm taupe) for the grid lines —
      ever-so-light, never a cold grey. */
-  --grid-line: rgba(122, 108, 74, 0.55);
+  --grid-line: rgba(88, 76, 48, 0.72);
 }
 
 /* Theme-aware regimental grid wash for the dashboard canvas. Defaults to the
