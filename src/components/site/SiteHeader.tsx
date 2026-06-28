@@ -6,6 +6,7 @@ import { Menu, X } from 'lucide-react'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
 import { BrandMark } from '@/components/site/BrandMark'
+import { ServicesMenu, MobileServicesList } from '@/components/site/ServicesMenu'
 
 /**
  * Shared v5 site header — the rigid/regimental nav used across every
@@ -47,12 +48,16 @@ export function SiteHeader() {
         </Link>
 
         <div className="hidden lg:flex items-center gap-7 ml-3 ff-mono text-[12.5px] font-medium tracking-[0.04em] uppercase text-[#9aa0a8]">
-          {NAV_LINKS.map((l) => (
-            <Link key={l.label} href={l.href} className="hover:text-white transition-colors inline-flex items-center gap-1.5">
-              {l.label}
-              {l.badge && <span className="text-[9px] text-[#C9241A] border border-[#C9241A] px-1 py-px leading-none">{l.badge}</span>}
-            </Link>
-          ))}
+          {NAV_LINKS.map((l) =>
+            l.label === 'Services' ? (
+              <ServicesMenu key={l.label} />
+            ) : (
+              <Link key={l.label} href={l.href} className="hover:text-white transition-colors inline-flex items-center gap-1.5">
+                {l.label}
+                {l.badge && <span className="text-[9px] text-[#C9241A] border border-[#C9241A] px-1 py-px leading-none">{l.badge}</span>}
+              </Link>
+            )
+          )}
         </div>
 
         <div className="ml-auto flex items-center gap-4">
@@ -114,11 +119,15 @@ export function SiteHeader() {
 
       {open && (
         <div className="lg:hidden bg-[#0F1216]/97 backdrop-blur-md border-t border-white/10 px-5 py-4 space-y-1">
-          {NAV_LINKS.map((l) => (
-            <Link key={l.label} href={l.href} onClick={() => setOpen(false)} className="ff-mono block px-2 py-3 text-sm uppercase tracking-[0.04em] text-white/70 hover:text-white">
-              {l.label}
-            </Link>
-          ))}
+          {NAV_LINKS.map((l) =>
+            l.label === 'Services' ? (
+              <MobileServicesList key={l.label} onNavigate={() => setOpen(false)} />
+            ) : (
+              <Link key={l.label} href={l.href} onClick={() => setOpen(false)} className="ff-mono block px-2 py-3 text-sm uppercase tracking-[0.04em] text-white/70 hover:text-white">
+                {l.label}
+              </Link>
+            )
+          )}
           <div className="pt-3 mt-2 border-t border-white/10 space-y-3">
             <div className="ff-mono text-[10px] tracking-[0.1em] uppercase text-white/45">Joining a session? Enter your code</div>
             <JoinCodeInput variant="v5" />

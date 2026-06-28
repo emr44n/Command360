@@ -6,6 +6,7 @@ import { Menu, X } from 'lucide-react'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
 import { BrandMark } from '@/components/site/BrandMark'
+import { ServicesMenu, MobileServicesList } from '@/components/site/ServicesMenu'
 
 /* Boxy auth-trigger button (opens the real auth slide-over). */
 export function V5AuthButton({
@@ -80,7 +81,9 @@ export function V5Nav() {
 
         <div className="hidden lg:flex items-center gap-7 ml-3 ff-mono text-[12.5px] font-medium tracking-[0.04em] uppercase text-[#9aa0a8]">
           {NAV_LINKS.map((l) =>
-            l.href.startsWith('#') ? (
+            l.label === 'Services' ? (
+              <ServicesMenu key={l.label} />
+            ) : l.href.startsWith('#') ? (
               <a key={l.label} href={l.href} onClick={(e) => onHash(e, l.href)} className="hover:text-white transition-colors inline-flex items-center gap-1.5">
                 {l.label}
                 {l.badge && <span className="text-[9px] text-[#C9241A] border border-[#C9241A] px-1 py-px leading-none">{l.badge}</span>}
@@ -159,7 +162,9 @@ export function V5Nav() {
       {open && (
         <div className="lg:hidden bg-[#0F1216]/97 backdrop-blur-md border-t border-white/10 px-5 py-4 space-y-1">
           {NAV_LINKS.map((l) =>
-            l.href.startsWith('#') ? (
+            l.label === 'Services' ? (
+              <MobileServicesList key={l.label} onNavigate={() => setOpen(false)} />
+            ) : l.href.startsWith('#') ? (
               <a key={l.label} href={l.href} onClick={(e) => onHash(e, l.href)} className="ff-mono block px-2 py-3 text-sm uppercase tracking-[0.04em] text-white/70 hover:text-white">
                 {l.label}
               </a>
