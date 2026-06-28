@@ -15,29 +15,33 @@ export interface StackItem {
 }
 
 /**
- * Pinned scroll-stacking cards.
+ * Pinned scroll-stacking cards — a "dock"/deck stack.
  *
- * A tall section pins a 100vh stage. All cards are absolutely positioned in
- * the SAME centre slot. Card 1 stays put; card 2 then card 3 ease up from
- * below (translateY 100vh → 0) as scroll progress advances, landing exactly
- * on top of the card before them — same size, same position, no scale.
- * Scrolling back up reverses it. Framer Motion useScroll/useTransform drives
- * it, with a smooth ease so each card settles into its slot.
+ * A tall section pins a 100vh stage. The three cards are absolutely positioned
+ * with a small vertical step between their rest slots: card 1 highest, card 2
+ * a touch lower, card 3 lower still — so once all three are down they read as
+ * an offset deck with the top edge of each card behind peeking out. Card 1
+ * starts in place; card 2 then card 3 fling up from below (translateY 100vh →
+ * 0) as scroll advances and lock hard into their slot (steep expo ease, so it
+ * snaps into place rather than drifting). Scrolling back reverses it.
  */
-const EASE = cubicBezier(0.22, 1, 0.36, 1)
+const EASE = cubicBezier(0.16, 1, 0.3, 1)
 
 function PhaseCard({
   item,
   z,
   y,
+  slot,
 }: {
   item: StackItem
   z: number
   y?: MotionValue<string>
+  /** rest-slot offset classes (top/bottom) so the cards form an offset deck */
+  slot: string
 }) {
   return (
-    <motion.div className="absolute inset-0" style={{ zIndex: z, y }}>
-      <div className="relative h-full w-full bg-[#16191E] text-white border border-white/12 overflow-hidden">
+    <motion.div className={`absolute left-0 right-0 ${slot}`} style={{ zIndex: z, y }}>
+      <div className="relative h-full w-full bg-[#16191E] text-white border border-white/12 overflow-hidden shadow-[0_-18px_40px_-24px_rgba(0,0,0,0.7)]">
         {/* very faint square grid in the card background */}
         <div className="absolute inset-0 pointer-events-none" aria-hidden="true" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px)', backgroundSize: '46px 46px', maskImage: 'radial-gradient(120% 120% at 20% 10%,#000,transparent 80%)', WebkitMaskImage: 'radial-gradient(120% 120% at 20% 10%,#000,transparent 80%)' }} />
         <div className="absolute top-[-120px] left-[-80px] w-[480px] h-[400px] pointer-events-none" aria-hidden="true" style={{ background: `radial-gradient(50% 60% at 30% 30%,${item.c}33,transparent 72%)`, filter: 'blur(42px)' }} />
@@ -82,21 +86,28 @@ export function StackedCards({ items }: { items: StackItem[] }) {
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
 
-  // Card 2 eases up through the first half of the pinned scroll, card 3
-  // through the second half. Tight buffers keep card 1 alone briefly at the
-  // start and settle the full stack before the section unpins — no dead tail.
-  const y2 = useTransform(scrollYProgress, [0.06, 0.42], ['100vh', '0vh'], { ease: EASE })
-  const y3 = useTransform(scrollYProgress, [0.5, 0.86], ['100vh', '0vh'], { ease: EASE })
+  // Card 2 flings up through the first half of the pinned scroll, card 3
+  // through the second half. Each finishes well before its window ends so it
+  // holds locked in its slot for a beat — the "click into place" feel — and
+  // the full deck is settled before the section unpins (no dead tail).
+  const y2 = useTransform(scrollYProgress, [0.08, 0.40], ['100vh', '0vh'], { ease: EASE })
+  const y3 = useTransform(scrollYProgress, [0.52, 0.84], ['100vh', '0vh'], { ease: EASE })
 
   const [c1, c2, c3] = items
 
+  // Rest slots: each card is the same height, stepped down by ~26px (mobile) /
+  // 40px (desktop) so the top edge of the cards behind peeks out as a deck.
+  const SLOT1 = 'top-0 bottom-[52px] sm:bottom-[80px]'
+  const SLOT2 = 'top-[26px] bottom-[26px] sm:top-[40px] sm:bottom-[40px]'
+  const SLOT3 = 'top-[52px] bottom-0 sm:top-[80px] sm:bottom-0'
+
   return (
-    <section ref={ref} className="relative h-[180vh] sm:h-[260vh]">
-      <div className="sticky top-0 h-screen overflow-hidden flex items-start sm:items-center justify-center px-4 sm:px-6 pt-[58px] sm:pt-[clamp(80px,11vh,120px)] pb-3 sm:pb-[clamp(28px,5vh,56px)]">
-        <div className="relative w-full max-w-[1080px] h-[clamp(430px,60vh,560px)] sm:h-[clamp(440px,72vh,620px)]">
-          {c1 && <PhaseCard item={c1} z={1} />}
-          {c2 && <PhaseCard item={c2} z={2} y={y2} />}
-          {c3 && <PhaseCard item={c3} z={3} y={y3} />}
+    <section ref={ref} className="relative h-[220vh] sm:h-[280vh]">
+      <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center px-4 sm:px-6 py-[clamp(72px,12vh,128px)]">
+        <div className="relative w-full max-w-[1080px] h-[clamp(468px,66vh,560px)] sm:h-[clamp(500px,76vh,648px)]">
+          {c1 && <PhaseCard item={c1} z={1} slot={SLOT1} />}
+          {c2 && <PhaseCard item={c2} z={2} y={y2} slot={SLOT2} />}
+          {c3 && <PhaseCard item={c3} z={3} y={y3} slot={SLOT3} />}
         </div>
       </div>
     </section>
