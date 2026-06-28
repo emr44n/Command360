@@ -91,9 +91,9 @@ export function StackedCards({ items }: { items: StackItem[] }) {
   const [c1, c2, c3] = items
 
   return (
-    <section ref={ref} className="relative" style={{ height: '260vh' }}>
-      <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center px-4 sm:px-6 pt-[clamp(64px,9vh,104px)] pb-[clamp(28px,5vh,56px)]">
-        <div className="relative w-full max-w-[1080px] h-[clamp(440px,72vh,620px)]">
+    <section ref={ref} className="relative h-[180vh] sm:h-[260vh]">
+      <div className="sticky top-0 h-screen overflow-hidden flex items-start sm:items-center justify-center px-4 sm:px-6 pt-[58px] sm:pt-[clamp(80px,11vh,120px)] pb-3 sm:pb-[clamp(28px,5vh,56px)]">
+        <div className="relative w-full max-w-[1080px] h-[clamp(430px,60vh,560px)] sm:h-[clamp(440px,72vh,620px)]">
           {c1 && <PhaseCard item={c1} z={1} />}
           {c2 && <PhaseCard item={c2} z={2} y={y2} />}
           {c3 && <PhaseCard item={c3} z={3} y={y3} />}

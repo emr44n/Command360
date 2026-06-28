@@ -284,7 +284,7 @@ export default function LandingPage() {
         </section>
 
         {/* ════════════ 03 SESSION LIFECYCLE — pinned scroll-stack ════════════ */}
-        <section className="bg-[#EFECE4] text-[#16191E] pt-[90px] pb-12">
+        <section className="bg-[#EFECE4] text-[#16191E] pt-[60px] pb-3 sm:pt-[90px] sm:pb-12">
           <div className="max-w-[1280px] mx-auto px-5 sm:px-[30px]">
             <Eyebrow n="03">Session lifecycle</Eyebrow>
             <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 max-w-[680px]" data-reveal>Three phases, one continuous record</h2>

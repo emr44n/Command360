@@ -52,21 +52,23 @@ export function FloatingJoinDock() {
       style={{ willChange: 'transform' }}
     >
       <div className="max-w-[1280px] mx-auto px-5 sm:px-[30px]">
-        <div className="flex items-center gap-5 py-3">
-          <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-4 py-2.5">
+          {/* Text + status — desktop only, to give the join field room on mobile */}
+          <div className="hidden sm:flex items-center gap-3 min-w-0">
             <span className="w-2 h-2 bg-[#C9241A] v5-pulse shrink-0" aria-hidden="true" />
             <div className="min-w-0">
               <div className="ff-display font-bold text-[14.5px] text-white leading-tight">Join a live session or start your own</div>
               <div className="ff-mono hidden md:block text-[11.5px] text-white/55">No app · no account for crew · free for 30 days</div>
             </div>
           </div>
-          <div className="ml-auto flex items-stretch gap-2.5 shrink-0">
-            <div className="hidden sm:block">
-              <JoinCodeInput variant="v5" />
+          <div className="flex-1 sm:flex-none sm:ml-auto flex items-stretch gap-2.5 min-w-0">
+            {/* Join code field (with the flashing cursor) — leads on mobile */}
+            <div className="flex-1 sm:flex-none min-w-0">
+              <JoinCodeInput variant="v5" className="w-full sm:w-auto" />
             </div>
             <button
               onClick={() => openAuth('register')}
-              className="ff-mono inline-flex items-center text-[11.5px] font-semibold uppercase tracking-[0.05em] text-white bg-[#C9241A] hover:bg-[#a91d14] v5-glow px-5 whitespace-nowrap transition-colors cursor-pointer"
+              className="ff-mono hidden sm:inline-flex items-center text-[11.5px] font-semibold uppercase tracking-[0.05em] text-white bg-[#C9241A] hover:bg-[#a91d14] v5-glow px-5 whitespace-nowrap transition-colors cursor-pointer"
             >
               Start trial
             </button>

@@ -122,8 +122,10 @@ export function SiteHeader() {
           <div className="pt-3 mt-2 border-t border-white/10 space-y-3">
             <div className="ff-mono text-[10px] tracking-[0.1em] uppercase text-white/45">Joining a session? Enter your code</div>
             <JoinCodeInput variant="v5" />
-            <button onClick={() => { setOpen(false); openAuth('login') }} className="ff-mono block w-full text-center py-3 text-sm uppercase tracking-[0.04em] text-white/70 hover:text-white cursor-pointer">Sign in</button>
-            <button onClick={() => { setOpen(false); openAuth('register') }} className="ff-mono block w-full text-center py-3 text-sm uppercase tracking-[0.04em] text-white border border-white/22 hover:bg-white/[0.06] cursor-pointer">Start free trial</button>
+            <div className="grid grid-cols-2 gap-2.5">
+              <button onClick={() => { setOpen(false); openAuth('login') }} className="ff-mono py-2.5 text-[12px] text-center uppercase tracking-[0.04em] text-white border border-white/22 hover:bg-white/[0.06] cursor-pointer">Sign in</button>
+              <button onClick={() => { setOpen(false); openAuth('register') }} className="ff-mono py-2.5 text-[12px] text-center font-semibold uppercase tracking-[0.04em] text-white bg-[#C9241A] hover:bg-[#a91d14] cursor-pointer">Start trial</button>
+            </div>
           </div>
         </div>
       )}
