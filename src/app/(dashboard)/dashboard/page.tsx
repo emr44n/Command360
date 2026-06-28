@@ -220,7 +220,7 @@ export default async function DashboardPage() {
           <QuickCreatePresentationCard />
           <QuickCreateStudioCard />
           <Link href="/dashboard/templates" className="group">
-            <div className="v5-pop relative h-full bg-[#16191E] dash-light:bg-white dash-card-elev border border-white/12 dash-light:border-black/10 p-5 hover:border-[#6a5ea8]/50 cursor-pointer overflow-hidden">
+            <div className="v5-pop dash-tile relative h-full bg-[#16191E] dash-light:bg-white dash-card-elev border border-white/12 dash-light:border-black/10 p-5 hover:border-[#6a5ea8]/50 cursor-pointer overflow-hidden">
               {/* Square colour accent */}
               <div className="w-10 h-10 bg-[#6a5ea8]/15 flex items-center justify-center mb-3">
                 <LayoutTemplate className="w-5 h-5 text-[#6a5ea8] dash-light:text-[#5B4F98]" />
@@ -230,7 +230,7 @@ export default async function DashboardPage() {
             </div>
           </Link>
           <Link href="/dashboard/sessions" className="group">
-            <div className="v5-pop relative h-full bg-[#16191E] dash-light:bg-white dash-card-elev border border-white/12 dash-light:border-black/10 p-5 hover:border-[#3E6DC4]/50 cursor-pointer overflow-hidden">
+            <div className="v5-pop dash-tile relative h-full bg-[#16191E] dash-light:bg-white dash-card-elev border border-white/12 dash-light:border-black/10 p-5 hover:border-[#3E6DC4]/50 cursor-pointer overflow-hidden">
               {/* Square colour accent */}
               <div className="w-10 h-10 bg-[#3E6DC4]/15 flex items-center justify-center mb-3">
                 <Radio className="w-5 h-5 text-[#3E6DC4] dash-light:text-[#3360BC]" />

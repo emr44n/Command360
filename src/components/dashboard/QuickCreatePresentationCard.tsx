@@ -55,7 +55,7 @@ export function QuickCreatePresentationCard() {
   return (
     <>
       <button onClick={() => setShowDialog(true)} disabled={creating} className="group text-left w-full h-full">
-        <div className="v5-pop relative h-full bg-[#16191E] dash-light:bg-white dash-card-elev border border-white/12 dash-light:border-black/10 p-5 hover:border-[#C9241A]/50 cursor-pointer overflow-hidden">
+        <div className="v5-pop dash-tile relative h-full bg-[#16191E] dash-light:bg-white dash-card-elev border border-white/12 dash-light:border-black/10 p-5 hover:border-[#C9241A]/50 cursor-pointer overflow-hidden">
           {/* Square colour accent */}
           <div className="w-10 h-10 bg-[#C9241A]/15 flex items-center justify-center mb-3">
             {creating ? (
