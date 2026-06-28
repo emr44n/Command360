@@ -54,9 +54,34 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   if (!SLUGS.includes(slug)) return { title: 'Solution — Command 360' }
+  const name = SERVICE_NAMES[slug]
+  const description = SERVICE_DESCRIPTIONS[slug]
+  const title = `${name} Training & Briefings — Command 360`
+  const path = `/solutions/${slug}`
+  const image = `/solutions/${slug}.webp`
   return {
-    title: `${SERVICE_NAMES[slug]} — Command 360`,
-    description: SERVICE_DESCRIPTIONS[slug],
+    title,
+    description,
+    keywords: [
+      `${name} training`, `${name} briefings`, `${name} CPD`,
+      'interactive training', 'emergency services training', 'UK blue light training',
+      'live polls', 'session debrief', 'Command 360',
+    ],
+    alternates: { canonical: path },
+    openGraph: {
+      title,
+      description,
+      url: path,
+      siteName: 'Command 360',
+      type: 'website',
+      images: [{ url: image, width: 1000, height: 1250, alt: `${name} professionals — Command 360 interactive training` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [image],
+    },
   }
 }
 

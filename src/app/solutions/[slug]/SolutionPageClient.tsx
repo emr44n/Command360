@@ -3,7 +3,7 @@
 import { FaqAccordion } from '@/components/home/FaqAccordion'
 import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
 import { SiteShell } from '@/components/site/SiteShell'
-import { PageHero, Eyebrow, LightSection, DarkSection, Container } from '@/components/site/primitives'
+import { PageHero, Eyebrow, LightSection, DarkSection, Container, ServiceHeroImage } from '@/components/site/primitives'
 import { SpotlightCard } from '@/components/home/SpotlightCard'
 import {
   Flame, Shield, Siren, Radio, Anchor, Search,
@@ -522,6 +522,21 @@ function glowColor(heroGlow: string, opacity: number) {
   return `rgba(${m[1]},${m[2]},${m[3]},${opacity})`
 }
 
+/* ─── Per-service hero image caption (training context, page-relevant) ─── */
+const HERO_CAPTIONS: Record<string, string> = {
+  'fire-rescue': 'Safety briefings & incident hot debriefs',
+  'police': 'Shift briefings, training days & knowledge checks',
+  'ambulance': 'Clinical CPD & anonymous crew welfare checks',
+  'armed-forces': 'Operational briefings & readiness at scale',
+  'coastguard': 'Maritime safety training from any station',
+  'search-rescue': 'Scenario-based exercises & hot debriefs',
+  'prison-probation': 'Secure staff briefings & compliance tracking',
+  'local-authority': 'Emergency planning & resilience exercises',
+  'civil-contingencies': 'Multi-agency exercises & table-top scenarios',
+  'nhs-emergency': 'Clinical governance & major-incident drills',
+  'voluntary-sector': 'Volunteer induction & skills assessment',
+}
+
 /* ─── Client page component ─── */
 export function SolutionPageClient({ slug }: { slug: string }) {
   const service = SERVICES.find((s) => s.slug === slug)
@@ -542,6 +557,14 @@ export function SolutionPageClient({ slug }: { slug: string }) {
         eyebrow={<Eyebrow>{service.name}</Eyebrow>}
         title={service.heroTitle}
         lede={service.heroDescription}
+        media={
+          <ServiceHeroImage
+            src={`/solutions/${slug}.webp`}
+            name={service.name}
+            caption={HERO_CAPTIONS[slug] ?? 'Interactive training, on any device'}
+            accent={serviceColour}
+          />
+        }
       >
         <button
           onClick={() => openAuth('register')}
