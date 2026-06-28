@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { Monitor, Plus } from 'lucide-react'
 import type { Metadata } from 'next'
 import { StudioListClient } from '@/components/studio/StudioListClient'
@@ -101,9 +102,10 @@ async function createStudioPresentation() {
     redirect('/dashboard/studio')
   }
 
-  // Create a studio slide
+  // Create a studio slide — light theme defaults the canvas to white.
+  const light = (await cookies()).get('c360_theme')?.value === 'light'
   const defaultStudioContent = {
-    canvas: { width: 1920, height: 1080, backgroundColor: '#1a1a2e' },
+    canvas: { width: 1920, height: 1080, backgroundColor: light ? '#ffffff' : '#1a1a2e' },
     layers: [],
     eventCategories: [],
     events: [],

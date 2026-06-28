@@ -19,8 +19,16 @@ export async function POST(req: NextRequest) {
     .single()
   if (!pres) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  // Use client-provided content if present (e.g. CCTV slides), otherwise default
-  const content = body.content || getDefaultSlideContent(slide_type as SlideType)
+  // Use client-provided content if present (e.g. CCTV slides), otherwise default.
+  // For a NEW studio scene with no explicit content, honour the dashboard light
+  // theme: light mode → white canvas (lightest); dark mode → the regimental navy.
+  let content = body.content || getDefaultSlideContent(slide_type as SlideType)
+  if (!body.content && slide_type === 'studio' && req.cookies.get('c360_theme')?.value === 'light') {
+    const studio = content as { canvas?: { backgroundColor?: string } }
+    if (studio?.canvas) {
+      content = { ...studio, canvas: { ...studio.canvas, backgroundColor: '#ffffff' } }
+    }
+  }
   const { data, error } = await supabase
     .from('slides')
     .insert({ presentation_id, slide_type, position: position ?? 0, title: title || '', content })

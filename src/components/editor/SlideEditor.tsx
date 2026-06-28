@@ -15,6 +15,7 @@ import { ExportDialog } from '@/components/studio/ExportDialog'
 import { LiveDirectorView, type ExerciseStats } from '@/components/presenter/LiveDirectorView'
 import { ExerciseDebrief } from '@/components/studio/ExerciseDebrief'
 import { ActiveModeEntry } from '@/components/studio/ActiveModeEntry'
+import { defaultStudioCanvasBg } from '@/lib/studio/default-canvas'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -735,7 +736,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
               const position = slides.length
               setSaveStatus('saving')
               const cctvContent = {
-                canvas: { width: 1920, height: 1080, backgroundColor: '#000000' },
+                canvas: { width: 1920, height: 1080, backgroundColor: defaultStudioCanvasBg('#000000') },
                 layers: [],
                 eventCategories: [],
                 events: [],
