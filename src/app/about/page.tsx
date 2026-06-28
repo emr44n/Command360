@@ -6,6 +6,7 @@ import { SpotlightCard } from '@/components/home/SpotlightCard'
 import { Target, Heart, Zap, ArrowRight, Flame, Shield, Siren, Anchor, Search, Lock, Building2, Radio, Users } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { AboutCarousel } from '@/components/about/AboutCarousel'
 
 /* ── DATA ── */
 
@@ -129,6 +130,7 @@ export default function AboutPage() {
         eyebrow={<Eyebrow>About Us</Eyebrow>}
         title={<>Making emergency services training <span className="text-[#C9241A]">interactive</span></>}
         lede="Command 360 was built with one goal: to help emergency services teams run better, more engaging training sessions that improve knowledge retention and save lives."
+        media={<AboutCarousel />}
       />
 
       {/* ─── OUR STORY ─── */}
