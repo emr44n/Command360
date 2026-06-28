@@ -148,44 +148,44 @@ export function ExportDialog({ isOpen, onClose, presentationId, presentationTitl
 
   return (
     <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-[#1e1f22] border border-[#3f4147] rounded-none p-5 max-w-sm w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+      <div className="bg-[#1e1f22] dash-light:bg-[#F5F2EB] border border-[#3f4147] dash-light:border-black/10 rounded-none p-5 max-w-sm w-full shadow-2xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-white dash-light:text-[#16191E] flex items-center gap-2">
             <Download className="w-4 h-4 text-red-400" />
             Export Scene
           </h3>
-          <button onClick={onClose} className="p-1 rounded-none text-[#9aa0a8] hover:text-white hover:bg-white/10 transition-colors">
+          <button onClick={onClose} className="p-1 rounded-none text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] hover:bg-white/10 dash-light:hover:bg-black/[0.05] transition-colors">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
         <div className="space-y-2">
           <button onClick={handleExportPPTX} disabled={!!exporting}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-none bg-[#2b2d31] hover:bg-[#35363c] transition-colors text-left disabled:opacity-50">
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-none bg-[#2b2d31] dash-light:bg-white hover:bg-[#35363c] dash-light:hover:bg-black/[0.05] transition-colors text-left disabled:opacity-50">
             <Presentation className="w-5 h-5 text-orange-400" />
             <div className="flex-1">
-              <p className="text-[11px] font-medium text-white">PowerPoint (.pptx)</p>
-              <p className="text-[9px] text-[#9aa0a8]">Editable slides with layers</p>
+              <p className="text-[11px] font-medium text-white dash-light:text-[#16191E]">PowerPoint (.pptx)</p>
+              <p className="text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169]">Editable slides with layers</p>
             </div>
-            {exporting === 'pptx' && <Loader2 className="w-4 h-4 text-[#9aa0a8] animate-spin" />}
+            {exporting === 'pptx' && <Loader2 className="w-4 h-4 text-[#9aa0a8] dash-light:text-[#5B6169] animate-spin" />}
           </button>
 
           <button onClick={handleExportPDF} disabled={!!exporting}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-none bg-[#2b2d31] hover:bg-[#35363c] transition-colors text-left disabled:opacity-50">
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-none bg-[#2b2d31] dash-light:bg-white hover:bg-[#35363c] dash-light:hover:bg-black/[0.05] transition-colors text-left disabled:opacity-50">
             <FileText className="w-5 h-5 text-red-400" />
             <div className="flex-1">
-              <p className="text-[11px] font-medium text-white">PDF (Print Preview)</p>
-              <p className="text-[9px] text-[#9aa0a8]">Opens print dialog for PDF</p>
+              <p className="text-[11px] font-medium text-white dash-light:text-[#16191E]">PDF (Print Preview)</p>
+              <p className="text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169]">Opens print dialog for PDF</p>
             </div>
-            {exporting === 'pdf' && <Loader2 className="w-4 h-4 text-[#9aa0a8] animate-spin" />}
+            {exporting === 'pdf' && <Loader2 className="w-4 h-4 text-[#9aa0a8] dash-light:text-[#5B6169] animate-spin" />}
           </button>
 
           <button onClick={handleExportC360} disabled={!!exporting}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-none bg-[#2b2d31] hover:bg-[#35363c] transition-colors text-left disabled:opacity-50">
-            <FileJson className="w-5 h-5 text-[#3E6DC4]" />
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-none bg-[#2b2d31] dash-light:bg-white hover:bg-[#35363c] dash-light:hover:bg-black/[0.05] transition-colors text-left disabled:opacity-50">
+            <FileJson className="w-5 h-5 text-[#3E6DC4] dash-light:text-[#3360BC]" />
             <div className="flex-1">
-              <p className="text-[11px] font-medium text-white">Command 360 (.c360)</p>
-              <p className="text-[9px] text-[#9aa0a8]">Full project backup</p>
+              <p className="text-[11px] font-medium text-white dash-light:text-[#16191E]">Command 360 (.c360)</p>
+              <p className="text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169]">Full project backup</p>
             </div>
           </button>
         </div>

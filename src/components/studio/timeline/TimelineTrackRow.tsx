@@ -71,7 +71,7 @@ export function TimelineTrackRow({
 
   return (
     <div
-      className="flex border-b border-[#1e1f22]/60 group/row"
+      className="flex border-b border-[#1e1f22]/60 dash-light:border-black/10 group/row"
       style={{ height: rowHeight }}
       draggable={!!onReorderTrack}
       onDragStart={(e) => {
@@ -91,10 +91,10 @@ export function TimelineTrackRow({
       }}
     >
       {/* Left label area */}
-      <div className="flex-shrink-0 flex items-center gap-1 px-1 bg-[#2b2d31] border-r border-[#1e1f22]" style={{ width: labelWidth }}>
+      <div className="flex-shrink-0 flex items-center gap-1 px-1 bg-[#2b2d31] dash-light:bg-white border-r border-[#1e1f22] dash-light:border-black/10" style={{ width: labelWidth }}>
         {/* Drag handle */}
         {onReorderTrack && (
-          <GripVertical className="w-3 h-3 text-[#9aa0a8] shrink-0 cursor-grab active:cursor-grabbing" />
+          <GripVertical className="w-3 h-3 text-[#9aa0a8] dash-light:text-[#5B6169] shrink-0 cursor-grab active:cursor-grabbing" />
         )}
         {/* Color dot */}
         <div
@@ -108,14 +108,14 @@ export function TimelineTrackRow({
             onChange={(e) => setEditName(e.target.value)}
             onBlur={handleRenameSubmit}
             onKeyDown={(e) => { if (e.key === 'Enter') handleRenameSubmit(); if (e.key === 'Escape') setIsEditing(false) }}
-            className="flex-1 h-5 text-white bg-[#2b2d31] border border-zinc-600 rounded-none px-1 outline-none"
+            className="flex-1 h-5 text-white dash-light:text-[#16191E] bg-[#2b2d31] dash-light:bg-white border border-zinc-600 dash-light:border-black/10 rounded-none px-1 outline-none"
             style={{ fontSize: compact ? 9 : 11 }}
             autoFocus
           />
         ) : (
           <Tooltip><TooltipTrigger asChild>
           <span
-            className="text-[#9aa0a8] truncate flex-1 cursor-default"
+            className="text-[#9aa0a8] dash-light:text-[#5B6169] truncate flex-1 cursor-default"
             style={{ fontSize: compact ? 9 : 11 }}
             onDoubleClick={handleDoubleClick}
           >
@@ -129,7 +129,7 @@ export function TimelineTrackRow({
           <button
             onClick={onToggleMute}
             className={`p-0.5 rounded-none transition-colors ${
-              track.muted ? 'text-red-400 opacity-100' : 'text-[#9aa0a8] hover:text-white'
+              track.muted ? 'text-red-400 opacity-100' : 'text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E]'
             }`}
           >
             {track.muted ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
@@ -139,19 +139,19 @@ export function TimelineTrackRow({
           <button
             onClick={onToggleHidden}
             className={`p-0.5 rounded-none transition-colors ${
-              track.hidden ? 'text-red-400 opacity-100' : 'text-[#9aa0a8] hover:text-white'
+              track.hidden ? 'text-red-400 opacity-100' : 'text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E]'
             }`}
           >
             {track.hidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
           </button>
           </TooltipTrigger><TooltipContent>{track.hidden ? 'Show' : 'Hide'}</TooltipContent></Tooltip>
           {track.locked && (
-            <Lock className="w-3 h-3 text-[#9aa0a8]" />
+            <Lock className="w-3 h-3 text-[#9aa0a8] dash-light:text-[#5B6169]" />
           )}
           <Tooltip><TooltipTrigger asChild>
           <button
             onClick={onDeleteTrack}
-            className="p-0.5 rounded-none text-[#9aa0a8] hover:text-red-400 transition-colors"
+            className="p-0.5 rounded-none text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-red-400 transition-colors"
           >
             <Trash2 className="w-3 h-3" />
           </button>
@@ -160,7 +160,7 @@ export function TimelineTrackRow({
       </div>
 
       {/* Right clip area */}
-      <div className="flex-1 relative overflow-hidden bg-zinc-950/50">
+      <div className="flex-1 relative overflow-hidden bg-zinc-950/50 dash-light:bg-[#ECE9E1]">
         <div
           className="relative h-full"
           style={{ transform: `translateX(-${scrollLeft}px)` }}

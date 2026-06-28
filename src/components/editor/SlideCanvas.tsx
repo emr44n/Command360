@@ -60,11 +60,11 @@ export function SlideCanvas({ slide, slides, selectedIndex, onTitleChange, onCan
     return (
       <div className="flex-1 flex items-center justify-center h-full" style={{ background: '#0c0c10' }}>
         <div className="flex flex-col items-center text-center max-w-xs">
-          <div className="w-20 h-20 rounded-none bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-5">
-            <FileText className="w-9 h-9 text-white/20" />
+          <div className="w-20 h-20 rounded-none bg-white/[0.04] dash-light:bg-black/[0.04] border border-white/[0.06] dash-light:border-black/10 flex items-center justify-center mb-5">
+            <FileText className="w-9 h-9 text-white/20 dash-light:text-[#5B6169]" />
           </div>
-          <p className="text-base font-semibold text-white/70 mb-1.5">No slides yet</p>
-          <p className="text-sm text-white/30 leading-relaxed">
+          <p className="text-base font-semibold text-white/70 dash-light:text-[#16191E] mb-1.5">No slides yet</p>
+          <p className="text-sm text-white/30 dash-light:text-[#5B6169] leading-relaxed">
             Add your first slide from the panel on the left to start building your presentation
           </p>
         </div>

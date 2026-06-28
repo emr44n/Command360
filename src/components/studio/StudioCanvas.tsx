@@ -815,11 +815,11 @@ export function StudioCanvas({
     >
       {/* Zoom controls — bottom-right of canvas area */}
       {interactive && (
-        <div className="absolute bottom-2 right-2 z-20 flex items-center gap-1 bg-[#1e1f22]/90 backdrop-blur-sm rounded-none px-1.5 py-1 border border-[#3f4147]/50">
-          <button onClick={() => setCanvasZoom(prev => Math.max(25, prev - 10))} className="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-white rounded-none transition-colors text-sm font-bold cursor-pointer">−</button>
-          <span className="text-[10px] text-zinc-400 font-mono w-10 text-center">{canvasZoom}%</span>
-          <button onClick={() => setCanvasZoom(prev => Math.min(200, prev + 10))} className="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-white rounded-none transition-colors text-sm font-bold cursor-pointer">+</button>
-          <button onClick={() => setCanvasZoom(100)} className="ml-0.5 px-1.5 h-6 flex items-center justify-center text-zinc-500 hover:text-white rounded-none text-[9px] transition-colors cursor-pointer">Fit</button>
+        <div className="absolute bottom-2 right-2 z-20 flex items-center gap-1 bg-[#1e1f22]/90 dash-light:bg-[#F5F2EB]/90 backdrop-blur-sm rounded-none px-1.5 py-1 border border-[#3f4147]/50 dash-light:border-black/10">
+          <button onClick={() => setCanvasZoom(prev => Math.max(25, prev - 10))} className="w-6 h-6 flex items-center justify-center text-zinc-400 dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] rounded-none transition-colors text-sm font-bold cursor-pointer">−</button>
+          <span className="text-[10px] text-zinc-400 dash-light:text-[#5B6169] font-mono w-10 text-center">{canvasZoom}%</span>
+          <button onClick={() => setCanvasZoom(prev => Math.min(200, prev + 10))} className="w-6 h-6 flex items-center justify-center text-zinc-400 dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] rounded-none transition-colors text-sm font-bold cursor-pointer">+</button>
+          <button onClick={() => setCanvasZoom(100)} className="ml-0.5 px-1.5 h-6 flex items-center justify-center text-zinc-500 dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] rounded-none text-[9px] transition-colors cursor-pointer">Fit</button>
         </div>
       )}
       {/* Konva stage for non-video layers */}

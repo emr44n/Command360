@@ -161,13 +161,13 @@ export function TimelineClip({
 
       {/* Left resize handle */}
       <div
-        className="absolute left-0 top-0 bottom-0 w-[6px] cursor-ew-resize opacity-0 group-hover:opacity-100 hover:bg-white/20 transition-opacity z-20"
+        className="absolute left-0 top-0 bottom-0 w-[6px] cursor-ew-resize opacity-0 group-hover:opacity-100 hover:bg-white/20 dash-light:hover:bg-black/[0.05] transition-opacity z-20"
         onMouseDown={(e) => handleMouseDown(e, 'resize-left')}
       />
 
       {/* Right resize handle */}
       <div
-        className="absolute right-0 top-0 bottom-0 w-[6px] cursor-ew-resize opacity-0 group-hover:opacity-100 hover:bg-white/20 transition-opacity z-20"
+        className="absolute right-0 top-0 bottom-0 w-[6px] cursor-ew-resize opacity-0 group-hover:opacity-100 hover:bg-white/20 dash-light:hover:bg-black/[0.05] transition-opacity z-20"
         onMouseDown={(e) => handleMouseDown(e, 'resize-right')}
       />
     </div>

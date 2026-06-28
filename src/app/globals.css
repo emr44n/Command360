@@ -641,6 +641,16 @@ html, body {
 /* ── EDITOR ── */
 .editor-canvas-bg { background: #f4f4f5; }
 .dark .editor-canvas-bg { background: #09090b; }
+/* Dashboard light theme wins over the global .dark on the editor/studio
+   workspace + scrollbars (the app keeps html.dark, so these need an explicit
+   .c360-light override to flip to light). */
+.c360-light .editor-canvas-bg { background: #ECE9E1; }
+.c360-light .slide-list-scroll::-webkit-scrollbar-thumb,
+.c360-light .settings-scroll::-webkit-scrollbar-thumb,
+.c360-light .canvas-scroll::-webkit-scrollbar-thumb { background: #cfc9bb; }
+.c360-light .slide-list-scroll::-webkit-scrollbar-thumb:hover,
+.c360-light .settings-scroll::-webkit-scrollbar-thumb:hover,
+.c360-light .canvas-scroll::-webkit-scrollbar-thumb:hover { background: #b6af9d; }
 
 .slide-dragging {
   opacity: 0.85;

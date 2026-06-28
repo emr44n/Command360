@@ -83,7 +83,7 @@ export function StudioProperties({
 
   if (!layer) {
     return (
-      <div className="flex h-full items-center justify-center bg-[#2b2d31] p-4 text-[#9aa0a8]">
+      <div className="flex h-full items-center justify-center bg-[#2b2d31] dash-light:bg-white p-4 text-[#9aa0a8] dash-light:text-[#5B6169]">
         <p className="text-center text-xs">Select a layer to edit its properties</p>
       </div>
     )
@@ -112,15 +112,15 @@ export function StudioProperties({
   }
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto overflow-x-hidden bg-[#2b2d31] text-white">
+    <div className="flex h-full flex-col overflow-y-auto overflow-x-hidden bg-[#2b2d31] dash-light:bg-white text-white dash-light:text-[#16191E]">
       {/* Header */}
-      <div className="flex items-center gap-2 border-b border-[#1e1f22] px-2 py-1.5">
+      <div className="flex items-center gap-2 border-b border-[#1e1f22] dash-light:border-black/10 px-2 py-1.5">
         <span className="flex-1 truncate text-[10px] font-medium">{layer.name}</span>
         <Tooltip><TooltipTrigger asChild>
         <Button
           variant="ghost"
           size="sm"
-          className="h-6 w-6 p-0 text-[#9aa0a8] hover:text-white"
+          className="h-6 w-6 p-0 text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E]"
           onClick={() => onDuplicate(layer.id)}
         >
           <CopyIcon className="size-3.5" />
@@ -141,20 +141,20 @@ export function StudioProperties({
       <div className="space-y-1.5 p-1.5">
         {/* Name */}
         <div>
-          <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">
+          <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">
             Name
           </Label>
           <Input
             value={layer.name}
             onChange={(e) => onUpdate({ name: e.target.value })}
-            className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-white px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
+            className="h-5 border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[9px] text-white dash-light:text-[#16191E] px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
           />
         </div>
 
         {/* Position */}
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">
+            <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">
               X %
             </Label>
             <Input
@@ -164,11 +164,11 @@ export function StudioProperties({
               max={100}
               step={0.1}
               onChange={(e) => onUpdate({ x: parseFloat(e.target.value) || 0 })}
-              className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-white px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
+              className="h-5 border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[9px] text-white dash-light:text-[#16191E] px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
             />
           </div>
           <div>
-            <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">
+            <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">
               Y %
             </Label>
             <Input
@@ -178,7 +178,7 @@ export function StudioProperties({
               max={100}
               step={0.1}
               onChange={(e) => onUpdate({ y: parseFloat(e.target.value) || 0 })}
-              className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-white px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
+              className="h-5 border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[9px] text-white dash-light:text-[#16191E] px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
             />
           </div>
         </div>
@@ -186,7 +186,7 @@ export function StudioProperties({
         {/* Size */}
         <div>
           <div className="flex items-center justify-between mb-1">
-            <Label className="text-[9px] text-[#9aa0a8] font-medium">
+            <Label className="text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">
               Size
             </Label>
             <Tooltip><TooltipTrigger asChild>
@@ -195,7 +195,7 @@ export function StudioProperties({
               className={`flex items-center gap-1 px-1.5 py-0.5 rounded-none text-[9px] font-medium transition-colors ${
                 aspectLocked
                   ? 'text-red-400 bg-red-400/10 hover:bg-red-400/20'
-                  : 'text-[#9aa0a8] hover:text-white hover:bg-zinc-700'
+                  : 'text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] hover:bg-zinc-700 dash-light:hover:bg-black/[0.05]'
               }`}
             >
               {aspectLocked ? (
@@ -208,7 +208,7 @@ export function StudioProperties({
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">
+              <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">
                 Width %
               </Label>
               <Input
@@ -226,11 +226,11 @@ export function StudioProperties({
                     onUpdate({ width: newW })
                   }
                 }}
-                className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-white px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
+                className="h-5 border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[9px] text-white dash-light:text-[#16191E] px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
               />
             </div>
             <div>
-              <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">
+              <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">
                 Height %
               </Label>
               <Input
@@ -248,7 +248,7 @@ export function StudioProperties({
                     onUpdate({ height: newH })
                   }
                 }}
-                className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-white px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
+                className="h-5 border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[9px] text-white dash-light:text-[#16191E] px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
               />
             </div>
           </div>
@@ -256,7 +256,7 @@ export function StudioProperties({
 
         {/* Rotation */}
         <div>
-          <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">
+          <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">
             Rotation ({Math.round(layer.rotation)}&deg;)
           </Label>
           <Slider
@@ -271,7 +271,7 @@ export function StudioProperties({
 
         {/* Opacity */}
         <div>
-          <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">
+          <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">
             Opacity ({Math.round(layer.opacity * 100)}%)
           </Label>
           <Slider
@@ -286,7 +286,7 @@ export function StudioProperties({
 
         {/* Blend Mode */}
         <div>
-          <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">
+          <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">
             Blend Mode
           </Label>
           <Select
@@ -295,7 +295,7 @@ export function StudioProperties({
               onUpdate({ blendMode: v as StudioLayer['blendMode'] })
             }
           >
-            <SelectTrigger className="h-6 w-full border-[#3f4147] bg-[#1e1f22] text-[10px] text-white">
+            <SelectTrigger className="h-6 w-full border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[10px] text-white dash-light:text-[#16191E]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -313,49 +313,49 @@ export function StudioProperties({
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             {layer.visible ? (
-              <EyeIcon className="size-3.5 text-[#9aa0a8]" />
+              <EyeIcon className="size-3.5 text-[#9aa0a8] dash-light:text-[#5B6169]" />
             ) : (
-              <EyeOffIcon className="size-3.5 text-[#9aa0a8]" />
+              <EyeOffIcon className="size-3.5 text-[#9aa0a8] dash-light:text-[#5B6169]" />
             )}
             <Switch
               checked={layer.visible}
               onCheckedChange={(v) => onUpdate({ visible: v })}
               size="sm"
             />
-            <span className="text-[10px] text-[#9aa0a8]">Visible</span>
+            <span className="text-[10px] text-[#9aa0a8] dash-light:text-[#5B6169]">Visible</span>
           </div>
           <div className="flex items-center gap-2">
             {layer.locked ? (
               <LockIcon className="size-3.5 text-amber-400" />
             ) : (
-              <UnlockIcon className="size-3.5 text-[#9aa0a8]" />
+              <UnlockIcon className="size-3.5 text-[#9aa0a8] dash-light:text-[#5B6169]" />
             )}
             <Switch
               checked={layer.locked}
               onCheckedChange={(v) => onUpdate({ locked: v })}
               size="sm"
             />
-            <span className="text-[10px] text-[#9aa0a8]">Lock</span>
+            <span className="text-[10px] text-[#9aa0a8] dash-light:text-[#5B6169]">Lock</span>
           </div>
         </div>
 
         {/* Text-specific properties */}
         {layer.type === 'text' && (
-          <div className="space-y-2 border-t border-[#1e1f22] pt-2">
-            <Label className="text-[9px] text-[#9aa0a8] font-medium">
+          <div className="space-y-2 border-t border-[#1e1f22] dash-light:border-black/10 pt-2">
+            <Label className="text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">
               Text Properties
             </Label>
             <div>
-              <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">Content</Label>
+              <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Content</Label>
               <Input
                 value={layer.text ?? ''}
                 onChange={(e) => onUpdate({ text: e.target.value })}
-                className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-white px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
+                className="h-5 border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[9px] text-white dash-light:text-[#16191E] px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
               />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">Font Size</Label>
+                <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Font Size</Label>
                 <Input
                   type="number"
                   value={layer.fontSize ?? 24}
@@ -364,16 +364,16 @@ export function StudioProperties({
                   onChange={(e) =>
                     onUpdate({ fontSize: parseInt(e.target.value) || 24 })
                   }
-                  className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-white px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
+                  className="h-5 border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[9px] text-white dash-light:text-[#16191E] px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
                 />
               </div>
               <div>
-                <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">Weight</Label>
+                <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Weight</Label>
                 <Select
                   value={layer.fontWeight ?? 'normal'}
                   onValueChange={(v) => onUpdate({ fontWeight: v })}
                 >
-                  <SelectTrigger className="h-6 w-full border-[#3f4147] bg-[#1e1f22] text-[10px] text-white">
+                  <SelectTrigger className="h-6 w-full border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[10px] text-white dash-light:text-[#16191E]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -389,19 +389,19 @@ export function StudioProperties({
               </div>
             </div>
             <div>
-              <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">Color</Label>
+              <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Color</Label>
               <ColorPickerPopover value={layer.color ?? '#ffffff'} onChange={(c) => onUpdate({ color: c })} />
             </div>
             <div>
-              <label className="text-[9px] text-[#9aa0a8] font-medium mb-1 block">Font</label>
+              <label className="text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium mb-1 block">Font</label>
               <FontPicker value={layer.fontFamily || 'Inter'} onChange={(f) => onUpdate({ fontFamily: f })} />
             </div>
             <div>
-              <label className="text-[9px] text-[#9aa0a8] font-medium mb-1 block">Align</label>
+              <label className="text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium mb-1 block">Align</label>
               <div className="flex gap-0.5">
                 {(['left', 'center', 'right'] as const).map(a => (
                   <button key={a} onClick={() => onUpdate({ textAlign: a })}
-                    className={`flex-1 h-5 rounded-none text-[8px] flex items-center justify-center transition-colors ${layer.textAlign === a ? 'bg-red-500/20 text-red-400' : 'bg-[#1e1f22] text-[#9aa0a8] hover:text-white'}`}>
+                    className={`flex-1 h-5 rounded-none text-[8px] flex items-center justify-center transition-colors ${layer.textAlign === a ? 'bg-red-500/20 text-red-400' : 'bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E]'}`}>
                     {a.charAt(0).toUpperCase() + a.slice(1)}
                   </button>
                 ))}
@@ -412,18 +412,18 @@ export function StudioProperties({
 
         {/* Audio-specific properties */}
         {layer.type === 'audio' && (
-          <div className="space-y-2 border-t border-[#1e1f22] pt-2">
-            <Label className="text-[9px] text-[#9aa0a8] font-medium">
+          <div className="space-y-2 border-t border-[#1e1f22] dash-light:border-black/10 pt-2">
+            <Label className="text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">
               Audio Properties
             </Label>
             {layer.src && (
               <div>
-                <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">File</Label>
-                <p className="text-[9px] text-[#9aa0a8] truncate">{layer.name}</p>
+                <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">File</Label>
+                <p className="text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] truncate">{layer.name}</p>
               </div>
             )}
             <div>
-              <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">
+              <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">
                 Volume ({Math.round((layer.volume ?? 1) * 100)}%)
               </Label>
               <Slider
@@ -441,34 +441,34 @@ export function StudioProperties({
                 onCheckedChange={(v) => onUpdate({ audioLoop: v })}
                 size="sm"
               />
-              <span className="text-[10px] text-[#9aa0a8]">Loop</span>
+              <span className="text-[10px] text-[#9aa0a8] dash-light:text-[#5B6169]">Loop</span>
             </div>
           </div>
         )}
 
         {/* Shape-specific properties */}
         {layer.type === 'shape' && (
-          <div className="space-y-2 border-t border-[#1e1f22] pt-2">
-            <Label className="text-[9px] text-[#9aa0a8] font-medium">{layer.name === 'Line' ? 'Line Properties' : 'Shape Properties'}</Label>
+          <div className="space-y-2 border-t border-[#1e1f22] dash-light:border-black/10 pt-2">
+            <Label className="text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">{layer.name === 'Line' ? 'Line Properties' : 'Shape Properties'}</Label>
 
             {/* LINE — simplified UI */}
             {layer.name === 'Line' ? (<>
               <div>
-                <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">Color</Label>
+                <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Color</Label>
                 <ColorPickerPopover value={layer.color ?? '#4a5568'} onChange={(c) => onUpdate({ color: c })} />
               </div>
               <div>
-                <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">Thickness ({layer.borderWidth ?? 2}px)</Label>
+                <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Thickness ({layer.borderWidth ?? 2}px)</Label>
                 <Slider value={[layer.borderWidth ?? 2]} min={1} max={20} step={1} onValueChange={([v]) => onUpdate({ borderWidth: v })} className="py-1" />
               </div>
               <div className="flex items-center gap-2">
                 <Switch checked={layer.borderStyle === 'dashed'} onCheckedChange={(v) => onUpdate({ borderStyle: v ? 'dashed' : 'solid' })} />
-                <span className="text-[10px] text-[#9aa0a8]">Dashed</span>
+                <span className="text-[10px] text-[#9aa0a8] dash-light:text-[#5B6169]">Dashed</span>
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <Label className="text-[9px] text-[#9aa0a8] font-medium">Feather ({layer.feather ?? 0}%)</Label>
-                  {(layer.feather ?? 0) > 0 && <button onClick={() => onUpdate({ feather: 0 })} className="text-[7px] text-[#9aa0a8] hover:text-white transition-colors">Reset</button>}
+                  <Label className="text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Feather ({layer.feather ?? 0}%)</Label>
+                  {(layer.feather ?? 0) > 0 && <button onClick={() => onUpdate({ feather: 0 })} className="text-[7px] text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] transition-colors">Reset</button>}
                 </div>
                 <Slider value={[layer.feather ?? 0]} min={0} max={100} step={1} onValueChange={([v]) => onUpdate({ feather: v })} className="py-1" />
               </div>
@@ -476,36 +476,36 @@ export function StudioProperties({
               {/* NON-LINE SHAPES — full UI */}
               {/* Fill Color */}
               <div>
-                <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">Fill Color</Label>
+                <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Fill Color</Label>
                 <ColorPickerPopover value={layer.color ?? '#4a5568'} onChange={(c) => onUpdate({ color: c })} />
               </div>
               {/* Transparent Fill */}
               <div className="flex items-center gap-2">
                 <Switch checked={layer.fillTransparent ?? false} onCheckedChange={(v) => onUpdate({ fillTransparent: v })} />
-                <span className="text-[10px] text-[#9aa0a8]">Transparent fill</span>
+                <span className="text-[10px] text-[#9aa0a8] dash-light:text-[#5B6169]">Transparent fill</span>
               </div>
               {/* Border */}
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <Switch checked={!!layer.borderWidth && layer.borderWidth > 0} onCheckedChange={(v) => onUpdate(v ? { borderWidth: 2, borderStyle: 'solid', borderColor: '#ffffff' } : { borderWidth: 0, borderStyle: 'none' })} />
-                  <span className="text-[10px] text-[#9aa0a8]">Border</span>
+                  <span className="text-[10px] text-[#9aa0a8] dash-light:text-[#5B6169]">Border</span>
                 </div>
                 {layer.borderWidth && layer.borderWidth > 0 && (
-                  <div className="space-y-2 pl-2 border-l-2 border-[#3f4147] ml-1">
+                  <div className="space-y-2 pl-2 border-l-2 border-[#3f4147] dash-light:border-black/10 ml-1">
                     <div>
-                      <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">Border Color</Label>
+                      <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Border Color</Label>
                       <ColorPickerPopover value={layer.borderColor ?? '#ffffff'} onChange={(c) => onUpdate({ borderColor: c })} />
                     </div>
                     <div>
-                      <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">Width ({layer.borderWidth ?? 2}px)</Label>
+                      <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Width ({layer.borderWidth ?? 2}px)</Label>
                       <Slider value={[layer.borderWidth ?? 2]} min={1} max={20} step={1} onValueChange={([v]) => onUpdate({ borderWidth: v })} className="py-1" />
                     </div>
                     <div>
-                      <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">Style</Label>
+                      <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Style</Label>
                       <div className="flex gap-0.5">
                         {(['solid', 'dashed', 'dotted'] as const).map(s => (
                           <button key={s} onClick={() => onUpdate({ borderStyle: s })}
-                            className={`flex-1 h-5 rounded-none text-[8px] flex items-center justify-center transition-colors ${layer.borderStyle === s ? 'bg-red-500/20 text-red-400' : 'bg-[#1e1f22] text-[#9aa0a8] hover:text-white'}`}>
+                            className={`flex-1 h-5 rounded-none text-[8px] flex items-center justify-center transition-colors ${layer.borderStyle === s ? 'bg-red-500/20 text-red-400' : 'bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E]'}`}>
                             {s.charAt(0).toUpperCase() + s.slice(1)}
                           </button>
                         ))}
@@ -517,7 +517,7 @@ export function StudioProperties({
             </>)}
             {/* Mask Mode */}
             <div>
-              <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">Mask Mode</Label>
+              <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Mask Mode</Label>
               <div className="flex gap-0.5">
                 {([
                   { value: 'none' as const, label: 'None' },
@@ -525,45 +525,45 @@ export function StudioProperties({
                   { value: 'multi-layer-mask' as const, label: 'Multi' },
                 ]).map(m => (
                   <button key={m.value} onClick={() => onUpdate({ maskMode: m.value })}
-                    className={`flex-1 h-5 rounded-none text-[8px] flex items-center justify-center transition-colors ${(layer.maskMode || 'none') === m.value ? 'bg-red-500/20 text-red-400' : 'bg-[#1e1f22] text-[#9aa0a8] hover:text-white'}`}>
+                    className={`flex-1 h-5 rounded-none text-[8px] flex items-center justify-center transition-colors ${(layer.maskMode || 'none') === m.value ? 'bg-red-500/20 text-red-400' : 'bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E]'}`}>
                     {m.label}
                   </button>
                 ))}
               </div>
-              {layer.maskMode === 'mask' && <p className="text-[7px] text-[#9aa0a8] mt-1">Cuts through the layer directly below</p>}
-              {layer.maskMode === 'multi-layer-mask' && <p className="text-[7px] text-[#9aa0a8] mt-1">Cuts through all layers below to base</p>}
+              {layer.maskMode === 'mask' && <p className="text-[7px] text-[#9aa0a8] dash-light:text-[#5B6169] mt-1">Cuts through the layer directly below</p>}
+              {layer.maskMode === 'multi-layer-mask' && <p className="text-[7px] text-[#9aa0a8] dash-light:text-[#5B6169] mt-1">Cuts through all layers below to base</p>}
             </div>
             {/* Feather Edge */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <Label className="text-[9px] text-[#9aa0a8] font-medium">Feather ({layer.feather ?? 0}%)</Label>
-                {(layer.feather ?? 0) > 0 && <button onClick={() => onUpdate({ feather: 0 })} className="text-[7px] text-[#9aa0a8] hover:text-white transition-colors">Reset</button>}
+                <Label className="text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Feather ({layer.feather ?? 0}%)</Label>
+                {(layer.feather ?? 0) > 0 && <button onClick={() => onUpdate({ feather: 0 })} className="text-[7px] text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] transition-colors">Reset</button>}
               </div>
               <Slider value={[layer.feather ?? 0]} min={0} max={100} step={1} onValueChange={([v]) => onUpdate({ feather: v })} className="py-1" />
-              <p className="text-[7px] text-[#9aa0a8] mt-0.5">Soft/transparent edge — Photoshop-style feathering</p>
+              <p className="text-[7px] text-[#9aa0a8] dash-light:text-[#5B6169] mt-0.5">Soft/transparent edge — Photoshop-style feathering</p>
             </div>
           </div>
         )}
 
         {/* Image feather */}
         {layer.type === 'image' && (
-          <div className="space-y-2 border-t border-[#1e1f22] pt-2">
+          <div className="space-y-2 border-t border-[#1e1f22] dash-light:border-black/10 pt-2">
             <div>
               <div className="flex items-center justify-between mb-1">
-                <Label className="text-[9px] text-[#9aa0a8] font-medium">Feather ({layer.feather ?? 0}%)</Label>
-                {(layer.feather ?? 0) > 0 && <button onClick={() => onUpdate({ feather: 0 })} className="text-[7px] text-[#9aa0a8] hover:text-white transition-colors">Reset</button>}
+                <Label className="text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Feather ({layer.feather ?? 0}%)</Label>
+                {(layer.feather ?? 0) > 0 && <button onClick={() => onUpdate({ feather: 0 })} className="text-[7px] text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] transition-colors">Reset</button>}
               </div>
               <Slider value={[layer.feather ?? 0]} min={0} max={100} step={1} onValueChange={([v]) => onUpdate({ feather: v })} className="py-1" />
-              <p className="text-[7px] text-[#9aa0a8] mt-0.5">Soft/transparent edge inward</p>
+              <p className="text-[7px] text-[#9aa0a8] dash-light:text-[#5B6169] mt-0.5">Soft/transparent edge inward</p>
             </div>
           </div>
         )}
 
         {/* ── Clip Info Section ── */}
         {selectedClip && onUpdateClip && (
-          <div className="border-t border-[#1e1f22] pt-3">
+          <div className="border-t border-[#1e1f22] dash-light:border-black/10 pt-3">
             <button
-              className="flex w-full items-center gap-1 text-[9px] text-[#9aa0a8] font-medium hover:text-white transition-colors"
+              className="flex w-full items-center gap-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium hover:text-white dash-light:hover:text-[#16191E] transition-colors"
               onClick={() => setClipInfoOpen(!clipInfoOpen)}
             >
               {clipInfoOpen ? (
@@ -577,7 +577,7 @@ export function StudioProperties({
               <div className="mt-2 space-y-2">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">Start (ms)</Label>
+                    <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Start (ms)</Label>
                     <Input
                       type="number"
                       value={selectedClip.startTime}
@@ -586,11 +586,11 @@ export function StudioProperties({
                       onChange={(e) =>
                         onUpdateClip({ startTime: parseInt(e.target.value) || 0 })
                       }
-                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-white px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
+                      className="h-5 border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[9px] text-white dash-light:text-[#16191E] px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
                     />
                   </div>
                   <div>
-                    <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">Duration (ms)</Label>
+                    <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Duration (ms)</Label>
                     <Input
                       type="number"
                       value={selectedClip.duration}
@@ -599,13 +599,13 @@ export function StudioProperties({
                       onChange={(e) =>
                         onUpdateClip({ duration: parseInt(e.target.value) || 1000 })
                       }
-                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-white px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
+                      className="h-5 border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[9px] text-white dash-light:text-[#16191E] px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">Trim Start (ms)</Label>
+                    <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Trim Start (ms)</Label>
                     <Input
                       type="number"
                       value={selectedClip.trimStart}
@@ -614,11 +614,11 @@ export function StudioProperties({
                       onChange={(e) =>
                         onUpdateClip({ trimStart: parseInt(e.target.value) || 0 })
                       }
-                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-white px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
+                      className="h-5 border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[9px] text-white dash-light:text-[#16191E] px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
                     />
                   </div>
                   <div>
-                    <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">Trim End (ms)</Label>
+                    <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">Trim End (ms)</Label>
                     <Input
                       type="number"
                       value={selectedClip.trimEnd}
@@ -627,7 +627,7 @@ export function StudioProperties({
                       onChange={(e) =>
                         onUpdateClip({ trimEnd: parseInt(e.target.value) || 0 })
                       }
-                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-white px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
+                      className="h-5 border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[9px] text-white dash-light:text-[#16191E] px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
                     />
                   </div>
                 </div>
@@ -638,9 +638,9 @@ export function StudioProperties({
 
         {/* ── Keyframes Section ── */}
         {selectedClip && onAddKeyframe && onDeleteKeyframe && (
-          <div className="border-t border-[#1e1f22] pt-3">
+          <div className="border-t border-[#1e1f22] dash-light:border-black/10 pt-3">
             <button
-              className="flex w-full items-center gap-1 text-[9px] text-[#9aa0a8] font-medium hover:text-white transition-colors"
+              className="flex w-full items-center gap-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium hover:text-white dash-light:hover:text-[#16191E] transition-colors"
               onClick={() => setKeyframesOpen(!keyframesOpen)}
             >
               {keyframesOpen ? (
@@ -653,29 +653,29 @@ export function StudioProperties({
             {keyframesOpen && (
               <div className="mt-2 space-y-1.5">
                 {sortedKeyframes.length === 0 && (
-                  <p className="text-[10px] text-[#9aa0a8] italic">No keyframes yet</p>
+                  <p className="text-[10px] text-[#9aa0a8] dash-light:text-[#5B6169] italic">No keyframes yet</p>
                 )}
 
                 {sortedKeyframes.map((kf) => (
                   <div
                     key={kf.id}
-                    className="flex items-center gap-1.5 rounded-none bg-zinc-800/60 px-2 py-1 text-[10px]"
+                    className="flex items-center gap-1.5 rounded-none bg-zinc-800/60 dash-light:bg-[#F5F2EB] px-2 py-1 text-[10px]"
                   >
-                    <span className="w-10 shrink-0 font-mono text-[#9aa0a8]">
+                    <span className="w-10 shrink-0 font-mono text-[#9aa0a8] dash-light:text-[#5B6169]">
                       {kf.time}ms
                     </span>
-                    <span className="w-12 shrink-0 truncate text-[#9aa0a8]">
+                    <span className="w-12 shrink-0 truncate text-[#9aa0a8] dash-light:text-[#5B6169]">
                       {kf.property}
                     </span>
-                    <span className="flex-1 truncate text-[#9aa0a8]">
+                    <span className="flex-1 truncate text-[#9aa0a8] dash-light:text-[#5B6169]">
                       {String(kf.value)}
                     </span>
-                    <span className="w-12 shrink-0 truncate text-[#9aa0a8]">
+                    <span className="w-12 shrink-0 truncate text-[#9aa0a8] dash-light:text-[#5B6169]">
                       {kf.easing}
                     </span>
                     <Tooltip><TooltipTrigger asChild>
                     <button
-                      className="p-0.5 text-[#9aa0a8] hover:text-red-400 transition-colors"
+                      className="p-0.5 text-[#9aa0a8] dash-light:text-[#5B6169] hover:text-red-400 transition-colors"
                       onClick={() => onDeleteKeyframe(kf.id)}
                     >
                       <Trash2Icon className="size-3" />
@@ -690,7 +690,7 @@ export function StudioProperties({
                     value={newKfProperty}
                     onValueChange={setNewKfProperty}
                   >
-                    <SelectTrigger className="h-6 w-24 border-[#3f4147] bg-[#1e1f22] text-[10px] text-white">
+                    <SelectTrigger className="h-6 w-24 border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[10px] text-white dash-light:text-[#16191E]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -704,7 +704,7 @@ export function StudioProperties({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-6 flex-1 border-[#3f4147] bg-[#2b2d31] text-[10px] text-[#9aa0a8] hover:bg-zinc-700"
+                    className="h-6 flex-1 border-[#3f4147] dash-light:border-black/10 bg-[#2b2d31] dash-light:bg-white text-[10px] text-[#9aa0a8] dash-light:text-[#5B6169] hover:bg-zinc-700 dash-light:hover:bg-black/[0.05]"
                     onClick={() => {
                       // Use current layer value as default
                       const prop = newKfProperty as keyof StudioLayer
@@ -730,9 +730,9 @@ export function StudioProperties({
 
         {/* ── Fade Controls Section ── */}
         {selectedClip && onAddKeyframe && (
-          <div className="border-t border-[#1e1f22] pt-3">
+          <div className="border-t border-[#1e1f22] dash-light:border-black/10 pt-3">
             <button
-              className="flex w-full items-center gap-1 text-[9px] text-[#9aa0a8] font-medium hover:text-white transition-colors"
+              className="flex w-full items-center gap-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium hover:text-white dash-light:hover:text-[#16191E] transition-colors"
               onClick={() => setFadeOpen(!fadeOpen)}
             >
               {fadeOpen ? (
@@ -746,7 +746,7 @@ export function StudioProperties({
               <div className="mt-2 space-y-2">
                 <div className="flex items-end gap-2">
                   <div className="flex-1">
-                    <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">
+                    <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">
                       Fade In (ms)
                     </Label>
                     <Input
@@ -755,13 +755,13 @@ export function StudioProperties({
                       min={0}
                       step={100}
                       onChange={(e) => setFadeInDuration(parseInt(e.target.value) || 0)}
-                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-white px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
+                      className="h-5 border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[9px] text-white dash-light:text-[#16191E] px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
                     />
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-6 shrink-0 border-[#3f4147] bg-[#2b2d31] text-[10px] text-[#9aa0a8] hover:bg-zinc-700"
+                    className="h-6 shrink-0 border-[#3f4147] dash-light:border-black/10 bg-[#2b2d31] dash-light:bg-white text-[10px] text-[#9aa0a8] dash-light:text-[#5B6169] hover:bg-zinc-700 dash-light:hover:bg-black/[0.05]"
                     onClick={handleAddFadeIn}
                   >
                     Apply
@@ -769,7 +769,7 @@ export function StudioProperties({
                 </div>
                 <div className="flex items-end gap-2">
                   <div className="flex-1">
-                    <Label className="mb-1 text-[9px] text-[#9aa0a8] font-medium">
+                    <Label className="mb-1 text-[9px] text-[#9aa0a8] dash-light:text-[#5B6169] font-medium">
                       Fade Out (ms)
                     </Label>
                     <Input
@@ -778,13 +778,13 @@ export function StudioProperties({
                       min={0}
                       step={100}
                       onChange={(e) => setFadeOutDuration(parseInt(e.target.value) || 0)}
-                      className="h-5 border-[#3f4147] bg-[#1e1f22] text-[9px] text-white px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
+                      className="h-5 border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-[9px] text-white dash-light:text-[#16191E] px-1.5 rounded-none focus:ring-1 focus:ring-red-500/30"
                     />
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-6 shrink-0 border-[#3f4147] bg-[#2b2d31] text-[10px] text-[#9aa0a8] hover:bg-zinc-700"
+                    className="h-6 shrink-0 border-[#3f4147] dash-light:border-black/10 bg-[#2b2d31] dash-light:bg-white text-[10px] text-[#9aa0a8] dash-light:text-[#5B6169] hover:bg-zinc-700 dash-light:hover:bg-black/[0.05]"
                     onClick={handleAddFadeOut}
                   >
                     Apply
@@ -796,11 +796,11 @@ export function StudioProperties({
         )}
 
         {/* Delete / Duplicate buttons */}
-        <div className="grid grid-cols-2 gap-2 border-t border-[#1e1f22] pt-3">
+        <div className="grid grid-cols-2 gap-2 border-t border-[#1e1f22] dash-light:border-black/10 pt-3">
           <Button
             variant="outline"
             size="sm"
-            className="border-[#3f4147] bg-[#1e1f22] text-xs text-[#9aa0a8] hover:bg-zinc-700"
+            className="border-[#3f4147] dash-light:border-black/10 bg-[#1e1f22] dash-light:bg-[#F5F2EB] text-xs text-[#9aa0a8] dash-light:text-[#5B6169] hover:bg-zinc-700 dash-light:hover:bg-black/[0.05]"
             onClick={() => onDuplicate(layer.id)}
           >
             <CopyIcon className="mr-1 size-3" /> Duplicate

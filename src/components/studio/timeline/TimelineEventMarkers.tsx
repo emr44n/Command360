@@ -19,7 +19,7 @@ export function TimelineEventMarkers({
   const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   return (
-    <div className="relative h-5 bg-[#1e1f22] border-b border-[#3f4147] overflow-hidden select-none">
+    <div className="relative h-5 bg-[#1e1f22] dash-light:bg-[#F5F2EB] border-b border-[#3f4147] dash-light:border-black/10 overflow-hidden select-none">
       <div
         className="relative h-full"
         style={{ transform: `translateX(-${scrollLeft}px)` }}
@@ -50,7 +50,7 @@ export function TimelineEventMarkers({
               />
               {/* Event name tooltip on hover */}
               {hoveredId === event.id && (
-                <div className="absolute bottom-full left-0 mb-1 px-1.5 py-0.5 rounded-none bg-[#2b2d31] border border-[#3f4147] text-[10px] text-white whitespace-nowrap shadow-lg z-50">
+                <div className="absolute bottom-full left-0 mb-1 px-1.5 py-0.5 rounded-none bg-[#2b2d31] dash-light:bg-white border border-[#3f4147] dash-light:border-black/10 text-[10px] text-white dash-light:text-[#16191E] whitespace-nowrap shadow-lg z-50">
                   {event.name}
                 </div>
               )}

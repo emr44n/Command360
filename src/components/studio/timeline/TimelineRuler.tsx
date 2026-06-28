@@ -51,7 +51,7 @@ export function TimelineRuler({ totalDuration, zoomLevel, scrollLeft, height = 2
   }, [totalDuration, zoomLevel])
 
   return (
-    <div className="relative bg-[#1e1f22] border-b border-[#3f4147] overflow-hidden select-none" style={{ height }}>
+    <div className="relative bg-[#1e1f22] dash-light:bg-[#F5F2EB] border-b border-[#3f4147] dash-light:border-black/10 overflow-hidden select-none" style={{ height }}>
       <div
         className="relative h-full"
         style={{ width: totalWidth, transform: `translateX(-${scrollLeft}px)` }}
@@ -71,7 +71,7 @@ export function TimelineRuler({ totalDuration, zoomLevel, scrollLeft, height = 2
             {/* Label */}
             {tick.label !== null && (
               <span
-                className="absolute left-1 text-[#9aa0a8] whitespace-nowrap font-mono tabular-nums"
+                className="absolute left-1 text-[#9aa0a8] dash-light:text-[#5B6169] whitespace-nowrap font-mono tabular-nums"
                 style={{ top: 1, fontSize: height < 22 ? 7 : 9 }}
               >
                 {tick.label}

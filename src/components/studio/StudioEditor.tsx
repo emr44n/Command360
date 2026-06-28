@@ -689,9 +689,9 @@ export function StudioEditor({
   const [activePanel, setActivePanel] = useState<'slides' | 'layers' | 'gallery' | 'events' | 'text' | 'shapes' | 'templates'>(hasSlides ? 'slides' : 'gallery')
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-[#1e1f22]" style={{ minHeight: 0 }}>
+    <div className="flex h-full w-full overflow-hidden bg-[#1e1f22] dash-light:bg-[#F5F2EB]" style={{ minHeight: 0 }}>
       {/* Icon Sidebar — Discord-style dark rail */}
-      <div className="w-[52px] shrink-0 bg-[#1e1f22] flex flex-col items-center py-3 gap-1.5">
+      <div className="w-[52px] shrink-0 bg-[#1e1f22] dash-light:bg-[#F5F2EB] flex flex-col items-center py-3 gap-1.5">
         {SIDEBAR_ICONS.map((item) => {
           const isActive = item.panel && showLeftPanel && activePanel === item.panel
           return (
@@ -708,7 +708,7 @@ export function StudioEditor({
               className={`w-10 h-10 rounded-none flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
                 isActive
                   ? `${item.activeClass} shadow-lg`
-                  : 'text-zinc-500 hover:text-zinc-200 hover:bg-[#35363c]'
+                  : 'text-zinc-500 dash-light:text-[#5B6169] hover:text-zinc-200 dash-light:hover:text-[#16191E] hover:bg-[#35363c] dash-light:hover:bg-black/[0.05]'
               }`}
             >
               <item.icon className="w-4 h-4" />
@@ -724,7 +724,7 @@ export function StudioEditor({
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => setShowTemplateName(true)}
-          className="w-10 h-10 rounded-none flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer text-zinc-500 hover:text-zinc-200 hover:bg-[#35363c]"
+          className="w-10 h-10 rounded-none flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer text-zinc-500 dash-light:text-[#5B6169] hover:text-zinc-200 dash-light:hover:text-[#16191E] hover:bg-[#35363c] dash-light:hover:bg-black/[0.05]"
         >
           <Save className="w-4 h-4" />
           <span className="text-[7px] leading-none font-medium">Save</span>
@@ -732,14 +732,14 @@ export function StudioEditor({
         </TooltipTrigger><TooltipContent side="right">Save as Template</TooltipContent></Tooltip>
 
         {/* Divider */}
-        <div className="w-6 h-px bg-zinc-700/50 mb-1" />
+        <div className="w-6 h-px bg-zinc-700/50 dash-light:bg-black/10 mb-1" />
 
         {/* Panel toggles at bottom */}
         <Tooltip><TooltipTrigger asChild>
         <button
           onClick={() => setShowProperties(v => !v)}
           className={`w-10 h-10 rounded-none flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
-            showProperties ? 'bg-[#35363c] text-zinc-300' : 'text-zinc-600 hover:text-zinc-400 hover:bg-[#35363c]'
+            showProperties ? 'bg-[#35363c] dash-light:bg-[#EAE6DD] text-zinc-300 dash-light:text-[#16191E]' : 'text-zinc-600 dash-light:text-[#5B6169] hover:text-zinc-400 dash-light:hover:text-[#16191E] hover:bg-[#35363c] dash-light:hover:bg-black/[0.05]'
           }`}
         >
           <Settings2 className="w-4 h-4" />
@@ -750,7 +750,7 @@ export function StudioEditor({
         <button
           onClick={() => setShowTimeline(v => !v)}
           className={`w-10 h-10 rounded-none flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer ${
-            showTimeline ? 'bg-[#35363c] text-zinc-300' : 'text-zinc-600 hover:text-zinc-400 hover:bg-[#35363c]'
+            showTimeline ? 'bg-[#35363c] dash-light:bg-[#EAE6DD] text-zinc-300 dash-light:text-[#16191E]' : 'text-zinc-600 dash-light:text-[#5B6169] hover:text-zinc-400 dash-light:hover:text-[#16191E] hover:bg-[#35363c] dash-light:hover:bg-black/[0.05]'
           }`}
         >
           <Film className="w-4 h-4" />
@@ -766,7 +766,7 @@ export function StudioEditor({
           {/* Left: Slides / Asset / Events panel — Discord channel list color */}
           {showLeftPanel && (
             <>
-              <div className="shrink-0 bg-[#2b2d31] overflow-hidden overflow-x-hidden flex flex-col border-r border-[#1e1f22]" style={{ width: leftPanelWidth }}>
+              <div className="shrink-0 bg-[#2b2d31] dash-light:bg-white overflow-hidden overflow-x-hidden flex flex-col border-r border-[#1e1f22] dash-light:border-black/10" style={{ width: leftPanelWidth }}>
                 {/* Active panel accent strip */}
                 <div className="h-[2px] shrink-0" style={{
                   backgroundColor: activePanel === 'slides' ? '#6a5ea8' : activePanel === 'layers' ? '#3E6DC4' : activePanel === 'gallery' ? '#C9241A' : activePanel === 'text' ? '#3E6DC4' : activePanel === 'shapes' ? '#2E9E63' : activePanel === 'templates' ? '#6a5ea8' : '#c98a2a'
@@ -876,14 +876,14 @@ export function StudioEditor({
                 )}
               </div>
               <div
-                className="w-[3px] shrink-0 cursor-col-resize bg-[#1e1f22] hover:bg-[#C9241A]/60 transition-colors"
+                className="w-[3px] shrink-0 cursor-col-resize bg-[#1e1f22] dash-light:bg-black/10 hover:bg-[#C9241A]/60 transition-colors"
                 onMouseDown={() => startDrag('left')}
               />
             </>
           )}
 
           {/* Center: Canvas area */}
-          <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#313338]">
+          <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#313338] dash-light:bg-[#ECE9E1]">
             {content.cctvLayout ? (
               /* CCTV: live grid preview of assigned scenes */
               <div className="flex-1 min-h-0 flex items-center justify-center p-4" style={{ background: '#141416', backgroundImage: 'radial-gradient(circle, #1e1f22 1px, transparent 1px)', backgroundSize: '16px 16px' }}>
@@ -925,36 +925,36 @@ export function StudioEditor({
                   />
                 </div>
                 {/* Transport bar */}
-                <div className="h-6 shrink-0 bg-[#2b2d31] border-t border-[#1e1f22] flex items-center justify-center gap-3 px-3">
-                  <span className="text-[9px] font-mono text-[#2E9E63] tabular-nums">
+                <div className="h-6 shrink-0 bg-[#2b2d31] dash-light:bg-white border-t border-[#1e1f22] dash-light:border-black/10 flex items-center justify-center gap-3 px-3">
+                  <span className="text-[9px] font-mono text-[#2E9E63] dash-light:text-[#1F8F54] tabular-nums">
                     {formatTime(currentTime)}
                   </span>
                   <div className="flex items-center gap-1">
                     <Tooltip><TooltipTrigger asChild>
                     <button onClick={handleUndo} disabled={undoStack.length === 0}
-                      className="w-6 h-6 rounded-none flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer">
+                      className="w-6 h-6 rounded-none flex items-center justify-center text-zinc-400 dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] hover:bg-white/10 dash-light:hover:bg-black/[0.05] disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer">
                       <Undo2 className="w-3.5 h-3.5" />
                     </button>
                     </TooltipTrigger><TooltipContent>Undo (Ctrl+Z)</TooltipContent></Tooltip>
                     <Tooltip><TooltipTrigger asChild>
                     <button onClick={handleRedo} disabled={redoStack.length === 0}
-                      className="w-6 h-6 rounded-none flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer">
+                      className="w-6 h-6 rounded-none flex items-center justify-center text-zinc-400 dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] hover:bg-white/10 dash-light:hover:bg-black/[0.05] disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer">
                       <Redo2 className="w-3.5 h-3.5" />
                     </button>
                     </TooltipTrigger><TooltipContent>Redo (Ctrl+Shift+Z)</TooltipContent></Tooltip>
-                    <button onClick={() => { setIsPlaying(false); setCurrentTime(0) }} className="w-5 h-5 rounded-none flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
+                    <button onClick={() => { setIsPlaying(false); setCurrentTime(0) }} className="w-5 h-5 rounded-none flex items-center justify-center text-zinc-400 dash-light:text-[#5B6169] hover:text-white dash-light:hover:text-[#16191E] hover:bg-white/10 dash-light:hover:bg-black/[0.05] transition-colors cursor-pointer">
                       <SkipBack className="w-3 h-3" />
                     </button>
                     <button
                       onClick={() => {
                         if (isPlaying) { setIsPlaying(false) } else { if (currentTime >= totalDuration) setCurrentTime(0); setIsPlaying(true) }
                       }}
-                      className="w-5 h-5 rounded-none flex items-center justify-center bg-zinc-700 hover:bg-zinc-600 text-white transition-colors cursor-pointer"
+                      className="w-5 h-5 rounded-none flex items-center justify-center bg-zinc-700 dash-light:bg-[#EAE6DD] hover:bg-zinc-600 dash-light:hover:bg-black/[0.05] text-white dash-light:text-[#16191E] transition-colors cursor-pointer"
                     >
                       {isPlaying ? <Square className="w-2 h-2 fill-current" /> : <Play className="w-2.5 h-2.5 fill-current ml-0.5" />}
                     </button>
                   </div>
-                  <span className="text-[9px] font-mono text-zinc-500 tabular-nums">
+                  <span className="text-[9px] font-mono text-zinc-500 dash-light:text-[#5B6169] tabular-nums">
                     / {formatTime(totalDuration)}
                   </span>
                 </div>
@@ -966,10 +966,10 @@ export function StudioEditor({
           {showProperties && (
             <>
               <div
-                className="w-[3px] shrink-0 cursor-col-resize bg-[#1e1f22] hover:bg-[#C9241A]/60 transition-colors"
+                className="w-[3px] shrink-0 cursor-col-resize bg-[#1e1f22] dash-light:bg-black/10 hover:bg-[#C9241A]/60 transition-colors"
                 onMouseDown={() => startDrag('properties')}
               />
-              <div className="shrink-0 bg-[#2b2d31] border-l border-[#1e1f22] overflow-y-auto overflow-x-hidden" style={{ width: propertiesWidth }}>
+              <div className="shrink-0 bg-[#2b2d31] dash-light:bg-white border-l border-[#1e1f22] dash-light:border-black/10 overflow-y-auto overflow-x-hidden" style={{ width: propertiesWidth }}>
                 {content.cctvLayout ? (
                   /* CCTV settings in properties panel */
                   <StudioCctvEditor
@@ -1018,16 +1018,16 @@ export function StudioEditor({
         {/* Timeline resize splitter */}
         {showTimeline && !content.cctvLayout && (
           <div
-            className="h-[5px] shrink-0 cursor-row-resize bg-[#1e1f22] hover:bg-[#C9241A]/60 transition-colors flex items-center justify-center group"
+            className="h-[5px] shrink-0 cursor-row-resize bg-[#1e1f22] dash-light:bg-black/10 hover:bg-[#C9241A]/60 transition-colors flex items-center justify-center group"
             onMouseDown={() => startDrag('timeline')}
           >
-            <div className="w-10 h-[2px] rounded-full bg-zinc-600 group-hover:bg-[#C9241A] transition-colors" />
+            <div className="w-10 h-[2px] rounded-full bg-zinc-600 dash-light:bg-black/20 group-hover:bg-[#C9241A] transition-colors" />
           </div>
         )}
 
         {/* Bottom: Timeline */}
         {showTimeline && !content.cctvLayout && (
-          <div className="shrink-0 bg-[#232428] overflow-hidden border-t border-[#1e1f22]" style={{ height: timelineHeight }}>
+          <div className="shrink-0 bg-[#232428] dash-light:bg-[#F5F2EB] overflow-hidden border-t border-[#1e1f22] dash-light:border-black/10" style={{ height: timelineHeight }}>
             <StudioTimeline
               content={content}
               onContentChange={(updates) => {
@@ -1058,11 +1058,11 @@ export function StudioEditor({
       {/* Template name dialog */}
       {showTemplateName && (
         <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowTemplateName(false)}>
-          <div className="bg-[#1e1f22] border border-[#3f4147] rounded-none p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
-            <h3 className="text-sm font-semibold text-white mb-3">Save as Template</h3>
-            <input type="text" value={templateNameInput} onChange={e => setTemplateNameInput(e.target.value)} onKeyDown={async e => { if (e.key === 'Enter' && templateNameInput.trim()) { saveAsTemplate(content, templateNameInput.trim()); const { toast } = await import('sonner'); toast.success('Saved as template', { duration: 2000 }); setShowTemplateName(false); setTemplateNameInput('') } }} placeholder="Template name..." className="w-full h-8 px-3 text-sm rounded-none border border-[#3f4147] bg-[#2b2d31] text-white placeholder:text-zinc-500 focus:outline-none focus:border-red-500 mb-3" autoFocus />
+          <div className="bg-[#1e1f22] dash-light:bg-[#F5F2EB] border border-[#3f4147] dash-light:border-black/10 rounded-none p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-sm font-semibold text-white dash-light:text-[#16191E] mb-3">Save as Template</h3>
+            <input type="text" value={templateNameInput} onChange={e => setTemplateNameInput(e.target.value)} onKeyDown={async e => { if (e.key === 'Enter' && templateNameInput.trim()) { saveAsTemplate(content, templateNameInput.trim()); const { toast } = await import('sonner'); toast.success('Saved as template', { duration: 2000 }); setShowTemplateName(false); setTemplateNameInput('') } }} placeholder="Template name..." className="w-full h-8 px-3 text-sm rounded-none border border-[#3f4147] dash-light:border-black/10 bg-[#2b2d31] dash-light:bg-white text-white dash-light:text-[#16191E] placeholder:text-zinc-500 dash-light:placeholder-[#8A9098] focus:outline-none focus:border-red-500 mb-3" autoFocus />
             <div className="flex gap-2 justify-end">
-              <button onClick={() => { setShowTemplateName(false); setTemplateNameInput('') }} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
+              <button onClick={() => { setShowTemplateName(false); setTemplateNameInput('') }} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#2b2d31] dash-light:bg-white text-zinc-300 dash-light:text-[#5B6169] hover:bg-[#35363c] dash-light:hover:bg-black/[0.05] transition-colors">Cancel</button>
               <button onClick={async () => { if (!templateNameInput.trim()) return; saveAsTemplate(content, templateNameInput.trim()); const { toast } = await import('sonner'); toast.success('Saved as template', { duration: 2000 }); setShowTemplateName(false); setTemplateNameInput('') }} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-red-600 text-white hover:bg-red-500 transition-colors">Save</button>
             </div>
           </div>
@@ -1072,11 +1072,11 @@ export function StudioEditor({
       {/* Delete layer confirmation */}
       {confirmDeleteLayerId && (
         <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setConfirmDeleteLayerId(null)}>
-          <div className="bg-[#1e1f22] border border-[#3f4147] rounded-none p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
-            <h3 className="text-sm font-semibold text-white mb-2">Delete this layer?</h3>
-            <p className="text-[11px] text-zinc-400 mb-4">This will remove the layer from the canvas and timeline. This cannot be undone.</p>
+          <div className="bg-[#1e1f22] dash-light:bg-[#F5F2EB] border border-[#3f4147] dash-light:border-black/10 rounded-none p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-sm font-semibold text-white dash-light:text-[#16191E] mb-2">Delete this layer?</h3>
+            <p className="text-[11px] text-zinc-400 dash-light:text-[#5B6169] mb-4">This will remove the layer from the canvas and timeline. This cannot be undone.</p>
             <div className="flex gap-2 justify-end">
-              <button onClick={() => setConfirmDeleteLayerId(null)} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors">Cancel</button>
+              <button onClick={() => setConfirmDeleteLayerId(null)} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#2b2d31] dash-light:bg-white text-zinc-300 dash-light:text-[#5B6169] hover:bg-[#35363c] dash-light:hover:bg-black/[0.05] transition-colors">Cancel</button>
               <button onClick={() => { handleDeleteLayer(confirmDeleteLayerId); setConfirmDeleteLayerId(null) }} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-red-600 text-white hover:bg-red-500 transition-colors">Delete</button>
             </div>
           </div>
@@ -1202,8 +1202,8 @@ function SlidesPanel({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-3 py-2.5 border-b border-[#1e1f22]">
-        <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Scenes</span>
+      <div className="px-3 py-2.5 border-b border-[#1e1f22] dash-light:border-black/10">
+        <span className="text-[11px] font-semibold text-zinc-400 dash-light:text-[#5B6169] uppercase tracking-wider">Scenes</span>
       </div>
       <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2.5">
         {slides.map((slide, index) => {
@@ -1245,12 +1245,12 @@ function SlidesPanel({
                 dragFromIndex === index ? 'opacity-70 scale-105 shadow-2xl ring-2 ring-red-500 z-50 cursor-grabbing' : ''
               } ${
                 isActive && dragFromIndex !== index
-                  ? 'ring-2 ring-red-500 ring-offset-1 ring-offset-[#2b2d31]'
-                  : dragFromIndex !== index ? 'ring-1 ring-[#3f4147] hover:ring-zinc-500' : ''
+                  ? 'ring-2 ring-red-500 ring-offset-1 ring-offset-[#2b2d31] dash-light:ring-offset-white'
+                  : dragFromIndex !== index ? 'ring-1 ring-[#3f4147] dash-light:ring-black/10 hover:ring-zinc-500 dash-light:hover:ring-black/20' : ''
               }`}
               style={dragFromIndex === null && dragOverIndex === null ? {} : undefined}
             >
-              <div className="relative aspect-video bg-[#1e1f22] flex items-center justify-center">
+              <div className="relative aspect-video bg-[#1e1f22] dash-light:bg-[#ECE9E1] flex items-center justify-center">
                 {/* Live canvas preview */}
                 {(() => {
                   const slideContent = slide.content as StudioContent | undefined
@@ -1365,7 +1365,7 @@ function SlidesPanel({
                         if (e.key === 'Escape') setEditingId(null)
                       }}
                       onClick={(e) => e.stopPropagation()}
-                      className="w-[80%] h-5 text-[10px] text-zinc-100 bg-[#383a40] border border-zinc-600 rounded-none px-1 text-center outline-none"
+                      className="w-[80%] h-5 text-[10px] text-zinc-100 dash-light:text-[#16191E] bg-[#383a40] dash-light:bg-white border border-zinc-600 dash-light:border-black/10 rounded-none px-1 text-center outline-none"
                       autoFocus
                     />
                   </div>
@@ -1388,7 +1388,7 @@ function SlidesPanel({
                 )}
                 {/* Scene number badge */}
                 <span className={`absolute top-1 left-1 z-20 text-[9px] font-bold px-1 py-0.5 rounded-none ${
-                  isActive ? 'bg-red-600 text-white' : 'bg-[#383a40]/80 text-zinc-400'
+                  isActive ? 'bg-red-600 text-white' : 'bg-[#383a40]/80 dash-light:bg-[#EAE6DD]/90 text-zinc-400 dash-light:text-[#5B6169]'
                 }`}>
                   {index + 1}
                 </span>
@@ -1398,7 +1398,7 @@ function SlidesPanel({
                     <Tooltip><TooltipTrigger asChild>
                     <button
                       onClick={(e) => { e.stopPropagation(); onDuplicateSlide(slide.id) }}
-                      className="w-5 h-5 rounded-none bg-[#383a40]/90 hover:bg-[#6a5ea8]/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                      className="w-5 h-5 rounded-none bg-[#383a40]/90 dash-light:bg-[#EAE6DD] hover:bg-[#6a5ea8]/80 text-zinc-400 dash-light:text-[#5B6169] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
                     >
                       <Copy className="w-2.5 h-2.5" />
                     </button>
@@ -1408,7 +1408,7 @@ function SlidesPanel({
                     <Tooltip><TooltipTrigger asChild>
                     <button
                       onClick={(e) => { e.stopPropagation(); onDeleteSlide(slide.id) }}
-                      className="w-5 h-5 rounded-none bg-[#383a40]/90 hover:bg-red-500/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                      className="w-5 h-5 rounded-none bg-[#383a40]/90 dash-light:bg-[#EAE6DD] hover:bg-red-500/80 text-zinc-400 dash-light:text-[#5B6169] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
                     >
                       <Trash2Icon className="w-2.5 h-2.5" />
                     </button>
@@ -1426,11 +1426,11 @@ function SlidesPanel({
         })}
       </div>
       {(onAddSlide || onAddCctvSlide) && (
-        <div className="px-2 py-2 border-t border-[#1e1f22] flex gap-1.5">
+        <div className="px-2 py-2 border-t border-[#1e1f22] dash-light:border-black/10 flex gap-1.5">
           {onAddSlide && (
             <button
               onClick={onAddSlide}
-              className="flex-1 h-7 rounded-none border border-dashed border-[#3f4147] hover:border-red-500/50 text-zinc-500 hover:text-red-400 flex items-center justify-center gap-1 text-[11px] transition-all cursor-pointer"
+              className="flex-1 h-7 rounded-none border border-dashed border-[#3f4147] dash-light:border-black/10 hover:border-red-500/50 text-zinc-500 dash-light:text-[#5B6169] hover:text-red-400 flex items-center justify-center gap-1 text-[11px] transition-all cursor-pointer"
             >
               <Plus className="w-3 h-3" />
               Scene
@@ -1439,7 +1439,7 @@ function SlidesPanel({
           {onAddCctvSlide && (
             <button
               onClick={onAddCctvSlide}
-              className="flex-1 h-7 rounded-none border border-dashed border-[#3f4147] hover:border-[#C9241A]/50 text-zinc-500 hover:text-[#C9241A] flex items-center justify-center gap-1 text-[11px] transition-all cursor-pointer"
+              className="flex-1 h-7 rounded-none border border-dashed border-[#3f4147] dash-light:border-black/10 hover:border-[#C9241A]/50 text-zinc-500 dash-light:text-[#5B6169] hover:text-[#C9241A] flex items-center justify-center gap-1 text-[11px] transition-all cursor-pointer"
             >
               <Monitor className="w-3 h-3" />
               CCTV
@@ -1469,13 +1469,13 @@ function TextPanel({
   const textLayers = layers.filter((l) => l.type === 'text')
   return (
     <div className="flex flex-col h-full">
-      <div className="px-3 py-2 border-b border-[#1a1a1a]">
-        <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Text Layers</span>
+      <div className="px-3 py-2 border-b border-[#1a1a1a] dash-light:border-black/10">
+        <span className="text-[11px] font-semibold text-zinc-400 dash-light:text-[#5B6169] uppercase tracking-wider">Text Layers</span>
       </div>
       <div className="px-2 py-2">
         <button
           onClick={() => onAddLayer({ type: 'text', name: 'Text', text: 'Text', fontSize: 24, color: '#000000' })}
-          className="w-full h-8 rounded-none border border-dashed border-[#2a2a2a] hover:border-red-500/50 text-zinc-500 hover:text-red-400 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer"
+          className="w-full h-8 rounded-none border border-dashed border-[#2a2a2a] dash-light:border-black/10 hover:border-red-500/50 text-zinc-500 dash-light:text-[#5B6169] hover:text-red-400 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" />
           Add Text
@@ -1483,7 +1483,7 @@ function TextPanel({
       </div>
       <div className="flex-1 overflow-y-auto px-2 space-y-1">
         {textLayers.length === 0 && (
-          <p className="mt-4 text-center text-xs text-zinc-500">No text layers yet</p>
+          <p className="mt-4 text-center text-xs text-zinc-500 dash-light:text-[#5B6169]">No text layers yet</p>
         )}
         {textLayers.map((layer) => {
           const isActive = layer.id === selectedLayerId
@@ -1491,17 +1491,17 @@ function TextPanel({
             <div
               key={layer.id}
               className={`flex items-center gap-2 rounded-none px-2 py-1.5 text-xs cursor-pointer transition-all group ${
-                isActive ? 'bg-red-600/20 text-red-300' : 'text-zinc-300 hover:bg-white/5'
+                isActive ? 'bg-red-600/20 text-red-300' : 'text-zinc-300 dash-light:text-[#16191E] hover:bg-white/5 dash-light:hover:bg-black/[0.04]'
               }`}
               onClick={() => onSelectLayer(layer.id)}
             >
               <Type className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span className="flex-1 truncate">{layer.name}</span>
-              <span className="text-[10px] text-zinc-600 truncate max-w-[80px]">{layer.text}</span>
+              <span className="text-[10px] text-zinc-600 dash-light:text-[#8A9098] truncate max-w-[80px]">{layer.text}</span>
               <Tooltip><TooltipTrigger asChild>
               <button
                 onClick={(e) => { e.stopPropagation(); onDeleteLayer(layer.id) }}
-                className="p-0.5 text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all"
+                className="p-0.5 text-zinc-600 dash-light:text-[#8A9098] opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all"
               >
                 <Trash2Icon className="w-3 h-3" />
               </button>
@@ -1543,8 +1543,8 @@ function ShapesPanel({
   ]
   return (
     <div className="flex flex-col h-full">
-      <div className="px-3 py-2 border-b border-[#1a1a1a]">
-        <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Shapes</span>
+      <div className="px-3 py-2 border-b border-[#1a1a1a] dash-light:border-black/10">
+        <span className="text-[11px] font-semibold text-zinc-400 dash-light:text-[#5B6169] uppercase tracking-wider">Shapes</span>
       </div>
       <div className="px-2 py-2 grid grid-cols-2 gap-1.5">
         {shapePresets.map((preset) => (
@@ -1563,19 +1563,19 @@ function ShapesPanel({
                 })
               }
             }}
-            className="h-10 rounded-none border border-[#2a2a2a] hover:border-red-500/50 text-zinc-400 hover:text-red-400 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer"
+            className="h-10 rounded-none border border-[#2a2a2a] dash-light:border-black/10 hover:border-red-500/50 text-zinc-400 dash-light:text-[#5B6169] hover:text-red-400 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer"
           >
             <span className="text-base">{preset.icon}</span>
             <span>{preset.label}</span>
           </button>
         ))}
       </div>
-      <div className="px-3 py-1 border-b border-[#1a1a1a]">
-        <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Placed Shapes</span>
+      <div className="px-3 py-1 border-b border-[#1a1a1a] dash-light:border-black/10">
+        <span className="text-[10px] font-semibold text-zinc-500 dash-light:text-[#5B6169] uppercase tracking-wider">Placed Shapes</span>
       </div>
       <div className="flex-1 overflow-y-auto px-2 py-1 space-y-1">
         {shapeLayers.length === 0 && (
-          <p className="mt-4 text-center text-xs text-zinc-500">No shapes yet</p>
+          <p className="mt-4 text-center text-xs text-zinc-500 dash-light:text-[#5B6169]">No shapes yet</p>
         )}
         {shapeLayers.map((layer) => {
           const isActive = layer.id === selectedLayerId
@@ -1583,7 +1583,7 @@ function ShapesPanel({
             <div
               key={layer.id}
               className={`flex items-center gap-2 rounded-none px-2 py-1.5 text-xs cursor-pointer transition-all group ${
-                isActive ? 'bg-red-600/20 text-red-300' : 'text-zinc-300 hover:bg-white/5'
+                isActive ? 'bg-red-600/20 text-red-300' : 'text-zinc-300 dash-light:text-[#16191E] hover:bg-white/5 dash-light:hover:bg-black/[0.04]'
               }`}
               onClick={() => onSelectLayer(layer.id)}
             >
@@ -1599,7 +1599,7 @@ function ShapesPanel({
               <Tooltip><TooltipTrigger asChild>
               <button
                 onClick={(e) => { e.stopPropagation(); onDeleteLayer(layer.id) }}
-                className="p-0.5 text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all"
+                className="p-0.5 text-zinc-600 dash-light:text-[#8A9098] opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all"
               >
                 <Trash2Icon className="w-3 h-3" />
               </button>
@@ -1641,14 +1641,14 @@ function SceneProperties({
 
   return (
     <div className="flex flex-col h-full overflow-x-hidden">
-      <div className="px-3 py-2.5 border-b border-[#1e1f22]">
-        <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Scene Properties</span>
+      <div className="px-3 py-2.5 border-b border-[#1e1f22] dash-light:border-black/10">
+        <span className="text-[11px] font-semibold text-zinc-400 dash-light:text-[#5B6169] uppercase tracking-wider">Scene Properties</span>
       </div>
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 space-y-5 min-w-0">
         {/* Scene Name */}
         <div className="space-y-1.5">
-          <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Scene Name</label>
+          <label className="text-[10px] font-semibold text-zinc-500 dash-light:text-[#5B6169] uppercase tracking-wider">Scene Name</label>
           {isEditingName ? (
             <input
               value={nameValue}
@@ -1664,33 +1664,33 @@ function SceneProperties({
                 }
                 if (e.key === 'Escape') setIsEditingName(false)
               }}
-              className="w-full h-7 text-[11px] text-zinc-100 bg-[#383a40] border border-zinc-600 rounded-none px-2 outline-none focus:border-red-500/60"
+              className="w-full h-7 text-[11px] text-zinc-100 dash-light:text-[#16191E] bg-[#383a40] dash-light:bg-white border border-zinc-600 dash-light:border-black/10 rounded-none px-2 outline-none focus:border-red-500/60"
               autoFocus
             />
           ) : (
             <button
               onClick={() => { setNameValue(slideName); setIsEditingName(true) }}
-              className="w-full h-7 text-left text-[11px] text-zinc-300 bg-[#383a40] rounded-none px-2 flex items-center justify-between hover:bg-[#43454b] transition-colors cursor-pointer"
+              className="w-full h-7 text-left text-[11px] text-zinc-300 dash-light:text-[#16191E] bg-[#383a40] dash-light:bg-white rounded-none px-2 flex items-center justify-between hover:bg-[#43454b] dash-light:hover:bg-black/[0.05] transition-colors cursor-pointer"
             >
               <span className="truncate">{slideName || 'Untitled Scene'}</span>
-              <Pencil className="w-3 h-3 text-zinc-500 shrink-0" />
+              <Pencil className="w-3 h-3 text-zinc-500 dash-light:text-[#5B6169] shrink-0" />
             </button>
           )}
         </div>
 
         {/* Background Color */}
         <div className="space-y-1.5">
-          <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Background Color</label>
+          <label className="text-[10px] font-semibold text-zinc-500 dash-light:text-[#5B6169] uppercase tracking-wider">Background Color</label>
           {/* Preset color swatches */}
           <div className="flex flex-wrap gap-1 mb-1.5 max-w-full">
             {['#ffffff', '#000000', '#1a1a2e', '#dc2626'].map(c => (
               <button key={c} onClick={() => handleBgChange(c)}
-                className={`w-5 h-5 rounded-none border transition-all cursor-pointer ${bgColor === c ? 'border-red-500 ring-1 ring-red-500/50 scale-110' : 'border-[#3f4147] hover:border-zinc-400'}`}
+                className={`w-5 h-5 rounded-none border transition-all cursor-pointer ${bgColor === c ? 'border-red-500 ring-1 ring-red-500/50 scale-110' : 'border-[#3f4147] dash-light:border-black/10 hover:border-zinc-400 dash-light:hover:border-black/20'}`}
                 style={{ backgroundColor: c }} />
             ))}
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-none border border-[#3f4147] shrink-0 cursor-pointer relative overflow-hidden" style={{ backgroundColor: bgColor }}>
+            <div className="w-7 h-7 rounded-none border border-[#3f4147] dash-light:border-black/10 shrink-0 cursor-pointer relative overflow-hidden" style={{ backgroundColor: bgColor }}>
               <input type="color" value={bgColor} onChange={(e) => handleBgChange(e.target.value)}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
             </div>
@@ -1700,16 +1700,16 @@ function SceneProperties({
                 const v = e.target.value
                 if (/^#[0-9a-fA-F]{0,6}$/.test(v)) handleBgChange(v)
               }}
-              className="flex-1 min-w-0 h-7 text-[11px] text-zinc-300 bg-[#383a40] border border-zinc-600 rounded-none px-2 font-mono outline-none focus:border-red-500/60"
+              className="flex-1 min-w-0 h-7 text-[11px] text-zinc-300 dash-light:text-[#16191E] bg-[#383a40] dash-light:bg-white border border-zinc-600 dash-light:border-black/10 rounded-none px-2 font-mono outline-none focus:border-red-500/60"
             />
           </div>
         </div>
 
         {/* Canvas Size */}
         <div className="space-y-1.5">
-          <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Canvas Size</label>
-          <div className="flex items-center gap-2 text-[11px] text-zinc-400">
-            <div className="flex-1 h-7 bg-[#383a40] rounded-none px-2 flex items-center border border-zinc-700/50">
+          <label className="text-[10px] font-semibold text-zinc-500 dash-light:text-[#5B6169] uppercase tracking-wider">Canvas Size</label>
+          <div className="flex items-center gap-2 text-[11px] text-zinc-400 dash-light:text-[#5B6169]">
+            <div className="flex-1 h-7 bg-[#383a40] dash-light:bg-[#EAE6DD] rounded-none px-2 flex items-center border border-zinc-700/50 dash-light:border-black/10">
               {content.canvas?.width || 1920} x {content.canvas?.height || 1080}
             </div>
           </div>
@@ -1717,32 +1717,32 @@ function SceneProperties({
 
         {/* Quick Actions */}
         <div className="space-y-1.5">
-          <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Quick Actions</label>
+          <label className="text-[10px] font-semibold text-zinc-500 dash-light:text-[#5B6169] uppercase tracking-wider">Quick Actions</label>
           <div className="grid grid-cols-2 gap-1.5">
             <button
               onClick={() => onOpenPanel('gallery')}
-              className="h-8 rounded-none border border-[#3f4147] hover:border-red-500/50 text-zinc-400 hover:text-red-400 flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
+              className="h-8 rounded-none border border-[#3f4147] dash-light:border-black/10 hover:border-red-500/50 text-zinc-400 dash-light:text-[#5B6169] hover:text-red-400 flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
             >
               <Image className="w-3 h-3" />
               Add Assets
             </button>
             <button
               onClick={() => onOpenPanel('text')}
-              className="h-8 rounded-none border border-[#3f4147] hover:border-[#3E6DC4]/50 text-zinc-400 hover:text-[#3E6DC4] flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
+              className="h-8 rounded-none border border-[#3f4147] dash-light:border-black/10 hover:border-[#3E6DC4]/50 text-zinc-400 dash-light:text-[#5B6169] hover:text-[#3E6DC4] flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
             >
               <Type className="w-3 h-3" />
               Add Text
             </button>
             <button
               onClick={() => onOpenPanel('shapes')}
-              className="h-8 rounded-none border border-[#3f4147] hover:border-[#2E9E63]/50 text-zinc-400 hover:text-[#2E9E63] flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
+              className="h-8 rounded-none border border-[#3f4147] dash-light:border-black/10 hover:border-[#2E9E63]/50 text-zinc-400 dash-light:text-[#5B6169] hover:text-[#2E9E63] flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
             >
               <Shapes className="w-3 h-3" />
               Add Shape
             </button>
             <button
               onClick={() => onOpenPanel('events')}
-              className="h-8 rounded-none border border-[#3f4147] hover:border-amber-500/50 text-zinc-400 hover:text-amber-400 flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
+              className="h-8 rounded-none border border-[#3f4147] dash-light:border-black/10 hover:border-amber-500/50 text-zinc-400 dash-light:text-[#5B6169] hover:text-amber-400 flex items-center justify-center gap-1.5 text-[10px] transition-all cursor-pointer"
             >
               <Sparkles className="w-3 h-3" />
               Add Event

@@ -575,17 +575,17 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   // ── Full-screen Studio Mode — overlays on top of everything ──
   if (isStudioSlide && studioContent) {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col bg-zinc-950 text-white">
+      <div className="fixed inset-0 z-50 flex flex-col bg-zinc-950 dash-light:bg-[#ECE9E1] text-white dash-light:text-[#16191E]">
         {/* Compact top bar */}
-        <div className="h-10 bg-zinc-900/90 border-b border-zinc-800 flex items-center gap-3 px-3 shrink-0 relative z-[60]">
+        <div className="h-10 bg-zinc-900/90 dash-light:bg-[#F5F2EB] border-b border-zinc-800 dash-light:border-black/10 flex items-center gap-3 px-3 shrink-0 relative z-[60]">
           <button
             onClick={() => router.push('/dashboard')}
-            className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-zinc-400 dash-light:text-[#5B6169] hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <BrandMark size={20} />
           </button>
-          <div className="w-px h-5 bg-zinc-700" />
+          <div className="w-px h-5 bg-zinc-700 dash-light:bg-black/10" />
 
           {/* File menu */}
           <div className="relative" ref={studioFileMenuRef}>
@@ -594,20 +594,20 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
               className={cn(
                 'h-7 px-2 rounded-none text-xs font-medium flex items-center gap-1 transition-all',
                 studioFileMenu
-                  ? 'bg-zinc-800 text-white'
-                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+                  ? 'bg-zinc-800 dash-light:bg-[#EAE6DD] text-white dash-light:text-[#16191E]'
+                  : 'text-zinc-400 dash-light:text-[#5B6169] hover:text-white hover:bg-zinc-800 dash-light:hover:bg-black/[0.05]'
               )}
             >
               File
               <ChevronDown className="w-3 h-3" />
             </button>
             {studioFileMenu && (
-              <div className="absolute top-full left-0 mt-1 w-56 bg-zinc-900 border border-zinc-700 rounded-none shadow-xl z-50 py-1 animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="absolute top-full left-0 mt-1 w-56 bg-zinc-900 dash-light:bg-white border border-zinc-700 dash-light:border-black/10 rounded-none shadow-xl z-50 py-1 animate-in fade-in slide-in-from-top-1 duration-150">
                 <StudioFileMenuItem icon={Save} label="Save" shortcut="Ctrl+S" onClick={() => { flushSaves(); toast.success('Saved', { duration: 2000 }); setStudioFileMenu(false) }} />
                 <StudioFileMenuItem icon={FilePlus} label="New scene" onClick={() => { setStudioFileMenu(false); router.push('/dashboard') }} />
-                <div className="h-px bg-zinc-700 mx-2 my-1" />
+                <div className="h-px bg-zinc-700 dash-light:bg-black/10 mx-2 my-1" />
                 <StudioFileMenuItem icon={FolderOpen} label="Open recent" onClick={() => { setStudioFileMenu(false); router.push('/dashboard') }} />
-                <div className="h-px bg-zinc-700 mx-2 my-1" />
+                <div className="h-px bg-zinc-700 dash-light:bg-black/10 mx-2 my-1" />
                 <StudioFileMenuItem icon={Copy} label="Duplicate scene" onClick={async () => {
                   setStudioFileMenu(false)
                   const res = await fetch(`/api/presentations/${presentation.id}/duplicate`, { method: 'POST' })
@@ -619,27 +619,27 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                     toast.error('Failed to duplicate', { duration: 2000 })
                   }
                 }} />
-                <div className="h-px bg-zinc-700 mx-2 my-1" />
+                <div className="h-px bg-zinc-700 dash-light:bg-black/10 mx-2 my-1" />
                 <StudioFileMenuItem icon={FileDown} label="Export..." onClick={() => { setStudioFileMenu(false); setShowExportDialog(true) }} />
                 <StudioFileMenuItem icon={Upload} label="Import .c360" onClick={() => { setStudioFileMenu(false); importInputRef.current?.click() }} />
               </div>
             )}
           </div>
 
-          <span className="text-[10px] uppercase tracking-[0.15em] text-zinc-500 font-medium">Command Studio</span>
+          <span className="text-[10px] uppercase tracking-[0.15em] text-zinc-500 dash-light:text-[#5B6169] font-medium">Command Studio</span>
           <span className="text-[9px] uppercase tracking-wider font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-none">Build Mode</span>
           <div className="relative group/title flex items-center">
             <input
               type="text"
               value={presentationTitle}
               onChange={(e) => handleTitleChange(e.target.value)}
-              className="bg-transparent border border-transparent hover:border-zinc-700 focus:border-zinc-600 text-sm text-white font-medium focus:outline-none rounded-none px-2 py-0.5 w-auto max-w-[300px] truncate transition-colors"
+              className="bg-transparent border border-transparent hover:border-zinc-700 dash-light:hover:border-black/10 focus:border-zinc-600 dash-light:focus:border-black/10 text-sm text-white dash-light:text-[#16191E] font-medium focus:outline-none rounded-none px-2 py-0.5 w-auto max-w-[300px] truncate transition-colors"
               placeholder="Untitled Scene"
             />
-            <svg className="w-3 h-3 text-zinc-600 group-hover/title:text-zinc-400 transition-colors -ml-5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+            <svg className="w-3 h-3 text-zinc-600 dash-light:text-[#5B6169] group-hover/title:text-zinc-400 transition-colors -ml-5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
           </div>
           <div className="flex-1" />
-          <span className={`text-[10px] transition-opacity ${saveStatus === 'saved' ? 'text-emerald-400 opacity-100' : saveStatus === 'saving' ? 'text-zinc-500 opacity-100' : 'opacity-0'}`}>
+          <span className={`text-[10px] transition-opacity ${saveStatus === 'saved' ? 'text-emerald-400 opacity-100' : saveStatus === 'saving' ? 'text-zinc-500 dash-light:text-[#5B6169] opacity-100' : 'opacity-0'}`}>
             {saveStatus === 'saving' ? 'Saving...' : 'Saved'}
           </span>
 
@@ -648,7 +648,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="text-zinc-400 hover:text-white h-7 w-7 p-0"
+            className="text-zinc-400 dash-light:text-[#5B6169] hover:text-white h-7 w-7 p-0"
             onClick={() => {
               if (document.fullscreenElement) {
                 document.exitFullscreen()
@@ -665,7 +665,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="text-zinc-400 hover:text-white h-7 text-xs gap-1"
+            className="text-zinc-400 dash-light:text-[#5B6169] hover:text-white h-7 text-xs gap-1"
             onClick={() => window.open(`/presentations/${presentation.id}/preview?slide=${selectedIndex}`, '_blank')}
           >
             <Eye className="w-3.5 h-3.5" />
@@ -683,7 +683,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             {starting ? 'Starting...' : 'Run Scene'}
           </Button>
 
-          <Button variant="ghost" size="sm" onClick={() => router.push('/dashboard')} className="text-zinc-400 hover:text-white h-7 text-xs">
+          <Button variant="ghost" size="sm" onClick={() => router.push('/dashboard')} className="text-zinc-400 dash-light:text-[#5B6169] hover:text-white h-7 text-xs">
             Exit Studio
           </Button>
         </div>
@@ -797,13 +797,13 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
         {/* Custom delete confirmation modal */}
         {deleteTargetId && (
           <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setDeleteTargetId(null)}>
-            <div className="bg-[#1e1f22] border border-[#3f4147] rounded-none p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
-              <h3 className="text-sm font-semibold text-white mb-2">Delete this scene?</h3>
-              <p className="text-[11px] text-zinc-400 mb-4">This action cannot be undone. The scene and all its layers will be permanently removed.</p>
+            <div className="bg-[#1e1f22] dash-light:bg-white border border-[#3f4147] dash-light:border-black/10 rounded-none p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+              <h3 className="text-sm font-semibold text-white dash-light:text-[#16191E] mb-2">Delete this scene?</h3>
+              <p className="text-[11px] text-zinc-400 dash-light:text-[#5B6169] mb-4">This action cannot be undone. The scene and all its layers will be permanently removed.</p>
               <div className="flex gap-2 justify-end">
                 <button
                   onClick={() => setDeleteTargetId(null)}
-                  className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#2b2d31] text-zinc-300 hover:bg-[#35363c] transition-colors"
+                  className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#2b2d31] dash-light:bg-[#EAE6DD] text-zinc-300 dash-light:text-[#5B6169] hover:bg-[#35363c] dash-light:hover:bg-black/[0.05] transition-colors"
                 >
                   Cancel
                 </button>
@@ -1302,11 +1302,11 @@ function StudioFileMenuItem({ icon: Icon, label, shortcut, onClick }: {
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-3 px-3 py-1.5 text-xs text-zinc-200 hover:bg-zinc-800 transition-colors"
+      className="w-full flex items-center gap-3 px-3 py-1.5 text-xs text-zinc-200 dash-light:text-[#16191E] hover:bg-zinc-800 dash-light:hover:bg-black/[0.05] transition-colors"
     >
-      <Icon className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+      <Icon className="w-3.5 h-3.5 text-zinc-400 dash-light:text-[#5B6169] shrink-0" />
       <span className="flex-1 text-left">{label}</span>
-      {shortcut && <span className="text-[10px] text-zinc-500 font-mono">{shortcut}</span>}
+      {shortcut && <span className="text-[10px] text-zinc-500 dash-light:text-[#5B6169] font-mono">{shortcut}</span>}
     </button>
   )
 }

@@ -506,12 +506,12 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
       {showShortcuts && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4"
           onClick={() => setShowShortcuts(false)}>
-          <div className="bg-[#1e1f22] rounded-none p-5 max-w-sm w-full border border-[#3f4147] shadow-2xl"
+          <div className="bg-[#1e1f22] dash-light:bg-white rounded-none p-5 max-w-sm w-full border border-[#3f4147] dash-light:border-black/10 shadow-2xl"
             onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-white">Keyboard Shortcuts</h3>
+              <h3 className="text-sm font-semibold text-white dash-light:text-[#16191E]">Keyboard Shortcuts</h3>
               <button onClick={() => setShowShortcuts(false)}
-                className="p-1 rounded-none text-zinc-500 hover:text-white hover:bg-white/10 transition-colors">
+                className="p-1 rounded-none text-zinc-500 dash-light:text-[#5B6169] hover:text-white hover:bg-white/10 dash-light:hover:bg-black/[0.05] transition-colors">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -523,8 +523,8 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                 ['F', 'Fullscreen'], ['Esc', 'Exit preview'], ['?', 'Shortcuts'],
               ].map(([key, desc]) => (
                 <div key={key} className="flex items-center justify-between py-0.5">
-                  <span className="text-[11px] text-zinc-400">{desc}</span>
-                  <kbd className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-none bg-[#2b2d31] text-zinc-300 border border-[#3f4147]">{key}</kbd>
+                  <span className="text-[11px] text-zinc-400 dash-light:text-[#5B6169]">{desc}</span>
+                  <kbd className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-none bg-[#2b2d31] dash-light:bg-[#EAE6DD] text-zinc-300 dash-light:text-[#5B6169] border border-[#3f4147] dash-light:border-black/10">{key}</kbd>
                 </div>
               ))}
             </div>

@@ -205,7 +205,7 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
                       <Monitor className="w-4 h-4 text-[#6a5ea8]" />
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] rounded-none bg-[#6a5ea8]/10 text-[#6a5ea8] px-2 py-0.5 font-medium">
+                      <span className="text-[10px] rounded-none bg-[#6a5ea8]/10 text-[#6a5ea8] dash-light:text-[#5B4F98] px-2 py-0.5 font-medium">
                         {p.studioSlideCount} studio slide{p.studioSlideCount !== 1 ? 's' : ''}
                       </span>
                       {/* Quick actions */}
@@ -356,7 +356,7 @@ export function StudioListClient({ presentations }: { presentations: StudioPrese
     {deleteConfirm && (
       <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setDeleteConfirm(null)}>
         <div className="bg-card border border-border rounded-none p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
-          <h3 className="text-sm font-semibold text-white mb-2">Delete &ldquo;{deleteConfirm.title}&rdquo;?</h3>
+          <h3 className="text-sm font-semibold text-white dash-light:text-[#16191E] mb-2">Delete &ldquo;{deleteConfirm.title}&rdquo;?</h3>
           <p className="text-[11px] text-muted-foreground mb-4">This action cannot be undone.</p>
           <div className="flex gap-2 justify-end">
             <button onClick={() => setDeleteConfirm(null)} className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-muted text-muted-foreground hover:bg-muted/80 transition-colors">Cancel</button>
