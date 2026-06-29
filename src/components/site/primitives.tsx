@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { HeroCornerLogo } from '@/components/site/HeroCornerLogo'
 
 /**
  * v5 design-system page primitives shared across all front-facing pages.
@@ -106,8 +107,9 @@ export function ServiceHeroImage({ src, name, caption, accent }: { src: string; 
       {/* bottom caption — training context */}
       <div className="absolute bottom-0 inset-x-0 p-5 pt-12">
         <div className="ff-mono text-[10px] tracking-[0.14em] uppercase mb-1.5" style={{ color: accent }}>Interactive training</div>
-        <div className="ff-display font-bold text-white text-[clamp(16px,1.7vw,20px)] leading-tight tracking-[-0.01em] max-w-[94%]">{caption}</div>
+        <div className="ff-display font-bold text-white text-[clamp(16px,1.7vw,20px)] leading-tight tracking-[-0.01em] max-w-[78%]">{caption}</div>
       </div>
+      <HeroCornerLogo />
     </div>
   )
 }

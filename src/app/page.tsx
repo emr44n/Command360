@@ -14,7 +14,8 @@ import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 import { FaqAccordion } from '@/components/home/FaqAccordion'
 import { FloatingJoinDock } from '@/components/join/FloatingJoinDock'
 import { FooterWordmark } from '@/components/home/FooterWordmark'
-import { BrandMark } from '@/components/site/BrandMark'
+import { BrandLink } from '@/components/site/BrandLink'
+import { HeroSeal } from '@/components/site/HeroSeal'
 
 /* ── DATA (canonical Command 360 copy) ── */
 
@@ -156,19 +157,8 @@ export default function LandingPage() {
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true"
             style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px)', backgroundSize: '74px 74px', maskImage: 'radial-gradient(1600px 920px at 32% 2%,#000,transparent 88%)', WebkitMaskImage: 'radial-gradient(1600px 920px at 32% 2%,#000,transparent 88%)' }} />
 
-          {/* rotating seal */}
-          <div className="hidden lg:flex absolute top-[96px] right-[38px] z-[4] w-[104px] h-[104px] items-center justify-center" aria-hidden="true">
-            {/* rotating text */}
-            <svg viewBox="0 0 100 100" className="v5-seal absolute inset-0 w-full h-full">
-              <defs><path id="sealpath" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" /></defs>
-              <text className="ff-mono" fontSize="8.6" letterSpacing="2.4" fill="#8b9099"><textPath href="#sealpath">COMMAND 360 · INTERACTIVE TRAINING · </textPath></text>
-            </svg>
-            {/* static logo at the centre, with the brand-red glow */}
-            <span className="relative inline-flex items-center justify-center">
-              <span className="absolute w-[36px] h-[36px] rounded-full" style={{ background: 'radial-gradient(circle, rgba(201,36,26,.34), transparent 68%)' }} aria-hidden="true" />
-              <BrandMark size={26} className="relative" />
-            </span>
-          </div>
+          {/* rotating seal — text revolves around the hover-spin logo */}
+          <HeroSeal />
 
           <div className="relative max-w-[1280px] mx-auto px-5 sm:px-[30px] pt-[104px]">
             <div className="grid lg:grid-cols-[1.05fr_0.95fr] border-x border-white/10">
@@ -525,10 +515,7 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-12 gap-x-8 gap-y-10 py-12 border-b border-white/10">
             <div className="col-span-2 md:col-span-3">
-              <div className="flex items-center gap-3 mb-4">
-                <BrandMark size={30} />
-                <span className="ff-wordmark text-[18px] text-white tracking-[0.01em]">COMMAND 360</span>
-              </div>
+              <BrandLink size={30} className="flex items-center gap-3 text-white shrink-0 w-fit mb-4" />
               <p className="text-[14px] leading-[1.6] mb-5 max-w-[300px]">Interactive command training for UK emergency services. UK-hosted, GDPR ready, built for those who serve.</p>
               <div className="flex gap-2.5">
                 {['in', 'X', '@'].map((s) => <span key={s} className="w-9 h-9 border border-white/15 flex items-center justify-center ff-mono text-[12px] text-[#9aa0a8] hover:border-white/45 hover:text-white transition-colors cursor-pointer">{s}</span>)}

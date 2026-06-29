@@ -1,5 +1,7 @@
 'use client'
 
+import { HeroCornerLogo } from '@/components/site/HeroCornerLogo'
+
 /**
  * Solutions-page hero image — the framed "grid panel" treatment used across
  * the site (matching the About / Command Studio carousels): bordered stage,
@@ -68,6 +70,7 @@ export function SolutionsHero() {
         </div>
         <Ticker items={SERVICES} c={ACCENT} />
       </div>
+      <HeroCornerLogo />
     </div>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { HeroCornerLogo } from '@/components/site/HeroCornerLogo'
 
 /**
  * About-page hero carousel — plays five brand scenes in order (1 → 5), each
@@ -166,6 +167,7 @@ export function AboutCarousel() {
           </div>
         </div>
       </motion.div>
+      <HeroCornerLogo />
     </div>
   )
 }
