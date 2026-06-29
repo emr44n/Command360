@@ -18,6 +18,7 @@ const NAV_LINKS = [
   { href: '/#capabilities', label: 'How It Works' },
   { href: '/#services', label: 'Services' },
   { href: '/command-studio', label: 'Command Studio', badge: 'NEW' },
+  { href: '/news', label: 'News' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ]
