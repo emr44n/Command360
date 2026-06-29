@@ -11,7 +11,7 @@ import { AboutCarousel } from '@/components/about/AboutCarousel'
 /* ── DATA ── */
 
 const STATS = [
-  { number: '11+', label: 'Services Supported' },
+  { number: '20+', label: 'Years in Incident Command & Virtual Training' },
   { number: '8', label: 'Slide Types' },
   { number: '∞', label: 'Real-time Results' },
   { number: 'UK', label: 'Wide Coverage' },
@@ -25,12 +25,12 @@ const FOUNDING_BOXES = [
   },
   {
     title: 'The Vision',
-    text: 'Command 360 was created to change that. We set out to build an interactive platform that makes every training session a two-way conversation — where every crew member has a voice, and facilitators get instant insight into what their teams actually know.',
+    text: 'Drawing on more than 20 years in incident command and virtual training, Command 360 was created to change that — an interactive platform that makes every session a two-way conversation, where every crew member has a voice and facilitators get instant insight into what their teams actually know.',
     c: '#3E6DC4',
   },
   {
     title: 'The Impact',
-    text: 'From fire station watch-room briefings to multi-agency exercises, Command 360 turns passive audiences into active participants.',
+    text: 'From fire-station watch-room briefings to multi-agency exercises across 11+ UK blue-light services, Command 360 turns passive audiences into active participants.',
     c: '#2E9E63',
   },
 ]
@@ -116,6 +116,7 @@ function useCarousel(count: number, interval = 4000) {
   const [active, setActive] = useState(0)
 
   useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const timer = setInterval(() => {
       setActive((prev) => (prev + 1) % count)
     }, interval)
@@ -128,7 +129,7 @@ function useCarousel(count: number, interval = 4000) {
 /* ── PAGE ── */
 
 export default function AboutPage() {
-  const foundingIdx = useCarousel(FOUNDING_BOXES.length, 4000)
+  const foundingIdx = useCarousel(FOUNDING_BOXES.length, 3000)
   const missionIdx = useCarousel(MISSION_FEATURES.length, 4000)
 
   return (
@@ -141,28 +142,31 @@ export default function AboutPage() {
       />
 
       {/* ─── OUR STORY ─── */}
-      <LightSection>
-        <Container>
+      <LightSection className="relative overflow-hidden">
+        {/* top-right glow follows the active card's colour */}
+        <div aria-hidden="true" className="absolute top-[-120px] right-[-90px] w-[640px] h-[440px] pointer-events-none transition-[background] duration-700" style={{ background: `radial-gradient(50% 60% at 70% 30%, ${FOUNDING_BOXES[foundingIdx].c}2b, transparent 72%)`, filter: 'blur(50px)' }} />
+        <Container className="relative">
           <div className="max-w-[620px] mb-3.5">
             <Eyebrow n="01">Our Story</Eyebrow>
             <h2 className="ff-display font-extrabold text-[clamp(30px,3.8vw,48px)] leading-none tracking-[-0.02em] mt-4 text-[#16191E]">Born from a need for better training</h2>
           </div>
           <div className="h-0.5 bg-[#16191E] origin-left mt-7 mb-9" data-rule />
           <div className="grid md:grid-cols-3 border-t border-l border-[rgba(20,25,30,0.16)]">
-            {FOUNDING_BOXES.map((box, i) => (
-              <SpotlightCard
-                key={box.title}
-                glow={`${box.c}26`}
-                className="v5-card group relative overflow-hidden p-[34px_30px] border-r border-b border-[rgba(20,25,30,0.16)] block cursor-default"
-              >
-                <span className="absolute inset-0 pointer-events-none" style={{ ['--v5-wash' as string]: `${box.c}24` }} aria-hidden="true" />
-                <div className="relative transition-opacity duration-700" style={{ opacity: foundingIdx === i ? 1 : 0.42 }}>
-                  <div className="w-[34px] h-[34px] mb-5" style={{ background: box.c }} aria-hidden="true" />
+            {FOUNDING_BOXES.map((box, i) => {
+              const activeCard = foundingIdx === i
+              return (
+                <div
+                  key={box.title}
+                  className={`group relative p-[36px_30px] border-r border-b border-[rgba(20,25,30,0.16)] cursor-default transition-[transform,background,box-shadow,opacity] duration-500 hover:bg-white hover:-translate-y-1 hover:opacity-100 hover:shadow-[0_24px_50px_-28px_rgba(20,25,30,0.45)] ${activeCard ? 'bg-white -translate-y-1 opacity-100 shadow-[0_24px_50px_-28px_rgba(20,25,30,0.45)]' : 'opacity-60'}`}
+                >
+                  {/* coloured top accent — drawn when active or hovered */}
+                  <span className="absolute top-0 left-0 right-0 h-0.5 origin-left transition-transform duration-500 group-hover:scale-x-100" style={{ background: box.c, transform: activeCard ? 'scaleX(1)' : 'scaleX(0)' }} aria-hidden="true" />
+                  <div className="w-[34px] h-[34px] mb-5 origin-left transition-transform duration-500 group-hover:scale-110" style={{ background: box.c, transform: activeCard ? 'scale(1.1)' : 'scale(1)' }} aria-hidden="true" />
                   <div className="ff-mono text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: box.c }}>{box.title}</div>
                   <p className="text-[14.5px] text-[#5a5f66] leading-relaxed">{box.text}</p>
                 </div>
-              </SpotlightCard>
-            ))}
+              )
+            })}
           </div>
         </Container>
       </LightSection>
