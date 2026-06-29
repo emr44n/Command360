@@ -282,6 +282,19 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
 
   const style = element.style || {}
 
+  // ─── resolved design-tool styling ───
+  // border-radius: prefer the % model (50% = circle); fall back to legacy px
+  const radius = style.borderRadiusPct != null ? `${style.borderRadiusPct}%` : `${style.borderRadius || 0}px`
+  const borderW = style.borderWidth || 0
+  const border = borderW > 0 ? `${borderW}px solid ${style.borderColor || '#ffffff'}` : undefined
+  // per-edge feather → two nested gradient masks (vertical + horizontal) that
+  // multiply, so corners fade correctly without needing mask-composite
+  const ef = style.edgeFade || {}
+  const ft = ef.top || 0, fb = ef.bottom || 0, fl = ef.left || 0, fr = ef.right || 0
+  const vMask = (ft || fb) ? `linear-gradient(to bottom, transparent 0%, #000 ${ft}%, #000 ${100 - fb}%, transparent 100%)` : undefined
+  const hMask = (fl || fr) ? `linear-gradient(to right, transparent 0%, #000 ${fl}%, #000 ${100 - fr}%, transparent 100%)` : undefined
+  const imgTransform = `translate(${style.imagePanX || 0}%, ${style.imagePanY || 0}%) scale(${style.imageScale || 1})`
+
   return (
     <div
       ref={elRef}
@@ -295,7 +308,10 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
         cursor: isEditing ? 'text' : dragging ? 'grabbing' : 'grab',
         outline: isSelected ? '2px solid #dc2626' : 'none',
         outlineOffset: 2,
-        borderRadius: element.type === 'image' ? (style.borderRadius || 0) : 0,
+        borderRadius: radius,
+        border,
+        boxSizing: 'border-box',
+        opacity: style.opacity ?? 1,
         zIndex: isSelected ? 25 : 22,
         transform: element.rotation ? `rotate(${element.rotation}deg)` : undefined,
       }}
@@ -306,71 +322,76 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
         if (element.type === 'text') onStartEdit()
       }}
     >
-      {element.type === 'text' && (
-        isEditing ? (
-          <textarea
-            autoFocus
-            value={element.content}
-            onChange={(e) => onUpdate({ content: e.target.value })}
-            onMouseDown={(e) => e.stopPropagation()}
-            style={{
-              width: '100%',
-              height: '100%',
-              background: style.backgroundColor || 'transparent',
-              color: style.color || '#374151',
-              fontSize: style.fontSize || 16,
-              fontWeight: style.fontWeight || 'normal',
-              fontStyle: style.fontStyle || 'normal',
-              textAlign: (style.textAlign as 'left' | 'center' | 'right') || 'left',
-              border: 'none',
-              outline: 'none',
-              resize: 'none',
-              padding: '4px 6px',
-              lineHeight: 1.4,
-              overflow: 'hidden',
-              fontFamily: 'inherit',
-            }}
-          />
-        ) : (
-          <div
-            style={{
-              width: '100%',
-              height: '100%',
-              background: style.backgroundColor || 'transparent',
-              color: style.color || '#374151',
-              fontSize: style.fontSize || 16,
-              fontWeight: style.fontWeight || 'normal',
-              fontStyle: style.fontStyle || 'normal',
-              textAlign: (style.textAlign as 'left' | 'center' | 'right') || 'left',
-              padding: '4px 6px',
-              lineHeight: 1.4,
-              overflow: 'hidden',
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word',
-              userSelect: 'none',
-            }}
-          >
-            {element.content || 'Click to edit'}
-          </div>
-        )
-      )}
+      {/* content clipped to the radius; nested wrappers carry the edge-fade masks */}
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius, WebkitMaskImage: vMask, maskImage: vMask }}>
+        <div style={{ width: '100%', height: '100%', WebkitMaskImage: hMask, maskImage: hMask }}>
+          {element.type === 'text' && (
+            isEditing ? (
+              <textarea
+                autoFocus
+                value={element.content}
+                onChange={(e) => onUpdate({ content: e.target.value })}
+                onMouseDown={(e) => e.stopPropagation()}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  background: style.backgroundColor || 'transparent',
+                  color: style.color || '#374151',
+                  fontSize: style.fontSize || 16,
+                  fontWeight: style.fontWeight || 'normal',
+                  fontStyle: style.fontStyle || 'normal',
+                  textAlign: (style.textAlign as 'left' | 'center' | 'right') || 'left',
+                  border: 'none',
+                  outline: 'none',
+                  resize: 'none',
+                  padding: '4px 6px',
+                  lineHeight: 1.4,
+                  overflow: 'hidden',
+                  fontFamily: 'inherit',
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  background: style.backgroundColor || 'transparent',
+                  color: style.color || '#374151',
+                  fontSize: style.fontSize || 16,
+                  fontWeight: style.fontWeight || 'normal',
+                  fontStyle: style.fontStyle || 'normal',
+                  textAlign: (style.textAlign as 'left' | 'center' | 'right') || 'left',
+                  padding: '4px 6px',
+                  lineHeight: 1.4,
+                  overflow: 'hidden',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                  userSelect: 'none',
+                }}
+              >
+                {element.content || 'Click to edit'}
+              </div>
+            )
+          )}
 
-      {element.type === 'image' && (
-        <img
-          src={element.content}
-          alt=""
-          draggable={false}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: (style.objectFit as 'cover' | 'contain' | 'fill') || 'cover',
-            borderRadius: style.borderRadius || 0,
-            opacity: style.opacity ?? 1,
-            userSelect: 'none',
-            pointerEvents: 'none',
-          }}
-        />
-      )}
+          {element.type === 'image' && (
+            <img
+              src={element.content}
+              alt=""
+              draggable={false}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: (style.objectFit as 'cover' | 'contain' | 'fill') || 'cover',
+                transform: imgTransform,
+                transformOrigin: 'center',
+                userSelect: 'none',
+                pointerEvents: 'none',
+              }}
+            />
+          )}
+        </div>
+      </div>
 
       {/* Resize handles when selected */}
       {isSelected && !isEditing && (
