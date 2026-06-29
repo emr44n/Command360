@@ -11,6 +11,7 @@ import {
 import { playEvent, type EventPlaybackController } from '@/lib/studio/event-playback'
 import { STUDIO_DEFAULT_BG } from '@/lib/studio/default-canvas'
 import { PushPanel, type PushQueueItem } from '@/components/studio/PushPanel'
+import { LiveScenesPanel } from '@/components/presenter/LiveScenesPanel'
 import { StudioProperties } from '@/components/studio/StudioProperties'
 import { generateLayerId } from '@/lib/utils/studio-utils'
 import { QRCodeSVG } from 'qrcode.react'
@@ -27,6 +28,11 @@ interface Props {
   channelRef: React.RefObject<RealtimeChannel | null>
   presenterName: string
   onEndExercise: (stats: ExerciseStats) => void
+  /** all studio scenes in the scenario (for the live-scene selector) */
+  scenes?: { id: string; title: string }[]
+  initialLiveSceneIds?: string[]
+  /** switch which scene the presenter is driving (Phase 4) */
+  onDriveScene?: (sceneId: string) => void
 }
 
 interface AssetItem { id: string; name: string; url: string; type: 'image' | 'video' | 'audio' }
@@ -63,7 +69,7 @@ const SHAPE_PRESETS = [
   { name: 'Polygon', w: 15, h: 15, color: '#4a5568' },
 ]
 
-export function LiveDirectorView({ slide, session, channelRef, presenterName, onEndExercise }: Props) {
+export function LiveDirectorView({ slide, session, channelRef, presenterName, onEndExercise, scenes, initialLiveSceneIds, onDriveScene }: Props) {
   const [activeContent] = useState<StudioContent>(() => JSON.parse(JSON.stringify(slide.content)))
   const { canvas, layers: initialLayers, events, eventCategories } = activeContent
 
@@ -102,7 +108,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   const audioInputRef = useRef<HTMLInputElement>(null)
 
   // ─── Right panel ───
-  const [rightTab, setRightTab] = useState<'push' | 'details'>('push')
+  const [rightTab, setRightTab] = useState<'push' | 'details' | 'scenes'>('push')
   const [pushQueue, setPushQueue] = useState<PushQueueItem[]>([])
   const [globalTransition, setGlobalTransition] = useState<'fade' | 'instant'>('fade')
 
@@ -987,9 +993,22 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
         <div className="w-56 shrink-0 bg-[#1e1f22] border-l border-[#2b2d31] flex flex-col overflow-hidden">
           {/* Tab switcher */}
           <div className="flex border-b border-[#2b2d31] shrink-0">
-            <button onClick={() => setRightTab('push')} className={`flex-1 py-2 text-[8px] font-bold uppercase tracking-wider transition-colors ${rightTab === 'push' ? 'text-red-400 border-b-2 border-red-500' : 'text-zinc-500 hover:text-zinc-300'}`}>Push to Live</button>
+            <button onClick={() => setRightTab('scenes')} className={`flex-1 py-2 text-[8px] font-bold uppercase tracking-wider transition-colors ${rightTab === 'scenes' ? 'text-red-400 border-b-2 border-red-500' : 'text-zinc-500 hover:text-zinc-300'}`}>Scenes</button>
+            <button onClick={() => setRightTab('push')} className={`flex-1 py-2 text-[8px] font-bold uppercase tracking-wider transition-colors ${rightTab === 'push' ? 'text-red-400 border-b-2 border-red-500' : 'text-zinc-500 hover:text-zinc-300'}`}>Push</button>
             <button onClick={() => setRightTab('details')} className={`flex-1 py-2 text-[8px] font-bold uppercase tracking-wider transition-colors ${rightTab === 'details' ? 'text-red-400 border-b-2 border-red-500' : 'text-zinc-500 hover:text-zinc-300'}`}>Details</button>
           </div>
+          {rightTab === 'scenes' && (
+            <div className="flex-1 overflow-y-auto p-2.5">
+              <LiveScenesPanel
+                session={session}
+                channelRef={channelRef}
+                scenes={scenes ?? [{ id: slide.id, title: slide.title || 'Scene 1' }]}
+                initialLiveSceneIds={initialLiveSceneIds ?? [slide.id]}
+                currentSceneId={slide.id}
+                onDrive={onDriveScene}
+              />
+            </div>
+          )}
           {rightTab === 'push' && (
             <PushPanel queue={pushQueue} onUpdateTransition={updateQueueTransition} onPushItem={pushItem} onPushAll={pushAll} onRemoveItem={removeFromQueue} globalTransition={globalTransition} onSetGlobalTransition={setGlobalTransition} />
           )}

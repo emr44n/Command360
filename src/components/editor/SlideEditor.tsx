@@ -520,6 +520,15 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       const channel = supabase.channel(`session:${data.session.id}`)
       channel.subscribe()
       channelRef.current = channel
+      // seed the live scene set with the scene being driven so a joining room
+      // has something to pick straight away
+      if (selectedSlide) {
+        fetch(`/api/sessions/${data.session.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ live_scene_ids: [selectedSlide.id] }),
+        }).catch(() => {})
+      }
       setActiveModeSession({ id: data.session.id, room_code: data.session.room_code })
       setActiveMode(true)
       setStarting(false)
@@ -564,6 +573,8 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           session={activeModeSession}
           channelRef={channelRef}
           presenterName={activeModePresenter}
+          scenes={slides.filter(s => s.slide_type === 'studio').map(s => ({ id: s.id, title: s.title }))}
+          initialLiveSceneIds={[selectedSlide.id]}
           onEndExercise={(stats) => {
             setActiveMode(false)
             setExerciseStats(stats)

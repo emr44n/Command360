@@ -7,6 +7,8 @@ export interface Session {
   room_code: string
   status: SessionStatus
   current_slide_id: string | null
+  /** studio scene (slide) IDs currently broadcast live for multi-scene rooms */
+  live_scene_ids: string[]
   voting_open: boolean
   started_at: string
   ended_at: string | null

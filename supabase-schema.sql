@@ -72,6 +72,9 @@ CREATE TABLE IF NOT EXISTS sessions (
   room_code VARCHAR(10) NOT NULL UNIQUE,
   status TEXT NOT NULL DEFAULT 'waiting' CHECK (status IN ('waiting', 'active', 'paused', 'ended')),
   current_slide_id UUID REFERENCES slides(id) ON DELETE SET NULL,
+  -- multi-scene live: studio scene (slide) IDs currently broadcast live; a
+  -- joining room picks one of these to show full-screen.
+  live_scene_ids JSONB NOT NULL DEFAULT '[]'::jsonb,
   voting_open BOOLEAN DEFAULT FALSE,
   started_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   ended_at TIMESTAMP WITH TIME ZONE,
