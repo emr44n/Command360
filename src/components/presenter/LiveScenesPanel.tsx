@@ -21,6 +21,8 @@ interface Props {
   currentSceneId?: string
   /** click a scene to drive it (Phase 4) — optional */
   onDrive?: (sceneId: string) => void
+  /** report the live-scene set upward so it survives a director remount */
+  onChange?: (liveSceneIds: string[]) => void
 }
 
 /**
@@ -30,7 +32,7 @@ interface Props {
  * `live_scene_ids` on the session and broadcasts LIVE_SCENES_UPDATED so any open
  * join pickers refresh.
  */
-export function LiveScenesPanel({ session, channelRef, scenes, initialLiveSceneIds, currentSceneId, onDrive }: Props) {
+export function LiveScenesPanel({ session, channelRef, scenes, initialLiveSceneIds, currentSceneId, onDrive, onChange }: Props) {
   const [liveIds, setLiveIds] = useState<string[]>(initialLiveSceneIds)
   const [saving, setSaving] = useState(false)
 
@@ -58,9 +60,10 @@ export function LiveScenesPanel({ session, channelRef, scenes, initialLiveSceneI
     setLiveIds(prev => {
       const next = prev.includes(sceneId) ? prev.filter(id => id !== sceneId) : [...prev, sceneId]
       persist(next)
+      onChange?.(next)
       return next
     })
-  }, [persist])
+  }, [persist, onChange])
 
   return (
     <div className="flex flex-col gap-3 text-zinc-200">

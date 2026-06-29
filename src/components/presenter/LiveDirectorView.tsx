@@ -33,6 +33,13 @@ interface Props {
   initialLiveSceneIds?: string[]
   /** switch which scene the presenter is driving (Phase 4) */
   onDriveScene?: (sceneId: string) => void
+  /** report the live-scene set upward so it survives a scene switch */
+  onLiveScenesChange?: (liveSceneIds: string[]) => void
+  /** cached live layers/states for this scene (restored when switching back to it) */
+  cachedLayers?: StudioLayer[]
+  cachedStates?: Record<string, StudioLayerState>
+  /** report this scene's live layers/states upward so switching away + back is non-destructive */
+  onSceneStateChange?: (sceneId: string, layers: StudioLayer[], layerStates: Record<string, StudioLayerState>) => void
 }
 
 interface AssetItem { id: string; name: string; url: string; type: 'image' | 'video' | 'audio' }
@@ -69,13 +76,13 @@ const SHAPE_PRESETS = [
   { name: 'Polygon', w: 15, h: 15, color: '#4a5568' },
 ]
 
-export function LiveDirectorView({ slide, session, channelRef, presenterName, onEndExercise, scenes, initialLiveSceneIds, onDriveScene }: Props) {
+export function LiveDirectorView({ slide, session, channelRef, presenterName, onEndExercise, scenes, initialLiveSceneIds, onDriveScene, onLiveScenesChange, cachedLayers, cachedStates, onSceneStateChange }: Props) {
   const [activeContent] = useState<StudioContent>(() => JSON.parse(JSON.stringify(slide.content)))
   const { canvas, layers: initialLayers, events, eventCategories } = activeContent
 
-  // ─── Core state ───
-  const [layers, setLayers] = useState(initialLayers)
-  const [layerStates, setLayerStates] = useState(() => buildInitialStates(initialLayers))
+  // ─── Core state ─── (restore cached live state when switching back to a scene)
+  const [layers, setLayers] = useState(cachedLayers ?? initialLayers)
+  const [layerStates, setLayerStates] = useState(() => cachedStates ?? buildInitialStates(initialLayers))
   const [triggeredEvents, setTriggeredEvents] = useState<Set<string>>(new Set())
   const [animatingEventId, setAnimatingEventId] = useState<string | null>(null)
   const [sessionSeconds, setSessionSeconds] = useState(0)
@@ -108,7 +115,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   const audioInputRef = useRef<HTMLInputElement>(null)
 
   // ─── Right panel ───
-  const [rightTab, setRightTab] = useState<'push' | 'details' | 'scenes'>('push')
+  const [rightTab, setRightTab] = useState<'push' | 'details' | 'scenes'>('scenes')
   const [pushQueue, setPushQueue] = useState<PushQueueItem[]>([])
   const [globalTransition, setGlobalTransition] = useState<'fade' | 'instant'>('fade')
 
@@ -303,13 +310,17 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   // re-mount) mid-exercise catch up to the current layers + states, rather
   // than being stuck on the scene's initial content.
   useEffect(() => {
-    const send = () => channelRef.current?.send({
-      type: 'broadcast', event: 'STUDIO_SYNC_STATE',
-      payload: { slide_id: slide.id, layers: layersRef.current, layerStates: layerStatesRef.current },
-    })
+    const send = () => {
+      channelRef.current?.send({
+        type: 'broadcast', event: 'STUDIO_SYNC_STATE',
+        payload: { slide_id: slide.id, layers: layersRef.current, layerStates: layerStatesRef.current },
+      })
+      // cache upward so switching away + back to this scene restores its live state
+      onSceneStateChange?.(slide.id, layersRef.current, layerStatesRef.current)
+    }
     const i = setInterval(send, 2000)
     return () => clearInterval(i)
-  }, [slide.id, channelRef])
+  }, [slide.id, channelRef, onSceneStateChange])
 
   const handleLayerMouseDown = useCallback((e: React.MouseEvent, layerId: string) => {
     e.stopPropagation(); e.preventDefault()
@@ -1006,6 +1017,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                 initialLiveSceneIds={initialLiveSceneIds ?? [slide.id]}
                 currentSceneId={slide.id}
                 onDrive={onDriveScene}
+                onChange={onLiveScenesChange}
               />
             </div>
           )}
