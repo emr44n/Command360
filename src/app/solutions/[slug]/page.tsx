@@ -33,17 +33,31 @@ const SERVICE_NAMES: Record<string, string> = {
 }
 
 const SERVICE_DESCRIPTIONS: Record<string, string> = {
-  'fire-rescue': 'From watch-level safety briefings to post-incident hot debriefs, Command 360 helps your crews engage, learn, and feed back — all in real time, on any device.',
-  'police': 'Deliver consistent policy training, knowledge assessments, and shift briefings with instant feedback, anonymous participation, and audit-ready reporting.',
-  'ambulance': 'Run clinical protocol training, CPD sessions, and welfare checks with anonymous response options — all from a phone, tablet, or laptop at station.',
-  'armed-forces': 'Conduct operational briefings, readiness assessments, and training evaluations at scale across units, formations, and locations.',
-  'coastguard': 'Maritime safety training, operational briefings, and volunteer coordination sessions with real-time participation from any device.',
-  'search-rescue': 'Team training exercises, equipment familiarisation, and operational readiness assessments designed for volunteer and professional SAR teams.',
-  'prison-probation': 'Staff training, security procedure assessments, and policy awareness sessions with secure, anonymous participation for sensitive environments.',
-  'local-authority': 'Emergency planning exercises, council briefings, and community resilience training with full participation tracking and exportable data.',
-  'civil-contingencies': 'Multi-agency exercises, table-top scenarios, and emergency response plan testing with real-time feedback collection and AI-powered analysis.',
-  'nhs-emergency': 'Clinical governance training, major incident briefings, and team development sessions with confidential feedback and exportable evidence.',
-  'voluntary-sector': 'Volunteer induction, skills assessment, and coordination briefings for community response teams, charities, and voluntary organisations.',
+  'fire-rescue': "Scenario-based incident command training for UK Fire & Rescue. Rehearse decision-making under pressure, JESIP joint working and NOG-aligned exercises with Command 360.",
+  'police': "Scenario-based police training on Command 360: rehearse NDM decisions, public order and command under pressure, with debriefs and analytics that reflect College of Policing APP.",
+  'ambulance': "Scenario-based ambulance training for UK trusts. Rehearse clinical decisions, major-incident command and JESIP joint working, with CPD evidence built in.",
+  'armed-forces': "Command 360 delivers scenario-based command training and assurance evidence for the UK Armed Forces, supporting DSAT, collective training and multi-agency readiness.",
+  'coastguard': "Scenario-based HM Coastguard training software for SAR coordination, coastal rescue and multi-agency exercises. Build, run and debrief realistic incidents with Command 360.",
+  'search-rescue': "Scenario-based search and rescue training for UK SAR, mountain, lowland and coastal volunteer teams. Rehearse search management, casualty care and multi-agency command.",
+  'prison-probation': "Scenario-based prison and probation training for HMPPS teams. Rehearse de-escalation, use-of-force decisions, safety procedures and multi-agency incidents with Command 360.",
+  'local-authority': "Scenario-based emergency planning and resilience training for UK local authorities. Rehearse Category 1 duties, JESIP joint working and business continuity with Command 360.",
+  'civil-contingencies': "Civil contingencies training and exercising software for UK Local Resilience Forums. Run table-top and live-style scenarios, review capability and capture learning.",
+  'nhs-emergency': "Scenario-based major incident and surge training for NHS emergency departments. Rehearse EPRR, MIMMS and RCEM-aligned decisions with exportable debrief evidence.",
+  'voluntary-sector': "Command 360 delivers scenario-based incident-command training for the voluntary sector, supporting volunteer induction, multi-agency exercising and resilience.",
+}
+
+const SERVICE_KEYWORDS: Record<string, string[]> = {
+  'fire-rescue': ["fire and rescue incident command training","fire service scenario based training","incident commander assessment software","National Operational Guidance training exercises","fire and rescue tabletop exercise platform","JESIP multi-agency training","decision making under pressure fire service","fire command competence assessment","fire and rescue debrief and analytics software","blue light incident command simulation"],
+  'police': ["police scenario training software","national decision model training","police command training platform","public order training exercises","police decision-making under pressure","police CPD training tool","incident command training UK police","police debrief and analytics software","APP-aligned police training"],
+  'ambulance': ["ambulance scenario training platform","paramedic clinical decision making training","JRCALC scenario training","ambulance major incident exercise software","EPRR ambulance training","paramedic CPD evidence portfolio","ambulance command and triage simulation","JESIP multi-agency ambulance training","NHS ambulance trust training software","paramedic competence assessment tool"],
+  'armed-forces': ["Armed Forces training platform","DSAT training software","military collective training simulation","command decision training under pressure","Defence training assurance software","JESIP multi-agency military training","Military Aid to the Civil Authorities exercise","scenario-based command training UK","military readiness training tool"],
+  'coastguard': ["HM Coastguard training software","Coastguard Rescue Officer training","coastal rescue scenario training","maritime search and rescue exercises","SAR coordination training UK","Coastguard Rescue Team training platform","declared facility competence assurance","multi-agency SAR exercise software"],
+  'search-rescue': ["search and rescue training platform","SAR volunteer training UK","mountain rescue training scenarios","lowland rescue exercise software","search management training","casualty care scenario training","multi-agency SAR exercise","incident command training search and rescue"],
+  'prison-probation': ["prison and probation training software","HMPPS scenario training","de-escalation training for prison officers","use of force decision-making training","custody incident command simulation","use of force training support","OMiC training tools","probation staff safety training","prison incident debrief and analytics","blue light immersive training platform"],
+  'local-authority': ["local authority emergency planning training","Civil Contingencies Act 2004 training","Category 1 responder exercise platform","Local Resilience Forum exercise software","business continuity scenario training","JESIP multi-agency training","community resilience training UK","emergency planning debrief and analytics","council incident command training"],
+  'civil-contingencies': ["civil contingencies training","Local Resilience Forum exercises","Civil Contingencies Act 2004 training","table-top exercise software","multi-agency exercise platform","emergency planning exercise tool","National Risk Register scenario training","LRF readiness and exercising","resilience training for blue-light services","JESIP joint working exercises"],
+  'nhs-emergency': ["NHS emergency department major incident training","ED surge scenario training","EPRR exercise software NHS","hospital major incident command training","MIMMS CSCATTT training simulation","emergency department debrief and analytics","RCEM aligned ED training platform","CQC evidence emergency department training","blue light incident command simulation","NHS emergency preparedness tabletop exercise"],
+  'voluntary-sector': ["voluntary sector emergency response training","voluntary sector civil protection training","volunteer induction emergency services","Local Resilience Forum voluntary sector exercise","multi-agency exercise voluntary sector","scenario-based training emergency volunteers","voluntary sector incident command training","JESIP joint working voluntary sector","emergency responder volunteer training UK","community resilience exercise platform"],
 }
 
 /* ─── Static params + metadata ─── */
@@ -62,10 +76,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title,
     description,
-    keywords: [
-      `${name} training`, `${name} briefings`, `${name} CPD`,
-      'interactive training', 'emergency services training', 'UK blue light training',
-      'live polls', 'session debrief', 'Command 360',
+    keywords: SERVICE_KEYWORDS[slug] ?? [
+      `${name} training`, `${name} briefings`, 'interactive training', 'emergency services training', 'Command 360',
     ],
     alternates: { canonical: path },
     openGraph: {
