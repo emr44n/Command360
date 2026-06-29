@@ -16,6 +16,7 @@ import {
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { BrandMark } from '@/components/site/BrandMark'
+import { buildEdgeFadeMasks, type EdgeFade } from '@/lib/editor/edge-fade'
 
 interface Props {
   presentation: { id: string; title: string }
@@ -261,18 +262,26 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                   if (!canvasEls || canvasEls.length === 0) return null
                   return (
                     <div key={slide.id} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 5 }}>
-                      <style>{`@keyframes c360ElFadeIn{from{opacity:0}to{opacity:var(--c360-el-op,1)}}`}</style>
+                      <style>{`
+                        @keyframes c360FadeIn{0%{opacity:0}33%{opacity:var(--c360-el-op,1)}100%{opacity:var(--c360-el-op,1)}}
+                        @keyframes c360FadeOut{0%{opacity:var(--c360-el-op,1)}66%{opacity:var(--c360-el-op,1)}100%{opacity:0}}
+                        @keyframes c360FadeBoth{0%{opacity:0}25%{opacity:var(--c360-el-op,1)}75%{opacity:var(--c360-el-op,1)}100%{opacity:0}}
+                      `}</style>
                       {canvasEls.map(el => {
                         const st = el.style || {}
                         const radius = st.borderRadiusPct != null ? `${st.borderRadiusPct as number}%` : `${(st.borderRadius as number) || 0}px`
                         const borderW = (st.borderWidth as number) || 0
-                        const ef = (st.edgeFade as { top?: number; bottom?: number; left?: number; right?: number }) || {}
-                        const ft = ef.top || 0, fb = ef.bottom || 0, fl = ef.left || 0, fr = ef.right || 0
-                        const vMask = (ft || fb) ? `linear-gradient(to bottom, transparent 0%, #000 ${ft}%, #000 ${100 - fb}%, transparent 100%)` : undefined
-                        const hMask = (fl || fr) ? `linear-gradient(to right, transparent 0%, #000 ${fl}%, #000 ${100 - fr}%, transparent 100%)` : undefined
+                        const { vMask, hMask } = buildEdgeFadeMasks(st.edgeFade as EdgeFade | undefined)
                         const imgTransform = `translate(${(st.imagePanX as number) || 0}%, ${(st.imagePanY as number) || 0}%) scale(${(st.imageScale as number) || 1})`
                         const anim = (st.anim as { fadeIn?: boolean; fadeOut?: boolean; speed?: number }) || {}
                         const elOpacity = (st.opacity as number) ?? 1
+                        const speed = anim.speed || 600
+                        // loop the configured fade in preview so it's visible + tunable
+                        const animCss = anim.fadeIn && anim.fadeOut
+                          ? `c360FadeBoth ${speed * 4}ms ease-in-out infinite`
+                          : anim.fadeIn ? `c360FadeIn ${speed * 3}ms ease-in-out infinite`
+                          : anim.fadeOut ? `c360FadeOut ${speed * 3}ms ease-in-out infinite`
+                          : undefined
                         return (
                           <div key={el.id} style={{
                             position: 'absolute',
@@ -283,10 +292,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                             boxSizing: 'border-box',
                             opacity: elOpacity,
                             transform: el.rotation ? `rotate(${el.rotation}deg)` : undefined,
-                            ...(anim.fadeIn ? {
-                              ['--c360-el-op' as string]: elOpacity,
-                              animation: `c360ElFadeIn ${anim.speed || 600}ms ease both`,
-                            } : {}),
+                            ...(animCss ? { ['--c360-el-op' as string]: elOpacity, animation: animCss } : {}),
                           }}>
                             <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius, WebkitMaskImage: vMask, maskImage: vMask }}>
                               <div style={{ width: '100%', height: '100%', WebkitMaskImage: hMask, maskImage: hMask }}>
