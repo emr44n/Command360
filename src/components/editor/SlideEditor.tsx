@@ -85,6 +85,8 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   // multi-scene live: which studio scenes are currently broadcast live (tracked
   // here so it survives switching which scene the presenter drives)
   const [liveSceneIds, setLiveSceneIds] = useState<string[]>([])
+  // exercise start time, kept across scene switches so the director timer is continuous
+  const [exerciseStartedAt, setExerciseStartedAt] = useState<string | null>(null)
   // per-scene live state cache so switching away + back to a scene is non-destructive
   const sceneCacheRef = useRef<Record<string, { layers: import('@/types/slide').StudioLayer[]; layerStates: Record<string, import('@/types/slide').StudioLayerState> }>>({})
   const cacheSceneState = useCallback((sceneId: string, layers: import('@/types/slide').StudioLayer[], layerStates: Record<string, import('@/types/slide').StudioLayerState>) => {
@@ -530,6 +532,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       channelRef.current = channel
       // seed the live scene set with the scene being driven so a joining room
       // has something to pick straight away
+      setExerciseStartedAt(new Date().toISOString())
       if (selectedSlide) {
         setLiveSceneIds([selectedSlide.id])
         fetch(`/api/sessions/${data.session.id}`, {
@@ -563,6 +566,9 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           setExerciseStats(null)
           setActiveMode(false)
           setActiveModeSession(null)
+          setExerciseStartedAt(null)
+          setLiveSceneIds([])
+          sceneCacheRef.current = {}
           if (channelRef.current) {
             const supabase = createClient()
             supabase.removeChannel(channelRef.current)
@@ -588,6 +594,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           onLiveScenesChange={setLiveSceneIds}
           cachedLayers={sceneCacheRef.current[selectedSlide.id]?.layers}
           cachedStates={sceneCacheRef.current[selectedSlide.id]?.layerStates}
+          exerciseStartedAt={exerciseStartedAt ?? undefined}
           onSceneStateChange={cacheSceneState}
           onDriveScene={(sceneId) => {
             // switch which scene the presenter drives; the key change remounts
