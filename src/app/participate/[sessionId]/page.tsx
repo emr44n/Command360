@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { ParticipantView } from '@/components/participant/ParticipantView'
+import { RoomSceneView } from '@/components/participant/RoomSceneView'
 import { WaitingScreen } from '@/components/participant/WaitingScreen'
 import type { Session } from '@/types/session'
 import type { Slide } from '@/types/slide'
@@ -16,6 +17,7 @@ export default function ParticipatePage() {
   const [participantId, setParticipantId] = useState<string | null>(null)
   const [clientToken, setClientToken] = useState<string | null>(null)
   const [displayName, setDisplayName] = useState<string | null>(null)
+  const [scenarioTitle, setScenarioTitle] = useState('')
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
 
@@ -41,7 +43,7 @@ export default function ParticipatePage() {
   async function loadSession() {
     const { data: sess } = await supabase
       .from('sessions')
-      .select('*')
+      .select('*, presentations(title)')
       .eq('id', sessionId)
       .single()
 
@@ -56,6 +58,7 @@ export default function ParticipatePage() {
       .eq('presentation_id', sess.presentation_id)
       .order('position')
 
+    setScenarioTitle((sess as { presentations?: { title?: string } }).presentations?.title || '')
     setSession(sess as Session)
     setSlides(slideData || [])
     setLoading(false)
@@ -63,6 +66,22 @@ export default function ParticipatePage() {
 
   if (loading || !session || !participantId || !clientToken || !displayName) {
     return <WaitingScreen message="Loading session..." />
+  }
+
+  // Multi-scene live studio session → per-room scene picker (rooms each choose a
+  // scene). Identified by the presenter having put scenes live.
+  const studioScenes = slides.filter((s) => s.slide_type === 'studio')
+  const isMultiSceneRoom = studioScenes.length > 0 && (session.live_scene_ids?.length ?? 0) > 0
+  if (isMultiSceneRoom) {
+    return (
+      <RoomSceneView
+        session={session}
+        scenes={studioScenes}
+        scenarioTitle={scenarioTitle}
+        participantId={participantId}
+        displayName={displayName}
+      />
+    )
   }
 
   return (
