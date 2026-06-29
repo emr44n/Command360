@@ -818,11 +818,6 @@ html, body {
 /* Rotating tactical seal. */
 .v5-seal { animation: v5spin 26s linear infinite; }
 
-/* Hero-corner logo: spins only while hovered, freezes in place on leave. */
-.hero-corner-logo { animation: v5spin 2.6s linear infinite; animation-play-state: paused; will-change: transform; }
-.hero-corner-logo.is-spinning { animation-play-state: running; }
-@media (prefers-reduced-motion: reduce) { .hero-corner-logo { animation: none; } }
-
 /* Marquee row. */
 .v5-marquee { animation: v5marquee 46s linear infinite; }
 .v5-marquee-wrap:hover .v5-marquee { animation-play-state: paused; }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { HeroCornerLogo } from '@/components/site/HeroCornerLogo'
 
 /**
  * Hero right-hand panel — a cinematic image carousel of the UK blue-light
@@ -76,6 +77,16 @@ function FootConnected({ accent }: { accent: string }) {
 export function HeroShowcase() {
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
+  // drag/swipe only on touch devices; desktop uses the pagination dots
+  const [isTouch, setIsTouch] = useState(false)
+
+  useEffect(() => {
+    const m = window.matchMedia('(pointer: coarse)')
+    const sync = () => setIsTouch(m.matches)
+    sync()
+    m.addEventListener('change', sync)
+    return () => m.removeEventListener('change', sync)
+  }, [])
 
   useEffect(() => {
     if (paused) return
@@ -96,8 +107,8 @@ export function HeroShowcase() {
     >
       {/* swipeable image stage */}
       <motion.div
-        className="relative flex-1 overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y"
-        drag="x"
+        className={`relative flex-1 overflow-hidden touch-pan-y ${isTouch ? 'cursor-grab active:cursor-grabbing' : ''}`}
+        drag={isTouch ? 'x' : false}
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.16}
         dragSnapToOrigin
@@ -166,6 +177,7 @@ export function HeroShowcase() {
             ))}
           </div>
         </div>
+        <HeroCornerLogo />
       </motion.div>
 
       {/* foot — agencies connecting live */}

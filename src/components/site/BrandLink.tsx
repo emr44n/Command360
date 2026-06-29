@@ -27,6 +27,7 @@ export function BrandLink({
   className?: string
 }) {
   const [turns, setTurns] = useState(0)
+  const [hover, setHover] = useState(false)
   const [reduce, setReduce] = useState(false)
   const pathname = usePathname()
 
@@ -46,15 +47,18 @@ export function BrandLink({
   }, [pathname, reduce])
 
   // each hover-enter and hover-leave adds one clockwise turn, so the logo
-  // always rotates the same direction and lands back at its start orientation
+  // always rotates the same direction and lands back at its start orientation;
+  // hovering also scales it up slightly (and back down on leave), like the seal
   const spin = () => { if (!reduce) setTurns((n) => n + 1) }
+  const onEnter = () => { setHover(true); spin() }
+  const onLeave = () => { setHover(false); spin() }
 
   return (
-    <Link href="/" className={className} onMouseEnter={spin} onMouseLeave={spin}>
+    <Link href="/" className={className} onMouseEnter={onEnter} onMouseLeave={onLeave}>
       <span
         className="inline-flex shrink-0 will-change-transform"
         style={{
-          transform: `rotate(${turns * 360}deg)`,
+          transform: `rotate(${turns * 360}deg) scale(${hover && !reduce ? 1.12 : 1})`,
           transition: reduce ? undefined : 'transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1)',
         }}
       >
