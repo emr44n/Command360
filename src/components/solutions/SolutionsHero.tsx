@@ -35,12 +35,12 @@ function Ticker({ items, c }: { items: string[]; c: string }) {
 
 export function SolutionsHero() {
   return (
-    <div className="relative w-full border border-white/12 bg-[#0A0C0F] overflow-hidden aspect-[4/5]" data-reveal>
+    <div className="relative w-full border border-white/12 bg-[#0A0C0F] overflow-hidden aspect-[16/9]" data-reveal>
       <img
-        src="/solutions/c360-hero.webp"
+        src="/solutions/all-services.webp"
         alt="Emergency-services teams using Command 360 interactive training"
-        width={1122}
-        height={1402}
+        width={1280}
+        height={720}
         loading="eager"
         className="absolute inset-0 w-full h-full object-cover object-top select-none"
       />

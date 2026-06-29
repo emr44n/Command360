@@ -5,7 +5,7 @@ import {
 } from 'lucide-react'
 import type { Metadata } from 'next'
 import { SiteShell } from '@/components/site/SiteShell'
-import { PageHero, Eyebrow, LightSection, DarkSection, Container } from '@/components/site/primitives'
+import { PageHero, Eyebrow, LightSection, Container } from '@/components/site/primitives'
 import { SpotlightCard } from '@/components/home/SpotlightCard'
 import { SolutionsHero } from '@/components/solutions/SolutionsHero'
 
@@ -35,17 +35,8 @@ export default function SolutionsPage() {
         eyebrow={<Eyebrow>Solutions</Eyebrow>}
         title={<>Purpose-built for <span className="text-[#C9241A]">every service</span></>}
         lede="Command 360 is designed for emergency services training. Choose your service to see how we can help your team."
+        media={<SolutionsHero />}
       />
-
-      {/* Hero image — added as its own framed block so the page keeps its
-          original single-column hero (no two-column homepage-style split) */}
-      <DarkSection className="!pt-0 pb-[72px]">
-        <Container>
-          <div className="mx-auto w-full max-w-[460px]">
-            <SolutionsHero />
-          </div>
-        </Container>
-      </DarkSection>
 
       {/* Services grid */}
       <LightSection>
