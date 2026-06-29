@@ -262,11 +262,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                   if (!canvasEls || canvasEls.length === 0) return null
                   return (
                     <div key={slide.id} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 5 }}>
-                      <style>{`
-                        @keyframes c360FadeIn{0%{opacity:0}33%{opacity:var(--c360-el-op,1)}100%{opacity:var(--c360-el-op,1)}}
-                        @keyframes c360FadeOut{0%{opacity:var(--c360-el-op,1)}66%{opacity:var(--c360-el-op,1)}100%{opacity:0}}
-                        @keyframes c360FadeBoth{0%{opacity:0}25%{opacity:var(--c360-el-op,1)}75%{opacity:var(--c360-el-op,1)}100%{opacity:0}}
-                      `}</style>
+                      <style>{`@keyframes c360ElIn{from{opacity:0}to{opacity:var(--c360-el-op,1)}}`}</style>
                       {canvasEls.map(el => {
                         const st = el.style || {}
                         const radius = st.borderRadiusPct != null ? `${st.borderRadiusPct as number}%` : `${(st.borderRadius as number) || 0}px`
@@ -276,12 +272,11 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                         const anim = (st.anim as { fadeIn?: boolean; fadeOut?: boolean; speed?: number }) || {}
                         const elOpacity = (st.opacity as number) ?? 1
                         const speed = anim.speed || 600
-                        // loop the configured fade in preview so it's visible + tunable
-                        const animCss = anim.fadeIn && anim.fadeOut
-                          ? `c360FadeBoth ${speed * 4}ms ease-in-out infinite`
-                          : anim.fadeIn ? `c360FadeIn ${speed * 3}ms ease-in-out infinite`
-                          : anim.fadeOut ? `c360FadeOut ${speed * 3}ms ease-in-out infinite`
-                          : undefined
+                        // Plays once on enter (no loop). The slide-transition wrapper
+                        // already fades the whole slide out on exit, so fadeOut needs no
+                        // separate element animation.
+                        const entering = animClass.startsWith('preview-slide-in')
+                        const animCss = entering && anim.fadeIn ? `c360ElIn ${speed}ms ease both` : undefined
                         return (
                           <div key={el.id} style={{
                             position: 'absolute',

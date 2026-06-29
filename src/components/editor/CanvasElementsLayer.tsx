@@ -28,6 +28,7 @@ export function CanvasElementsLayer({ elements, onChange, containerRef, selected
   // Use lifted state if provided, otherwise fall back to local state
   const [localSelectedId, setLocalSelectedId] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
   // Canva-style "reposition" mode: drag the image inside its frame to set the pan
   const [panMode, setPanMode] = useState(false)
 
@@ -139,18 +140,35 @@ export function CanvasElementsLayer({ elements, onChange, containerRef, selected
 
   return (
     <>
-      {/* Canvas elements overlay */}
+      {/* Canvas elements overlay.
+          Content is rendered in two canvas-level layers so off-canvas parts
+          ghost correctly even when an element is rotated:
+            · ghost layer  — every element, dimmed, NOT clipped (the bleed)
+            · crisp layer  — every element, full, clipped to the canvas bounds
+                             (overflow:hidden in canvas pixel space → rotation-safe)
+          The interactive frames (drag/resize/rotate + handles) sit on top. */}
       <div
         style={{ position: 'absolute', inset: 0, zIndex: 20, pointerEvents: 'none' }}
         onClick={handleCanvasClick}
       >
+        {/* off-canvas ghost (dimmed) */}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+          {elements.map(el => el.id === editingId ? null : <ElementContent key={el.id} element={el} ghost />)}
+        </div>
+        {/* on-canvas crisp, clipped to the slide */}
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+          {elements.map(el => el.id === editingId ? null : <ElementContent key={el.id} element={el} />)}
+        </div>
+        {/* interactive frames + handles */}
         {elements.map(el => (
           <DraggableElement
             key={el.id}
             element={el}
             isSelected={el.id === selectedId}
+            isHovered={el.id === hoveredId}
             isEditing={el.id === editingId}
             containerRef={containerRef}
+            onHover={(h) => setHoveredId(h ? el.id : (cur) => (cur === el.id ? null : cur))}
             onSelect={() => { setSelectedId(el.id); setEditingId(null) }}
             onStartEdit={() => setEditingId(el.id)}
             onUpdate={(updates) => updateElement(el.id, updates)}
@@ -221,13 +239,77 @@ export function CanvasElementsLayer({ elements, onChange, containerRef, selected
   )
 }
 
+/* ─── Element content (pure visual — no interaction) ───
+   Rendered in two canvas-level layers: a dimmed `ghost` (unclipped, shows the
+   off-canvas bleed) and the crisp on-canvas copy (clipped to the slide by the
+   parent layer's overflow:hidden, so it's correct under any rotation). */
+function ElementContent({ element, ghost }: { element: CanvasElement; ghost?: boolean }) {
+  const style = element.style || {}
+  const radius = style.borderRadiusPct != null ? `${style.borderRadiusPct}%` : `${style.borderRadius || 0}px`
+  const borderW = style.borderWidth || 0
+  const border = borderW > 0 ? `${borderW}px solid ${style.borderColor || '#ffffff'}` : undefined
+  const { vMask, hMask } = buildEdgeFadeMasks(style.edgeFade)
+  const imgTransform = `translate(${style.imagePanX || 0}%, ${style.imagePanY || 0}%) scale(${style.imageScale || 1})`
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: `${element.x}%`, top: `${element.y}%`,
+        width: `${element.width}%`, height: `${element.height}%`,
+        borderRadius: radius,
+        border,
+        boxSizing: 'border-box',
+        opacity: (style.opacity ?? 1) * (ghost ? 0.28 : 1),
+        transform: element.rotation ? `rotate(${element.rotation}deg)` : undefined,
+        pointerEvents: 'none',
+      }}
+    >
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius, WebkitMaskImage: vMask, maskImage: vMask }}>
+        <div style={{ width: '100%', height: '100%', WebkitMaskImage: hMask, maskImage: hMask }}>
+          {element.type === 'text' && (
+            <div style={{
+              width: '100%', height: '100%',
+              background: style.backgroundColor || 'transparent',
+              color: style.color || '#374151',
+              fontSize: style.fontSize || 16,
+              fontWeight: style.fontWeight || 'normal',
+              fontStyle: style.fontStyle || 'normal',
+              textAlign: (style.textAlign as 'left' | 'center' | 'right') || 'left',
+              padding: '4px 6px', lineHeight: 1.4, overflow: 'hidden',
+              whiteSpace: 'pre-wrap', wordBreak: 'break-word', userSelect: 'none',
+            }}>
+              {element.content || 'Click to edit'}
+            </div>
+          )}
+          {element.type === 'image' && (
+            <img
+              src={element.content}
+              alt=""
+              draggable={false}
+              style={{
+                width: '100%', height: '100%',
+                objectFit: (style.objectFit as 'cover' | 'contain' | 'fill') || 'cover',
+                transform: imgTransform, transformOrigin: 'center',
+                userSelect: 'none', pointerEvents: 'none',
+              }}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /* ─── Draggable Element ─── */
 
-function DraggableElement({ element, isSelected, isEditing, containerRef, onSelect, onStartEdit, onUpdate, onUpdateStyle, onDelete, panMode, onTogglePan }: {
+function DraggableElement({ element, isSelected, isHovered, isEditing, containerRef, onHover, onSelect, onStartEdit, onUpdate, onUpdateStyle, onDelete, panMode, onTogglePan }: {
   element: CanvasElement
   isSelected: boolean
+  isHovered: boolean
   isEditing: boolean
   containerRef: React.RefObject<HTMLDivElement | null>
+  onHover: (hovering: boolean) => void
   onSelect: () => void
   onStartEdit: () => void
   onUpdate: (updates: Partial<CanvasElement>) => void
@@ -276,6 +358,7 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
   const startResize = useCallback((e: React.MouseEvent, handle: string) => {
     e.preventDefault()
     e.stopPropagation()
+    onSelect()
     setResizing(handle)
     const container = containerRef.current
     if (!container) return
@@ -287,7 +370,7 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
       elW: element.width,
       elH: element.height,
     }
-  }, [element, containerRef])
+  }, [element, containerRef, onSelect])
 
   // Rotation — grabbed from the ring just outside a corner. Angle is measured
   // from the element centre to the pointer; Shift snaps to 15°.
@@ -407,49 +490,7 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
   }, [dragging, resizing, rotating, panning, element.width, element.height, onUpdate, onUpdateStyle, containerRef])
 
   const style = element.style || {}
-
-  // ─── resolved design-tool styling ───
-  // border-radius: prefer the % model (50% = circle); fall back to legacy px
-  const radius = style.borderRadiusPct != null ? `${style.borderRadiusPct}%` : `${style.borderRadius || 0}px`
-  const borderW = style.borderWidth || 0
-  const border = borderW > 0 ? `${borderW}px solid ${style.borderColor || '#ffffff'}` : undefined
-  // per-edge feather → two nested eased gradient masks (vertical + horizontal)
-  // that multiply, so corners fade correctly without needing mask-composite
-  const { vMask, hMask } = buildEdgeFadeMasks(style.edgeFade)
-  const imgTransform = `translate(${style.imagePanX || 0}%, ${style.imagePanY || 0}%) scale(${style.imageScale || 1})`
-
-  // ─── off-slide (Keynote) bleed ───
-  // how far each edge spills past the 0–100% slide bounds, as a % of the element's own box
-  const offTop = element.y < 0 ? Math.min(100, (-element.y / element.height) * 100) : 0
-  const offLeft = element.x < 0 ? Math.min(100, (-element.x / element.width) * 100) : 0
-  const offRight = (element.x + element.width) > 100 ? Math.min(100, ((element.x + element.width - 100) / element.width) * 100) : 0
-  const offBottom = (element.y + element.height) > 100 ? Math.min(100, ((element.y + element.height - 100) / element.height) * 100) : 0
-  const hasBleed = offTop > 0 || offLeft > 0 || offRight > 0 || offBottom > 0
-  // crisp copy is clipped to the on-slide rectangle; a dim ghost shows the spill underneath
-  const onSlideClip = hasBleed ? `inset(${offTop}% ${offRight}% ${offBottom}% ${offLeft}%)` : undefined
-
-  const maskedContent = (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius, WebkitMaskImage: vMask, maskImage: vMask }}>
-      <div style={{ width: '100%', height: '100%', WebkitMaskImage: hMask, maskImage: hMask }}>
-        {element.type === 'image' && (
-          <img
-            src={element.content}
-            alt=""
-            draggable={false}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: (style.objectFit as 'cover' | 'contain' | 'fill') || 'cover',
-              transform: imgTransform,
-              transformOrigin: 'center',
-              userSelect: 'none',
-              pointerEvents: 'none',
-            }}
-          />
-        )}
-      </div>
-    </div>
-  )
+  const showHandles = (isSelected || isHovered) && !isEditing && !panMode
 
   return (
     <div
@@ -462,15 +503,17 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
         height: `${element.height}%`,
         pointerEvents: 'auto',
         cursor: isEditing ? 'text' : panMode && element.type === 'image' ? (panning ? 'grabbing' : 'move') : dragging ? 'grabbing' : 'grab',
-        outline: isSelected ? (panMode && element.type === 'image' ? '2px dashed #dc2626' : '2px solid #dc2626') : 'none',
+        outline: isSelected
+          ? (panMode && element.type === 'image' ? '2px dashed #dc2626' : '2px solid #dc2626')
+          : isHovered ? '1px solid rgba(220,38,38,0.55)' : 'none',
         outlineOffset: 2,
-        borderRadius: radius,
-        border,
         boxSizing: 'border-box',
-        opacity: style.opacity ?? 1,
-        zIndex: isSelected ? 25 : 22,
+        background: 'transparent',
+        zIndex: isSelected ? 25 : isHovered ? 24 : 22,
         transform: element.rotation ? `rotate(${element.rotation}deg)` : undefined,
       }}
+      onMouseEnter={() => onHover(true)}
+      onMouseLeave={() => onHover(false)}
       onMouseDown={startDrag}
       onClick={(e) => { e.stopPropagation(); onSelect() }}
       onDoubleClick={(e) => {
@@ -480,99 +523,28 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
         else if (element.type === 'image') onTogglePan?.()
       }}
     >
-      {/* dim ghost of the part that spills off-slide (editor-only Keynote bleed) */}
-      {hasBleed && (
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.3, pointerEvents: 'none' }}>
-          {element.type === 'image' && maskedContent}
-          {element.type === 'text' && (
-            <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius }}>
-              <div style={{
-                width: '100%', height: '100%',
-                background: style.backgroundColor || 'transparent',
-                color: style.color || '#374151',
-                fontSize: style.fontSize || 16,
-                fontWeight: style.fontWeight || 'normal',
-                fontStyle: style.fontStyle || 'normal',
-                textAlign: (style.textAlign as 'left' | 'center' | 'right') || 'left',
-                padding: '4px 6px', lineHeight: 1.4, overflow: 'hidden',
-                whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-              }}>{element.content}</div>
-            </div>
-          )}
-        </div>
+      {/* The visible content lives in the canvas-level crisp/ghost layers; the
+          frame is transparent and only carries interaction + handles. Text
+          editing happens here so you can type. */}
+      {isEditing && element.type === 'text' && (
+        <textarea
+          autoFocus
+          value={element.content}
+          onChange={(e) => onUpdate({ content: e.target.value })}
+          onMouseDown={(e) => e.stopPropagation()}
+          style={{
+            width: '100%', height: '100%',
+            background: style.backgroundColor || 'transparent',
+            color: style.color || '#374151',
+            fontSize: style.fontSize || 16,
+            fontWeight: style.fontWeight || 'normal',
+            fontStyle: style.fontStyle || 'normal',
+            textAlign: (style.textAlign as 'left' | 'center' | 'right') || 'left',
+            border: 'none', outline: 'none', resize: 'none',
+            padding: '4px 6px', lineHeight: 1.4, overflow: 'hidden', fontFamily: 'inherit',
+          }}
+        />
       )}
-
-      {/* content clipped to the radius; nested wrappers carry the edge-fade masks.
-          when off-slide, this crisp copy is clipped to the on-slide region. */}
-      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius, WebkitMaskImage: vMask, maskImage: vMask, clipPath: onSlideClip, WebkitClipPath: onSlideClip }}>
-        <div style={{ width: '100%', height: '100%', WebkitMaskImage: hMask, maskImage: hMask }}>
-          {element.type === 'text' && (
-            isEditing ? (
-              <textarea
-                autoFocus
-                value={element.content}
-                onChange={(e) => onUpdate({ content: e.target.value })}
-                onMouseDown={(e) => e.stopPropagation()}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  background: style.backgroundColor || 'transparent',
-                  color: style.color || '#374151',
-                  fontSize: style.fontSize || 16,
-                  fontWeight: style.fontWeight || 'normal',
-                  fontStyle: style.fontStyle || 'normal',
-                  textAlign: (style.textAlign as 'left' | 'center' | 'right') || 'left',
-                  border: 'none',
-                  outline: 'none',
-                  resize: 'none',
-                  padding: '4px 6px',
-                  lineHeight: 1.4,
-                  overflow: 'hidden',
-                  fontFamily: 'inherit',
-                }}
-              />
-            ) : (
-              <div
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  background: style.backgroundColor || 'transparent',
-                  color: style.color || '#374151',
-                  fontSize: style.fontSize || 16,
-                  fontWeight: style.fontWeight || 'normal',
-                  fontStyle: style.fontStyle || 'normal',
-                  textAlign: (style.textAlign as 'left' | 'center' | 'right') || 'left',
-                  padding: '4px 6px',
-                  lineHeight: 1.4,
-                  overflow: 'hidden',
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-word',
-                  userSelect: 'none',
-                }}
-              >
-                {element.content || 'Click to edit'}
-              </div>
-            )
-          )}
-
-          {element.type === 'image' && (
-            <img
-              src={element.content}
-              alt=""
-              draggable={false}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: (style.objectFit as 'cover' | 'contain' | 'fill') || 'cover',
-                transform: imgTransform,
-                transformOrigin: 'center',
-                userSelect: 'none',
-                pointerEvents: 'none',
-              }}
-            />
-          )}
-        </div>
-      </div>
 
       {/* Reposition-mode hint */}
       {isSelected && panMode && element.type === 'image' && (
@@ -582,10 +554,10 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
         </div>
       )}
 
-      {/* Transform handles when selected — rotate zones sit OUTSIDE the scale
-          handles (no geometric overlap), so the cursor never flickers between
-          rotate and scale, and both work from corners AND edge midpoints. */}
-      {isSelected && !isEditing && !panMode && (() => {
+      {/* Transform handles — shown on hover OR selection. Rotate zones sit
+          OUTSIDE the scale handles (no overlap → no cursor flicker); both work
+          from corners AND edge midpoints. */}
+      {showHandles && (() => {
         const HIT = 16          // scale hit-box (centred on the point)
         const ROT = 16          // rotate zone size, placed just beyond the hit-box
         const cursors: Record<string, string> = {
