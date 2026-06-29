@@ -38,6 +38,10 @@ interface ServiceData {
   templateSuggestions: string[]
   faqs: { question: string; answer: string }[]
   ctaHeadline: string
+  /* bespoke, per-service content (added to bolster each page) */
+  standards?: { name: string; description: string }[]
+  evidence?: string
+  multiAgency?: string
 }
 
 /* ─── Slide types (shared) ─── */
@@ -702,11 +706,53 @@ export function SolutionPageClient({ slug }: { slug: string }) {
         </Container>
       </DarkSection>
 
+      {/* ── Standards, evidence & joint working (bespoke per service) ── */}
+      {service.standards && service.standards.length > 0 && (
+        <LightSection>
+          <Container>
+            <div className="max-w-[680px] mb-3.5">
+              <Eyebrow n="05">Standards &amp; Assurance</Eyebrow>
+              <h2 className="ff-display font-extrabold text-[clamp(30px,3.8vw,48px)] leading-none tracking-[-0.02em] mt-4 text-[#16191E]">Built around {service.name} standards</h2>
+              <p className="text-[16px] text-[#5a5f66] mt-4">Command 360 helps you train, assess and evidence competence against the frameworks {service.name} teams already work to.</p>
+            </div>
+            <div className="h-0.5 bg-[#16191E] origin-left mt-7" data-rule />
+            <div className="grid sm:grid-cols-2 border-l border-t border-[rgba(20,25,30,0.16)]">
+              {service.standards.map((st) => (
+                <SpotlightCard key={st.name} glow={glowColor(service.heroGlow, 0.15)} className="v5-card group relative overflow-hidden p-[30px_28px] border-r border-b border-[rgba(20,25,30,0.16)] block cursor-default">
+                  <span className="absolute inset-0 pointer-events-none" style={{ '--v5-wash': glowColor(service.heroGlow, 0.14) } as CSSProperties} aria-hidden="true" />
+                  <div className="relative">
+                    <div className="w-[34px] h-[34px] mb-5" style={{ background: serviceColour }} aria-hidden="true" />
+                    <h3 className="ff-display font-bold text-[18px] tracking-[-0.01em] mb-2.5 text-[#16191E]">{st.name}</h3>
+                    <p className="text-[14.5px] text-[#5a5f66] leading-relaxed">{st.description}</p>
+                  </div>
+                </SpotlightCard>
+              ))}
+            </div>
+            {(service.evidence || service.multiAgency) && (
+              <div className="grid md:grid-cols-2 gap-x-10 gap-y-8 mt-12 pt-10 border-t border-[rgba(20,25,30,0.16)]">
+                {service.evidence && (
+                  <div>
+                    <div className="ff-mono text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: serviceColour }}>Evidence-led learning</div>
+                    <p className="text-[15px] text-[#3a3f46] leading-relaxed">{service.evidence}</p>
+                  </div>
+                )}
+                {service.multiAgency && (
+                  <div>
+                    <div className="ff-mono text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: serviceColour }}>Multi-agency ready</div>
+                    <p className="text-[15px] text-[#3a3f46] leading-relaxed">{service.multiAgency}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </Container>
+        </LightSection>
+      )}
+
       {/* ── Templates ── */}
       <LightSection>
         <Container>
           <div className="max-w-[640px] mb-3.5">
-            <Eyebrow n="05">Ready-Made Presentations</Eyebrow>
+            <Eyebrow n="06">Ready-Made Presentations</Eyebrow>
             <h2 className="ff-display font-extrabold text-[clamp(30px,3.8vw,48px)] leading-none tracking-[-0.02em] mt-4 text-[#16191E]">Templates designed for {service.name}</h2>
             <p className="text-[16px] text-[#5a5f66] mt-4">Start quickly with purpose-built templates — or create your own from scratch.</p>
           </div>
