@@ -460,7 +460,7 @@ export default function LandingPage() {
         </section>
 
         {/* ════════════ 09 TESTIMONIALS (light) ════════════ */}
-        <section className="bg-[#EFECE4] text-[#16191E] pb-[90px]">
+        <section className="bg-[#EFECE4] text-[#16191E] py-[90px]">
           <div className="max-w-[1280px] mx-auto px-5 sm:px-[30px]">
             <Eyebrow n="09">Testimonials</Eyebrow>
             <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 mb-9" data-reveal>Trusted by those who serve</h2>
