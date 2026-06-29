@@ -1,7 +1,7 @@
 'use client'
 import { useState, useCallback, useRef, useEffect } from 'react'
 import type { CanvasElement } from '@/types/slide'
-import { Type, Image, X, Bold, Italic, AlignLeft, AlignCenter, AlignRight, Trash2, GripVertical } from 'lucide-react'
+import { Type, Image, X, Bold, Italic, AlignLeft, AlignCenter, AlignRight, Trash2, GripVertical, Move } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
@@ -25,11 +25,18 @@ export function CanvasElementsLayer({ elements, onChange, containerRef, selected
   // Use lifted state if provided, otherwise fall back to local state
   const [localSelectedId, setLocalSelectedId] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
+  // Canva-style "reposition" mode: drag the image inside its frame to set the pan
+  const [panMode, setPanMode] = useState(false)
 
   const selectedId = selectedElementId !== undefined ? selectedElementId : localSelectedId
   const setSelectedId = onSelectElement || setLocalSelectedId
 
   const selected = elements.find(e => e.id === selectedId) || null
+
+  // leaving the image (or deselecting) exits reposition mode
+  useEffect(() => {
+    if (!selected || selected.type !== 'image') setPanMode(false)
+  }, [selectedId, selected])
 
   const addTextElement = useCallback(() => {
     const el: CanvasElement = {
@@ -129,6 +136,7 @@ export function CanvasElementsLayer({ elements, onChange, containerRef, selected
             onUpdate={(updates) => updateElement(el.id, updates)}
             onUpdateStyle={(s) => updateElementStyle(el.id, s)}
             onDelete={() => deleteElement(el.id)}
+            panMode={panMode && el.id === selectedId}
           />
         ))}
       </div>
@@ -168,6 +176,18 @@ export function CanvasElementsLayer({ elements, onChange, containerRef, selected
             </button>
             <div className="w-px h-4 bg-border" />
             <button
+              onClick={() => setPanMode(v => !v)}
+              title="Drag the image inside its frame to reposition it"
+              className={cn(
+                'flex items-center gap-1 px-2 py-1 rounded-none text-xs transition-colors',
+                panMode ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted',
+              )}
+            >
+              <Move className="w-3.5 h-3.5" />
+              Reposition
+            </button>
+            <div className="w-px h-4 bg-border" />
+            <button
               onClick={() => deleteElement(selectedId)}
               className="p-1 rounded-none text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
             >
@@ -182,7 +202,7 @@ export function CanvasElementsLayer({ elements, onChange, containerRef, selected
 
 /* ─── Draggable Element ─── */
 
-function DraggableElement({ element, isSelected, isEditing, containerRef, onSelect, onStartEdit, onUpdate, onUpdateStyle, onDelete }: {
+function DraggableElement({ element, isSelected, isEditing, containerRef, onSelect, onStartEdit, onUpdate, onUpdateStyle, onDelete, panMode }: {
   element: CanvasElement
   isSelected: boolean
   isEditing: boolean
@@ -192,12 +212,15 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
   onUpdate: (updates: Partial<CanvasElement>) => void
   onUpdateStyle: (s: Partial<NonNullable<CanvasElement['style']>>) => void
   onDelete: () => void
+  panMode?: boolean
 }) {
   const elRef = useRef<HTMLDivElement>(null)
   const [dragging, setDragging] = useState(false)
+  const [panning, setPanning] = useState(false)
   const [resizing, setResizing] = useState<string | null>(null)
   const [rotating, setRotating] = useState(false)
   const dragStart = useRef({ x: 0, y: 0, elX: 0, elY: 0, elW: 0, elH: 0 })
+  const panStart = useRef({ x: 0, y: 0, panX: 0, panY: 0 })
   const rotateStart = useRef({ cx: 0, cy: 0, startAngle: 0, startRotation: 0 })
 
   const startDrag = useCallback((e: React.MouseEvent) => {
@@ -205,10 +228,19 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
     e.preventDefault()
     e.stopPropagation()
     onSelect()
-    setDragging(true)
     const container = containerRef.current
     if (!container) return
-    const rect = container.getBoundingClientRect()
+    // reposition mode: drag pans the image within its frame instead of moving it
+    if (panMode && element.type === 'image') {
+      setPanning(true)
+      panStart.current = {
+        x: e.clientX, y: e.clientY,
+        panX: element.style?.imagePanX || 0,
+        panY: element.style?.imagePanY || 0,
+      }
+      return
+    }
+    setDragging(true)
     dragStart.current = {
       x: e.clientX,
       y: e.clientY,
@@ -217,7 +249,7 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
       elW: element.width,
       elH: element.height,
     }
-  }, [element, isEditing, onSelect, containerRef])
+  }, [element, isEditing, onSelect, containerRef, panMode])
 
   const startResize = useCallback((e: React.MouseEvent, handle: string) => {
     e.preventDefault()
@@ -255,9 +287,23 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
   }, [element, onSelect])
 
   useEffect(() => {
-    if (!dragging && !resizing && !rotating) return
+    if (!dragging && !resizing && !rotating && !panning) return
 
     function onMove(e: MouseEvent) {
+      if (panning) {
+        const container = containerRef.current
+        if (!container) return
+        const rect = container.getBoundingClientRect()
+        // convert pointer delta (px) → % of the element's own box
+        const dxPct = ((e.clientX - panStart.current.x) / rect.width) * 100 / (element.width / 100)
+        const dyPct = ((e.clientY - panStart.current.y) / rect.height) * 100 / (element.height / 100)
+        const clamp = (v: number) => Math.max(-50, Math.min(50, Math.round(v * 10) / 10))
+        onUpdateStyle({
+          imagePanX: clamp(panStart.current.panX + dxPct),
+          imagePanY: clamp(panStart.current.panY + dyPct),
+        })
+        return
+      }
       if (rotating) {
         const a = (Math.atan2(e.clientY - rotateStart.current.cy, e.clientX - rotateStart.current.cx) * 180) / Math.PI
         let next = rotateStart.current.startRotation + (a - rotateStart.current.startAngle)
@@ -305,6 +351,7 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
       setDragging(false)
       setResizing(null)
       setRotating(false)
+      setPanning(false)
     }
 
     window.addEventListener('mousemove', onMove)
@@ -313,7 +360,7 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
       window.removeEventListener('mousemove', onMove)
       window.removeEventListener('mouseup', onUp)
     }
-  }, [dragging, resizing, rotating, onUpdate, containerRef])
+  }, [dragging, resizing, rotating, panning, element.width, element.height, onUpdate, onUpdateStyle, containerRef])
 
   const style = element.style || {}
 
@@ -330,6 +377,39 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
   const hMask = (fl || fr) ? `linear-gradient(to right, transparent 0%, #000 ${fl}%, #000 ${100 - fr}%, transparent 100%)` : undefined
   const imgTransform = `translate(${style.imagePanX || 0}%, ${style.imagePanY || 0}%) scale(${style.imageScale || 1})`
 
+  // ─── off-slide (Keynote) bleed ───
+  // how far each edge spills past the 0–100% slide bounds, as a % of the element's own box
+  const offTop = element.y < 0 ? Math.min(100, (-element.y / element.height) * 100) : 0
+  const offLeft = element.x < 0 ? Math.min(100, (-element.x / element.width) * 100) : 0
+  const offRight = (element.x + element.width) > 100 ? Math.min(100, ((element.x + element.width - 100) / element.width) * 100) : 0
+  const offBottom = (element.y + element.height) > 100 ? Math.min(100, ((element.y + element.height - 100) / element.height) * 100) : 0
+  const hasBleed = offTop > 0 || offLeft > 0 || offRight > 0 || offBottom > 0
+  // crisp copy is clipped to the on-slide rectangle; a dim ghost shows the spill underneath
+  const onSlideClip = hasBleed ? `inset(${offTop}% ${offRight}% ${offBottom}% ${offLeft}%)` : undefined
+
+  const maskedContent = (
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius, WebkitMaskImage: vMask, maskImage: vMask }}>
+      <div style={{ width: '100%', height: '100%', WebkitMaskImage: hMask, maskImage: hMask }}>
+        {element.type === 'image' && (
+          <img
+            src={element.content}
+            alt=""
+            draggable={false}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: (style.objectFit as 'cover' | 'contain' | 'fill') || 'cover',
+              transform: imgTransform,
+              transformOrigin: 'center',
+              userSelect: 'none',
+              pointerEvents: 'none',
+            }}
+          />
+        )}
+      </div>
+    </div>
+  )
+
   return (
     <div
       ref={elRef}
@@ -340,8 +420,8 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
         width: `${element.width}%`,
         height: `${element.height}%`,
         pointerEvents: 'auto',
-        cursor: isEditing ? 'text' : dragging ? 'grabbing' : 'grab',
-        outline: isSelected ? '2px solid #dc2626' : 'none',
+        cursor: isEditing ? 'text' : panMode && element.type === 'image' ? (panning ? 'grabbing' : 'move') : dragging ? 'grabbing' : 'grab',
+        outline: isSelected ? (panMode && element.type === 'image' ? '2px dashed #dc2626' : '2px solid #dc2626') : 'none',
         outlineOffset: 2,
         borderRadius: radius,
         border,
@@ -357,8 +437,31 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
         if (element.type === 'text') onStartEdit()
       }}
     >
-      {/* content clipped to the radius; nested wrappers carry the edge-fade masks */}
-      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius, WebkitMaskImage: vMask, maskImage: vMask }}>
+      {/* dim ghost of the part that spills off-slide (editor-only Keynote bleed) */}
+      {hasBleed && (
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.3, pointerEvents: 'none' }}>
+          {element.type === 'image' && maskedContent}
+          {element.type === 'text' && (
+            <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius }}>
+              <div style={{
+                width: '100%', height: '100%',
+                background: style.backgroundColor || 'transparent',
+                color: style.color || '#374151',
+                fontSize: style.fontSize || 16,
+                fontWeight: style.fontWeight || 'normal',
+                fontStyle: style.fontStyle || 'normal',
+                textAlign: (style.textAlign as 'left' | 'center' | 'right') || 'left',
+                padding: '4px 6px', lineHeight: 1.4, overflow: 'hidden',
+                whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+              }}>{element.content}</div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* content clipped to the radius; nested wrappers carry the edge-fade masks.
+          when off-slide, this crisp copy is clipped to the on-slide region. */}
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius, WebkitMaskImage: vMask, maskImage: vMask, clipPath: onSlideClip, WebkitClipPath: onSlideClip }}>
         <div style={{ width: '100%', height: '100%', WebkitMaskImage: hMask, maskImage: hMask }}>
           {element.type === 'text' && (
             isEditing ? (

@@ -260,7 +260,8 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                   }> | undefined
                   if (!canvasEls || canvasEls.length === 0) return null
                   return (
-                    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 5 }}>
+                    <div key={slide.id} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 5 }}>
+                      <style>{`@keyframes c360ElFadeIn{from{opacity:0}to{opacity:var(--c360-el-op,1)}}`}</style>
                       {canvasEls.map(el => {
                         const st = el.style || {}
                         const radius = st.borderRadiusPct != null ? `${st.borderRadiusPct as number}%` : `${(st.borderRadius as number) || 0}px`
@@ -270,6 +271,8 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                         const vMask = (ft || fb) ? `linear-gradient(to bottom, transparent 0%, #000 ${ft}%, #000 ${100 - fb}%, transparent 100%)` : undefined
                         const hMask = (fl || fr) ? `linear-gradient(to right, transparent 0%, #000 ${fl}%, #000 ${100 - fr}%, transparent 100%)` : undefined
                         const imgTransform = `translate(${(st.imagePanX as number) || 0}%, ${(st.imagePanY as number) || 0}%) scale(${(st.imageScale as number) || 1})`
+                        const anim = (st.anim as { fadeIn?: boolean; fadeOut?: boolean; speed?: number }) || {}
+                        const elOpacity = (st.opacity as number) ?? 1
                         return (
                           <div key={el.id} style={{
                             position: 'absolute',
@@ -278,8 +281,12 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                             borderRadius: radius,
                             border: borderW > 0 ? `${borderW}px solid ${(st.borderColor as string) || '#ffffff'}` : undefined,
                             boxSizing: 'border-box',
-                            opacity: (st.opacity as number) ?? 1,
+                            opacity: elOpacity,
                             transform: el.rotation ? `rotate(${el.rotation}deg)` : undefined,
+                            ...(anim.fadeIn ? {
+                              ['--c360-el-op' as string]: elOpacity,
+                              animation: `c360ElFadeIn ${anim.speed || 600}ms ease both`,
+                            } : {}),
                           }}>
                             <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius, WebkitMaskImage: vMask, maskImage: vMask }}>
                               <div style={{ width: '100%', height: '100%', WebkitMaskImage: hMask, maskImage: hMask }}>
