@@ -11,6 +11,7 @@ import { SiteShell } from '@/components/site/SiteShell'
 import { PageHero, Eyebrow, LightSection, DarkSection, Container } from '@/components/site/primitives'
 import { SpotlightCard } from '@/components/home/SpotlightCard'
 import { SolutionsHero } from '@/components/solutions/SolutionsHero'
+import { V5AuthButton } from '@/components/home/V5Chrome'
 
 export const metadata: Metadata = {
   title: 'Solutions — Command 360',
@@ -161,6 +162,21 @@ export default function SolutionsPage() {
           </div>
         </Container>
       </DarkSection>
+
+      {/* ─── DON'T SEE YOUR SERVICE ─── */}
+      <LightSection>
+        <Container>
+          <div className="max-w-[680px] mx-auto text-center">
+            <Eyebrow n="05">Get In Touch</Eyebrow>
+            <h2 className="ff-display font-extrabold text-[clamp(30px,3.8vw,48px)] leading-none tracking-[-0.02em] mt-4 text-[#16191E]">Don&apos;t see your service?</h2>
+            <p className="text-[16px] text-[#5a5f66] mt-4">Command 360 works for any training context. Tell us how your team trains and we&apos;ll show you how it fits.</p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <V5AuthButton tab="register" label="Get started free" variant="solid" />
+              <Link href="/contact" className="ff-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-[#16191E] border border-[rgba(20,25,30,0.22)] hover:bg-[rgba(20,25,30,0.05)] hover:border-[rgba(20,25,30,0.4)] px-6 py-4 transition-colors">Contact us</Link>
+            </div>
+          </div>
+        </Container>
+      </LightSection>
     </SiteShell>
   )
 }
