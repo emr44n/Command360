@@ -9,7 +9,13 @@ import { PageHero, Eyebrow, DarkSection, LightSection, Container } from '@/compo
 
 export const metadata: Metadata = {
   title: 'Help Centre — Command 360',
-  description: 'Guides and resources to help you get the most out of Command 360.',
+  description: 'Help centre for Command 360: guides on live polls, quizzes, scenario building, debriefs and analytics for UK emergency-services training teams.',
+  keywords: [
+    'emergency services training help', 'interactive training platform support', 'live polling setup guide',
+    'incident command exercise builder', 'blue light training software help', 'quiz and survey tool guide',
+    'training session troubleshooting', 'scenario builder how to', 'debrief and analytics help',
+    'word cloud and Q&A setup', 'facilitator getting started guide', 'UK emergency training platform support',
+  ],
 }
 
 const CATEGORIES = [
