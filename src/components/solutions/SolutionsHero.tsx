@@ -39,8 +39,8 @@ export function SolutionsHero() {
       <img
         src="/solutions/c360-hero.webp"
         alt="Emergency-services teams using Command 360 interactive training"
-        width={1000}
-        height={1250}
+        width={1122}
+        height={1402}
         loading="eager"
         className="absolute inset-0 w-full h-full object-cover object-top select-none"
       />
