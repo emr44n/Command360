@@ -18,6 +18,11 @@ export type BroadcastEvent =
   | { event: 'STUDIO_PLAYBACK_START'; payload: { slide_id: string; startTime: number; eventId?: string } }
   | { event: 'STUDIO_PLAYBACK_PAUSE'; payload: { slide_id: string; currentTime: number } }
   | { event: 'STUDIO_LAYER_STATES_UPDATE'; payload: { slide_id: string; layerStates: Record<string, StudioLayerState> } }
+  /* late-join sync: presenter replays the full scene; participant can request it */
+  | { event: 'STUDIO_SYNC_STATE'; payload: { slide_id: string; layers: StudioLayer[]; layerStates: Record<string, StudioLayerState> } }
+  | { event: 'STUDIO_STATE_REQUEST'; payload: { slide_id: string } }
+  /* multi-scene live: the set of live scene IDs changed — open join pickers refresh */
+  | { event: 'LIVE_SCENES_UPDATED'; payload: { session_id: string; live_scene_ids: string[] } }
 
 export type PresenceState = {
   role: 'presenter' | 'participant'
