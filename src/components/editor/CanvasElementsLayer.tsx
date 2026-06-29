@@ -4,6 +4,7 @@ import type { CanvasElement } from '@/types/slide'
 import { Type, Image, X, Bold, Italic, AlignLeft, AlignCenter, AlignRight, Trash2, GripVertical, Move } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { buildEdgeFadeMasks } from '@/lib/editor/edge-fade'
 
 interface Props {
   elements: CanvasElement[]
@@ -18,8 +19,10 @@ function generateId() {
   return `el_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
 }
 
-// curved-arrow cursor shown in the rotate ring just outside each corner
-const ROTATE_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23dc2626' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 2.6-6.4'/%3E%3Cpolyline points='3 3 3 8 8 8'/%3E%3C/svg%3E") 11 11, grab`
+// Curved-arrow cursor shown in the rotate zone just outside each handle.
+// Drawn as a white arrow with a dark halo (path stroked twice) so it stays
+// crisp and legible on any background. 28px canvas, hotspot at centre.
+const ROTATE_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cg fill='none' stroke='%23111' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 14a8 8 0 1 0 2.3-5.6'/%3E%3Cpolyline points='6 5 6 10 11 10'/%3E%3C/g%3E%3Cg fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 14a8 8 0 1 0 2.3-5.6'/%3E%3Cpolyline points='6 5 6 10 11 10'/%3E%3C/g%3E%3C/svg%3E") 14 14, grab`
 
 export function CanvasElementsLayer({ elements, onChange, containerRef, selectedElementId, onSelectElement, onRequestAddImage }: Props) {
   // Use lifted state if provided, otherwise fall back to local state
@@ -137,6 +140,7 @@ export function CanvasElementsLayer({ elements, onChange, containerRef, selected
             onUpdateStyle={(s) => updateElementStyle(el.id, s)}
             onDelete={() => deleteElement(el.id)}
             panMode={panMode && el.id === selectedId}
+            onTogglePan={() => { setSelectedId(el.id); setPanMode(v => !v) }}
           />
         ))}
       </div>
@@ -202,7 +206,7 @@ export function CanvasElementsLayer({ elements, onChange, containerRef, selected
 
 /* ─── Draggable Element ─── */
 
-function DraggableElement({ element, isSelected, isEditing, containerRef, onSelect, onStartEdit, onUpdate, onUpdateStyle, onDelete, panMode }: {
+function DraggableElement({ element, isSelected, isEditing, containerRef, onSelect, onStartEdit, onUpdate, onUpdateStyle, onDelete, panMode, onTogglePan }: {
   element: CanvasElement
   isSelected: boolean
   isEditing: boolean
@@ -213,6 +217,7 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
   onUpdateStyle: (s: Partial<NonNullable<CanvasElement['style']>>) => void
   onDelete: () => void
   panMode?: boolean
+  onTogglePan?: () => void
 }) {
   const elRef = useRef<HTMLDivElement>(null)
   const [dragging, setDragging] = useState(false)
@@ -369,12 +374,9 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
   const radius = style.borderRadiusPct != null ? `${style.borderRadiusPct}%` : `${style.borderRadius || 0}px`
   const borderW = style.borderWidth || 0
   const border = borderW > 0 ? `${borderW}px solid ${style.borderColor || '#ffffff'}` : undefined
-  // per-edge feather → two nested gradient masks (vertical + horizontal) that
-  // multiply, so corners fade correctly without needing mask-composite
-  const ef = style.edgeFade || {}
-  const ft = ef.top || 0, fb = ef.bottom || 0, fl = ef.left || 0, fr = ef.right || 0
-  const vMask = (ft || fb) ? `linear-gradient(to bottom, transparent 0%, #000 ${ft}%, #000 ${100 - fb}%, transparent 100%)` : undefined
-  const hMask = (fl || fr) ? `linear-gradient(to right, transparent 0%, #000 ${fl}%, #000 ${100 - fr}%, transparent 100%)` : undefined
+  // per-edge feather → two nested eased gradient masks (vertical + horizontal)
+  // that multiply, so corners fade correctly without needing mask-composite
+  const { vMask, hMask } = buildEdgeFadeMasks(style.edgeFade)
   const imgTransform = `translate(${style.imagePanX || 0}%, ${style.imagePanY || 0}%) scale(${style.imageScale || 1})`
 
   // ─── off-slide (Keynote) bleed ───
@@ -434,7 +436,9 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
       onClick={(e) => { e.stopPropagation(); onSelect() }}
       onDoubleClick={(e) => {
         e.stopPropagation()
+        // text → edit; image → enter/exit Canva-style reposition (drag inside frame)
         if (element.type === 'text') onStartEdit()
+        else if (element.type === 'image') onTogglePan?.()
       }}
     >
       {/* dim ghost of the part that spills off-slide (editor-only Keynote bleed) */}
@@ -531,59 +535,81 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
         </div>
       </div>
 
-      {/* Resize handles when selected */}
-      {isSelected && !isEditing && (
-        <>
-          {/* rotation rings just OUTSIDE each corner (scale handle sits on top) */}
-          {['nw', 'ne', 'sw', 'se'].map(corner => {
-            const pos: React.CSSProperties = {}
-            if (corner.includes('n')) pos.top = -24
-            if (corner.includes('s')) pos.bottom = -24
-            if (corner.includes('w')) pos.left = -24
-            if (corner.includes('e')) pos.right = -24
-            return (
-              <div
-                key={`rot-${corner}`}
-                onMouseDown={startRotate}
-                style={{ position: 'absolute', ...pos, width: 24, height: 24, zIndex: 28, cursor: ROTATE_CURSOR }}
-              />
-            )
-          })}
-          {['nw', 'ne', 'sw', 'se', 'n', 's', 'e', 'w'].map(handle => {
-            const isCorner = handle.length === 2
-            const pos: React.CSSProperties = {}
-            if (handle.includes('n')) pos.top = -5
-            if (handle.includes('s')) pos.bottom = -5
-            if (handle.includes('w')) pos.left = -5
-            if (handle.includes('e')) pos.right = -5
-            if (handle === 'n' || handle === 's') { pos.left = '50%'; pos.marginLeft = -4 }
-            if (handle === 'e' || handle === 'w') { pos.top = '50%'; pos.marginTop = -4 }
-
-            const cursors: Record<string, string> = {
-              nw: 'nw-resize', ne: 'ne-resize', sw: 'sw-resize', se: 'se-resize',
-              n: 'n-resize', s: 's-resize', e: 'e-resize', w: 'w-resize',
-            }
-
-            return (
-              <div
-                key={handle}
-                onMouseDown={(e) => startResize(e, handle)}
-                style={{
-                  position: 'absolute',
-                  ...pos,
-                  width: isCorner ? 10 : 8,
-                  height: isCorner ? 10 : 8,
-                  background: '#dc2626',
-                  border: '2px solid #fff',
-                  borderRadius: isCorner ? 2 : 1,
-                  cursor: cursors[handle],
-                  zIndex: 30,
-                }}
-              />
-            )
-          })}
-        </>
+      {/* Reposition-mode hint */}
+      {isSelected && panMode && element.type === 'image' && (
+        <div style={{ position: 'absolute', top: -22, left: 0, zIndex: 31, pointerEvents: 'none' }}
+          className="ff-mono text-[9px] uppercase tracking-wider bg-[#dc2626] text-white px-1.5 py-0.5 whitespace-nowrap">
+          Drag to reposition · double-click to finish
+        </div>
       )}
+
+      {/* Transform handles when selected — rotate zones sit OUTSIDE the scale
+          handles (no geometric overlap), so the cursor never flickers between
+          rotate and scale, and both work from corners AND edge midpoints. */}
+      {isSelected && !isEditing && !panMode && (() => {
+        const HIT = 16          // scale hit-box (centred on the point)
+        const ROT = 16          // rotate zone size, placed just beyond the hit-box
+        const cursors: Record<string, string> = {
+          nw: 'nwse-resize', se: 'nwse-resize', ne: 'nesw-resize', sw: 'nesw-resize',
+          n: 'ns-resize', s: 'ns-resize', e: 'ew-resize', w: 'ew-resize',
+        }
+        const HANDLES = ['nw', 'ne', 'sw', 'se', 'n', 's', 'e', 'w']
+        // scale hit-box position (centred on the corner / edge-midpoint)
+        const hitPos = (h: string): React.CSSProperties => {
+          const p: React.CSSProperties = {}
+          if (h.includes('n')) p.top = -HIT / 2
+          if (h.includes('s')) p.bottom = -HIT / 2
+          if (h.includes('w')) p.left = -HIT / 2
+          if (h.includes('e')) p.right = -HIT / 2
+          if (h === 'n' || h === 's') { p.left = '50%'; p.marginLeft = -HIT / 2 }
+          if (h === 'e' || h === 'w') { p.top = '50%'; p.marginTop = -HIT / 2 }
+          return p
+        }
+        // rotate zone position (just OUTSIDE the hit-box, no overlap)
+        const rotPos = (h: string): React.CSSProperties => {
+          const out = HIT / 2 + ROT  // distance from the edge to the zone's near side
+          const p: React.CSSProperties = {}
+          if (h.includes('n')) p.top = -out
+          if (h.includes('s')) p.bottom = -out
+          if (h.includes('w')) p.left = -out
+          if (h.includes('e')) p.right = -out
+          if (h === 'n' || h === 's') { p.left = '50%'; p.marginLeft = -ROT / 2 }
+          if (h === 'e' || h === 'w') { p.top = '50%'; p.marginTop = -ROT / 2 }
+          return p
+        }
+        return (
+          <>
+            {/* rotate zones (lower layer) */}
+            {HANDLES.map(h => (
+              <div
+                key={`rot-${h}`}
+                onMouseDown={startRotate}
+                style={{ position: 'absolute', ...rotPos(h), width: ROT, height: ROT, zIndex: 28, cursor: ROTATE_CURSOR }}
+              />
+            ))}
+            {/* scale handles (upper layer) — white dot, red ring, crisp */}
+            {HANDLES.map(h => {
+              const isCorner = h.length === 2
+              const dot = isCorner ? 10 : 8
+              return (
+                <div
+                  key={`scl-${h}`}
+                  onMouseDown={(e) => startResize(e, h)}
+                  style={{ position: 'absolute', ...hitPos(h), width: HIT, height: HIT, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: cursors[h], zIndex: 30 }}
+                >
+                  <div style={{
+                    width: dot, height: dot,
+                    background: '#fff',
+                    border: '1.5px solid #dc2626',
+                    borderRadius: isCorner ? 2 : '50%',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.35)',
+                  }} />
+                </div>
+              )
+            })}
+          </>
+        )
+      })()}
     </div>
   )
 }
