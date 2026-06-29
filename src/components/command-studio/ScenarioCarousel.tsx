@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 /**
  * Command Studio hero carousel — plays the seven built scenario scenes in
  * order (1 → 7), each a different emergency-services discipline. Crossfades
- * between them, with a scenario label chip, a "scenario N / 7" marker, a
+ * between them with a gentle top-anchored ken-burns, a scenario label chip, a
  * scrolling ticker of the training focus for that scene, pagination dots and a
  * swipeable stage (touch + mouse drag). Rigid v5 grid frame.
  */
@@ -30,6 +30,11 @@ const SCENES: Scene[] = [
   { src: '/command-studio/cs-7.webp', label: 'Public Order', scenario: 'Crowd & public-order', c: '#3E6DC4', ticker: ['Shield formations', 'Crowd dynamics', 'Cordon lines', 'De-escalation', 'Casualty support'] },
 ]
 
+// ken-burns anchors — all pinned to the top edge (vertical 0%) so the slow
+// zoom never trims the top; the varying horizontal point gives each scene a
+// gentle, different drift (a subtle pan feel)
+const KEN_ORIGINS = ['50% 0%', '34% 0%', '64% 0%', '44% 0%', '58% 0%', '38% 0%', '62% 0%']
+
 function Ticker({ items, c }: { items: string[]; c: string }) {
   const row = [...items, ...items]
   return (
@@ -48,14 +53,23 @@ function Ticker({ items, c }: { items: string[]; c: string }) {
 export function ScenarioCarousel() {
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
+  const [reduce, setReduce] = useState(false)
+
+  // honour prefers-reduced-motion: no ken-burns (and auto-advance is off too)
+  useEffect(() => {
+    const m = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const sync = () => setReduce(m.matches)
+    sync()
+    m.addEventListener('change', sync)
+    return () => m.removeEventListener('change', sync)
+  }, [])
 
   useEffect(() => {
-    if (paused) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (paused || reduce) return
     // dwell slowed ~60% (4200 → 6700ms) for a calmer transition cadence
     const id = setInterval(() => setActive((v) => (v + 1) % SCENES.length), 6700)
     return () => clearInterval(id)
-  }, [paused])
+  }, [paused, reduce])
 
   const next = () => setActive((v) => (v + 1) % SCENES.length)
   const prev = () => setActive((v) => (v - 1 + SCENES.length) % SCENES.length)
@@ -70,7 +84,7 @@ export function ScenarioCarousel() {
     >
       {/* swipeable image stage */}
       <motion.div
-        className="relative aspect-[7/5] overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y"
+        className="relative aspect-[1200/849] overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y"
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.16}
@@ -89,14 +103,15 @@ export function ScenarioCarousel() {
             alt={`${s.label} — ${s.scenario}, built in Command 360`}
             draggable={false}
             loading={active === 0 ? 'eager' : 'lazy'}
-            // ~32% larger, anchored to the left so the subject grows toward the
-            // left and stays in the safe zone; no ken-burns pan
-            className="absolute inset-0 w-full h-full object-cover object-left select-none pointer-events-none"
-            style={{ scale: 1.32, transformOrigin: 'left center' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            // full-frame: the stage matches the 1200×849 source, so each scene
+            // enters showing the whole image — top and sides — then drifts in a
+            // slow top-anchored ken-burns (zoom never trims the top)
+            className="absolute inset-0 w-full h-full object-cover object-top select-none pointer-events-none"
+            style={{ transformOrigin: KEN_ORIGINS[active % KEN_ORIGINS.length] }}
+            initial={{ opacity: 0, scale: 1 }}
+            animate={{ opacity: 1, scale: reduce ? 1 : 1.05 }}
             exit={{ opacity: 0 }}
-            transition={{ opacity: { duration: 1.1, ease: 'easeInOut' } }}
+            transition={{ opacity: { duration: 1.1, ease: 'easeInOut' }, scale: { duration: 7.6, ease: 'easeOut' } }}
           />
         </AnimatePresence>
 

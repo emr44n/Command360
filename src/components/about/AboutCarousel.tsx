@@ -7,9 +7,10 @@ import { AnimatePresence, motion } from 'framer-motion'
  * About-page hero carousel — plays five brand scenes in order (1 → 5), each
  * tied to a part of the Command 360 story (mission, multi-agency coordination,
  * live insight, who we serve, interactive training). Matches the Command
- * Studio hero exactly: 6.7s dwell, 1.1s crossfade, a static zoom (no pan), a
- * scrolling ticker, pagination dots and a swipeable stage. Centred so the
- * brand mark stays in the safe zone on these centre-weighted compositions.
+ * Studio hero exactly: 6.7s dwell, 1.1s crossfade, a full-frame fit with a
+ * gentle top-anchored ken-burns (the stage matches the 16:9 source, so each
+ * scene enters uncropped), a scrolling ticker, pagination dots and a swipeable
+ * stage.
  */
 
 interface Slide {
@@ -27,6 +28,11 @@ const SLIDES: Slide[] = [
   { src: '/about/about-4.webp', label: 'Who We Serve', caption: 'Built for those who protect us', c: '#D94B3D', ticker: ['Fire & Rescue', 'Police', 'Ambulance', 'Search & rescue', 'Every responder'] },
   { src: '/about/about-5.webp', label: 'Interactive Training', caption: 'Every session a two-way conversation', c: '#2E9E63', ticker: ['Live polls', 'Quizzes', 'Anonymous Q&A', 'Debriefs', 'Knowledge retention'] },
 ]
+
+// ken-burns anchors — all pinned to the top edge (vertical 0%) so the slow
+// zoom never trims the top; the varying horizontal point gives each scene a
+// gentle, different drift (a subtle pan feel)
+const KEN_ORIGINS = ['50% 0%', '32% 0%', '66% 0%', '40% 0%', '60% 0%']
 
 function Ticker({ items, c }: { items: string[]; c: string }) {
   const row = [...items, ...items]
@@ -46,14 +52,23 @@ function Ticker({ items, c }: { items: string[]; c: string }) {
 export function AboutCarousel() {
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
+  const [reduce, setReduce] = useState(false)
+
+  // honour prefers-reduced-motion: no ken-burns (and auto-advance is off too)
+  useEffect(() => {
+    const m = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const sync = () => setReduce(m.matches)
+    sync()
+    m.addEventListener('change', sync)
+    return () => m.removeEventListener('change', sync)
+  }, [])
 
   useEffect(() => {
-    if (paused) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (paused || reduce) return
     // same dwell as the Command Studio hero
     const id = setInterval(() => setActive((v) => (v + 1) % SLIDES.length), 6700)
     return () => clearInterval(id)
-  }, [paused])
+  }, [paused, reduce])
 
   const next = () => setActive((v) => (v + 1) % SLIDES.length)
   const prev = () => setActive((v) => (v - 1 + SLIDES.length) % SLIDES.length)
@@ -67,7 +82,7 @@ export function AboutCarousel() {
       data-reveal
     >
       <motion.div
-        className="relative aspect-[16/10] overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y"
+        className="relative aspect-[16/9] overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y"
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.16}
@@ -86,13 +101,15 @@ export function AboutCarousel() {
             alt={`${s.label} — ${s.caption}, Command 360`}
             draggable={false}
             loading={active === 0 ? 'eager' : 'lazy'}
-            // gentle static zoom, centred so the brand mark stays in the safe zone
-            className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
-            style={{ scale: 1.12 }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            // full-frame: the stage matches the 16:9 source, so each scene
+            // enters showing the whole image — top and sides — then drifts in a
+            // slow top-anchored ken-burns (zoom never trims the top)
+            className="absolute inset-0 w-full h-full object-cover object-top select-none pointer-events-none"
+            style={{ transformOrigin: KEN_ORIGINS[active % KEN_ORIGINS.length] }}
+            initial={{ opacity: 0, scale: 1 }}
+            animate={{ opacity: 1, scale: reduce ? 1 : 1.05 }}
             exit={{ opacity: 0 }}
-            transition={{ opacity: { duration: 1.1, ease: 'easeInOut' } }}
+            transition={{ opacity: { duration: 1.1, ease: 'easeInOut' }, scale: { duration: 7.6, ease: 'easeOut' } }}
           />
         </AnimatePresence>
 

@@ -7,6 +7,7 @@ import type { Metadata } from 'next'
 import { SiteShell } from '@/components/site/SiteShell'
 import { PageHero, Eyebrow, LightSection, Container } from '@/components/site/primitives'
 import { SpotlightCard } from '@/components/home/SpotlightCard'
+import { SolutionsHero } from '@/components/solutions/SolutionsHero'
 
 export const metadata: Metadata = {
   title: 'Solutions — Command 360',
@@ -34,6 +35,7 @@ export default function SolutionsPage() {
         eyebrow={<Eyebrow>Solutions</Eyebrow>}
         title={<>Purpose-built for <span className="text-[#C9241A]">every service</span></>}
         lede="Command 360 is designed for emergency services training. Choose your service to see how we can help your team."
+        media={<SolutionsHero />}
       />
 
       {/* Services grid */}
