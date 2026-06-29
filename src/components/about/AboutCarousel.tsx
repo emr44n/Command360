@@ -7,9 +7,9 @@ import { AnimatePresence, motion } from 'framer-motion'
  * About-page hero carousel — plays five brand scenes in order (1 → 5), each
  * tied to a part of the Command 360 story (mission, multi-agency coordination,
  * live insight, who we serve, interactive training). Matches the Command
- * Studio hero exactly: 6.7s dwell, 1.1s crossfade, a static zoom (no pan), a
- * scrolling ticker, pagination dots and a swipeable stage. Centred so the
- * brand mark stays in the safe zone on these centre-weighted compositions.
+ * Studio hero exactly: 6.7s dwell, 1.1s crossfade, a full-frame fit (the stage
+ * matches the 16:9 source so nothing is cropped), a scrolling ticker,
+ * pagination dots and a swipeable stage.
  */
 
 interface Slide {
@@ -67,7 +67,7 @@ export function AboutCarousel() {
       data-reveal
     >
       <motion.div
-        className="relative aspect-[16/10] overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y"
+        className="relative aspect-[16/9] overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y"
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.16}
@@ -86,9 +86,10 @@ export function AboutCarousel() {
             alt={`${s.label} — ${s.caption}, Command 360`}
             draggable={false}
             loading={active === 0 ? 'eager' : 'lazy'}
-            // gentle static zoom, centred so the brand mark stays in the safe zone
-            className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
-            style={{ scale: 1.12 }}
+            // full-frame: the stage matches the 16:9 source, so the whole image
+            // is visible — top and sides — with no crop; top-anchored so any
+            // sub-pixel rounding trims the bottom, never the top
+            className="absolute inset-0 w-full h-full object-cover object-top select-none pointer-events-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

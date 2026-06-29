@@ -70,7 +70,7 @@ export function ScenarioCarousel() {
     >
       {/* swipeable image stage */}
       <motion.div
-        className="relative aspect-[7/5] overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y"
+        className="relative aspect-[1200/849] overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y"
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.16}
@@ -89,10 +89,10 @@ export function ScenarioCarousel() {
             alt={`${s.label} — ${s.scenario}, built in Command 360`}
             draggable={false}
             loading={active === 0 ? 'eager' : 'lazy'}
-            // ~32% larger, anchored to the left so the subject grows toward the
-            // left and stays in the safe zone; no ken-burns pan
-            className="absolute inset-0 w-full h-full object-cover object-left select-none pointer-events-none"
-            style={{ scale: 1.32, transformOrigin: 'left center' }}
+            // full-frame: the stage matches the 1200×849 source, so the whole
+            // image is visible — top and sides — with no crop; top-anchored so
+            // any sub-pixel rounding trims the bottom, never the top
+            className="absolute inset-0 w-full h-full object-cover object-top select-none pointer-events-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
