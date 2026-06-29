@@ -1279,6 +1279,30 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           e.target.value = ''
         }}
       />
+
+      {/* Delete confirmation modal (also available in the normal editor view) */}
+      {deleteTargetId && (
+        <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setDeleteTargetId(null)}>
+          <div className="bg-[#1e1f22] dash-light:bg-white border border-[#3f4147] dash-light:border-black/10 rounded-none p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-sm font-semibold text-white dash-light:text-[#16191E] mb-2">Delete this scene?</h3>
+            <p className="text-[11px] text-zinc-400 dash-light:text-[#5B6169] mb-4">This action cannot be undone. The scene and all its layers will be permanently removed.</p>
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setDeleteTargetId(null)}
+                className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-[#2b2d31] dash-light:bg-[#EAE6DD] text-zinc-300 dash-light:text-[#5B6169] hover:bg-[#35363c] dash-light:hover:bg-black/[0.05] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteSlide}
+                className="px-3 py-1.5 text-[11px] font-medium rounded-none bg-red-600 text-white hover:bg-red-500 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

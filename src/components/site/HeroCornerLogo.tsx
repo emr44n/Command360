@@ -57,7 +57,7 @@ export function HeroCornerLogo({ size = 33, className = '' }: { size?: number; c
       {/* soft dark disc so the mark reads on any image */}
       <span className="absolute inset-[-7px] rounded-full bg-black/35 backdrop-blur-[2px]" />
       <motion.span className="relative inline-flex will-change-transform" style={{ rotate }}>
-        <BrandMark size={size} />
+        <BrandMark size={size} animated={false} />
       </motion.span>
     </div>
   )
