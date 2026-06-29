@@ -18,6 +18,9 @@ function generateId() {
   return `el_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
 }
 
+// curved-arrow cursor shown in the rotate ring just outside each corner
+const ROTATE_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23dc2626' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 2.6-6.4'/%3E%3Cpolyline points='3 3 3 8 8 8'/%3E%3C/svg%3E") 11 11, grab`
+
 export function CanvasElementsLayer({ elements, onChange, containerRef, selectedElementId, onSelectElement, onRequestAddImage }: Props) {
   // Use lifted state if provided, otherwise fall back to local state
   const [localSelectedId, setLocalSelectedId] = useState<string | null>(null)
@@ -193,7 +196,9 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
   const elRef = useRef<HTMLDivElement>(null)
   const [dragging, setDragging] = useState(false)
   const [resizing, setResizing] = useState<string | null>(null)
+  const [rotating, setRotating] = useState(false)
   const dragStart = useRef({ x: 0, y: 0, elX: 0, elY: 0, elW: 0, elH: 0 })
+  const rotateStart = useRef({ cx: 0, cy: 0, startAngle: 0, startRotation: 0 })
 
   const startDrag = useCallback((e: React.MouseEvent) => {
     if (isEditing) return
@@ -230,10 +235,39 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
     }
   }, [element, containerRef])
 
+  // Rotation — grabbed from the ring just outside a corner. Angle is measured
+  // from the element centre to the pointer; Shift snaps to 15°.
+  const startRotate = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    onSelect()
+    const el = elRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const cx = rect.left + rect.width / 2
+    const cy = rect.top + rect.height / 2
+    rotateStart.current = {
+      cx, cy,
+      startAngle: (Math.atan2(e.clientY - cy, e.clientX - cx) * 180) / Math.PI,
+      startRotation: element.rotation || 0,
+    }
+    setRotating(true)
+  }, [element, onSelect])
+
   useEffect(() => {
-    if (!dragging && !resizing) return
+    if (!dragging && !resizing && !rotating) return
 
     function onMove(e: MouseEvent) {
+      if (rotating) {
+        const a = (Math.atan2(e.clientY - rotateStart.current.cy, e.clientX - rotateStart.current.cx) * 180) / Math.PI
+        let next = rotateStart.current.startRotation + (a - rotateStart.current.startAngle)
+        if (e.shiftKey) next = Math.round(next / 15) * 15
+        next = Math.round(next)
+        while (next > 180) next -= 360
+        while (next < -180) next += 360
+        onUpdate({ rotation: next })
+        return
+      }
       const container = containerRef.current
       if (!container) return
       const rect = container.getBoundingClientRect()
@@ -270,6 +304,7 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
     function onUp() {
       setDragging(false)
       setResizing(null)
+      setRotating(false)
     }
 
     window.addEventListener('mousemove', onMove)
@@ -278,7 +313,7 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
       window.removeEventListener('mousemove', onMove)
       window.removeEventListener('mouseup', onUp)
     }
-  }, [dragging, resizing, onUpdate, containerRef])
+  }, [dragging, resizing, rotating, onUpdate, containerRef])
 
   const style = element.style || {}
 
@@ -396,6 +431,21 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
       {/* Resize handles when selected */}
       {isSelected && !isEditing && (
         <>
+          {/* rotation rings just OUTSIDE each corner (scale handle sits on top) */}
+          {['nw', 'ne', 'sw', 'se'].map(corner => {
+            const pos: React.CSSProperties = {}
+            if (corner.includes('n')) pos.top = -24
+            if (corner.includes('s')) pos.bottom = -24
+            if (corner.includes('w')) pos.left = -24
+            if (corner.includes('e')) pos.right = -24
+            return (
+              <div
+                key={`rot-${corner}`}
+                onMouseDown={startRotate}
+                style={{ position: 'absolute', ...pos, width: 24, height: 24, zIndex: 28, cursor: ROTATE_CURSOR }}
+              />
+            )
+          })}
           {['nw', 'ne', 'sw', 'se', 'n', 's', 'e', 'w'].map(handle => {
             const isCorner = handle.length === 2
             const pos: React.CSSProperties = {}
