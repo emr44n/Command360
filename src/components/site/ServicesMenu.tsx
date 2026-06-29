@@ -88,31 +88,44 @@ export function ServicesMenu() {
   )
 }
 
-/* Mobile list — rendered inside the burger menu under a "Services" heading. */
+/* Mobile list — a collapsible "Services" section inside the burger menu. Tap
+   the row to expand the per-service subpages; collapsed by default so the menu
+   stays short and the Join box / auth buttons remain reachable. */
 export function MobileServicesList({ onNavigate }: { onNavigate?: () => void }) {
+  const [open, setOpen] = useState(false)
   return (
-    <div className="pt-1">
-      <div className="ff-mono text-[10px] tracking-[0.12em] uppercase text-white/40 px-2 pb-1.5">Services</div>
-      <div className="grid grid-cols-1">
-        {SERVICES.map((s) => (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="w-full flex items-center justify-between px-2 py-3 ff-mono text-sm uppercase tracking-[0.04em] text-white/70 hover:text-white cursor-pointer"
+      >
+        Services
+        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="pl-3 pb-1 border-l border-white/10 ml-2">
+          {SERVICES.map((s) => (
+            <Link
+              key={s.slug}
+              href={`/solutions/${s.slug}`}
+              onClick={onNavigate}
+              className="flex items-center gap-3 px-2 py-2.5 text-white/70 hover:text-white"
+            >
+              <span className="w-2 h-2 shrink-0" style={{ background: s.c }} aria-hidden="true" />
+              <span className="ff-mono text-[12.5px] tracking-[0.02em]">{s.label}</span>
+            </Link>
+          ))}
           <Link
-            key={s.slug}
-            href={`/solutions/${s.slug}`}
+            href="/solutions"
             onClick={onNavigate}
-            className="flex items-center gap-3 px-2 py-2.5 text-white/70 hover:text-white"
+            className="flex items-center gap-2 px-2 py-2.5 ff-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-[#C9241A]"
           >
-            <span className="w-2 h-2 shrink-0" style={{ background: s.c }} aria-hidden="true" />
-            <span className="ff-mono text-[12.5px] tracking-[0.02em]">{s.label}</span>
+            All services <ArrowRight className="w-3.5 h-3.5" />
           </Link>
-        ))}
-        <Link
-          href="/solutions"
-          onClick={onNavigate}
-          className="flex items-center gap-2 px-2 py-2.5 ff-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-[#C9241A]"
-        >
-          All services <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
-      </div>
+        </div>
+      )}
     </div>
   )
 }

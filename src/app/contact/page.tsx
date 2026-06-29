@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { SiteShell } from '@/components/site/SiteShell'
 import { PageHero, Eyebrow, DarkSection, Container } from '@/components/site/primitives'
+import { BrandLink } from '@/components/site/BrandLink'
 import {
   Mail,
   MapPin,
@@ -130,6 +131,23 @@ export default function ContactPage() {
         eyebrow={<Eyebrow>Contact Us</Eyebrow>}
         title={<>Let&apos;s <span className="text-[#C9241A]">Talk</span></>}
         lede="Questions, feedback, or partnership enquiries — we'd love to hear from you."
+        media={
+          <div className="relative w-full max-w-[440px] mx-auto border border-white/12 bg-[#0A0C0F] overflow-hidden" data-reveal>
+            {/* little ticker label across the top of the box */}
+            <div className="relative overflow-hidden border-b border-white/10 px-4 py-2.5 mask-fade-x">
+              <div className="flex items-center gap-6 w-max v5-marquee ff-mono text-[10px] tracking-[0.14em] uppercase text-white/55" style={{ animationDuration: '24s' }}>
+                {['Interactive training', 'UK emergency services', 'GDPR ready', 'UK-hosted', 'Get in touch', 'Interactive training', 'UK emergency services', 'GDPR ready', 'UK-hosted', 'Get in touch'].map((t, i) => (
+                  <span key={i} className="inline-flex items-center gap-2 whitespace-nowrap"><span className="w-1.5 h-1.5 bg-[#C9241A]" />{t}</span>
+                ))}
+              </div>
+            </div>
+            <div className="p-8 sm:p-10 flex flex-col items-start gap-6">
+              <BrandLink size={42} className="flex items-center gap-3 text-white shrink-0 w-fit" />
+              <p className="text-[15px] leading-[1.65] text-[#9aa0a8]">Command 360 is built in the UK for blue-light and emergency services. Whether it&apos;s a question, a demo, or a partnership — a real person gets back to you.</p>
+              <div className="ff-mono text-[11px] tracking-[0.1em] uppercase text-white/45">Birmingham, West Midlands · UK-hosted</div>
+            </div>
+          </div>
+        }
       />
 
       {/* ── Form + Map two-column section ── */}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { HeroCornerLogo } from '@/components/site/HeroCornerLogo'
 
 /**
  * Command Studio hero carousel — plays the seven built scenario scenes in
@@ -168,6 +169,7 @@ export function ScenarioCarousel() {
           </div>
         </div>
       </motion.div>
+      <HeroCornerLogo />
     </div>
   )
 }

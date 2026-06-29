@@ -1,14 +1,20 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { BrandMark } from './BrandMark'
 
 /**
- * Header brand link (logo + COMMAND 360 wordmark). Hovering anywhere on the
- * link spins the logo one full turn clockwise and settles it back upright;
- * moving the cursor away spins it another full turn clockwise (never
- * reversing), again settling upright. A small, deliberate micro-animation.
+ * Brand link (logo + COMMAND 360 wordmark) used wherever the combined mark
+ * appears — site header, home nav and footer.
+ *
+ * Animation rules:
+ *  - On load / every page navigation: after a ~1s beat the logo revolves one
+ *    full turn clockwise and settles upright.
+ *  - On hover (anywhere on the link): spins one full turn clockwise, settling
+ *    upright; moving the cursor away spins another full turn clockwise (never
+ *    reversing), again settling upright.
  * Honours prefers-reduced-motion (no spin).
  */
 export function BrandLink({
@@ -22,6 +28,7 @@ export function BrandLink({
 }) {
   const [turns, setTurns] = useState(0)
   const [reduce, setReduce] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     const m = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -31,9 +38,16 @@ export function BrandLink({
     return () => m.removeEventListener('change', sync)
   }, [])
 
+  // on first load and on every route change, wait a beat then revolve once
+  useEffect(() => {
+    if (reduce) return
+    const t = setTimeout(() => setTurns((n) => n + 1), 1000)
+    return () => clearTimeout(t)
+  }, [pathname, reduce])
+
   // each hover-enter and hover-leave adds one clockwise turn, so the logo
   // always rotates the same direction and lands back at its start orientation
-  const spin = () => { if (!reduce) setTurns((t) => t + 1) }
+  const spin = () => { if (!reduce) setTurns((n) => n + 1) }
 
   return (
     <Link href="/" className={className} onMouseEnter={spin} onMouseLeave={spin}>
@@ -41,7 +55,7 @@ export function BrandLink({
         className="inline-flex shrink-0 will-change-transform"
         style={{
           transform: `rotate(${turns * 360}deg)`,
-          transition: reduce ? undefined : 'transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1)',
+          transition: reduce ? undefined : 'transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1)',
         }}
       >
         <BrandMark size={size} />

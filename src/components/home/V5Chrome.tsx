@@ -157,7 +157,7 @@ export function V5Nav() {
       </nav>
 
       {open && (
-        <div className="lg:hidden bg-[#0F1216]/97 backdrop-blur-md border-t border-white/10 px-5 py-4 space-y-1">
+        <div className="lg:hidden bg-[#0F1216]/97 backdrop-blur-md border-t border-white/10 px-5 py-4 space-y-1 max-h-[calc(100dvh-80px)] overflow-y-auto overscroll-contain">
           {NAV_LINKS.map((l) =>
             l.label === 'Services' ? (
               <MobileServicesList key={l.label} onNavigate={() => setOpen(false)} />
