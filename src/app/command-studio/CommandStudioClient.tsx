@@ -2,7 +2,7 @@
 
 import {
   Layers, Zap, Play, Sparkles, Vote, Eye, Monitor, MousePointerClick,
-  Flame, Shield, Siren, Target,
+  Flame, Shield, Siren, Target, Workflow, Repeat,
 } from 'lucide-react'
 import { PageHero, Eyebrow, LightSection, DarkSection, Container } from '@/components/site/primitives'
 import { SpotlightCard } from '@/components/home/SpotlightCard'
@@ -11,6 +11,13 @@ import { ScenarioCarousel } from '@/components/command-studio/ScenarioCarousel'
 import { StudioPlayerDemo } from '@/components/command-studio/StudioPlayerDemo'
 
 /* ── DATA ── */
+
+const IMMERSIVE = [
+  { icon: Layers, title: 'Build a believable world', description: 'Compose bespoke scenes from images, video and overlays so teams confront recognisable settings — a motorway pile-up, a high-rise fire, a flooded estate — grounded in your own operating context.', c: '#D94B3D' },
+  { icon: Workflow, title: 'Scenarios that evolve', description: 'Trigger events that shift the picture in real time, so decisions carry consequences. As conditions change, commanders must reassess, reprioritise and adapt the way a live incident demands.', c: '#3E6DC4' },
+  { icon: Flame, title: 'Experience rare, high-risk events', description: 'Major incidents are rare by design, which limits real exposure. Simulation lets teams rehearse mass-casualty, hazmat or wide-area scenarios repeatedly, building familiarity real deployments cannot reliably provide.', c: '#c98a2a' },
+  { icon: Repeat, title: 'Practise safely, then repeat', description: 'A consequence-free environment encourages bold decisions and honest mistakes. Run the same scenario again with new variables to test alternative approaches and embed learning through deliberate repetition.', c: '#2E9E63' },
+]
 
 const STEPS = [
   {
@@ -235,6 +242,32 @@ export default function CommandStudioClient() {
           <StudioPlayerDemo />
         </Container>
       </DarkSection>
+
+      {/* ═══ 05 IMMERSIVE PRACTICE (light) ═══ */}
+      <LightSection>
+        <Container>
+          <div className="max-w-[680px] mb-3.5">
+            <Eyebrow n="05">Immersive Practice</Eyebrow>
+            <h2 className="ff-display font-extrabold text-[clamp(30px,3.8vw,48px)] leading-none tracking-[-0.02em] mt-4 text-[#16191E]">Rehearse the rare event before it ever reaches the ground</h2>
+            <p className="text-[16px] text-[#5a5f66] mt-4">Layered, evolving scenarios let commanders make real decisions under pressure in a safe browser-based environment — no headset required, every detail tailored to your incident types.</p>
+          </div>
+          <div className="h-0.5 bg-[#16191E] origin-left mt-7" data-rule />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 border-l border-[rgba(20,25,30,0.16)]">
+            {IMMERSIVE.map((f) => (
+              <SpotlightCard key={f.title} glow={`${f.c}26`} className="v5-card group relative overflow-hidden p-[34px_28px] border-r border-b border-[rgba(20,25,30,0.16)] block cursor-default">
+                <span className="absolute inset-0 pointer-events-none" style={{ ['--v5-wash' as string]: `${f.c}24` }} aria-hidden="true" />
+                <div className="relative">
+                  <div className="w-[42px] h-[42px] flex items-center justify-center mb-5" style={{ background: `${f.c}18` }}>
+                    <f.icon className="w-5 h-5" style={{ color: f.c }} />
+                  </div>
+                  <h3 className="ff-display font-bold text-[18px] tracking-[-0.01em] mb-2.5 text-[#16191E]">{f.title}</h3>
+                  <p className="text-[14px] text-[#5a5f66] leading-relaxed">{f.description}</p>
+                </div>
+              </SpotlightCard>
+            ))}
+          </div>
+        </Container>
+      </LightSection>
     </>
   )
 }

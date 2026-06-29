@@ -120,6 +120,14 @@ function Eyebrow({ children, n }: { children: React.ReactNode; n?: string }) {
   )
 }
 
+/* ── DATA: why interactive learning works ── */
+const WHY_IT_WORKS = [
+  { title: 'Active beats passive', c: '#C9241A', desc: 'People retain far more when they respond, decide and reflect rather than sit and listen. Every prompt turns a one-way briefing into recall that carries into the field.' },
+  { title: 'Pressure-tested judgement', c: '#3E6DC4', desc: 'Realistic scenarios let commanders rehearse time-critical calls in a safe space, building the pattern recognition and confidence that sharp, high-stakes decisions demand.' },
+  { title: 'Multi-agency readiness', c: '#2E9E63', desc: 'Shared exercises put fire, police, ambulance and partners in one room, exposing assumptions and gaps in co-ordination long before a live incident does.' },
+  { title: 'Evidence you can act on', c: '#c98a2a', desc: 'Every response, theme and debrief is captured, so training leads can see what landed, where confidence is thin and what to reinforce next time.' },
+]
+
 /* ── PAGE ── */
 export default function LandingPage() {
   return (
@@ -427,10 +435,34 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ════════════ 08 TESTIMONIALS (light) ════════════ */}
+        {/* ════════════ 08 WHY IT WORKS (dark) ════════════ */}
+        <section className="relative overflow-hidden bg-[#0F1216] text-white py-[90px]">
+          <div className="absolute top-[-140px] left-[-100px] w-[780px] h-[560px] pointer-events-none" aria-hidden="true" style={{ background: 'radial-gradient(55% 65% at 30% 30%,rgba(201,36,26,.14),transparent 76%)', filter: 'blur(46px)' }} />
+          <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
+          <div className="relative max-w-[1280px] mx-auto px-5 sm:px-[30px]">
+            <div className="flex items-end justify-between gap-8 flex-wrap mb-9">
+              <div className="max-w-[640px]" data-reveal>
+                <Eyebrow n="08">Why it works</Eyebrow>
+                <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 text-white">Decisions stick when crews make them, not just hear them</h2>
+              </div>
+              <p className="text-[16px] text-[#9aa0a8] max-w-[360px] mb-1.5" data-reveal>Passive briefings fade fast; learning that asks people to commit to a decision, see the outcome and reflect together is what holds up when the next incident is real.</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 border-t border-l border-white/14">
+              {WHY_IT_WORKS.map((w) => (
+                <div key={w.title} data-reveal className="group v5-pop cursor-default relative p-[28px_24px] border-r border-b border-white/14">
+                  <span className="inline-block w-3 h-3 mb-[18px]" style={{ background: w.c }} />
+                  <div className="ff-display font-bold text-[17px] mb-1.5 text-white">{w.title}</div>
+                  <div className="text-[13px] text-[#9aa0a8] leading-[1.5]">{w.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ════════════ 09 TESTIMONIALS (light) ════════════ */}
         <section className="bg-[#EFECE4] text-[#16191E] pb-[90px]">
           <div className="max-w-[1280px] mx-auto px-5 sm:px-[30px]">
-            <Eyebrow n="08">Testimonials</Eyebrow>
+            <Eyebrow n="09">Testimonials</Eyebrow>
             <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 mb-9" data-reveal>Trusted by those who serve</h2>
             <TestimonialColumns />
           </div>

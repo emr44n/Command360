@@ -2,6 +2,7 @@ import Link from 'next/link'
 import {
   BarChart2, Cloud, HelpCircle, MessageCircle, ClipboardList, FileText,
   Zap, Shield, Eye, Users, Download, Brain,
+  Activity, Compass, ClipboardCheck,
 } from 'lucide-react'
 import type { Metadata } from 'next'
 import { SiteShell } from '@/components/site/SiteShell'
@@ -11,7 +12,7 @@ import { V5AuthButton } from '@/components/home/V5Chrome'
 
 export const metadata: Metadata = {
   title: 'Product — Command 360',
-  description: 'Interactive polls, quizzes, word clouds, Q&A and AI insights for emergency services training.',
+  description: 'Discover the science behind Command 360: how live participation, scenario decisions and instant assessment drive engagement, retention and defensible competence.',
 }
 
 const FEATURES = [
@@ -30,6 +31,13 @@ const CAPABILITIES = [
   { icon: Users, title: 'Unlimited participants', desc: 'No cap on audience size — designed for briefing rooms and large conference halls.' },
   { icon: Download, title: 'CSV export', desc: 'Download all session data for external analysis, evaluation, and reporting.' },
   { icon: Brain, title: 'AI insights', desc: 'AI-generated summaries, key themes, and actionable recommendations from every session.' },
+]
+
+const SCIENCE = [
+  { icon: Brain, title: 'Active recall beats passive review', description: 'Decades of cognitive research show that retrieving information under realistic pressure strengthens memory far more than re-reading or listening, embedding skills that hold up when they matter most.', c: '#C9241A' },
+  { icon: Activity, title: 'Engagement drives retention', description: 'Live polls, quizzes and word clouds pull every participant into the moment. Sustained attention and active response are what move learning from short-term recall into lasting recall.', c: '#3E6DC4' },
+  { icon: Compass, title: 'Decision rehearsal builds judgement', description: 'Working through scenarios forces commanders to weigh options, act and see consequences. Repeated, varied practice develops the rapid, accurate judgement that real incidents demand.', c: '#2E9E63' },
+  { icon: ClipboardCheck, title: 'Instant assessment, defensible records', description: 'Capturing every response and decision as it happens produces an objective, timestamped evidence trail — supporting honest debrief and auditable proof of demonstrated competence.', c: '#c98a2a' },
 ]
 
 export default function ProductPage() {
@@ -93,6 +101,32 @@ export default function ProductPage() {
           </div>
         </Container>
       </DarkSection>
+
+      {/* Why it works — the science of interactive learning */}
+      <LightSection>
+        <Container>
+          <div className="max-w-[680px] mb-3.5">
+            <Eyebrow n="03">Why It Works</Eyebrow>
+            <h2 className="ff-display font-extrabold text-[clamp(30px,3.8vw,48px)] leading-none tracking-[-0.02em] mt-4 text-[#16191E]">The science behind decisions made under pressure</h2>
+            <p className="text-[16px] text-[#5a5f66] mt-4">Interactive training works because the brain learns by doing, not watching — live participation, real decisions and immediate feedback turn passive sessions into durable, defensible competence.</p>
+          </div>
+          <div className="h-0.5 bg-[#16191E] origin-left mt-7" data-rule />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 border-l border-[rgba(20,25,30,0.16)]">
+            {SCIENCE.map((f) => (
+              <SpotlightCard key={f.title} glow={`${f.c}26`} className="v5-card group relative overflow-hidden p-[34px_28px] border-r border-b border-[rgba(20,25,30,0.16)] block cursor-default">
+                <span className="absolute inset-0 pointer-events-none" style={{ ['--v5-wash' as string]: `${f.c}24` }} aria-hidden="true" />
+                <div className="relative">
+                  <div className="w-[42px] h-[42px] flex items-center justify-center mb-5" style={{ background: `${f.c}18` }}>
+                    <f.icon className="w-5 h-5" style={{ color: f.c }} />
+                  </div>
+                  <h3 className="ff-display font-bold text-[18px] tracking-[-0.01em] mb-2.5 text-[#16191E]">{f.title}</h3>
+                  <p className="text-[14px] text-[#5a5f66] leading-relaxed">{f.description}</p>
+                </div>
+              </SpotlightCard>
+            ))}
+          </div>
+        </Container>
+      </LightSection>
     </SiteShell>
   )
 }

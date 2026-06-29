@@ -3,7 +3,7 @@
 import { SiteShell } from '@/components/site/SiteShell'
 import { PageHero, Eyebrow, LightSection, DarkSection, Container } from '@/components/site/primitives'
 import { SpotlightCard } from '@/components/home/SpotlightCard'
-import { Target, Heart, Zap, ArrowRight, Flame, Shield, Siren, Anchor, Search, Lock, Building2, Radio, Users } from 'lucide-react'
+import { Target, Heart, Zap, ArrowRight, Flame, Shield, Siren, Anchor, Search, Lock, Building2, Radio, Users, Workflow, Brain, BarChart3 } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { AboutCarousel } from '@/components/about/AboutCarousel'
@@ -54,6 +54,13 @@ const VALUES = [
     description: 'Training facilitators should focus on content, not technology. Command 360 is intuitive for presenters and participants alike.',
     c: '#c98a2a',
   },
+]
+
+const APPROACH = [
+  { icon: Users, title: 'Active participation', description: 'Decades of education research show people retain more when they respond, decide and discuss rather than listen passively. Every session asks the room to take part, not just attend.', c: '#C9241A' },
+  { icon: Workflow, title: 'Scenario-based decisions', description: 'Crews rehearse judgement on realistic incidents before facing them for real, practising the choices and trade-offs that matter most in a controlled, low-stakes environment.', c: '#3E6DC4' },
+  { icon: Brain, title: 'Evidence-informed design', description: 'Techniques like retrieval practice and immediate feedback are well established for strengthening recall. We build these proven methods into how every session is delivered.', c: '#2E9E63' },
+  { icon: BarChart3, title: 'Measurable retention', description: 'Live results and post-session analytics make learning visible, so facilitators can see where understanding holds, surface knowledge gaps and evidence improvement over time.', c: '#c98a2a' },
 ]
 
 const SERVICES = [
@@ -255,13 +262,39 @@ export default function AboutPage() {
         </Container>
       </LightSection>
 
+      {/* ─── OUR APPROACH ─── */}
+      <LightSection>
+        <Container>
+          <div className="max-w-[640px] mb-3.5">
+            <Eyebrow n="05">Our Approach</Eyebrow>
+            <h2 className="ff-display font-extrabold text-[clamp(30px,3.8vw,48px)] leading-none tracking-[-0.02em] mt-4 text-[#16191E]">Learning that holds under pressure</h2>
+            <p className="text-[16px] text-[#5a5f66] mt-4">We built Command 360 on a simple conviction: people remember what they actively do, so we turn every briefing into a decision they have to make, not a slide they watch.</p>
+          </div>
+          <div className="h-0.5 bg-[#16191E] origin-left mt-7 mb-9" data-rule />
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 border-t border-l border-[rgba(20,25,30,0.16)]">
+            {APPROACH.map((f) => (
+              <SpotlightCard key={f.title} glow={`${f.c}26`} className="v5-card group relative overflow-hidden p-[34px_28px] border-r border-b border-[rgba(20,25,30,0.16)] block cursor-default">
+                <span className="absolute inset-0 pointer-events-none" style={{ ['--v5-wash' as string]: `${f.c}24` }} aria-hidden="true" />
+                <div className="relative">
+                  <div className="w-[42px] h-[42px] flex items-center justify-center mb-5" style={{ background: `${f.c}18` }}>
+                    <f.icon className="w-5 h-5" style={{ color: f.c }} />
+                  </div>
+                  <h3 className="ff-display font-bold text-[18px] tracking-[-0.01em] mb-2.5 text-[#16191E]">{f.title}</h3>
+                  <p className="text-[14px] text-[#5a5f66] leading-relaxed">{f.description}</p>
+                </div>
+              </SpotlightCard>
+            ))}
+          </div>
+        </Container>
+      </LightSection>
+
       {/* ─── MISSION ─── */}
       <DarkSection>
         <div className="absolute top-[-140px] left-1/2 -translate-x-1/2 w-[820px] h-[460px] pointer-events-none" aria-hidden="true" style={{ background: 'radial-gradient(55% 65% at 50% 30%,rgba(201,36,26,.14),transparent 76%)', filter: 'blur(46px)' }} />
         <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
         <Container className="relative">
           <div className="max-w-[620px] mb-9">
-            <Eyebrow n="05">Our Mission</Eyebrow>
+            <Eyebrow n="06">Our Mission</Eyebrow>
             <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 text-white">Make your training <span className="text-[#C9241A]">engaging</span></h2>
             <p className="text-[16px] text-[#9aa0a8] mt-4">We believe that when training is interactive, people pay attention. When people pay attention, they learn. And when emergency responders learn better, communities are safer.</p>
           </div>
