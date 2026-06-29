@@ -638,7 +638,8 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
               value={presentationTitle}
               onChange={(e) => handleTitleChange(e.target.value)}
               className="bg-transparent border border-transparent hover:border-zinc-700 dash-light:hover:border-black/10 focus:border-zinc-600 dash-light:focus:border-black/10 text-sm text-white dash-light:text-[#16191E] font-medium focus:outline-none rounded-none px-2 py-0.5 w-auto max-w-[300px] truncate transition-colors"
-              placeholder="Untitled Scene"
+              placeholder="Untitled Scenario"
+              title="Scenario name"
             />
             <svg className="w-3 h-3 text-zinc-600 dash-light:text-[#5B6169] group-hover/title:text-zinc-400 transition-colors -ml-5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
           </div>

@@ -9,6 +9,7 @@ import {
   Volume2, GripVertical, Eye, EyeOff, Zap, Lock, Unlock, Shield, ShieldOff,
 } from 'lucide-react'
 import { playEvent, type EventPlaybackController } from '@/lib/studio/event-playback'
+import { STUDIO_DEFAULT_BG } from '@/lib/studio/default-canvas'
 import { PushPanel, type PushQueueItem } from '@/components/studio/PushPanel'
 import { StudioProperties } from '@/components/studio/StudioProperties'
 import { generateLayerId } from '@/lib/utils/studio-utils'
@@ -220,13 +221,26 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
 
   const redoEvent = useCallback((eventId: string) => { setTriggeredEvents(prev => { const n = new Set(prev); n.delete(eventId); return n }) }, [])
 
-  // ─── Add layer to canvas + push queue ───
+  // ─── Broadcast a single layer live (used by auto-push on drop + manual push) ───
+  const broadcastLayerAdded = useCallback((layer: StudioLayer, state: StudioLayerState, transition: 'fade' | 'instant') => {
+    const layerToSend = { ...layer, ...state }
+    channelRef.current?.send({ type: 'broadcast', event: 'STUDIO_LAYER_ADDED', payload: { slide_id: slide.id, layer: layerToSend } })
+    if (transition === 'fade') {
+      channelRef.current?.send({ type: 'broadcast', event: 'STUDIO_LAYER_STATES_UPDATE', payload: { slide_id: slide.id, layerStates: { [layerToSend.id]: { opacity: 0 } } } })
+      setTimeout(() => { channelRef.current?.send({ type: 'broadcast', event: 'STUDIO_LAYER_STATES_UPDATE', payload: { slide_id: slide.id, layerStates: { [layerToSend.id]: { opacity: state.opacity } } } }) }, 50)
+    }
+  }, [slide.id, channelRef])
+
+  // ─── Add layer to canvas — goes LIVE on drop (dynamic), no separate push step ───
   const addLayerToCanvasAndQueue = useCallback((layer: StudioLayer) => {
+    const state: StudioLayerState = { visible: layer.visible, opacity: layer.opacity, x: layer.x, y: layer.y, width: layer.width, height: layer.height, rotation: layer.rotation, src: layer.src, volume: layer.volume }
     setLayers(prev => [...prev, layer])
-    setLayerStates(prev => ({ ...prev, [layer.id]: { visible: layer.visible, opacity: layer.opacity, x: layer.x, y: layer.y, width: layer.width, height: layer.height, rotation: layer.rotation, src: layer.src, volume: layer.volume } }))
-    setPushQueue(prev => [...prev, { layer, transition: globalTransition }])
+    setLayerStates(prev => ({ ...prev, [layer.id]: state }))
     setSelectedLayerId(layer.id)
-  }, [])
+    // auto-push so the dropped asset reaches participants immediately
+    broadcastLayerAdded(layer, state, globalTransition)
+    setAssetsAdded(prev => prev + 1)
+  }, [broadcastLayerAdded, globalTransition])
 
   // ─── Push handlers ───
   const pushItem = useCallback((layerId: string) => {
@@ -275,6 +289,21 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   // Use ref for layerStates to avoid stale closures during drag
   const layerStatesRef = useRef(layerStates)
   layerStatesRef.current = layerStates
+  const layersRef = useRef(layers)
+  layersRef.current = layers
+
+  // ─── Sync heartbeat ───
+  // Re-broadcast the full live scene every 2s so participants who join (or
+  // re-mount) mid-exercise catch up to the current layers + states, rather
+  // than being stuck on the scene's initial content.
+  useEffect(() => {
+    const send = () => channelRef.current?.send({
+      type: 'broadcast', event: 'STUDIO_SYNC_STATE',
+      payload: { slide_id: slide.id, layers: layersRef.current, layerStates: layerStatesRef.current },
+    })
+    const i = setInterval(send, 2000)
+    return () => clearInterval(i)
+  }, [slide.id, channelRef])
 
   const handleLayerMouseDown = useCallback((e: React.MouseEvent, layerId: string) => {
     e.stopPropagation(); e.preventDefault()
@@ -844,7 +873,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
             </svg>
             <div ref={canvasRef}
               className={`relative overflow-hidden rounded-none ${isDragOver ? 'ring-2 ring-[#C9241A] ring-offset-2 ring-offset-[#111113]' : ''}`}
-              style={{ width: 'min(72rem, calc((100vh - 8rem) * 16 / 9))', aspectRatio: '16/9', backgroundColor: canvas.backgroundColor, transform: `scale(${canvasZoom / 100})`, transformOrigin: 'center center', transition: 'transform 0.15s ease-out' }}
+              style={{ width: 'min(72rem, calc((100vh - 8rem) * 16 / 9))', aspectRatio: '16/9', backgroundColor: canvas.backgroundColor || STUDIO_DEFAULT_BG, transform: `scale(${canvasZoom / 100})`, transformOrigin: 'center center', transition: 'transform 0.15s ease-out' }}
               onClick={handleCanvasClick} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
             >
               {layers.map(layer => {
