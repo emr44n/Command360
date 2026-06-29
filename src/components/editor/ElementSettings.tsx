@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import {
   Type, Image, Bold, Italic, AlignLeft, AlignCenter, AlignRight,
-  Trash2, RotateCw, Square, Circle, Maximize, Minimize, Eye,
+  Trash2, RotateCw, Square, Circle, Eye,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
@@ -21,6 +21,9 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
   const style = element.style || {}
   const isText = element.type === 'text'
   const isImage = element.type === 'image'
+  const ef = style.edgeFade || {}
+  const anim = style.anim || {}
+  const sides = ['top', 'bottom', 'left', 'right'] as const
 
   return (
     <div className="space-y-5">
@@ -149,6 +152,73 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
         </div>
       </div>
 
+      {/* ─── Edge fade (per side) ─── */}
+      <div className="space-y-3 border-t border-border pt-5">
+        <Label className="text-muted-foreground text-xs uppercase tracking-wide">Edge fade</Label>
+        <div className="flex gap-4">
+          {/* square with a cross — tap an edge to feather it */}
+          <div className="relative w-[76px] h-[76px] shrink-0 border border-border bg-muted/30">
+            <span className="absolute left-1/2 top-1.5 bottom-1.5 w-px -translate-x-1/2 bg-border" aria-hidden="true" />
+            <span className="absolute top-1/2 left-1.5 right-1.5 h-px -translate-y-1/2 bg-border" aria-hidden="true" />
+            {sides.map((side) => {
+              const on = (ef[side] || 0) > 0
+              const posCls =
+                side === 'top' ? 'top-0 left-1/2 -translate-x-1/2 -translate-y-1/2'
+                  : side === 'bottom' ? 'bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2'
+                    : side === 'left' ? 'left-0 top-1/2 -translate-y-1/2 -translate-x-1/2'
+                      : 'right-0 top-1/2 -translate-y-1/2 translate-x-1/2'
+              return (
+                <button
+                  key={side}
+                  onClick={() => onUpdateStyle({ edgeFade: { ...ef, [side]: on ? 0 : 25 } })}
+                  className={cn('absolute w-4 h-4 rounded-full border transition-colors', posCls, on ? 'bg-primary border-primary' : 'bg-background border-border hover:border-primary/60')}
+                  aria-label={`${side} edge fade`}
+                />
+              )
+            })}
+          </div>
+          <div className="flex-1 space-y-2.5">
+            {sides.filter((side) => (ef[side] || 0) > 0).map((side) => (
+              <div key={side} className="space-y-1">
+                <div className="flex justify-between text-[11px] text-muted-foreground"><span className="capitalize">{side}</span><span>{ef[side] || 0}%</span></div>
+                <input type="range" min={0} max={60} value={ef[side] || 0} onChange={(e) => onUpdateStyle({ edgeFade: { ...ef, [side]: Number(e.target.value) } })} className="w-full accent-primary h-1.5" />
+              </div>
+            ))}
+            {!(ef.top || ef.bottom || ef.left || ef.right) && (
+              <p className="text-[11px] text-muted-foreground leading-relaxed">Tap an edge to softly fade it into the background.</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ─── Fade animation (on enter / exit) ─── */}
+      <div className="space-y-3 border-t border-border pt-5">
+        <Label className="text-muted-foreground text-xs uppercase tracking-wide">Fade animation</Label>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => onUpdateStyle({ anim: { ...anim, fadeIn: !anim.fadeIn } })}
+            className={cn('flex-1 py-1.5 rounded-none text-xs font-medium transition-colors', anim.fadeIn ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
+          >
+            On enter
+          </button>
+          <button
+            onClick={() => onUpdateStyle({ anim: { ...anim, fadeOut: !anim.fadeOut } })}
+            className={cn('flex-1 py-1.5 rounded-none text-xs font-medium transition-colors', anim.fadeOut ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
+          >
+            On exit
+          </button>
+        </div>
+        {(anim.fadeIn || anim.fadeOut) && (
+          <>
+            <div className="space-y-1">
+              <div className="flex justify-between text-[11px] text-muted-foreground"><span>Speed</span><span>{((anim.speed ?? 600) / 1000).toFixed(1)}s</span></div>
+              <input type="range" min={200} max={2000} step={100} value={anim.speed ?? 600} onChange={(e) => onUpdateStyle({ anim: { ...anim, speed: Number(e.target.value) } })} className="w-full accent-primary h-1.5" />
+            </div>
+            <button onClick={() => onUpdateStyle({ anim: undefined })} className="text-[11px] text-muted-foreground hover:text-destructive transition-colors">Remove animation</button>
+          </>
+        )}
+      </div>
+
       {/* ─── Text-specific settings ─── */}
       {isText && (
         <div className="space-y-3 border-t border-border pt-5">
@@ -272,46 +342,73 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
             </div>
           </div>
 
-          {/* Border radius */}
+          {/* Corner radius (% — 50% = full circle) */}
           <div className="space-y-1">
-            <label className="text-[11px] text-muted-foreground">Border radius</label>
+            <label className="text-[11px] text-muted-foreground">Corner radius</label>
             <div className="flex items-center gap-3">
               <input
                 type="range"
                 min={0}
                 max={50}
-                value={style.borderRadius || 0}
-                onChange={(e) => onUpdateStyle({ borderRadius: Number(e.target.value) })}
+                value={style.borderRadiusPct ?? 0}
+                onChange={(e) => onUpdateStyle({ borderRadiusPct: Number(e.target.value) })}
                 className="flex-1 accent-primary h-1.5"
               />
-              <span className="text-xs text-muted-foreground w-10 text-right">{style.borderRadius || 0}px</span>
+              <span className="text-xs text-muted-foreground w-12 text-right">{(style.borderRadiusPct ?? 0) >= 50 ? 'circle' : `${style.borderRadiusPct ?? 0}%`}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Tooltip><TooltipTrigger asChild>
-              <button
-                onClick={() => onUpdateStyle({ borderRadius: 0 })}
-                className={cn('p-1.5 rounded-none transition-colors', (style.borderRadius || 0) === 0 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
-              >
+              <button onClick={() => onUpdateStyle({ borderRadiusPct: 0 })} className={cn('p-1.5 rounded-none transition-colors', (style.borderRadiusPct ?? 0) === 0 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}>
                 <Square className="w-3.5 h-3.5" />
               </button>
               </TooltipTrigger><TooltipContent>Sharp corners</TooltipContent></Tooltip>
               <Tooltip><TooltipTrigger asChild>
-              <button
-                onClick={() => onUpdateStyle({ borderRadius: 8 })}
-                className={cn('p-1.5 rounded-none transition-colors', style.borderRadius === 8 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
-              >
+              <button onClick={() => onUpdateStyle({ borderRadiusPct: 12 })} className={cn('p-1.5 rounded-none transition-colors', style.borderRadiusPct === 12 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}>
                 <Square className="w-3.5 h-3.5" style={{ borderRadius: 3 }} />
               </button>
-              </TooltipTrigger><TooltipContent>Rounded corners</TooltipContent></Tooltip>
+              </TooltipTrigger><TooltipContent>Rounded</TooltipContent></Tooltip>
               <Tooltip><TooltipTrigger asChild>
-              <button
-                onClick={() => onUpdateStyle({ borderRadius: 50 })}
-                className={cn('p-1.5 rounded-none transition-colors', style.borderRadius === 50 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}
-              >
+              <button onClick={() => onUpdateStyle({ borderRadiusPct: 50 })} className={cn('p-1.5 rounded-none transition-colors', style.borderRadiusPct === 50 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground hover:text-foreground')}>
                 <Circle className="w-3.5 h-3.5" />
               </button>
               </TooltipTrigger><TooltipContent>Circle</TooltipContent></Tooltip>
             </div>
+          </div>
+
+          {/* Border */}
+          <div className="space-y-1">
+            <label className="text-[11px] text-muted-foreground">Border</label>
+            <div className="flex items-center gap-3">
+              <input type="range" min={0} max={20} value={style.borderWidth || 0} onChange={(e) => onUpdateStyle({ borderWidth: Number(e.target.value) })} className="flex-1 accent-primary h-1.5" />
+              <span className="text-xs text-muted-foreground w-10 text-right">{style.borderWidth || 0}px</span>
+            </div>
+            {(style.borderWidth || 0) > 0 && (
+              <div className="flex items-center gap-2 pt-1">
+                <input type="color" value={style.borderColor || '#ffffff'} onChange={(e) => onUpdateStyle({ borderColor: e.target.value })} className="w-8 h-8 rounded-none cursor-pointer border border-border" />
+                <Input value={style.borderColor || '#ffffff'} onChange={(e) => onUpdateStyle({ borderColor: e.target.value })} className="h-8 text-xs bg-background border-border font-mono flex-1" />
+              </div>
+            )}
+          </div>
+
+          {/* In-frame image zoom + pan */}
+          <div className="space-y-1">
+            <label className="text-[11px] text-muted-foreground">Image scale (zoom inside frame)</label>
+            <div className="flex items-center gap-3">
+              <input type="range" min={100} max={400} value={Math.round((style.imageScale ?? 1) * 100)} onChange={(e) => onUpdateStyle({ imageScale: Number(e.target.value) / 100 })} className="flex-1 accent-primary h-1.5" />
+              <span className="text-xs text-muted-foreground w-10 text-right">{Math.round((style.imageScale ?? 1) * 100)}%</span>
+            </div>
+            {(style.imageScale ?? 1) > 1 && (
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[11px] text-muted-foreground"><span>Pan X</span><span>{style.imagePanX ?? 0}%</span></div>
+                  <input type="range" min={-50} max={50} value={style.imagePanX ?? 0} onChange={(e) => onUpdateStyle({ imagePanX: Number(e.target.value) })} className="w-full accent-primary h-1.5" />
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[11px] text-muted-foreground"><span>Pan Y</span><span>{style.imagePanY ?? 0}%</span></div>
+                  <input type="range" min={-50} max={50} value={style.imagePanY ?? 0} onChange={(e) => onUpdateStyle({ imagePanY: Number(e.target.value) })} className="w-full accent-primary h-1.5" />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Image URL (to change) */}

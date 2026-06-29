@@ -18,6 +18,9 @@ function generateId() {
   return `el_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
 }
 
+// curved-arrow cursor shown in the rotate ring just outside each corner
+const ROTATE_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23dc2626' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 2.6-6.4'/%3E%3Cpolyline points='3 3 3 8 8 8'/%3E%3C/svg%3E") 11 11, grab`
+
 export function CanvasElementsLayer({ elements, onChange, containerRef, selectedElementId, onSelectElement, onRequestAddImage }: Props) {
   // Use lifted state if provided, otherwise fall back to local state
   const [localSelectedId, setLocalSelectedId] = useState<string | null>(null)
@@ -193,7 +196,9 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
   const elRef = useRef<HTMLDivElement>(null)
   const [dragging, setDragging] = useState(false)
   const [resizing, setResizing] = useState<string | null>(null)
+  const [rotating, setRotating] = useState(false)
   const dragStart = useRef({ x: 0, y: 0, elX: 0, elY: 0, elW: 0, elH: 0 })
+  const rotateStart = useRef({ cx: 0, cy: 0, startAngle: 0, startRotation: 0 })
 
   const startDrag = useCallback((e: React.MouseEvent) => {
     if (isEditing) return
@@ -230,10 +235,39 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
     }
   }, [element, containerRef])
 
+  // Rotation — grabbed from the ring just outside a corner. Angle is measured
+  // from the element centre to the pointer; Shift snaps to 15°.
+  const startRotate = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    onSelect()
+    const el = elRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const cx = rect.left + rect.width / 2
+    const cy = rect.top + rect.height / 2
+    rotateStart.current = {
+      cx, cy,
+      startAngle: (Math.atan2(e.clientY - cy, e.clientX - cx) * 180) / Math.PI,
+      startRotation: element.rotation || 0,
+    }
+    setRotating(true)
+  }, [element, onSelect])
+
   useEffect(() => {
-    if (!dragging && !resizing) return
+    if (!dragging && !resizing && !rotating) return
 
     function onMove(e: MouseEvent) {
+      if (rotating) {
+        const a = (Math.atan2(e.clientY - rotateStart.current.cy, e.clientX - rotateStart.current.cx) * 180) / Math.PI
+        let next = rotateStart.current.startRotation + (a - rotateStart.current.startAngle)
+        if (e.shiftKey) next = Math.round(next / 15) * 15
+        next = Math.round(next)
+        while (next > 180) next -= 360
+        while (next < -180) next += 360
+        onUpdate({ rotation: next })
+        return
+      }
       const container = containerRef.current
       if (!container) return
       const rect = container.getBoundingClientRect()
@@ -270,6 +304,7 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
     function onUp() {
       setDragging(false)
       setResizing(null)
+      setRotating(false)
     }
 
     window.addEventListener('mousemove', onMove)
@@ -278,9 +313,22 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
       window.removeEventListener('mousemove', onMove)
       window.removeEventListener('mouseup', onUp)
     }
-  }, [dragging, resizing, onUpdate, containerRef])
+  }, [dragging, resizing, rotating, onUpdate, containerRef])
 
   const style = element.style || {}
+
+  // ─── resolved design-tool styling ───
+  // border-radius: prefer the % model (50% = circle); fall back to legacy px
+  const radius = style.borderRadiusPct != null ? `${style.borderRadiusPct}%` : `${style.borderRadius || 0}px`
+  const borderW = style.borderWidth || 0
+  const border = borderW > 0 ? `${borderW}px solid ${style.borderColor || '#ffffff'}` : undefined
+  // per-edge feather → two nested gradient masks (vertical + horizontal) that
+  // multiply, so corners fade correctly without needing mask-composite
+  const ef = style.edgeFade || {}
+  const ft = ef.top || 0, fb = ef.bottom || 0, fl = ef.left || 0, fr = ef.right || 0
+  const vMask = (ft || fb) ? `linear-gradient(to bottom, transparent 0%, #000 ${ft}%, #000 ${100 - fb}%, transparent 100%)` : undefined
+  const hMask = (fl || fr) ? `linear-gradient(to right, transparent 0%, #000 ${fl}%, #000 ${100 - fr}%, transparent 100%)` : undefined
+  const imgTransform = `translate(${style.imagePanX || 0}%, ${style.imagePanY || 0}%) scale(${style.imageScale || 1})`
 
   return (
     <div
@@ -295,7 +343,10 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
         cursor: isEditing ? 'text' : dragging ? 'grabbing' : 'grab',
         outline: isSelected ? '2px solid #dc2626' : 'none',
         outlineOffset: 2,
-        borderRadius: element.type === 'image' ? (style.borderRadius || 0) : 0,
+        borderRadius: radius,
+        border,
+        boxSizing: 'border-box',
+        opacity: style.opacity ?? 1,
         zIndex: isSelected ? 25 : 22,
         transform: element.rotation ? `rotate(${element.rotation}deg)` : undefined,
       }}
@@ -306,75 +357,95 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
         if (element.type === 'text') onStartEdit()
       }}
     >
-      {element.type === 'text' && (
-        isEditing ? (
-          <textarea
-            autoFocus
-            value={element.content}
-            onChange={(e) => onUpdate({ content: e.target.value })}
-            onMouseDown={(e) => e.stopPropagation()}
-            style={{
-              width: '100%',
-              height: '100%',
-              background: style.backgroundColor || 'transparent',
-              color: style.color || '#374151',
-              fontSize: style.fontSize || 16,
-              fontWeight: style.fontWeight || 'normal',
-              fontStyle: style.fontStyle || 'normal',
-              textAlign: (style.textAlign as 'left' | 'center' | 'right') || 'left',
-              border: 'none',
-              outline: 'none',
-              resize: 'none',
-              padding: '4px 6px',
-              lineHeight: 1.4,
-              overflow: 'hidden',
-              fontFamily: 'inherit',
-            }}
-          />
-        ) : (
-          <div
-            style={{
-              width: '100%',
-              height: '100%',
-              background: style.backgroundColor || 'transparent',
-              color: style.color || '#374151',
-              fontSize: style.fontSize || 16,
-              fontWeight: style.fontWeight || 'normal',
-              fontStyle: style.fontStyle || 'normal',
-              textAlign: (style.textAlign as 'left' | 'center' | 'right') || 'left',
-              padding: '4px 6px',
-              lineHeight: 1.4,
-              overflow: 'hidden',
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word',
-              userSelect: 'none',
-            }}
-          >
-            {element.content || 'Click to edit'}
-          </div>
-        )
-      )}
+      {/* content clipped to the radius; nested wrappers carry the edge-fade masks */}
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius, WebkitMaskImage: vMask, maskImage: vMask }}>
+        <div style={{ width: '100%', height: '100%', WebkitMaskImage: hMask, maskImage: hMask }}>
+          {element.type === 'text' && (
+            isEditing ? (
+              <textarea
+                autoFocus
+                value={element.content}
+                onChange={(e) => onUpdate({ content: e.target.value })}
+                onMouseDown={(e) => e.stopPropagation()}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  background: style.backgroundColor || 'transparent',
+                  color: style.color || '#374151',
+                  fontSize: style.fontSize || 16,
+                  fontWeight: style.fontWeight || 'normal',
+                  fontStyle: style.fontStyle || 'normal',
+                  textAlign: (style.textAlign as 'left' | 'center' | 'right') || 'left',
+                  border: 'none',
+                  outline: 'none',
+                  resize: 'none',
+                  padding: '4px 6px',
+                  lineHeight: 1.4,
+                  overflow: 'hidden',
+                  fontFamily: 'inherit',
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  background: style.backgroundColor || 'transparent',
+                  color: style.color || '#374151',
+                  fontSize: style.fontSize || 16,
+                  fontWeight: style.fontWeight || 'normal',
+                  fontStyle: style.fontStyle || 'normal',
+                  textAlign: (style.textAlign as 'left' | 'center' | 'right') || 'left',
+                  padding: '4px 6px',
+                  lineHeight: 1.4,
+                  overflow: 'hidden',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                  userSelect: 'none',
+                }}
+              >
+                {element.content || 'Click to edit'}
+              </div>
+            )
+          )}
 
-      {element.type === 'image' && (
-        <img
-          src={element.content}
-          alt=""
-          draggable={false}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: (style.objectFit as 'cover' | 'contain' | 'fill') || 'cover',
-            borderRadius: style.borderRadius || 0,
-            opacity: style.opacity ?? 1,
-            userSelect: 'none',
-            pointerEvents: 'none',
-          }}
-        />
-      )}
+          {element.type === 'image' && (
+            <img
+              src={element.content}
+              alt=""
+              draggable={false}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: (style.objectFit as 'cover' | 'contain' | 'fill') || 'cover',
+                transform: imgTransform,
+                transformOrigin: 'center',
+                userSelect: 'none',
+                pointerEvents: 'none',
+              }}
+            />
+          )}
+        </div>
+      </div>
 
       {/* Resize handles when selected */}
       {isSelected && !isEditing && (
         <>
+          {/* rotation rings just OUTSIDE each corner (scale handle sits on top) */}
+          {['nw', 'ne', 'sw', 'se'].map(corner => {
+            const pos: React.CSSProperties = {}
+            if (corner.includes('n')) pos.top = -24
+            if (corner.includes('s')) pos.bottom = -24
+            if (corner.includes('w')) pos.left = -24
+            if (corner.includes('e')) pos.right = -24
+            return (
+              <div
+                key={`rot-${corner}`}
+                onMouseDown={startRotate}
+                style={{ position: 'absolute', ...pos, width: 24, height: 24, zIndex: 28, cursor: ROTATE_CURSOR }}
+              />
+            )
+          })}
           {['nw', 'ne', 'sw', 'se', 'n', 's', 'e', 'w'].map(handle => {
             const isCorner = handle.length === 2
             const pos: React.CSSProperties = {}

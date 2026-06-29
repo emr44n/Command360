@@ -296,6 +296,15 @@ export interface CanvasElement {
     borderRadius?: number
     opacity?: number
     objectFit?: string
+    /* design-tool element styling (images, video, text, shapes) */
+    borderRadiusPct?: number          // 0–100, 100 = full circle/ellipse (preferred over px)
+    borderWidth?: number              // px
+    borderColor?: string
+    imageScale?: number               // 1–4, in-frame zoom of the image
+    imagePanX?: number                // % offset of the image inside the frame
+    imagePanY?: number
+    edgeFade?: { top?: number; bottom?: number; left?: number; right?: number } // 0–60 (% feather depth per side)
+    anim?: { fadeIn?: boolean; fadeOut?: boolean; speed?: number } // enter/exit fade; speed in ms
   }
 }
 

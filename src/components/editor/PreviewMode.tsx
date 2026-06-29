@@ -261,37 +261,54 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                   if (!canvasEls || canvasEls.length === 0) return null
                   return (
                     <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 5 }}>
-                      {canvasEls.map(el => (
-                        <div key={el.id} style={{
-                          position: 'absolute',
-                          left: `${el.x}%`, top: `${el.y}%`,
-                          width: `${el.width}%`, height: `${el.height}%`,
-                          transform: el.rotation ? `rotate(${el.rotation}deg)` : undefined,
-                        }}>
-                          {el.type === 'text' && (
-                            <div style={{
-                              width: '100%', height: '100%',
-                              color: (el.style?.color as string) || '#374151',
-                              fontSize: (el.style?.fontSize as number) || 16,
-                              fontWeight: (el.style?.fontWeight as string) || 'normal',
-                              fontStyle: (el.style?.fontStyle as string) || 'normal',
-                              textAlign: (el.style?.textAlign as 'left' | 'center' | 'right') || 'left',
-                              padding: '4px 6px', lineHeight: 1.4, whiteSpace: 'pre-wrap',
-                              backgroundColor: (el.style?.backgroundColor as string) || 'transparent',
-                            }}>
-                              {el.content}
+                      {canvasEls.map(el => {
+                        const st = el.style || {}
+                        const radius = st.borderRadiusPct != null ? `${st.borderRadiusPct as number}%` : `${(st.borderRadius as number) || 0}px`
+                        const borderW = (st.borderWidth as number) || 0
+                        const ef = (st.edgeFade as { top?: number; bottom?: number; left?: number; right?: number }) || {}
+                        const ft = ef.top || 0, fb = ef.bottom || 0, fl = ef.left || 0, fr = ef.right || 0
+                        const vMask = (ft || fb) ? `linear-gradient(to bottom, transparent 0%, #000 ${ft}%, #000 ${100 - fb}%, transparent 100%)` : undefined
+                        const hMask = (fl || fr) ? `linear-gradient(to right, transparent 0%, #000 ${fl}%, #000 ${100 - fr}%, transparent 100%)` : undefined
+                        const imgTransform = `translate(${(st.imagePanX as number) || 0}%, ${(st.imagePanY as number) || 0}%) scale(${(st.imageScale as number) || 1})`
+                        return (
+                          <div key={el.id} style={{
+                            position: 'absolute',
+                            left: `${el.x}%`, top: `${el.y}%`,
+                            width: `${el.width}%`, height: `${el.height}%`,
+                            borderRadius: radius,
+                            border: borderW > 0 ? `${borderW}px solid ${(st.borderColor as string) || '#ffffff'}` : undefined,
+                            boxSizing: 'border-box',
+                            opacity: (st.opacity as number) ?? 1,
+                            transform: el.rotation ? `rotate(${el.rotation}deg)` : undefined,
+                          }}>
+                            <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius, WebkitMaskImage: vMask, maskImage: vMask }}>
+                              <div style={{ width: '100%', height: '100%', WebkitMaskImage: hMask, maskImage: hMask }}>
+                                {el.type === 'text' && (
+                                  <div style={{
+                                    width: '100%', height: '100%',
+                                    color: (st.color as string) || '#374151',
+                                    fontSize: (st.fontSize as number) || 16,
+                                    fontWeight: (st.fontWeight as string) || 'normal',
+                                    fontStyle: (st.fontStyle as string) || 'normal',
+                                    textAlign: (st.textAlign as 'left' | 'center' | 'right') || 'left',
+                                    padding: '4px 6px', lineHeight: 1.4, whiteSpace: 'pre-wrap',
+                                    backgroundColor: (st.backgroundColor as string) || 'transparent',
+                                  }}>
+                                    {el.content}
+                                  </div>
+                                )}
+                                {el.type === 'image' && (
+                                  <img src={el.content} alt="" style={{
+                                    width: '100%', height: '100%',
+                                    objectFit: ((st.objectFit as string) || 'cover') as React.CSSProperties['objectFit'],
+                                    transform: imgTransform, transformOrigin: 'center',
+                                  }} />
+                                )}
+                              </div>
                             </div>
-                          )}
-                          {el.type === 'image' && (
-                            <img src={el.content} alt="" style={{
-                              width: '100%', height: '100%',
-                              objectFit: ((el.style?.objectFit as string) || 'cover') as React.CSSProperties['objectFit'],
-                              borderRadius: (el.style?.borderRadius as number) || 0,
-                              opacity: (el.style?.opacity as number) ?? 1,
-                            }} />
-                          )}
-                        </div>
-                      ))}
+                          </div>
+                        )
+                      })}
                     </div>
                   )
                 })()}
