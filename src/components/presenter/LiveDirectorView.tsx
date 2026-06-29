@@ -10,7 +10,6 @@ import {
 } from 'lucide-react'
 import { playEvent, type EventPlaybackController } from '@/lib/studio/event-playback'
 import { STUDIO_DEFAULT_BG } from '@/lib/studio/default-canvas'
-import { PushPanel, type PushQueueItem } from '@/components/studio/PushPanel'
 import { LiveScenesPanel } from '@/components/presenter/LiveScenesPanel'
 import { StudioProperties } from '@/components/studio/StudioProperties'
 import { generateLayerId } from '@/lib/utils/studio-utils'
@@ -40,6 +39,8 @@ interface Props {
   cachedStates?: Record<string, StudioLayerState>
   /** report this scene's live layers/states upward so switching away + back is non-destructive */
   onSceneStateChange?: (sceneId: string, layers: StudioLayer[], layerStates: Record<string, StudioLayerState>) => void
+  /** exercise start time (ISO) — kept across scene switches so the timer doesn't reset */
+  exerciseStartedAt?: string
 }
 
 interface AssetItem { id: string; name: string; url: string; type: 'image' | 'video' | 'audio' }
@@ -76,7 +77,7 @@ const SHAPE_PRESETS = [
   { name: 'Polygon', w: 15, h: 15, color: '#4a5568' },
 ]
 
-export function LiveDirectorView({ slide, session, channelRef, presenterName, onEndExercise, scenes, initialLiveSceneIds, onDriveScene, onLiveScenesChange, cachedLayers, cachedStates, onSceneStateChange }: Props) {
+export function LiveDirectorView({ slide, session, channelRef, presenterName, onEndExercise, scenes, initialLiveSceneIds, onDriveScene, onLiveScenesChange, cachedLayers, cachedStates, onSceneStateChange, exerciseStartedAt }: Props) {
   const [activeContent] = useState<StudioContent>(() => JSON.parse(JSON.stringify(slide.content)))
   const { canvas, layers: initialLayers, events, eventCategories } = activeContent
 
@@ -85,7 +86,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   const [layerStates, setLayerStates] = useState(() => cachedStates ?? buildInitialStates(initialLayers))
   const [triggeredEvents, setTriggeredEvents] = useState<Set<string>>(new Set())
   const [animatingEventId, setAnimatingEventId] = useState<string | null>(null)
-  const [sessionSeconds, setSessionSeconds] = useState(0)
+  const [sessionSeconds, setSessionSeconds] = useState(() => exerciseStartedAt ? Math.max(0, Math.floor((Date.now() - new Date(exerciseStartedAt).getTime()) / 1000)) : 0)
   const [showEndConfirm, setShowEndConfirm] = useState(false)
   const [assetsAdded, setAssetsAdded] = useState(0)
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set())
@@ -115,13 +116,11 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   const audioInputRef = useRef<HTMLInputElement>(null)
 
   // ─── Right panel ───
-  const [rightTab, setRightTab] = useState<'push' | 'details' | 'scenes'>('scenes')
-  const [pushQueue, setPushQueue] = useState<PushQueueItem[]>([])
-  const [globalTransition, setGlobalTransition] = useState<'fade' | 'instant'>('fade')
+  const [rightTab, setRightTab] = useState<'details' | 'scenes'>('scenes')
 
   // ─── Refs ───
   const eventControllerRef = useRef<EventPlaybackController | null>(null)
-  const startTimeRef = useRef(new Date().toISOString())
+  const startTimeRef = useRef(exerciseStartedAt || new Date().toISOString())
   const canvasRef = useRef<HTMLDivElement>(null)
   const canvasWrapperRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<{ layerId: string; startMX: number; startMY: number; startX: number; startY: number } | null>(null)
@@ -175,7 +174,6 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
   const deleteLayer = useCallback((layerId: string) => {
     setLayers(prev => prev.filter(l => l.id !== layerId))
     setLayerStates(prev => { const n = { ...prev }; delete n[layerId]; return n })
-    setPushQueue(prev => prev.filter(q => q.layer.id !== layerId))
     setSelectedLayerId(null)
     channelRef.current?.send({ type: 'broadcast', event: 'STUDIO_LAYER_REMOVED', payload: { slide_id: slide.id, layerId } })
   }, [slide.id, channelRef])
@@ -244,50 +242,15 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     }
   }, [slide.id, channelRef])
 
-  // ─── Add layer to canvas — goes LIVE on drop (dynamic), no separate push step ───
+  // ─── Add layer to canvas — goes LIVE on drop (dynamic), fades in for participants ───
   const addLayerToCanvasAndQueue = useCallback((layer: StudioLayer) => {
     const state: StudioLayerState = { visible: layer.visible, opacity: layer.opacity, x: layer.x, y: layer.y, width: layer.width, height: layer.height, rotation: layer.rotation, src: layer.src, volume: layer.volume }
     setLayers(prev => [...prev, layer])
     setLayerStates(prev => ({ ...prev, [layer.id]: state }))
     setSelectedLayerId(layer.id)
-    // auto-push so the dropped asset reaches participants immediately
-    broadcastLayerAdded(layer, state, globalTransition)
+    broadcastLayerAdded(layer, state, 'fade')
     setAssetsAdded(prev => prev + 1)
-  }, [broadcastLayerAdded, globalTransition])
-
-  // ─── Push handlers ───
-  const pushItem = useCallback((layerId: string) => {
-    const qItem = pushQueue.find(q => q.layer.id === layerId)
-    if (!qItem) return
-    const state = layerStates[qItem.layer.id]
-    const currentLayer = layers.find(l => l.id === qItem.layer.id)
-    if (!currentLayer || !state) return
-    const layerToSend = { ...currentLayer, ...state }
-    channelRef.current?.send({ type: 'broadcast', event: 'STUDIO_LAYER_ADDED', payload: { slide_id: slide.id, layer: layerToSend } })
-    if (qItem.transition === 'fade') {
-      // Send with 0 opacity then fade in
-      channelRef.current?.send({ type: 'broadcast', event: 'STUDIO_LAYER_STATES_UPDATE', payload: { slide_id: slide.id, layerStates: { [layerToSend.id]: { opacity: 0 } } } })
-      setTimeout(() => { channelRef.current?.send({ type: 'broadcast', event: 'STUDIO_LAYER_STATES_UPDATE', payload: { slide_id: slide.id, layerStates: { [layerToSend.id]: { opacity: state.opacity } } } }) }, 50)
-    }
-    setPushQueue(prev => prev.filter(q => q.layer.id !== layerId))
-    setAssetsAdded(prev => prev + 1)
-  }, [pushQueue, layerStates, layers, slide.id, channelRef])
-
-  const pushAll = useCallback(() => {
-    for (const qItem of pushQueue) pushItem(qItem.layer.id)
-  }, [pushQueue, pushItem])
-
-  const removeFromQueue = useCallback((layerId: string) => {
-    setPushQueue(prev => prev.filter(q => q.layer.id !== layerId))
-    // Also remove from canvas
-    setLayers(prev => prev.filter(l => l.id !== layerId))
-    setLayerStates(prev => { const n = { ...prev }; delete n[layerId]; return n })
-    if (selectedLayerId === layerId) setSelectedLayerId(null)
-  }, [selectedLayerId])
-
-  const updateQueueTransition = useCallback((layerId: string, transition: 'fade' | 'instant') => {
-    setPushQueue(prev => prev.map(q => q.layer.id === layerId ? { ...q, transition } : q))
-  }, [])
+  }, [broadcastLayerAdded])
 
   // ─── End exercise ───
   const handleEndExercise = useCallback(async () => {
@@ -427,7 +390,7 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
       setPolygonPoints(prev => [...prev, { x: xPct, y: yPct }])
       return
     }
-    setSelectedLayerId(null); setRightTab('push'); setDistortMode(null)
+    setSelectedLayerId(null); setRightTab('scenes'); setDistortMode(null)
   }, [polygonDrawing, polygonPoints, layers, addLayerToCanvasAndQueue])
   const toggleFullscreen = useCallback(() => { if (document.fullscreenElement) document.exitFullscreen(); else canvasWrapperRef.current?.requestFullscreen() }, [])
 
@@ -1005,7 +968,6 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
           {/* Tab switcher */}
           <div className="flex border-b border-[#2b2d31] shrink-0">
             <button onClick={() => setRightTab('scenes')} className={`flex-1 py-2 text-[8px] font-bold uppercase tracking-wider transition-colors ${rightTab === 'scenes' ? 'text-red-400 border-b-2 border-red-500' : 'text-zinc-500 hover:text-zinc-300'}`}>Scenes</button>
-            <button onClick={() => setRightTab('push')} className={`flex-1 py-2 text-[8px] font-bold uppercase tracking-wider transition-colors ${rightTab === 'push' ? 'text-red-400 border-b-2 border-red-500' : 'text-zinc-500 hover:text-zinc-300'}`}>Push</button>
             <button onClick={() => setRightTab('details')} className={`flex-1 py-2 text-[8px] font-bold uppercase tracking-wider transition-colors ${rightTab === 'details' ? 'text-red-400 border-b-2 border-red-500' : 'text-zinc-500 hover:text-zinc-300'}`}>Details</button>
           </div>
           {rightTab === 'scenes' && (
@@ -1020,9 +982,6 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
                 onChange={onLiveScenesChange}
               />
             </div>
-          )}
-          {rightTab === 'push' && (
-            <PushPanel queue={pushQueue} onUpdateTransition={updateQueueTransition} onPushItem={pushItem} onPushAll={pushAll} onRemoveItem={removeFromQueue} globalTransition={globalTransition} onSetGlobalTransition={setGlobalTransition} />
           )}
           {rightTab === 'details' && (
             <div className="flex-1 overflow-y-auto">

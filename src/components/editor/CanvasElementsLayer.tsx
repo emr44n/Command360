@@ -104,21 +104,38 @@ export function CanvasElementsLayer({ elements, onChange, containerRef, selected
     }
   }, [])
 
-  // Keyboard delete
+  // Keyboard: delete, escape, and arrow-key nudge (Shift = larger step)
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (selectedId && !editingId && (e.key === 'Delete' || e.key === 'Backspace')) {
+      const ae = document.activeElement
+      const inField = !!ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || (ae as HTMLElement).isContentEditable)
+
+      if (selectedId && !editingId && !inField && (e.key === 'Delete' || e.key === 'Backspace')) {
         e.preventDefault()
         deleteElement(selectedId)
+        return
       }
       if (e.key === 'Escape') {
         setSelectedId(null)
         setEditingId(null)
+        return
+      }
+      if (selectedId && !editingId && !inField && e.key.startsWith('Arrow')) {
+        const el = elements.find((x) => x.id === selectedId)
+        if (!el) return
+        e.preventDefault()
+        const step = e.shiftKey ? 2 : 0.5
+        let { x, y } = el
+        if (e.key === 'ArrowLeft') x -= step
+        else if (e.key === 'ArrowRight') x += step
+        else if (e.key === 'ArrowUp') y -= step
+        else if (e.key === 'ArrowDown') y += step
+        updateElement(selectedId, { x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 })
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [selectedId, editingId, deleteElement])
+  }, [selectedId, editingId, deleteElement, elements, updateElement, setSelectedId])
 
   return (
     <>
@@ -327,27 +344,49 @@ function DraggableElement({ element, isSelected, isEditing, containerRef, onSele
 
       if (dragging) {
         // Allow elements to be dragged outside the slide boundary (pasteboard area)
-        const newX = dragStart.current.elX + dx
-        const newY = dragStart.current.elY + dy
+        let newX = dragStart.current.elX + dx
+        let newY = dragStart.current.elY + dy
+        // Shift constrains movement to the dominant axis (like real design tools)
+        if (e.shiftKey) {
+          if (Math.abs(dx) >= Math.abs(dy)) newY = dragStart.current.elY
+          else newX = dragStart.current.elX
+        }
         onUpdate({ x: Math.round(newX * 10) / 10, y: Math.round(newY * 10) / 10 })
       }
 
       if (resizing) {
+        const corner = resizing.length === 2
         let newW = dragStart.current.elW
         let newH = dragStart.current.elH
         let newX = dragStart.current.elX
         let newY = dragStart.current.elY
 
-        if (resizing.includes('e')) newW = Math.max(5, dragStart.current.elW + dx)
-        if (resizing.includes('w')) { newW = Math.max(5, dragStart.current.elW - dx); newX = dragStart.current.elX + dx }
-        if (resizing.includes('s')) newH = Math.max(3, dragStart.current.elH + dy)
-        if (resizing.includes('n')) { newH = Math.max(3, dragStart.current.elH - dy); newY = dragStart.current.elY + dy }
+        if (resizing.includes('e')) newW = dragStart.current.elW + dx
+        if (resizing.includes('w')) newW = dragStart.current.elW - dx
+        if (resizing.includes('s')) newH = dragStart.current.elH + dy
+        if (resizing.includes('n')) newH = dragStart.current.elH - dy
+        newW = Math.max(5, newW)
+        newH = Math.max(3, newH)
+
+        // Shift on a corner = lock the aspect ratio (driven by the larger change)
+        if (corner && e.shiftKey && dragStart.current.elH > 0) {
+          const aspect = dragStart.current.elW / dragStart.current.elH
+          if (Math.abs(newW - dragStart.current.elW) >= Math.abs(newH - dragStart.current.elH) * aspect) {
+            newH = newW / aspect
+          } else {
+            newW = newH * aspect
+          }
+        }
+
+        // keep the opposite edge anchored when dragging a west/north handle
+        if (resizing.includes('w')) newX = dragStart.current.elX + (dragStart.current.elW - newW)
+        if (resizing.includes('n')) newY = dragStart.current.elY + (dragStart.current.elH - newH)
 
         onUpdate({
           x: Math.round(newX * 10) / 10,
           y: Math.round(newY * 10) / 10,
-          width: Math.round(Math.max(5, newW) * 10) / 10,
-          height: Math.round(Math.max(3, newH) * 10) / 10,
+          width: Math.round(newW * 10) / 10,
+          height: Math.round(newH * 10) / 10,
         })
       }
     }
