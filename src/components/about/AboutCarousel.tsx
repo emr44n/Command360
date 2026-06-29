@@ -53,11 +53,21 @@ export function AboutCarousel() {
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
   const [reduce, setReduce] = useState(false)
+  // drag/swipe only on touch devices; on desktop use the pagination dots
+  const [isTouch, setIsTouch] = useState(false)
 
   // honour prefers-reduced-motion: no ken-burns (and auto-advance is off too)
   useEffect(() => {
     const m = window.matchMedia('(prefers-reduced-motion: reduce)')
     const sync = () => setReduce(m.matches)
+    sync()
+    m.addEventListener('change', sync)
+    return () => m.removeEventListener('change', sync)
+  }, [])
+
+  useEffect(() => {
+    const m = window.matchMedia('(pointer: coarse)')
+    const sync = () => setIsTouch(m.matches)
     sync()
     m.addEventListener('change', sync)
     return () => m.removeEventListener('change', sync)
@@ -82,8 +92,8 @@ export function AboutCarousel() {
       data-reveal
     >
       <motion.div
-        className="relative aspect-[16/9] overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y"
-        drag="x"
+        className={`relative aspect-[16/9] overflow-hidden touch-pan-y ${isTouch ? 'cursor-grab active:cursor-grabbing' : ''}`}
+        drag={isTouch ? 'x' : false}
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.16}
         dragSnapToOrigin
