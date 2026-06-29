@@ -82,6 +82,14 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   const [showActiveEntry, setShowActiveEntry] = useState(false)
   const [activeModeSession, setActiveModeSession] = useState<{ id: string; room_code: string } | null>(null)
   const [activeModePresenter, setActiveModePresenter] = useState('')
+  // multi-scene live: which studio scenes are currently broadcast live (tracked
+  // here so it survives switching which scene the presenter drives)
+  const [liveSceneIds, setLiveSceneIds] = useState<string[]>([])
+  // per-scene live state cache so switching away + back to a scene is non-destructive
+  const sceneCacheRef = useRef<Record<string, { layers: import('@/types/slide').StudioLayer[]; layerStates: Record<string, import('@/types/slide').StudioLayerState> }>>({})
+  const cacheSceneState = useCallback((sceneId: string, layers: import('@/types/slide').StudioLayer[], layerStates: Record<string, import('@/types/slide').StudioLayerState>) => {
+    sceneCacheRef.current[sceneId] = { layers, layerStates }
+  }, [])
   const [exerciseStats, setExerciseStats] = useState<ExerciseStats | null>(null)
   const channelRef = useRef<ReturnType<ReturnType<typeof createClient>['channel']> | null>(null)
 
@@ -523,6 +531,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       // seed the live scene set with the scene being driven so a joining room
       // has something to pick straight away
       if (selectedSlide) {
+        setLiveSceneIds([selectedSlide.id])
         fetch(`/api/sessions/${data.session.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -569,12 +578,22 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
     return (
       <>
         <LiveDirectorView
+          key={selectedSlide.id}
           slide={selectedSlide}
           session={activeModeSession}
           channelRef={channelRef}
           presenterName={activeModePresenter}
           scenes={slides.filter(s => s.slide_type === 'studio').map(s => ({ id: s.id, title: s.title }))}
-          initialLiveSceneIds={[selectedSlide.id]}
+          initialLiveSceneIds={liveSceneIds.length ? liveSceneIds : [selectedSlide.id]}
+          onLiveScenesChange={setLiveSceneIds}
+          cachedLayers={sceneCacheRef.current[selectedSlide.id]?.layers}
+          cachedStates={sceneCacheRef.current[selectedSlide.id]?.layerStates}
+          onSceneStateChange={cacheSceneState}
+          onDriveScene={(sceneId) => {
+            // switch which scene the presenter drives; the key change remounts
+            // the director onto that scene (only valid for studio scenes)
+            if (slides.some(s => s.id === sceneId && s.slide_type === 'studio')) setSelectedSlideId(sceneId)
+          }}
           onEndExercise={(stats) => {
             setActiveMode(false)
             setExerciseStats(stats)
