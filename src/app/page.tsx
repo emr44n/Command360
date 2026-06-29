@@ -361,8 +361,9 @@ export default function LandingPage() {
         </section>
 
         {/* ════════════ 05 DEPLOYMENT (light) ════════════ */}
-        <section id="deploy" className="bg-[#EFECE4] text-[#16191E] pb-[90px]">
-          <div className="max-w-[1280px] mx-auto px-5 sm:px-[30px]">
+        <section id="deploy" className="relative overflow-hidden bg-[#EFECE4] text-[#16191E] pb-[90px]">
+          <div aria-hidden="true" className="absolute top-[-120px] right-[-90px] w-[640px] h-[420px] pointer-events-none" style={{ background: 'radial-gradient(50% 60% at 70% 30%, rgba(201,36,26,0.10), transparent 72%)', filter: 'blur(48px)' }} />
+          <div className="relative max-w-[1280px] mx-auto px-5 sm:px-[30px]">
             <Eyebrow n="05">Deployment</Eyebrow>
             <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 mb-3.5" data-reveal>Operational in minutes</h2>
             <div className="h-0.5 bg-[#16191E] origin-left" data-rule />
