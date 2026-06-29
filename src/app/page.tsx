@@ -4,6 +4,7 @@ import { SpotlightCard } from '@/components/home/SpotlightCard'
 import { RevealManager } from '@/components/home/RevealManager'
 import { RotatingWord } from '@/components/home/RotatingWord'
 import { StackedCards } from '@/components/home/StackedCards'
+import { DeploymentSteps } from '@/components/home/DeploymentSteps'
 import { TopBar } from '@/components/home/TopBar'
 import { ScrollProgress } from '@/components/home/ScrollProgress'
 import { TestimonialColumns } from '@/components/home/TestimonialColumns'
@@ -59,12 +60,6 @@ const IMPACT = [
   { value: 90, suffix: '%', label: 'Prefer interactive briefings', accent: false },
   { value: 60, suffix: '%', label: 'Faster than paper forms', accent: false },
   { value: 3, suffix: 's', label: 'To an AI session summary', accent: false },
-]
-
-const STEPS = [
-  { n: '01', title: 'Create your session', desc: 'Build interactive slides with polls, quizzes, word clouds, and Q&A — from a template or from scratch.', accent: true },
-  { n: '02', title: 'Launch a live session', desc: 'Crew join on any device with a 6-digit code or QR at your briefing — no app, no account needed.', accent: false },
-  { n: '03', title: 'See results instantly', desc: 'Review live results, get AI summaries, and export data for evaluation records and learning logs.', accent: false },
 ]
 
 const USE_CASES = [
@@ -367,16 +362,7 @@ export default function LandingPage() {
             <Eyebrow n="05">Deployment</Eyebrow>
             <h2 className="ff-display font-extrabold text-[clamp(28px,3.6vw,44px)] leading-[1.02] tracking-[-0.02em] mt-4 mb-3.5" data-reveal>Operational in minutes</h2>
             <div className="h-0.5 bg-[#16191E] origin-left" data-rule />
-            <div className="grid md:grid-cols-3 border-l border-[rgba(20,25,30,0.16)]">
-              {STEPS.map((s) => (
-                <div key={s.n} data-reveal className="group relative p-[40px_30px] border-r border-b border-[rgba(20,25,30,0.16)] transition-[transform,background,box-shadow] duration-300 hover:bg-white hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(20,25,30,0.45)]">
-                  <span className="absolute top-0 left-0 right-0 h-0.5 bg-[#C9241A] scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" aria-hidden="true" />
-                  <div className="ff-display font-black text-[46px] leading-none mb-5 origin-left transition-transform duration-300 group-hover:scale-110" style={{ color: s.accent ? '#C9241A' : '#16191E' }}>{s.n}</div>
-                  <h3 className="ff-display font-bold text-[20px] tracking-[-0.01em] mb-2.5 text-[#16191E]">{s.title}</h3>
-                  <p className="text-[14.5px] text-[#5a5f66]">{s.desc}</p>
-                </div>
-              ))}
-            </div>
+            <DeploymentSteps />
           </div>
         </section>
 

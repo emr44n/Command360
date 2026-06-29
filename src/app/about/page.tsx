@@ -129,7 +129,7 @@ function useCarousel(count: number, interval = 4000) {
 /* ── PAGE ── */
 
 export default function AboutPage() {
-  const foundingIdx = useCarousel(FOUNDING_BOXES.length, 3000)
+  const foundingIdx = useCarousel(FOUNDING_BOXES.length, 5000)
   const missionIdx = useCarousel(MISSION_FEATURES.length, 4000)
 
   return (
@@ -157,13 +157,18 @@ export default function AboutPage() {
               return (
                 <div
                   key={box.title}
-                  className={`group relative p-[36px_30px] border-r border-b border-[rgba(20,25,30,0.16)] cursor-default transition-[transform,background,box-shadow,opacity] duration-500 hover:bg-white hover:-translate-y-1 hover:opacity-100 hover:shadow-[0_24px_50px_-28px_rgba(20,25,30,0.45)] ${activeCard ? 'bg-white -translate-y-1 opacity-100 shadow-[0_24px_50px_-28px_rgba(20,25,30,0.45)]' : 'opacity-60'}`}
+                  className={`group relative overflow-hidden p-[36px_30px] border-r border-b border-[rgba(20,25,30,0.16)] cursor-default transition-[transform,background,box-shadow] duration-500 hover:bg-white hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(20,25,30,0.45)] ${activeCard ? 'bg-white -translate-y-1 shadow-[0_24px_50px_-28px_rgba(20,25,30,0.45)]' : ''}`}
                 >
+                  {/* ambient colour glow + grain in the corner of the highlighted card */}
+                  <span aria-hidden="true" className={`absolute top-[-40px] right-[-40px] w-[230px] h-[190px] pointer-events-none blur-[38px] transition-opacity duration-700 group-hover:opacity-100 ${activeCard ? 'opacity-100' : 'opacity-0'}`} style={{ background: `radial-gradient(50% 60% at 70% 30%, ${box.c}40, transparent 72%)` }} />
+                  <span aria-hidden="true" className={`absolute inset-0 pointer-events-none v5-grain mix-blend-multiply transition-opacity duration-700 group-hover:opacity-[0.13] ${activeCard ? 'opacity-[0.13]' : 'opacity-0'}`} />
                   {/* coloured top accent — drawn when active or hovered */}
                   <span className="absolute top-0 left-0 right-0 h-0.5 origin-left transition-transform duration-500 group-hover:scale-x-100" style={{ background: box.c, transform: activeCard ? 'scaleX(1)' : 'scaleX(0)' }} aria-hidden="true" />
-                  <div className="w-[34px] h-[34px] mb-5 origin-left transition-transform duration-500 group-hover:scale-110" style={{ background: box.c, transform: activeCard ? 'scale(1.1)' : 'scale(1)' }} aria-hidden="true" />
-                  <div className="ff-mono text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: box.c }}>{box.title}</div>
-                  <p className="text-[14.5px] text-[#5a5f66] leading-relaxed">{box.text}</p>
+                  <div className="relative">
+                    <div className="w-[34px] h-[34px] mb-5 origin-left transition-transform duration-500 group-hover:scale-110" style={{ background: box.c, transform: activeCard ? 'scale(1.1)' : 'scale(1)' }} aria-hidden="true" />
+                    <div className="ff-mono text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: box.c }}>{box.title}</div>
+                    <p className="text-[14.5px] text-[#5a5f66] leading-relaxed">{box.text}</p>
+                  </div>
                 </div>
               )
             })}
