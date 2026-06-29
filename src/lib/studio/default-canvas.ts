@@ -12,6 +12,14 @@
  * @param darkDefault the background to use in dark mode (navy for scenes,
  *                    black for CCTV walls).
  */
+/**
+ * Fallback background for the LIVE render surfaces (build canvas, presenter
+ * active/preview, and the participant view) when a scene has no explicit
+ * background colour. Using one shared constant guarantees the canvas looks
+ * identical across all three contexts.
+ */
+export const STUDIO_DEFAULT_BG = '#1a1a2e'
+
 export function defaultStudioCanvasBg(darkDefault = '#1a1a2e'): string {
   if (typeof document !== 'undefined') {
     const root = document.querySelector('[data-dash-root]')

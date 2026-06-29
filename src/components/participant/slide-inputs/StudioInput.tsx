@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Slide, StudioContent, StudioLayer, StudioLayerState } from '@/types/slide'
 import { Monitor, CheckCircle2, Maximize2, X } from 'lucide-react'
@@ -7,12 +7,14 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { BrandMark } from '@/components/site/BrandMark'
+import { STUDIO_DEFAULT_BG } from '@/lib/studio/default-canvas'
 
 interface Props {
   slide: Slide
   sessionId: string
   onSubmit: (answer: Record<string, unknown>) => Promise<void>
 }
+
 
 const OPTION_COLORS = [
   'border-primary hover:bg-primary/10 data-[selected=true]:bg-primary/20',
@@ -43,6 +45,28 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
   const [voteSubmitted, setVoteSubmitted] = useState(false)
   const channelRef = useRef<ReturnType<ReturnType<typeof createClient>['channel']> | null>(null)
   const canvasRef = useRef<HTMLDivElement>(null)
+
+  // Add a layer idempotently — replace if it already exists, else append. This
+  // stops a layer being duplicated when it arrives via both the auto-push on
+  // drop and a follow-up sync/heartbeat.
+  const applyLayerAdded = useCallback((newLayer: StudioLayer) => {
+    setLayers(prev => (prev.some(l => l.id === newLayer.id) ? prev.map(l => (l.id === newLayer.id ? newLayer : l)) : [...prev, newLayer]))
+    setLayerStates(prev => ({
+      ...prev,
+      [newLayer.id]: {
+        visible: newLayer.visible, opacity: newLayer.opacity,
+        x: newLayer.x, y: newLayer.y, width: newLayer.width, height: newLayer.height,
+        rotation: newLayer.rotation, src: newLayer.src, volume: newLayer.volume,
+      },
+    }))
+  }, [])
+
+  // Apply a full-state sync from the presenter (late-join catch-up + heartbeat):
+  // replace the layer list (so added layers appear) and the live layer states.
+  const applySyncState = useCallback((payload: { layers?: StudioLayer[]; layerStates?: Record<string, StudioLayerState> }) => {
+    if (Array.isArray(payload.layers)) setLayers(payload.layers)
+    if (payload.layerStates) setLayerStates(payload.layerStates)
+  }, [])
 
   useEffect(() => {
     const supabase = createClient()
@@ -89,17 +113,11 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
       })
       .on('broadcast', { event: 'STUDIO_LAYER_ADDED' }, ({ payload }) => {
         if (payload.slide_id === slide.id && payload.layer) {
-          const newLayer = payload.layer as StudioLayer
-          setLayers(prev => [...prev, newLayer])
-          setLayerStates(prev => ({
-            ...prev,
-            [newLayer.id]: {
-              visible: newLayer.visible, opacity: newLayer.opacity,
-              x: newLayer.x, y: newLayer.y, width: newLayer.width, height: newLayer.height,
-              rotation: newLayer.rotation, src: newLayer.src,
-            },
-          }))
+          applyLayerAdded(payload.layer as StudioLayer)
         }
+      })
+      .on('broadcast', { event: 'STUDIO_SYNC_STATE' }, ({ payload }) => {
+        if (payload.slide_id === slide.id) applySyncState(payload)
       })
       .on('broadcast', { event: 'STUDIO_LAYER_REMOVED' }, ({ payload }) => {
         if (payload.slide_id === slide.id && payload.layerId) {
@@ -113,11 +131,16 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
           setExerciseStats({ duration: payload.duration, eventsTriggered: payload.eventsTriggered })
         }
       })
-      .subscribe()
+      .subscribe((status) => {
+        // ask the presenter to replay the current live state for late joiners
+        if (status === 'SUBSCRIBED') {
+          channel.send({ type: 'broadcast', event: 'STUDIO_STATE_REQUEST', payload: { slide_id: slide.id } })
+        }
+      })
 
     channelRef.current = channel
     return () => { supabase.removeChannel(channel) }
-  }, [sessionId, slide.id])
+  }, [sessionId, slide.id, applyLayerAdded, applySyncState])
 
   // Also listen on main session channel for STUDIO events
   useEffect(() => {
@@ -165,17 +188,11 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
       })
       .on('broadcast', { event: 'STUDIO_LAYER_ADDED' }, ({ payload }) => {
         if (payload.slide_id === slide.id && payload.layer) {
-          const newLayer = payload.layer as StudioLayer
-          setLayers(prev => [...prev, newLayer])
-          setLayerStates(prev => ({
-            ...prev,
-            [newLayer.id]: {
-              visible: newLayer.visible, opacity: newLayer.opacity,
-              x: newLayer.x, y: newLayer.y, width: newLayer.width, height: newLayer.height,
-              rotation: newLayer.rotation, src: newLayer.src,
-            },
-          }))
+          applyLayerAdded(payload.layer as StudioLayer)
         }
+      })
+      .on('broadcast', { event: 'STUDIO_SYNC_STATE' }, ({ payload }) => {
+        if (payload.slide_id === slide.id) applySyncState(payload)
       })
       .on('broadcast', { event: 'STUDIO_LAYER_REMOVED' }, ({ payload }) => {
         if (payload.slide_id === slide.id && payload.layerId) {
@@ -189,10 +206,14 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
           setExerciseStats({ duration: payload.duration, eventsTriggered: payload.eventsTriggered })
         }
       })
-      .subscribe()
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          mainChannel.send({ type: 'broadcast', event: 'STUDIO_STATE_REQUEST', payload: { slide_id: slide.id } })
+        }
+      })
 
     return () => { supabase.removeChannel(mainChannel) }
-  }, [sessionId, slide.id])
+  }, [sessionId, slide.id, applyLayerAdded, applySyncState])
 
   useEffect(() => {
     const interval = setInterval(() => setSessionSeconds(s => s + 1), 1000)
@@ -339,7 +360,7 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
         className="w-full relative overflow-hidden rounded-none z-10"
         style={{
           aspectRatio: '16 / 9',
-          backgroundColor: canvas.backgroundColor,
+          backgroundColor: canvas.backgroundColor || STUDIO_DEFAULT_BG,
         }}
       >
         {layers.map((layer) => {

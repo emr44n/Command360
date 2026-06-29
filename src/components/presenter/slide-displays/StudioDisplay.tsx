@@ -5,6 +5,7 @@ import type { Session } from '@/types/session'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { Zap, Vote, QrCode, Play, ChevronRight, ChevronDown, RotateCcw, Monitor, Check, X } from 'lucide-react'
 import { playEvent, type EventPlaybackController } from '@/lib/studio/event-playback'
+import { STUDIO_DEFAULT_BG } from '@/lib/studio/default-canvas'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 interface Props {
@@ -187,6 +188,23 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
     return () => { eventControllerRef.current?.cancel() }
   }, [])
 
+  // ─── Sync heartbeat (present mode) ───
+  // Re-broadcast the full live scene every 2s so participants joining mid-way
+  // catch up to the current layers + states (matches LiveDirectorView).
+  const liveLayersRef = useRef(layers)
+  liveLayersRef.current = layers
+  const liveStatesRef = useRef(layerStates)
+  liveStatesRef.current = layerStates
+  useEffect(() => {
+    if (mode !== 'present') return
+    const send = () => channelRef?.current?.send({
+      type: 'broadcast', event: 'STUDIO_SYNC_STATE',
+      payload: { slide_id: slide.id, layers: liveLayersRef.current, layerStates: liveStatesRef.current },
+    })
+    const i = setInterval(send, 2000)
+    return () => clearInterval(i)
+  }, [mode, slide.id, channelRef])
+
   const handleResetAll = useCallback(() => {
     eventControllerRef.current?.cancel()
     eventControllerRef.current = null
@@ -303,7 +321,7 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
           className="w-full relative overflow-hidden flex-1 rounded-none"
           style={{
             aspectRatio: '16 / 9',
-            backgroundColor: canvas.backgroundColor,
+            backgroundColor: canvas.backgroundColor || STUDIO_DEFAULT_BG,
           }}
         >
           {/* Canvas-only fullscreen button (native Fullscreen API) */}
