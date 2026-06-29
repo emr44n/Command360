@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 import { JoinCodeInput } from '@/components/join/JoinCodeInput'
 import { useAuthSlideOver } from '@/components/auth/AuthSlideOverProvider'
-import { BrandMark } from '@/components/site/BrandMark'
+import { BrandLink } from '@/components/site/BrandLink'
 import { ServicesMenu, MobileServicesList } from '@/components/site/ServicesMenu'
 
 /**
@@ -42,10 +42,7 @@ export function SiteHeader() {
       }`}
     >
       <nav className="max-w-[1280px] mx-auto px-5 sm:px-[30px] h-[66px] flex items-center gap-7">
-        <Link href="/" className="flex items-center gap-3 text-white shrink-0">
-          <BrandMark size={30} />
-          <span className="ff-wordmark text-[18px] tracking-[0.01em] whitespace-nowrap">COMMAND&nbsp;360</span>
-        </Link>
+        <BrandLink size={30} />
 
         <div className="hidden lg:flex items-center gap-7 ml-3 ff-mono text-[12.5px] font-medium tracking-[0.04em] uppercase text-[#9aa0a8]">
           {NAV_LINKS.map((l) =>

@@ -158,11 +158,16 @@ export default function LandingPage() {
 
           {/* rotating seal */}
           <div className="hidden lg:flex absolute top-[96px] right-[38px] z-[4] w-[104px] h-[104px] items-center justify-center" aria-hidden="true">
+            {/* rotating text */}
             <svg viewBox="0 0 100 100" className="v5-seal absolute inset-0 w-full h-full">
               <defs><path id="sealpath" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" /></defs>
               <text className="ff-mono" fontSize="8.6" letterSpacing="2.4" fill="#8b9099"><textPath href="#sealpath">COMMAND 360 · INTERACTIVE TRAINING · </textPath></text>
             </svg>
-            <span className="w-[9px] h-[9px] bg-[#C9241A]" style={{ boxShadow: '0 0 0 6px rgba(201,36,26,.18)' }} />
+            {/* static logo at the centre, with the brand-red glow */}
+            <span className="relative inline-flex items-center justify-center">
+              <span className="absolute w-[36px] h-[36px] rounded-full" style={{ background: 'radial-gradient(circle, rgba(201,36,26,.34), transparent 68%)' }} aria-hidden="true" />
+              <BrandMark size={26} className="relative" />
+            </span>
           </div>
 
           <div className="relative max-w-[1280px] mx-auto px-5 sm:px-[30px] pt-[104px]">
