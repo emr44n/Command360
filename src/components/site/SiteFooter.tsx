@@ -69,6 +69,7 @@ export function SiteFooter() {
             <div className="ff-mono text-[11px] font-semibold tracking-[0.1em] uppercase text-white mb-[18px]">Company</div>
             <div className="flex flex-col gap-2.5 text-[13.5px]">
               <Link href="/about" className="hover:text-white transition-colors">About</Link>
+              <Link href="/news" className="hover:text-white transition-colors">News</Link>
               <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
               <Link href="/help" className="hover:text-white transition-colors">Help centre</Link>
               <Link href="/contact" className="hover:text-white transition-colors">Book a demo</Link>
