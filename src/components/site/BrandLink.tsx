@@ -62,7 +62,7 @@ export function BrandLink({
           transition: reduce ? undefined : 'transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1)',
         }}
       >
-        <BrandMark size={size} />
+        <BrandMark size={size} animated={false} />
       </span>
       {wordmark && (
         <span className="ff-wordmark text-[18px] tracking-[0.01em] whitespace-nowrap">COMMAND&nbsp;360</span>

@@ -6,24 +6,30 @@ const BUCKET = 'presentation-assets'
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
 
-// Admin client for storage operations
+// Admin client for storage operations (service role bypasses storage RLS)
 function getAdminClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) {
+    throw new Error(
+      'Image storage is not configured on the server (missing SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_URL).'
+    )
+  }
+  return createClient(url, key)
 }
 
-// Ensure bucket exists (idempotent)
-async function ensureBucket() {
-  const admin = getAdminClient()
-  const { data } = await admin.storage.getBucket(BUCKET)
-  if (!data) {
-    await admin.storage.createBucket(BUCKET, {
-      public: true,
-      fileSizeLimit: MAX_FILE_SIZE,
-      allowedMimeTypes: ALLOWED_TYPES,
-    })
+// Ensure bucket exists (idempotent). Surfaces the real reason on failure.
+async function ensureBucket(admin: ReturnType<typeof getAdminClient>) {
+  const { data: existing } = await admin.storage.getBucket(BUCKET)
+  if (existing) return
+  const { error } = await admin.storage.createBucket(BUCKET, {
+    public: true,
+    fileSizeLimit: MAX_FILE_SIZE,
+    allowedMimeTypes: ALLOWED_TYPES,
+  })
+  // ignore the benign "already exists" race; surface anything else
+  if (error && !/already exists/i.test(error.message)) {
+    throw new Error(`Could not prepare the storage bucket: ${error.message}`)
   }
 }
 
@@ -56,37 +62,35 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  await ensureBucket()
-  const admin = getAdminClient()
+  try {
+    const admin = getAdminClient()
+    await ensureBucket(admin)
 
-  // Generate unique file path: user_id/timestamp-filename
-  const ext = file.name.split('.').pop() || 'png'
-  const safeName = file.name
-    .replace(/[^a-zA-Z0-9.-]/g, '_')
-    .substring(0, 100)
-  const filePath = `${user.id}/${Date.now()}-${safeName}`
+    // Generate unique file path: user_id/timestamp-filename
+    const safeName = file.name
+      .replace(/[^a-zA-Z0-9.-]/g, '_')
+      .substring(0, 100)
+    const filePath = `${user.id}/${Date.now()}-${safeName}`
 
-  const buffer = Buffer.from(await file.arrayBuffer())
+    const buffer = Buffer.from(await file.arrayBuffer())
 
-  const { data, error } = await admin.storage
-    .from(BUCKET)
-    .upload(filePath, buffer, {
-      contentType: file.type,
-      upsert: false,
-    })
+    const { data, error } = await admin.storage
+      .from(BUCKET)
+      .upload(filePath, buffer, {
+        contentType: file.type,
+        upsert: false,
+      })
 
-  if (error) {
-    console.error('Upload error:', error)
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
+    if (error) {
+      console.error('Upload error:', error)
+      return NextResponse.json({ error: `Upload failed: ${error.message}` }, { status: 500 })
+    }
+
+    const { data: urlData } = admin.storage.from(BUCKET).getPublicUrl(data.path)
+    return NextResponse.json({ url: urlData.publicUrl, path: data.path })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Upload failed'
+    console.error('Upload error:', err)
+    return NextResponse.json({ error: message }, { status: 500 })
   }
-
-  // Get public URL
-  const { data: urlData } = admin.storage
-    .from(BUCKET)
-    .getPublicUrl(data.path)
-
-  return NextResponse.json({
-    url: urlData.publicUrl,
-    path: data.path,
-  })
 }
