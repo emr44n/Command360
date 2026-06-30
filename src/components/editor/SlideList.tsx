@@ -22,6 +22,7 @@ import {
   MessageCircle, ClipboardList, FileText, Star, AlignLeft,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { plainTextFromHtml } from '@/lib/slide-content'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 const ICONS: Record<string, React.ElementType> = {
@@ -228,7 +229,7 @@ function MiniContentPreview({ slide }: { slide: Slide }) {
       const c = slide.content as ContentSlideContent
       return (
         <p style={{ fontSize: 7, color: '#9ca3af', lineHeight: 1.3, overflow: 'hidden', maxHeight: 24 }}>
-          {c.body || 'No content'}
+          {plainTextFromHtml(c.body) || slide.title || 'No content'}
         </p>
       )
     }
