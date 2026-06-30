@@ -30,7 +30,11 @@ export function SiteHeader() {
   const { openAuth } = useAuthSlideOver()
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
+    // Match the TopBar's hysteresis so header + ticker dock together (no jitter/gap).
+    const onScroll = () => {
+      const y = window.scrollY
+      setScrolled((prev) => (prev ? y > 24 : y > 48))
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
