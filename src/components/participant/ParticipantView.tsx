@@ -14,8 +14,9 @@ import { SurveyInput } from './slide-inputs/SurveyInput'
 import { RatingScaleInput } from './slide-inputs/RatingScaleInput'
 import { OpenTextInput } from './slide-inputs/OpenTextInput'
 import { StudioInput } from './slide-inputs/StudioInput'
-import { CheckCircle2, Trophy } from 'lucide-react'
+import { CheckCircle2, Trophy, Sun, Moon } from 'lucide-react'
 import { BrandMark } from '@/components/site/BrandMark'
+import { SlideElementsView, hasCanvasElements } from '@/components/slides/SlideElementsView'
 import { toast } from 'sonner'
 
 interface ParticipantViewProps {
@@ -35,6 +36,7 @@ export function ParticipantView({ session: initialSession, slides, participantId
   const [sessionEnded, setSessionEnded] = useState(false)
   const [score, setScore] = useState(0)
   const [slideTransition, setSlideTransition] = useState(false)
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const channelRef = useRef<ReturnType<ReturnType<typeof createClient>['channel']> | null>(null)
   const supabase = createClient()
 
@@ -43,6 +45,21 @@ export function ParticipantView({ session: initialSession, slides, participantId
   useEffect(() => {
     setStore({ participantId, clientToken, displayName, sessionId: session.id })
   }, [])
+
+  // Audience theme preference — remembered per device so a viewer's light/dark
+  // choice sticks across slides and reconnects.
+  useEffect(() => {
+    const saved = window.localStorage.getItem('c360-audience-theme')
+    if (saved === 'light' || saved === 'dark') setTheme(saved)
+  }, [])
+  const toggleTheme = useCallback(() => {
+    setTheme((t) => {
+      const next = t === 'dark' ? 'light' : 'dark'
+      window.localStorage.setItem('c360-audience-theme', next)
+      return next
+    })
+  }, [])
+  const themeClass = theme === 'light' ? 'c360-light' : ''
 
   useEffect(() => {
     const channel = supabase.channel(`session:${session.id}`)
@@ -176,7 +193,7 @@ export function ParticipantView({ session: initialSession, slides, participantId
   const isStudio = currentSlide.slide_type === 'studio'
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className={`${themeClass} min-h-screen bg-background text-foreground flex flex-col`}>
       {/* Header */}
       {isStudio ? (
         /* Thin header for studio — scene title centered */
@@ -185,7 +202,9 @@ export function ParticipantView({ session: initialSession, slides, participantId
             <BrandMark size={20} />
           </div>
           <span className="text-sm font-semibold text-foreground truncate">{currentSlide.title}</span>
-          <div className="w-5" />
+          <button onClick={toggleTheme} aria-label="Toggle light or dark mode" className="w-5 h-5 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+            {theme === 'dark' ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+          </button>
         </div>
       ) : (
         /* Standard header for other slide types */
@@ -196,12 +215,17 @@ export function ParticipantView({ session: initialSession, slides, participantId
               <BrandMark size={28} />
               <span className="ff-wordmark text-sm text-foreground tracking-tight">Command 360</span>
             </div>
-            {score > 0 && (
-              <div className="flex items-center gap-1.5 text-primary font-mono font-bold text-sm bg-primary/10 px-3 py-1 rounded-none">
-                <Trophy className="w-3.5 h-3.5" />
-                {score}
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              {score > 0 && (
+                <div className="flex items-center gap-1.5 text-primary font-mono font-bold text-sm bg-primary/10 px-3 py-1 rounded-none">
+                  <Trophy className="w-3.5 h-3.5" />
+                  {score}
+                </div>
+              )}
+              <button onClick={toggleTheme} aria-label="Toggle light or dark mode" className="w-8 h-8 flex items-center justify-center rounded-none text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
           {/* Bottom row: participant info */}
           <div className="flex items-center justify-between">
@@ -302,9 +326,32 @@ function SlideInput({ slide, sessionId, onSubmit }: { slide: Slide; sessionId: s
 
 function ContentDisplay({ slide }: { slide: Slide }) {
   const body = (slide.content as { body?: string }).body
+  const hasImages = hasCanvasElements(slide)
+  const emptyBody = isEmptyBody(body)
+
+  // When the author has laid out images/text on the slide, mirror the projected
+  // slide as a true 16:9 surface so phone viewers see exactly what's on screen.
+  if (hasImages) {
+    return (
+      <div className="bg-white rounded-none border border-border overflow-hidden shadow-sm">
+        <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
+          {!emptyBody && (
+            <div className="absolute inset-0 flex items-center justify-center p-5 text-center">
+              {isHtmlBody(body)
+                ? <div className="text-[#374151] text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: body! }} />
+                : <div className="text-[#374151] text-sm leading-relaxed whitespace-pre-wrap">{body}</div>}
+            </div>
+          )}
+          <SlideElementsView slide={slide} />
+        </div>
+      </div>
+    )
+  }
+
+  if (emptyBody) return null
   return (
     <div className="bg-card border border-border rounded-none p-6 transition-all duration-200">
-      {isEmptyBody(body) ? null : isHtmlBody(body)
+      {isHtmlBody(body)
         ? <div className="text-foreground text-base leading-relaxed" dangerouslySetInnerHTML={{ __html: body! }} />
         : <div className="text-foreground text-base leading-relaxed whitespace-pre-wrap">{body}</div>}
     </div>
