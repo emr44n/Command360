@@ -21,8 +21,10 @@ export interface StackItem {
  * stage and cards 2 then 3 fling up and lock into an offset deck as you scroll.
  *
  * Mobile: the scroll-linked fling feels janky on touch (and dynamic-viewport
- * 100vh units make it "ping"), so on small screens we drop the pin entirely and
- * render the cards as a plain, solid vertical stack that scrolls normally.
+ * 100vh units make it "ping"), so on small screens we get the same stacked-deck
+ * effect with pure CSS `position: sticky` — each card sticks at a slightly lower
+ * offset than the last, so they overlap into a deck as you scroll (no JS, no
+ * 100vh ping). Matches the desktop deck feel, smoothly on touch.
  */
 const EASE = cubicBezier(0.16, 1, 0.3, 1)
 
@@ -107,10 +109,15 @@ function PinnedStack({ items }: { items: StackItem[] }) {
 export function StackedCards({ items }: { items: StackItem[] }) {
   return (
     <>
-      {/* Mobile: plain, solid stacked cards — scrolls normally, no fling/ping */}
-      <div className="sm:hidden px-4 py-10 space-y-5">
-        {items.map((it) => (
-          <div key={it.n} className="relative h-[clamp(440px,78vh,540px)]">
+      {/* Mobile: CSS sticky stacked deck — each card sticks slightly lower than
+          the previous, overlapping into a deck (no JS, no 100vh ping). */}
+      <div className="sm:hidden px-4 pt-10 pb-16 flex flex-col gap-6">
+        {items.map((it, i) => (
+          <div
+            key={it.n}
+            className="sticky h-[clamp(420px,68vh,520px)]"
+            style={{ top: `${78 + i * 16}px`, zIndex: i + 1 }}
+          >
             <PhaseCardInner item={it} />
           </div>
         ))}

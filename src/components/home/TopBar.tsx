@@ -21,7 +21,12 @@ export function TopBar() {
   const [i, setI] = useState(0)
 
   useEffect(() => {
-    const onScroll = () => setHidden(window.scrollY > 36)
+    // Hysteresis (hide >48, show <24) so the ticker and header dock together and
+    // don't flicker when momentum-scrolling oscillates around a single threshold.
+    const onScroll = () => {
+      const y = window.scrollY
+      setHidden((prev) => (prev ? y > 24 : y > 48))
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
