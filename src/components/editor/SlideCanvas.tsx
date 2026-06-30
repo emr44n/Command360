@@ -8,7 +8,7 @@ import {
   BarChart2, Cloud, HelpCircle, MessageCircle, ClipboardList,
   FileText, Star, AlignLeft, Monitor,
 } from 'lucide-react'
-import { CanvasElementsLayer } from './CanvasElementsLayer'
+import { CanvasElementsLayer, StaticCanvasElements } from './CanvasElementsLayer'
 
 interface SlideCanvasProps {
   slide: Slide | null
@@ -210,8 +210,10 @@ export function SlideCanvas({ slide, slides, selectedIndex, onTitleChange, onCan
                   </div>
                 </div>
 
-                {/* Canvas elements layer — only on the selected slide */}
-                {isSelected && onCanvasElementsChange && (
+                {/* Canvas elements: interactive on the selected slide, static
+                    (read-only) on every other slide so a slide's images/text
+                    stay visible when it isn't the active slide. */}
+                {isSelected && onCanvasElementsChange ? (
                   <CanvasElementsLayer
                     elements={(s.content as Record<string, unknown>)?._canvas_elements as CanvasElement[] || []}
                     onChange={onCanvasElementsChange}
@@ -219,6 +221,10 @@ export function SlideCanvas({ slide, slides, selectedIndex, onTitleChange, onCan
                     selectedElementId={selectedElementId}
                     onSelectElement={onSelectElement}
                     onRequestAddImage={onRequestAddImage}
+                  />
+                ) : (
+                  <StaticCanvasElements
+                    elements={(s.content as Record<string, unknown>)?._canvas_elements as CanvasElement[] || []}
                   />
                 )}
               </div>
