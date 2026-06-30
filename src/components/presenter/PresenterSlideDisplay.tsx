@@ -1,6 +1,7 @@
 'use client'
 import type { Session } from '@/types/session'
 import type { Slide } from '@/types/slide'
+import { isEmptyBody, isHtmlBody } from '@/lib/slide-content'
 import { PollResultsDisplay } from './slide-displays/PollResultsDisplay'
 import { WordCloudDisplay } from './slide-displays/WordCloudDisplay'
 import { QuizDisplay } from './slide-displays/QuizDisplay'
@@ -63,6 +64,9 @@ function SlideContent({ slide, session, responseCount, channelRef, allSlides }: 
 }
 
 function ContentDisplay({ slide }: { slide: Slide }) {
-  const content = slide.content as { body: string }
-  return <div className="text-muted-foreground text-lg leading-relaxed whitespace-pre-wrap min-h-32">{content.body}</div>
+  const body = (slide.content as { body?: string }).body
+  if (isEmptyBody(body)) return <div className="min-h-32" />
+  return isHtmlBody(body)
+    ? <div className="text-muted-foreground text-lg leading-relaxed min-h-32" dangerouslySetInnerHTML={{ __html: body! }} />
+    : <div className="text-muted-foreground text-lg leading-relaxed whitespace-pre-wrap min-h-32">{body}</div>
 }

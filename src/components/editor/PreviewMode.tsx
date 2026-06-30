@@ -506,18 +506,21 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                   style={{ animationDelay: `${i * 30}ms` }}
                   onClick={(e) => { e.stopPropagation(); setCurrent(i); setShowGrid(false) }}>
                   <div style={{
+                    position: 'relative',
                     background: '#ffffff', borderRadius: 12, overflow: 'hidden',
                     border: i === current ? '2px solid #dc2626' : '2px solid var(--border)',
                     aspectRatio: '16/9', display: 'flex', flexDirection: 'column', padding: '12px 14px',
                     transition: 'all 0.2s',
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 6, position: 'relative', zIndex: 2 }}>
                       <GridIcon style={{ width: 10, height: 10, color: gridColor }} />
                       <span style={{ fontSize: 8, fontWeight: 600, textTransform: 'uppercase', color: gridColor }}>{TYPE_LABELS[s.slide_type]}</span>
                     </div>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', position: 'relative', zIndex: 2 }}>
                       {s.title || 'Untitled'}
                     </p>
+                    {/* live render of the slide's canvas elements (images/text) */}
+                    <MiniCanvasEls slide={s} />
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-1 text-center font-semibold">{i + 1}</p>
                 </button>
@@ -1141,6 +1144,49 @@ function buildStudioInitialStates(layers: StudioLayer[]): Record<string, StudioL
     map[l.id] = { visible: l.visible, opacity: l.opacity, x: l.x, y: l.y, width: l.width, height: l.height, rotation: l.rotation, src: l.src }
   }
   return map
+}
+
+/* Live (static) render of a slide's canvas elements for the grid-overview
+   thumbnails, so the grid shows the actual images/text on each slide. */
+function MiniCanvasEls({ slide }: { slide: Slide }) {
+  const els = (slide.content as Record<string, unknown>)?._canvas_elements as Array<{
+    id: string; type: string; x: number; y: number; width: number; height: number;
+    content: string; style?: Record<string, unknown>; rotation?: number;
+  }> | undefined
+  if (!els || els.length === 0) return null
+  return (
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 12, pointerEvents: 'none', zIndex: 1 }}>
+      {els.map((el) => {
+        const st = el.style || {}
+        const radius = st.borderRadiusPct != null ? `${st.borderRadiusPct as number}%` : `${(st.borderRadius as number) || 0}px`
+        const borderW = (st.borderWidth as number) || 0
+        const { vMask, hMask } = buildEdgeFadeMasks(st.edgeFade as EdgeFade | undefined)
+        const imgTransform = `translate(${(st.imagePanX as number) || 0}%, ${(st.imagePanY as number) || 0}%) scale(${(st.imageScale as number) || 1})`
+        return (
+          <div key={el.id} style={{
+            position: 'absolute', left: `${el.x}%`, top: `${el.y}%`, width: `${el.width}%`, height: `${el.height}%`,
+            borderRadius: radius, border: borderW > 0 ? `${Math.max(1, borderW / 3)}px solid ${(st.borderColor as string) || '#fff'}` : undefined,
+            boxSizing: 'border-box', opacity: (st.opacity as number) ?? 1,
+            transform: el.rotation ? `rotate(${el.rotation}deg)` : undefined,
+          }}>
+            <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius, WebkitMaskImage: vMask, maskImage: vMask }}>
+              <div style={{ width: '100%', height: '100%', WebkitMaskImage: hMask, maskImage: hMask }}>
+                {el.type === 'image' && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={el.content} alt="" style={{ width: '100%', height: '100%', objectFit: ((st.objectFit as string) || 'cover') as React.CSSProperties['objectFit'], transform: imgTransform, transformOrigin: 'center' }} />
+                )}
+                {el.type === 'text' && (
+                  <div style={{ width: '100%', height: '100%', color: (st.color as string) || '#374151', fontSize: Math.max(4, ((st.fontSize as number) || 16) * 0.32), fontWeight: (st.fontWeight as string) || 'normal', textAlign: (st.textAlign as 'left' | 'center' | 'right') || 'left', padding: '2px 3px', lineHeight: 1.2, overflow: 'hidden', whiteSpace: 'pre-wrap', backgroundColor: (st.backgroundColor as string) || 'transparent' }}>
+                    {el.content}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
 }
 
 function StudioPreviewLayer({ layer, state, small }: { layer: StudioLayer; state: StudioLayerState; small?: boolean }) {
