@@ -2,6 +2,7 @@
 import type { Session } from '@/types/session'
 import type { Slide } from '@/types/slide'
 import { isEmptyBody, isHtmlBody } from '@/lib/slide-content'
+import { SlideElementsView, hasCanvasElements } from '@/components/slides/SlideElementsView'
 import { PollResultsDisplay } from './slide-displays/PollResultsDisplay'
 import { WordCloudDisplay } from './slide-displays/WordCloudDisplay'
 import { QuizDisplay } from './slide-displays/QuizDisplay'
@@ -65,7 +66,26 @@ function SlideContent({ slide, session, responseCount, channelRef, allSlides }: 
 
 function ContentDisplay({ slide }: { slide: Slide }) {
   const body = (slide.content as { body?: string }).body
-  if (isEmptyBody(body)) return <div className="min-h-32" />
+  const emptyBody = isEmptyBody(body)
+
+  // When the slide carries laid-out images/text, project them as an overlay on
+  // a 16:9 surface so the audience screen matches what was built in the studio.
+  if (hasCanvasElements(slide)) {
+    return (
+      <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
+        {!emptyBody && (
+          <div className="absolute inset-0 flex items-center justify-center p-6 text-center z-[1]">
+            {isHtmlBody(body)
+              ? <div className="text-muted-foreground text-lg leading-relaxed" dangerouslySetInnerHTML={{ __html: body! }} />
+              : <div className="text-muted-foreground text-lg leading-relaxed whitespace-pre-wrap">{body}</div>}
+          </div>
+        )}
+        <SlideElementsView slide={slide} />
+      </div>
+    )
+  }
+
+  if (emptyBody) return <div className="min-h-32" />
   return isHtmlBody(body)
     ? <div className="text-muted-foreground text-lg leading-relaxed min-h-32" dangerouslySetInnerHTML={{ __html: body! }} />
     : <div className="text-muted-foreground text-lg leading-relaxed whitespace-pre-wrap min-h-32">{body}</div>

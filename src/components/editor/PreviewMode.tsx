@@ -261,7 +261,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                   }> | undefined
                   if (!canvasEls || canvasEls.length === 0) return null
                   return (
-                    <div key={slide.id} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 5 }}>
+                    <div key={slide.id} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 5, overflow: 'hidden' }}>
                       <style>{`@keyframes c360ElIn{from{opacity:0}to{opacity:var(--c360-el-op,1)}}`}</style>
                       {canvasEls.map(el => {
                         const st = el.style || {}

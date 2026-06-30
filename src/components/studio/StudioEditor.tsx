@@ -45,6 +45,11 @@ interface StudioEditorProps {
   onReorderSlides?: (fromIndex: number, toIndex: number) => void
 }
 
+/* Cross-scene layer clipboard. Module-level so a copied layer survives switching
+   between scenes (each scene mounts its own editor content) — Ctrl+C in one
+   scene, Ctrl+V in another pastes the same layer. */
+let studioLayerClipboard: StudioLayer | null = null
+
 /* ── CCTV Live Preview — renders scene layers in grid on the canvas area ── */
 function CctvLivePreview({ content, slides }: { content: StudioContent; slides: Slide[] }) {
   const layout = content.cctvLayout || '4'
@@ -381,26 +386,55 @@ export function StudioEditor({
     onContentChange(next)
   }, [redoStack, content, onContentChange])
 
+  // Paste the clipboard layer into the current scene (offset slightly, new id).
+  const pasteLayer = useCallback(() => {
+    const src = studioLayerClipboard
+    if (!src) return
+    const dup = {
+      ...src,
+      id: generateLayerId(),
+      name: `${src.name} (copy)`,
+      x: Math.min(95, src.x + 3),
+      y: Math.min(95, src.y + 3),
+      zIndex: layers.length,
+    } as StudioLayer
+    const withLayer: StudioContent = { ...content, layers: [...layers, dup] }
+    const withTrack = addTrackForLayer(withLayer, dup)
+    onContentChange(withTrack)
+    setSelectedLayerId(dup.id)
+  }, [content, layers, onContentChange, setSelectedLayerId])
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+      const inField = ((t) => t === 'INPUT' || t === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable)((e.target as HTMLElement)?.tagName)
+      const mod = e.ctrlKey || e.metaKey
+      if (mod && e.key === 'z' && !e.shiftKey) {
         e.preventDefault()
         handleUndo()
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && e.shiftKey) {
+      if (mod && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
         e.preventDefault()
         handleRedo()
       }
+      // Copy / paste the selected layer (works across scenes)
+      if (mod && e.key === 'c' && !inField && selectedLayerId) {
+        const src = layers.find((l) => l.id === selectedLayerId)
+        if (src) { studioLayerClipboard = src; e.preventDefault() }
+      }
+      if (mod && e.key === 'v' && !inField && studioLayerClipboard) {
+        e.preventDefault()
+        pasteLayer()
+      }
       // Delete selected layer with confirmation
       if ((e.key === 'Delete' || e.key === 'Backspace') && selectedLayerId) {
-        if ((e.target as HTMLElement)?.tagName === 'INPUT' || (e.target as HTMLElement)?.tagName === 'TEXTAREA') return
+        if (inField) return
         e.preventDefault()
         setConfirmDeleteLayerId(selectedLayerId)
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [handleUndo, handleRedo, selectedLayerId])
+  }, [handleUndo, handleRedo, selectedLayerId, layers, pasteLayer])
 
   // Content mutation helpers
   const updateContent = useCallback(
