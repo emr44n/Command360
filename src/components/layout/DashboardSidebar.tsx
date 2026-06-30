@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { BrandMark } from '@/components/site/BrandMark'
+import { BrandLink } from '@/components/site/BrandLink'
 import {
   LayoutDashboard, LogOut, LayoutTemplate, Settings,
   Radio, BarChart2, Users, ChevronLeft, ChevronRight, Plus, Moon, Sun, Monitor, FileText, Share2, ShieldCheck, TrendingUp,
@@ -140,12 +140,16 @@ export function DashboardSidebar() {
       {/* Subtle right-edge red glow */}
       <div className="pointer-events-none absolute inset-y-0 -right-px w-px shadow-[0_0_12px_1px_rgba(201,36,26,0.10)]" />
 
-      {/* Logo */}
+      {/* Logo — hovering the logo OR the wordmark runs the brand spin+zoom */}
       <div className={cn('h-16 flex items-center', collapsed ? 'px-3 justify-center' : 'px-5')}>
-        <Link href="/dashboard" className="flex items-center gap-2.5 text-white dash-light:text-[#16191E]">
-          <BrandMark size={32} />
-          {!collapsed && <span className="ff-wordmark text-[15px] tracking-tight uppercase">Command 360</span>}
-        </Link>
+        <BrandLink
+          href="/dashboard"
+          size={32}
+          wordmark={!collapsed}
+          className="flex items-center gap-2.5 text-white dash-light:text-[#16191E]"
+          wordmarkText="Command 360"
+          wordmarkClassName="ff-wordmark text-[15px] tracking-tight uppercase"
+        />
       </div>
 
       {/* New Presentation button */}

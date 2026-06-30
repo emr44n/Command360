@@ -204,6 +204,127 @@ export const NEWS_POSTS: NewsPost[] = [
       },
     ],
   },
+  {
+    slug: 'the-debrief-is-the-training',
+    title: 'The debrief is the training: turning every session into a record',
+    excerpt:
+      'A briefing that vanishes the moment it ends teaches little. We look at why a structured, captured debrief is where real learning — and inspection-ready evidence — is made.',
+    category: 'Training Science',
+    date: '2026-06-03',
+    readingMinutes: 5,
+    author: 'Command 360 Editorial',
+    heroImage: '/about/about-3.webp',
+    accent: '#2E9E63',
+    keywords: [
+      'training debrief',
+      'hot debrief',
+      'learning logs',
+      'CPD evidence',
+      'emergency services evaluation',
+    ],
+    blocks: [
+      {
+        type: 'text',
+        text: 'Ask a crew what they took from a session a fortnight ago and the honest answer is often “not much I could write down.” The learning was real in the moment, but nothing captured it — so it faded. The debrief is where a training session stops being an event and becomes a record you can act on.',
+      },
+      { type: 'heading', text: 'From conversation to evidence' },
+      {
+        type: 'text',
+        text: 'A good debrief surfaces what people decided, why, and what they would do differently. When that is captured rather than just spoken, it becomes three things at once: individual learning, a team improvement plan, and the inspection-ready evidence services increasingly have to produce. Command 360 generates a debrief from every session automatically, so the record writes itself.',
+      },
+      {
+        type: 'image',
+        src: '/about/about-1.webp',
+        alt: 'A command team reviewing a session debrief together',
+        caption: 'The decisions and reasoning, captured — not lost the moment the room empties.',
+      },
+      { type: 'heading', text: 'Closing the loop' },
+      {
+        type: 'text',
+        text: 'The point of a debrief is not to mark homework — it is to feed the next session. Knowledge gaps identified today become the scenario you run next month, so training compounds instead of resetting each time.',
+      },
+    ],
+  },
+  {
+    slug: 'training-without-a-headset',
+    title: 'Immersive training without a headset: the case for the room',
+    excerpt:
+      'VR has a place, but it does not scale to a whole watch on an ordinary Tuesday. Here is how to get the engagement of immersive training using the screens and devices you already have.',
+    category: 'Training Science',
+    date: '2026-05-27',
+    readingMinutes: 6,
+    author: 'Command 360 Editorial',
+    heroImage: '/command-studio/cs-3.webp',
+    accent: '#3E6DC4',
+    keywords: [
+      'immersive training',
+      'no headset training',
+      'scenario based learning',
+      'blue light training technology',
+      'accessible training',
+    ],
+    blocks: [
+      {
+        type: 'text',
+        text: 'Headsets are compelling, but they are also a logistics problem: kit to buy, clean, charge, update and store, and a session that can only run a handful of people at a time. For the routine, repeated training that actually builds competence, the barrier matters more than the wow factor.',
+      },
+      { type: 'heading', text: 'Engagement is about decisions, not hardware' },
+      {
+        type: 'text',
+        text: 'What makes immersive training stick is not the device — it is being put in front of a realistic, evolving situation and having to decide. That works just as well on the screens and phones a service already owns. Everyone in the room takes part on their own device, and the facilitator drives one shared, developing incident.',
+      },
+      {
+        type: 'image',
+        src: '/command-studio/cs-5.webp',
+        alt: 'A full watch taking part in a screen-based incident exercise',
+        caption: 'Whole-team participation on existing devices — no headset queue.',
+      },
+      { type: 'heading', text: 'Accessible by design' },
+      {
+        type: 'text',
+        text: 'Browser-based training is also more inclusive: no motion sickness, no fiddly fit, and it works for people who cannot or would rather not use a headset. The most immersive training is the one your whole team can actually take part in.',
+      },
+    ],
+  },
+  {
+    slug: 'bronze-silver-gold-in-one-room',
+    title: 'Bronze, Silver and Gold in one room: training command levels together',
+    excerpt:
+      'Operational, tactical and strategic command are usually trained apart. We make the case for running one scenario across all three levels at once — and rehearsing the hand-overs that decide outcomes.',
+    category: 'Incident Command',
+    date: '2026-05-20',
+    readingMinutes: 6,
+    author: 'Command 360 Editorial',
+    heroImage: '/solutions/civil-contingencies.webp',
+    accent: '#c98a2a',
+    keywords: [
+      'bronze silver gold command',
+      'tactical command training',
+      'strategic command',
+      'command structure',
+      'multi-level exercise',
+    ],
+    blocks: [
+      {
+        type: 'text',
+        text: 'Real incidents are run across operational (Bronze), tactical (Silver) and strategic (Gold) command. Yet training often isolates each level, so the seams between them — the very places incidents are won or lost — are never rehearsed.',
+      },
+      { type: 'heading', text: 'One incident, three vantage points' },
+      {
+        type: 'text',
+        text: 'Run a single scenario across all three levels and each commander sees the same incident from their own vantage point — and feels the consequences of the others’ decisions. The Gold commander’s strategic intent shapes the Silver plan; the Silver plan sets the Bronze tasks; and information has to flow back up just as cleanly.',
+      },
+      {
+        type: 'quote',
+        text: 'Incidents are rarely lost at a single level. They are lost in the hand-over between them.',
+      },
+      { type: 'heading', text: 'Rehearsing the hand-over' },
+      {
+        type: 'text',
+        text: 'Training the levels together turns the hand-over from an assumption into a skill. Command 360 lets a single scenario scale across Bronze, Silver and Gold, so the people who have to work together on the day train together first.',
+      },
+    ],
+  },
 ]
 
 export const INDUSTRY_FEED: FeedItem[] = [
