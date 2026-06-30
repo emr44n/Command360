@@ -28,6 +28,14 @@ function ease(t: number): number {
 /** Build the eased gradient stop list for one axis. `near` fades in over the
  *  first `near`% from transparent; `far` fades out over the last `far`%. */
 function axisStops(near: number, far: number): string {
+  // If the two fade bands would overlap (>100% combined) scale them down so the
+  // stops stay monotonic — otherwise the browser clamps them and the whole
+  // element collapses to transparent.
+  if (near + far > 100) {
+    const s = 100 / (near + far)
+    near *= s
+    far *= s
+  }
   const N = 6
   const stops: string[] = []
   if (near > 0) {

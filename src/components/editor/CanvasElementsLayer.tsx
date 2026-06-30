@@ -459,6 +459,9 @@ function DraggableElement({ element, isSelected, isHovered, isEditing, container
           } else {
             newW = newH * aspect
           }
+          // re-clamp so neither dimension drops below its minimum (keep aspect)
+          if (newW < 5) { newW = 5; newH = newW / aspect }
+          if (newH < 3) { newH = 3; newW = newH * aspect }
         }
 
         // keep the opposite edge anchored when dragging a west/north handle

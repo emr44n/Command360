@@ -285,6 +285,19 @@ export function LiveDirectorView({ slide, session, channelRef, presenterName, on
     return () => clearInterval(i)
   }, [slide.id, channelRef, onSceneStateChange])
 
+  // Answer a late joiner's request immediately (no waiting for the next 2s tick).
+  useEffect(() => {
+    const channel = channelRef.current
+    if (!channel) return
+    channel.on('broadcast', { event: 'STUDIO_STATE_REQUEST' }, ({ payload }: { payload: { slide_id: string } }) => {
+      if (payload.slide_id !== slide.id) return
+      channel.send({
+        type: 'broadcast', event: 'STUDIO_SYNC_STATE',
+        payload: { slide_id: slide.id, layers: layersRef.current, layerStates: layerStatesRef.current },
+      })
+    })
+  }, [slide.id, channelRef])
+
   const handleLayerMouseDown = useCallback((e: React.MouseEvent, layerId: string) => {
     e.stopPropagation(); e.preventDefault()
     const state = layerStatesRef.current[layerId]; if (!state) return
