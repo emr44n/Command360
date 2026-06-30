@@ -21,10 +21,16 @@ export function BrandLink({
   size = 30,
   wordmark = true,
   className = 'flex items-center gap-3 text-white shrink-0',
+  href = '/',
+  wordmarkText = 'COMMAND 360',
+  wordmarkClassName = 'ff-wordmark text-[18px] tracking-[0.01em] whitespace-nowrap',
 }: {
   size?: number
   wordmark?: boolean
   className?: string
+  href?: string
+  wordmarkText?: string
+  wordmarkClassName?: string
 }) {
   const [turns, setTurns] = useState(0)
   const [hover, setHover] = useState(false)
@@ -54,7 +60,7 @@ export function BrandLink({
   const onLeave = () => { setHover(false); spin() }
 
   return (
-    <Link href="/" className={className} onMouseEnter={onEnter} onMouseLeave={onLeave}>
+    <Link href={href} className={className} onMouseEnter={onEnter} onMouseLeave={onLeave}>
       <span
         className="inline-flex shrink-0 will-change-transform"
         style={{
@@ -65,7 +71,7 @@ export function BrandLink({
         <BrandMark size={size} animated={false} />
       </span>
       {wordmark && (
-        <span className="ff-wordmark text-[18px] tracking-[0.01em] whitespace-nowrap">COMMAND&nbsp;360</span>
+        <span className={wordmarkClassName}>{wordmarkText}</span>
       )}
     </Link>
   )

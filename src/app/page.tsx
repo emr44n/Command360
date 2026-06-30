@@ -367,7 +367,7 @@ export default function LandingPage() {
         </section>
 
         {/* ════════════ 06 SERVICES (dark) ════════════ */}
-        <section id="services" className="relative overflow-hidden bg-[#0F1216] text-white py-[90px]">
+        <section id="services" className="relative overflow-hidden bg-[#0F1216] text-white pt-[72px] pb-[104px] sm:py-[90px]">
           <div className="absolute top-[-140px] right-[-100px] w-[780px] h-[560px] pointer-events-none" aria-hidden="true" style={{ background: 'radial-gradient(55% 65% at 70% 30%,rgba(201,36,26,.14),transparent 76%)', filter: 'blur(46px)' }} />
           <div className="absolute inset-0 v5-grain opacity-[0.1] mix-blend-overlay pointer-events-none" aria-hidden="true" />
           <div className="relative max-w-[1280px] mx-auto px-5 sm:px-[30px]">
