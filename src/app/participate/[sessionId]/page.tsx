@@ -40,6 +40,20 @@ export default function ParticipatePage() {
     loadSession()
   }, [sessionId])
 
+  // Keep live_scene_ids fresh so a participant who joined BEFORE the presenter
+  // went live still flips into the multi-scene room picker when scenes go live.
+  useEffect(() => {
+    const channel = supabase.channel(`session:${sessionId}`)
+    channel
+      .on('broadcast', { event: 'LIVE_SCENES_UPDATED' }, ({ payload }) => {
+        if (payload.session_id === sessionId) {
+          setSession((prev) => (prev ? { ...prev, live_scene_ids: payload.live_scene_ids || [] } : prev))
+        }
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [sessionId])
+
   async function loadSession() {
     const { data: sess } = await supabase
       .from('sessions')

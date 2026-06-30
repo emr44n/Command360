@@ -68,6 +68,18 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
     if (payload.layerStates) setLayerStates(payload.layerStates)
   }, [])
 
+  // Apply a PARTIAL layer-states update (a drag, a fade step): merge per-layer so
+  // a single-layer update never wipes the other live layers' states.
+  const applyStatesUpdate = useCallback((partial: Record<string, Partial<StudioLayerState>>) => {
+    setLayerStates(prev => {
+      const next = { ...prev }
+      for (const [id, props] of Object.entries(partial)) {
+        next[id] = { ...(next[id] as StudioLayerState), ...props }
+      }
+      return next
+    })
+  }, [])
+
   useEffect(() => {
     const supabase = createClient()
     const channel = supabase.channel(`session:${sessionId}:studio:${slide.id}`)
@@ -98,7 +110,7 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
       })
       .on('broadcast', { event: 'STUDIO_LAYER_STATES_UPDATE' }, ({ payload }) => {
         if (payload.slide_id === slide.id && payload.layerStates) {
-          setLayerStates(payload.layerStates as Record<string, StudioLayerState>)
+          applyStatesUpdate(payload.layerStates as Record<string, Partial<StudioLayerState>>)
         }
       })
       .on('broadcast', { event: 'STUDIO_PLAYBACK_START' }, ({ payload }) => {
@@ -140,7 +152,7 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
 
     channelRef.current = channel
     return () => { supabase.removeChannel(channel) }
-  }, [sessionId, slide.id, applyLayerAdded, applySyncState])
+  }, [sessionId, slide.id, applyLayerAdded, applySyncState, applyStatesUpdate])
 
   // Also listen on main session channel for STUDIO events
   useEffect(() => {
@@ -173,7 +185,7 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
       })
       .on('broadcast', { event: 'STUDIO_LAYER_STATES_UPDATE' }, ({ payload }) => {
         if (payload.slide_id === slide.id && payload.layerStates) {
-          setLayerStates(payload.layerStates as Record<string, StudioLayerState>)
+          applyStatesUpdate(payload.layerStates as Record<string, Partial<StudioLayerState>>)
         }
       })
       .on('broadcast', { event: 'STUDIO_PLAYBACK_START' }, ({ payload }) => {
@@ -213,7 +225,7 @@ export function StudioInput({ slide, sessionId, onSubmit }: Props) {
       })
 
     return () => { supabase.removeChannel(mainChannel) }
-  }, [sessionId, slide.id, applyLayerAdded, applySyncState])
+  }, [sessionId, slide.id, applyLayerAdded, applySyncState, applyStatesUpdate])
 
   useEffect(() => {
     const interval = setInterval(() => setSessionSeconds(s => s + 1), 1000)

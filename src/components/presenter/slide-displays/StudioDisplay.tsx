@@ -205,6 +205,20 @@ export function StudioDisplay({ slide, session, channelRef, allSlides, mode }: P
     return () => clearInterval(i)
   }, [mode, slide.id, channelRef])
 
+  // Answer a late joiner's STUDIO_STATE_REQUEST immediately (present mode).
+  useEffect(() => {
+    if (mode !== 'present') return
+    const channel = channelRef?.current
+    if (!channel) return
+    channel.on('broadcast', { event: 'STUDIO_STATE_REQUEST' }, ({ payload }: { payload: { slide_id: string } }) => {
+      if (payload.slide_id !== slide.id) return
+      channel.send({
+        type: 'broadcast', event: 'STUDIO_SYNC_STATE',
+        payload: { slide_id: slide.id, layers: liveLayersRef.current, layerStates: liveStatesRef.current },
+      })
+    })
+  }, [mode, slide.id, channelRef])
+
   const handleResetAll = useCallback(() => {
     eventControllerRef.current?.cancel()
     eventControllerRef.current = null

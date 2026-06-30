@@ -25,13 +25,16 @@ export function DeploymentSteps() {
   }, [])
 
   return (
-    <div className="grid md:grid-cols-3 border-l border-[rgba(20,25,30,0.16)]">
+    // data-reveal lives on this STATIC wrapper, not the cards: the cards'
+    // className changes every 5s as they auto-cycle, and React rewriting
+    // className wipes the imperatively-added `.is-in` reveal class — which made
+    // the whole section fade back to opacity:0 after the first cycle tick.
+    <div data-reveal className="grid md:grid-cols-3 border-l border-[rgba(20,25,30,0.16)]">
       {STEPS.map((s, i) => {
         const on = active === i
         return (
           <div
             key={s.n}
-            data-reveal
             className={`group relative overflow-hidden p-[40px_30px] border-r border-b border-[rgba(20,25,30,0.16)] cursor-default transition-[transform,background,box-shadow] duration-500 hover:bg-white hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(20,25,30,0.45)] ${on ? 'bg-white -translate-y-1 shadow-[0_24px_50px_-28px_rgba(20,25,30,0.45)]' : ''}`}
           >
             {/* ambient colour glow + grain in the corner of the highlighted card */}

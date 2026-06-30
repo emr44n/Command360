@@ -223,7 +223,9 @@ export function getPost(slug: string): NewsPost | undefined {
 }
 
 export function formatNewsDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-GB', {
+  const d = new Date(iso)
+  if (!iso || isNaN(d.getTime())) return '' // live feed entries may lack a date
+  return d.toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

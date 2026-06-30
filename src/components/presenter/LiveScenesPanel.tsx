@@ -57,13 +57,13 @@ export function LiveScenesPanel({ session, channelRef, scenes, initialLiveSceneI
   }, [session.id, channelRef])
 
   const toggle = useCallback((sceneId: string) => {
-    setLiveIds(prev => {
-      const next = prev.includes(sceneId) ? prev.filter(id => id !== sceneId) : [...prev, sceneId]
-      persist(next)
-      onChange?.(next)
-      return next
-    })
-  }, [persist, onChange])
+    // compute next from current state, then run side effects OUTSIDE the updater
+    // (updaters must be pure — React invokes them twice under StrictMode)
+    const next = liveIds.includes(sceneId) ? liveIds.filter(id => id !== sceneId) : [...liveIds, sceneId]
+    setLiveIds(next)
+    persist(next)
+    onChange?.(next)
+  }, [liveIds, persist, onChange])
 
   return (
     <div className="flex flex-col gap-3 text-zinc-200">
