@@ -301,6 +301,23 @@ function ElementContent({ element, ghost }: { element: CanvasElement; ghost?: bo
   )
 }
 
+/**
+ * Read-only render of a slide's canvas elements, clipped to the slide bounds.
+ * Used for NON-selected slides in the stacked editor (and anywhere a static
+ * preview of the overlay is needed) so a slide's images/text stay visible even
+ * when it isn't the active slide.
+ */
+export function StaticCanvasElements({ elements }: { elements: CanvasElement[] }) {
+  if (!elements || elements.length === 0) return null
+  return (
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 10, pointerEvents: 'none', zIndex: 6 }}>
+      {elements.map((el) => (
+        <ElementContent key={el.id} element={el} />
+      ))}
+    </div>
+  )
+}
+
 /* ─── Draggable Element ─── */
 
 function DraggableElement({ element, isSelected, isHovered, isEditing, containerRef, onHover, onSelect, onStartEdit, onUpdate, onUpdateStyle, onDelete, panMode, onTogglePan }: {
