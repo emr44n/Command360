@@ -43,7 +43,7 @@ export function ServicesMenu() {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="hover:text-white transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+        className="uppercase hover:text-white transition-colors inline-flex items-center gap-1.5 cursor-pointer"
       >
         Services
         <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
