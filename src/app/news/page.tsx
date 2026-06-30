@@ -4,7 +4,11 @@ import { Rss, ArrowUpRight } from 'lucide-react'
 import { SiteShell } from '@/components/site/SiteShell'
 import { PageHero, Eyebrow, LightSection, DarkSection, Container } from '@/components/site/primitives'
 import { SpotlightCard } from '@/components/home/SpotlightCard'
-import { getAllPosts, formatNewsDate, INDUSTRY_FEED } from '@/lib/news'
+import { getAllPosts, formatNewsDate } from '@/lib/news'
+import { fetchIndustryFeed } from '@/lib/news-feed'
+
+// refresh the live industry feed hourly
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'News & Insight — Command 360',
@@ -30,9 +34,10 @@ export const metadata: Metadata = {
   },
 }
 
-export default function NewsPage() {
+export default async function NewsPage() {
   const posts = getAllPosts()
   const [lead, ...rest] = posts
+  const industryFeed = await fetchIndustryFeed()
 
   return (
     <SiteShell>
@@ -154,7 +159,7 @@ export default function NewsPage() {
                 Across the community
               </h2>
               <p className="text-[16px] text-[#9aa0a8] mt-4">
-                The latest incident-command and resilience news from across the UK blue-light community, pulled into one place. Live RSS ingestion is coming — this is a preview of the feed.
+                The latest incident-command, fire &amp; rescue and resilience news pulled live from public GOV.UK feeds, refreshed hourly.
               </p>
             </div>
             <a
@@ -165,7 +170,7 @@ export default function NewsPage() {
             </a>
           </div>
           <div className="border-t border-white/14">
-            {INDUSTRY_FEED.map((item) => (
+            {industryFeed.map((item) => (
               <a
                 key={item.title}
                 href={item.url}

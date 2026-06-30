@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ShieldCheck, Mail } from 'lucide-react'
 
 const TICKER = [
-  'New — Scenario Studio: immersive incident simulation',
+  'New — Command Studio: immersive incident simulation',
   'Trusted across UK fire, police & ambulance services',
   'Run your first live session free — no card required',
   'AI session summaries generated in seconds',
