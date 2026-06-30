@@ -26,7 +26,7 @@ const CAPABILITIES = [
   { n: '03', title: 'Word Clouds', desc: 'Capture collective sentiment with word clouds that grow in real time — an instant read on the room.', c: '#2E9E63' },
   { n: '04', title: 'Anonymous Q&A', desc: 'Upvoted questions surface the concerns nobody raises face-to-face. No names, no judgement.', c: '#2592a3' },
   { n: '05', title: 'AI Insights', desc: 'Auto-generated summaries, key themes, and sentiment analysis after every session.', c: '#6a5ea8' },
-  { n: '06', title: 'Scenario Studio', desc: 'Layered images and video with live event triggers — the most immersive way to train.', c: '#C9241A', badge: 'NEW', href: '/command-studio' },
+  { n: '06', title: 'Command Studio', desc: 'Layered images and video with live event triggers — the most immersive way to train.', c: '#C9241A', badge: 'NEW', href: '/command-studio' },
 ]
 
 const DOCTRINE_BOXES = [
@@ -531,6 +531,7 @@ export default function LandingPage() {
               <div className="ff-mono text-[11px] font-semibold tracking-[0.1em] uppercase text-white mb-[18px]">Company</div>
               <div className="flex flex-col gap-2.5 text-[13.5px]">
                 <Link href="/about" className="hover:text-white transition-colors">About</Link>
+                <Link href="/news" className="hover:text-white transition-colors">News</Link>
                 <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
                 <Link href="/help" className="hover:text-white transition-colors">Help centre</Link>
                 <Link href="/contact" className="hover:text-white transition-colors">Book a demo</Link>
