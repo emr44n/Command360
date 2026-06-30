@@ -160,7 +160,7 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
               <div className="flex justify-between text-[11px] text-muted-foreground"><span>Speed</span><span>{((anim.speed ?? 600) / 1000).toFixed(1)}s</span></div>
               <input type="range" min={200} max={2000} step={100} value={anim.speed ?? 600} onChange={(e) => onUpdateStyle({ anim: { ...anim, speed: Number(e.target.value) } })} className="w-full accent-primary h-1.5" />
             </div>
-            <p className="text-[11px] text-muted-foreground/80 leading-relaxed">Loops in preview so you can tune it. Plays once on enter / exit when presenting.</p>
+            <p className="text-[11px] text-muted-foreground/80 leading-relaxed">Plays once as the slide enters / exits — in preview and when presenting.</p>
             <button onClick={() => onUpdateStyle({ anim: undefined })} className="text-[11px] text-muted-foreground hover:text-destructive transition-colors">Remove animation</button>
           </>
         )}
