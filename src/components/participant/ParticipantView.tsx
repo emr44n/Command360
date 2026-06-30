@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Session } from '@/types/session'
 import type { Slide } from '@/types/slide'
+import { isEmptyBody, isHtmlBody } from '@/lib/slide-content'
 import { useParticipantStore } from '@/stores/participantStore'
 import { WaitingScreen } from './WaitingScreen'
 import { PollInput } from './slide-inputs/PollInput'
@@ -300,10 +301,12 @@ function SlideInput({ slide, sessionId, onSubmit }: { slide: Slide; sessionId: s
 }
 
 function ContentDisplay({ slide }: { slide: Slide }) {
-  const content = slide.content as { body: string }
+  const body = (slide.content as { body?: string }).body
   return (
     <div className="bg-card border border-border rounded-none p-6 transition-all duration-200">
-      <div className="text-foreground text-base leading-relaxed whitespace-pre-wrap">{content.body}</div>
+      {isEmptyBody(body) ? null : isHtmlBody(body)
+        ? <div className="text-foreground text-base leading-relaxed" dangerouslySetInnerHTML={{ __html: body! }} />
+        : <div className="text-foreground text-base leading-relaxed whitespace-pre-wrap">{body}</div>}
     </div>
   )
 }

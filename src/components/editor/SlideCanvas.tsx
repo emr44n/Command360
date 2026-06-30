@@ -9,6 +9,7 @@ import {
   FileText, Star, AlignLeft, Monitor,
 } from 'lucide-react'
 import { CanvasElementsLayer, StaticCanvasElements } from './CanvasElementsLayer'
+import { isEmptyBody, isHtmlBody } from '@/lib/slide-content'
 
 interface SlideCanvasProps {
   slide: Slide | null
@@ -404,14 +405,13 @@ function SlidePreview({ slide }: { slide: Slide }) {
     }
     case 'content': {
       const c = slide.content as ContentSlideContent
-      return (
-        <div style={{
-          fontSize: 16, whiteSpace: 'pre-wrap', lineHeight: 1.7,
-          textAlign: 'center', maxWidth: 500, color: '#374151',
-        }}>
-          {c.body || <span style={{ color: '#9ca3af', fontStyle: 'italic' }}>No content yet</span>}
-        </div>
-      )
+      const base: React.CSSProperties = { fontSize: 16, whiteSpace: 'pre-wrap', lineHeight: 1.7, textAlign: 'center', maxWidth: 500, color: '#374151' }
+      if (isEmptyBody(c.body)) {
+        return <div style={base}><span style={{ color: '#9ca3af', fontStyle: 'italic' }}>No content yet</span></div>
+      }
+      return isHtmlBody(c.body)
+        ? <div style={base} dangerouslySetInnerHTML={{ __html: c.body }} />
+        : <div style={base}>{c.body}</div>
     }
     case 'survey': {
       const c = slide.content as SurveyContent
