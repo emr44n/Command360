@@ -3,7 +3,6 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Session } from '@/types/session'
 import type { Slide } from '@/types/slide'
-import { isEmptyBody, isHtmlBody } from '@/lib/slide-content'
 import { useParticipantStore } from '@/stores/participantStore'
 import { WaitingScreen } from './WaitingScreen'
 import { PollInput } from './slide-inputs/PollInput'
@@ -178,7 +177,10 @@ export function ParticipantView({ session: initialSession, slides, participantId
     return <WaitingScreen message="Waiting for presentation to start..." />
   }
 
-  if (!session.voting_open && currentSlide?.slide_type !== 'studio') {
+  // Studio + content slides are display-only — always shown; voting-type slides
+  // wait for the presenter to open voting.
+  const isDisplayOnly = currentSlide?.slide_type === 'studio' || currentSlide?.slide_type === 'content'
+  if (!session.voting_open && !isDisplayOnly) {
     return (
       <WaitingScreen
         message="Voting is closed"
@@ -191,6 +193,8 @@ export function ParticipantView({ session: initialSession, slides, participantId
   const slideIndex = slides.findIndex((s) => s.id === currentSlide.id)
   const totalSlides = slides.length
   const isStudio = currentSlide.slide_type === 'studio'
+  // Content slides project as a full composed surface — no badge/title chrome.
+  const isContent = currentSlide.slide_type === 'content'
 
   return (
     <div className={`${themeClass} min-h-screen bg-background text-foreground flex flex-col`}>
@@ -256,11 +260,11 @@ export function ParticipantView({ session: initialSession, slides, participantId
 
       {/* Slide content */}
       <div
-        className={`${isStudio ? 'flex-1 flex items-center justify-center px-2 py-2' : 'max-w-lg mx-auto px-4 py-6 space-y-6'} transition-all duration-300 ease-out ${
+        className={`${isStudio ? 'flex-1 flex items-center justify-center px-2 py-2' : isContent ? 'max-w-2xl w-full mx-auto px-3 py-4' : 'max-w-lg mx-auto px-4 py-6 space-y-6'} transition-all duration-300 ease-out ${
           slideTransition ? 'opacity-0 translate-y-3 scale-[0.98]' : 'opacity-100 translate-y-0 scale-100'
         }`}
       >
-        {!isStudio && (
+        {!isStudio && !isContent && (
           <div className="space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <span className="text-xs font-medium text-primary uppercase tracking-wide">
               {currentSlide.slide_type.replace('_', ' ')}
@@ -325,35 +329,14 @@ function SlideInput({ slide, sessionId, onSubmit }: { slide: Slide; sessionId: s
 }
 
 function ContentDisplay({ slide }: { slide: Slide }) {
-  const body = (slide.content as { body?: string }).body
-  const hasImages = hasCanvasElements(slide)
-  const emptyBody = isEmptyBody(body)
-
-  // When the author has laid out images/text on the slide, mirror the projected
-  // slide as a true 16:9 surface so phone viewers see exactly what's on screen.
-  if (hasImages) {
-    return (
-      <div className="bg-white rounded-none border border-border overflow-hidden shadow-sm">
-        <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
-          {!emptyBody && (
-            <div className="absolute inset-0 flex items-center justify-center p-5 text-center">
-              {isHtmlBody(body)
-                ? <div className="text-[#374151] text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: body! }} />
-                : <div className="text-[#374151] text-sm leading-relaxed whitespace-pre-wrap">{body}</div>}
-            </div>
-          )}
-          <SlideElementsView slide={slide} />
-        </div>
-      </div>
-    )
-  }
-
-  if (emptyBody) return null
+  // Content slides are a composed canvas (title + body are movable boxes), so
+  // phone viewers see the same 16:9 surface the presenter projects.
+  if (!hasCanvasElements(slide)) return null
   return (
-    <div className="bg-card border border-border rounded-none p-6 transition-all duration-200">
-      {isHtmlBody(body)
-        ? <div className="text-foreground text-base leading-relaxed" dangerouslySetInnerHTML={{ __html: body! }} />
-        : <div className="text-foreground text-base leading-relaxed whitespace-pre-wrap">{body}</div>}
+    <div className="bg-white rounded-none border border-border overflow-hidden shadow-sm">
+      <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
+        <SlideElementsView slide={slide} />
+      </div>
     </div>
   )
 }

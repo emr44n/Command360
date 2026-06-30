@@ -12,11 +12,12 @@
  */
 import type { CanvasElement, Slide } from '@/types/slide'
 import { buildEdgeFadeMasks, type EdgeFade } from '@/lib/editor/edge-fade'
+import { slideRenderElements } from '@/lib/editor/content-layers'
 
-/** Pull the canvas elements off any slide content (they live under `_canvas_elements`). */
+/** Everything to render for a slide: the author's images/text plus, for content
+ *  slides, the bound title/body boxes. */
 export function slideCanvasElements(slide: Slide): CanvasElement[] {
-  const els = (slide.content as Record<string, unknown>)?._canvas_elements
-  return Array.isArray(els) ? (els as CanvasElement[]) : []
+  return slideRenderElements(slide)
 }
 
 export function hasCanvasElements(slide: Slide): boolean {

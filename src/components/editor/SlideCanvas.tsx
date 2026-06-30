@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { CanvasElementsLayer, StaticCanvasElements } from './CanvasElementsLayer'
 import { isEmptyBody, isHtmlBody } from '@/lib/slide-content'
+import { slideRenderElements, realCanvasElements } from '@/lib/editor/content-layers'
 
 interface SlideCanvasProps {
   slide: Slide | null
@@ -171,52 +172,57 @@ export function SlideCanvas({ slide, slides, selectedIndex, onTitleChange, onCan
                   transition: 'box-shadow 0.2s ease',
                 }}
               >
-                {/* Clipping layer for slide content */}
-                <div style={{
-                  position: 'absolute',
-                  inset: 0,
-                  borderRadius: 10,
-                  overflow: 'hidden',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}>
-                  {/* Slide header */}
-                  <div style={{ padding: '24px 32px 12px', flexShrink: 0 }}>
-                    {isSelected ? (
-                      <InlineTitle
-                        value={s.title}
-                        onChange={onTitleChange}
-                        slideType={s.slide_type}
-                      />
-                    ) : (
-                      <h2 style={{
-                        fontSize: 24, fontWeight: 700, color: '#111827', lineHeight: 1.3,
-                        minHeight: '1.3em',
-                      }}>
-                        {s.title || <span style={{ color: '#9ca3af', fontStyle: 'italic', fontWeight: 400 }}>Untitled slide</span>}
-                      </h2>
-                    )}
-                  </div>
-
-                  {/* Content */}
+                {/* Clipping layer for slide content. Content slides are a pure
+                    canvas of movable text/image boxes (title + body are bound
+                    boxes), so they skip the fixed header + centred body. */}
+                {s.slide_type !== 'content' && (
                   <div style={{
-                    flex: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '0 32px 24px',
+                    position: 'absolute',
+                    inset: 0,
+                    borderRadius: 10,
                     overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
                   }}>
-                    <SlidePreview slide={s} />
+                    {/* Slide header */}
+                    <div style={{ padding: '24px 32px 12px', flexShrink: 0 }}>
+                      {isSelected ? (
+                        <InlineTitle
+                          value={s.title}
+                          onChange={onTitleChange}
+                          slideType={s.slide_type}
+                        />
+                      ) : (
+                        <h2 style={{
+                          fontSize: 24, fontWeight: 700, color: '#111827', lineHeight: 1.3,
+                          minHeight: '1.3em',
+                        }}>
+                          {s.title || <span style={{ color: '#9ca3af', fontStyle: 'italic', fontWeight: 400 }}>Untitled slide</span>}
+                        </h2>
+                      )}
+                    </div>
+
+                    {/* Content */}
+                    <div style={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '0 32px 24px',
+                      overflow: 'hidden',
+                    }}>
+                      <SlidePreview slide={s} />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Canvas elements: interactive on the selected slide, static
                     (read-only) on every other slide so a slide's images/text
-                    stay visible when it isn't the active slide. */}
+                    stay visible when it isn't the active slide. For content
+                    slides the list also carries the bound title/body boxes. */}
                 {isSelected && onCanvasElementsChange ? (
                   <CanvasElementsLayer
-                    elements={(s.content as Record<string, unknown>)?._canvas_elements as CanvasElement[] || []}
+                    elements={s.slide_type === 'content' ? slideRenderElements(s, true) : realCanvasElements(s)}
                     onChange={onCanvasElementsChange}
                     containerRef={selectedCardRef}
                     selectedElementId={selectedElementId}
@@ -225,7 +231,7 @@ export function SlideCanvas({ slide, slides, selectedIndex, onTitleChange, onCan
                   />
                 ) : (
                   <StaticCanvasElements
-                    elements={(s.content as Record<string, unknown>)?._canvas_elements as CanvasElement[] || []}
+                    elements={s.slide_type === 'content' ? slideRenderElements(s, false) : realCanvasElements(s)}
                   />
                 )}
               </div>

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { SERVICES } from '@/components/site/ServicesMenu'
+import { SERVICES } from '@/components/site/services-data'
 import { getAllPosts } from '@/lib/news'
 
 const BASE = 'https://command360.co.uk'
