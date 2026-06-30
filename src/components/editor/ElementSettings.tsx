@@ -6,7 +6,7 @@ import type { CanvasElement } from '@/types/slide'
 import { Input } from '@/components/ui/input'
 import {
   Type, Image, Bold, Italic, AlignLeft, AlignCenter, AlignRight,
-  Trash2, RotateCw, Square, Circle, Eye, Move, ChevronDown, Layers, Sparkles, Wind,
+  Trash2, RotateCw, Square, Circle, Eye, Move, ChevronDown, Layers, Sparkles, Wind, Copy,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
@@ -16,6 +16,7 @@ interface Props {
   onUpdate: (updates: Partial<CanvasElement>) => void
   onUpdateStyle: (style: Partial<NonNullable<CanvasElement['style']>>) => void
   onDelete: () => void
+  onDuplicate?: () => void
 }
 
 /* Collapsible section — keeps the panel clean; expand only what you need. */
@@ -38,7 +39,7 @@ function Section({ id, title, icon, open, onToggle, children }: {
   )
 }
 
-export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: Props) {
+export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete, onDuplicate }: Props) {
   const style = element.style || {}
   const isText = element.type === 'text'
   const isImage = element.type === 'image'
@@ -281,8 +282,14 @@ export function ElementSettings({ element, onUpdate, onUpdateStyle, onDelete }: 
         </Section>
       )}
 
-      {/* ─── Delete ─── */}
-      <div className="border-t border-border pt-4 mt-1">
+      {/* ─── Duplicate / Delete ─── */}
+      <div className="border-t border-border pt-4 mt-1 space-y-2">
+        {onDuplicate && (
+          <button onClick={onDuplicate} className="w-full flex items-center justify-center gap-2 py-2 rounded-none text-xs font-medium text-foreground hover:bg-muted transition-colors border border-border">
+            <Copy className="w-3.5 h-3.5" />
+            Duplicate <span className="text-muted-foreground">(Ctrl+D)</span>
+          </button>
+        )}
         <button onClick={onDelete} className="w-full flex items-center justify-center gap-2 py-2 rounded-none text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors border border-destructive/20">
           <Trash2 className="w-3.5 h-3.5" />
           Delete element

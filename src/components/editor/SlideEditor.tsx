@@ -46,6 +46,13 @@ interface SlideEditorProps {
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   const [slides, setSlides] = useState<Slide[]>(initialSlides)
+  // always-current slides (for undo snapshots / copy-paste, avoids stale closures)
+  const slidesRef = useRef<Slide[]>(initialSlides)
+  slidesRef.current = slides
+  // throttle undo snapshots so a typing/drag burst is one step
+  const lastSnapRef = useRef(0)
+  // clipboard for copy/paste of canvas elements (persists across slide changes)
+  const clipboardRef = useRef<CanvasElement | null>(null)
   const [selectedSlideId, setSelectedSlideId] = useState<string | null>(initialSlides[0]?.id || null)
   const [showTypeSelector, setShowTypeSelector] = useState(false)
   const [presentationTitle, setPresentationTitle] = useState(presentation.title)
@@ -179,40 +186,79 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   // Keyboard shortcuts
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.ctrlKey && e.key === 's') {
+      const mod = e.ctrlKey || e.metaKey
+      if (!mod) return
+      const ae = document.activeElement
+      const inField = !!ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || (ae as HTMLElement).isContentEditable)
+      const k = e.key.toLowerCase()
+
+      if (k === 's') {
         e.preventDefault()
         flushSaves()
         toast.success('Saved', { duration: 2000 })
-      } else if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+      } else if (k === 'z' && !e.shiftKey) {
         e.preventDefault()
         handleUndo()
-      } else if (e.ctrlKey && e.key === 'z' && e.shiftKey) {
+      } else if ((k === 'z' && e.shiftKey) || k === 'y') {
         e.preventDefault()
         handleRedo()
+      } else if (k === 'c' && !inField && selectedElementId) {
+        // copy selected canvas element (let native copy run while typing)
+        if (copySelectedElement()) e.preventDefault()
+      } else if (k === 'v' && !inField && clipboardRef.current) {
+        e.preventDefault()
+        pasteElement()
+      } else if (k === 'd' && !inField && selectedElementId) {
+        e.preventDefault()
+        duplicateSelectedElement()
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   })
 
+  // Apply a restored slides array and queue the changed slides for save so
+  // undo/redo actually persists (not just a local revert).
+  function applyRestored(next: Slide[], current: Slide[]) {
+    setSlides(next)
+    const curById = new Map(current.map((s) => [s.id, s]))
+    for (const s of next) {
+      const c = curById.get(s.id)
+      if (!c || c.title !== s.title || c.speaker_notes !== s.speaker_notes || JSON.stringify(c.content) !== JSON.stringify(s.content)) {
+        pendingUpdatesRef.current[s.id] = { ...pendingUpdatesRef.current[s.id], title: s.title, content: s.content, speaker_notes: s.speaker_notes }
+      }
+    }
+    setSaveStatus('saving')
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+    saveTimerRef.current = setTimeout(() => flushSaves(), 400)
+  }
+
   function handleUndo() {
     if (undoStack.length === 0) return
+    const current = slidesRef.current
     const prev = undoStack[undoStack.length - 1]
-    setRedoStack((s) => [...s, slides])
+    setRedoStack((s) => [...s, current])
     setUndoStack((s) => s.slice(0, -1))
-    setSlides(prev)
+    applyRestored(prev, current)
   }
 
   function handleRedo() {
     if (redoStack.length === 0) return
+    const current = slidesRef.current
     const next = redoStack[redoStack.length - 1]
-    setUndoStack((s) => [...s, slides])
+    setUndoStack((s) => [...s, current])
     setRedoStack((s) => s.slice(0, -1))
-    setSlides(next)
+    applyRestored(next, current)
   }
 
-  function pushUndo() {
-    setUndoStack((s) => [...s.slice(-19), slides])
+  // Snapshot the CURRENT slides for undo. Throttled (a burst of edits = one
+  // step); pass force for discrete actions (add / delete / duplicate slide).
+  function pushUndo(force = false) {
+    const now = Date.now()
+    if (!force && now - lastSnapRef.current < 600) return
+    lastSnapRef.current = now
+    const snap = slidesRef.current
+    setUndoStack((s) => [...s.slice(-49), snap])
     setRedoStack([])
   }
 
@@ -263,7 +309,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   }, [flushSaves])
 
   const handleAddSlide = useCallback(async (type: SlideType) => {
-    pushUndo()
+    pushUndo(true)
     const position = slides.length
     setSaveStatus('saving')
     const res = await fetch('/api/slides', {
@@ -301,7 +347,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
     if (!selectedSlide) return
     const originalIndex = slides.findIndex(s => s.id === selectedSlide.id)
     const insertPosition = originalIndex + 1
-    pushUndo()
+    pushUndo(true)
     setSaveStatus('saving')
     const res = await fetch('/api/slides', {
       method: 'POST',
@@ -335,7 +381,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
     const slide = slides[originalIndex]
     if (!slide) return
     const insertPosition = originalIndex + 1
-    pushUndo()
+    pushUndo(true)
     setSaveStatus('saving')
     const res = await fetch('/api/slides', {
       method: 'POST',
@@ -372,7 +418,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
     if (!deleteTargetId) return
     const id = deleteTargetId
     setDeleteTargetId(null)
-    pushUndo()
+    pushUndo(true)
     setSaveStatus('saving')
     const res = await fetch(`/api/slides/${id}`, { method: 'DELETE' })
     if (res.ok) {
@@ -392,6 +438,8 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
 
   const handleSlideChange = useCallback((updates: Partial<Slide>) => {
     if (!selectedSlideId) return
+
+    pushUndo() // throttled — records the pre-change state so edits are undoable
 
     setSlides((prev) => prev.map((s) => s.id === selectedSlideId ? { ...s, ...updates } : s))
 
@@ -433,8 +481,39 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
     setShowAddImageDialog(true)
   }, [selectedSlide])
 
+  // ─── Copy / paste / duplicate of canvas elements ───
+  const getCanvasEls = (slide: Slide | null): CanvasElement[] =>
+    ((slide?.content as Record<string, unknown>)?._canvas_elements as CanvasElement[]) || []
+  const newElId = () => `el_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
+  const clampPct = (v: number) => Math.max(0, Math.min(92, v))
+
+  const copySelectedElement = useCallback(() => {
+    if (!selectedSlide || !selectedElementId) return false
+    const el = getCanvasEls(selectedSlide).find((e) => e.id === selectedElementId)
+    if (!el) return false
+    clipboardRef.current = JSON.parse(JSON.stringify(el))
+    return true
+  }, [selectedSlide, selectedElementId])
+
+  const pasteElement = useCallback(() => {
+    if (!selectedSlide || !clipboardRef.current) return
+    const src = clipboardRef.current
+    const el: CanvasElement = { ...JSON.parse(JSON.stringify(src)), id: newElId(), x: clampPct((src.x || 0) + 3), y: clampPct((src.y || 0) + 3) }
+    handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: [...getCanvasEls(selectedSlide), el] } as unknown as Slide['content'] })
+    setSelectedElementId(el.id)
+  }, [selectedSlide, handleSlideChange])
+
+  const duplicateSelectedElement = useCallback(() => {
+    if (!selectedSlide || !selectedElementId) return
+    const el0 = getCanvasEls(selectedSlide).find((e) => e.id === selectedElementId)
+    if (!el0) return
+    const el: CanvasElement = { ...JSON.parse(JSON.stringify(el0)), id: newElId(), x: clampPct((el0.x || 0) + 3), y: clampPct((el0.y || 0) + 3) }
+    handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: [...getCanvasEls(selectedSlide), el] } as unknown as Slide['content'] })
+    setSelectedElementId(el.id)
+  }, [selectedSlide, selectedElementId, handleSlideChange])
+
   const handleReorder = useCallback(async (reordered: Slide[]) => {
-    pushUndo()
+    pushUndo(true)
     setSlides(reordered)
     setSaveStatus('saving')
     const results = await Promise.all(reordered.map((slide, i) =>
@@ -805,7 +884,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
               }
             }}
             onReorderSlides={async (fromIndex: number, toIndex: number) => {
-              pushUndo()
+              pushUndo(true)
               setSlides((prev: Slide[]) => {
                 const next = [...prev]
                 const [moved] = next.splice(fromIndex, 1)
@@ -1258,6 +1337,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                         handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: els } as unknown as Slide['content'] })
                         setSelectedElementId(null)
                       }}
+                      onDuplicate={duplicateSelectedElement}
                     />
                   ) : (
                     <SlideSettings slide={selectedSlide} onChange={handleSlideChange} />
