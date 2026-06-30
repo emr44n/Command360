@@ -16,6 +16,7 @@ import { LiveDirectorView, type ExerciseStats } from '@/components/presenter/Liv
 import { ExerciseDebrief } from '@/components/studio/ExerciseDebrief'
 import { ActiveModeEntry } from '@/components/studio/ActiveModeEntry'
 import { defaultStudioCanvasBg } from '@/lib/studio/default-canvas'
+import { applyEditedElements, slideRenderElements } from '@/lib/editor/content-layers'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -484,12 +485,16 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   // ─── Copy / paste / duplicate of canvas elements ───
   const getCanvasEls = (slide: Slide | null): CanvasElement[] =>
     ((slide?.content as Record<string, unknown>)?._canvas_elements as CanvasElement[]) || []
+  // Selectable elements include the bound title/body boxes on content slides, so
+  // they can be copied/duplicated (into real, independent text elements).
+  const getSelectableEls = (slide: Slide | null): CanvasElement[] =>
+    !slide ? [] : slide.slide_type === 'content' ? slideRenderElements(slide, true) : getCanvasEls(slide)
   const newElId = () => `el_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
   const clampPct = (v: number) => Math.max(0, Math.min(92, v))
 
   const copySelectedElement = useCallback(() => {
     if (!selectedSlide || !selectedElementId) return false
-    const el = getCanvasEls(selectedSlide).find((e) => e.id === selectedElementId)
+    const el = getSelectableEls(selectedSlide).find((e) => e.id === selectedElementId)
     if (!el) return false
     clipboardRef.current = JSON.parse(JSON.stringify(el))
     return true
@@ -505,7 +510,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
 
   const duplicateSelectedElement = useCallback(() => {
     if (!selectedSlide || !selectedElementId) return
-    const el0 = getCanvasEls(selectedSlide).find((e) => e.id === selectedElementId)
+    const el0 = getSelectableEls(selectedSlide).find((e) => e.id === selectedElementId)
     if (!el0) return
     const el: CanvasElement = { ...JSON.parse(JSON.stringify(el0)), id: newElId(), x: clampPct((el0.x || 0) + 3), y: clampPct((el0.y || 0) + 3) }
     handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: [...getCanvasEls(selectedSlide), el] } as unknown as Slide['content'] })
@@ -1256,7 +1261,12 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                   selectedIndex={selectedIndex}
                   onTitleChange={(title) => { if (selectedSlide) handleSlideChange({ title }) }}
                   onCanvasElementsChange={(canvas_elements) => {
-                    if (selectedSlide) {
+                    if (!selectedSlide) return
+                    if (selectedSlide.slide_type === 'content') {
+                      // Content slides: the list may include the bound title/body
+                      // boxes — route them back to slide.title / content.body.
+                      handleSlideChange(applyEditedElements(selectedSlide, canvas_elements))
+                    } else {
                       handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: canvas_elements } as unknown as Slide['content'] })
                     }
                   }}

@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { BrandMark } from '@/components/site/BrandMark'
 import { buildEdgeFadeMasks, type EdgeFade } from '@/lib/editor/edge-fade'
+import { slideRenderElements } from '@/lib/editor/content-layers'
 
 interface Props {
   presentation: { id: string; title: string }
@@ -226,39 +227,44 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                   boxShadow: '0 20px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)',
                 }}
               >
-                {/* Type badge + room code */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                  <div style={{
-                    display: 'flex', alignItems: 'center', gap: 5,
-                    background: `${typeColor}14`, borderRadius: 6, padding: '3px 10px',
-                  }}>
-                    <Icon style={{ width: 12, height: 12, color: typeColor }} />
-                    <span style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: typeColor }}>
-                      {TYPE_LABELS[slide.slide_type]}
-                    </span>
+                {/* Type badge + room code — hidden for content slides, which
+                    project as a full-bleed composed canvas. */}
+                {slide.slide_type !== 'content' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: 5,
+                      background: `${typeColor}14`, borderRadius: 6, padding: '3px 10px',
+                    }}>
+                      <Icon style={{ width: 12, height: 12, color: typeColor }} />
+                      <span style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: typeColor }}>
+                        {TYPE_LABELS[slide.slide_type]}
+                      </span>
+                    </div>
+                    <div style={{
+                      marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5,
+                      background: '#f3f4f6', borderRadius: 6, padding: '3px 10px',
+                    }}>
+                      <QrCode style={{ width: 9, height: 9, color: '#6b7280' }} />
+                      <span style={{ fontSize: 9, fontWeight: 700, fontFamily: 'monospace', color: '#374151', letterSpacing: '0.08em' }}>
+                        command360.co.uk/join
+                      </span>
+                    </div>
                   </div>
-                  <div style={{
-                    marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5,
-                    background: '#f3f4f6', borderRadius: 6, padding: '3px 10px',
-                  }}>
-                    <QrCode style={{ width: 9, height: 9, color: '#6b7280' }} />
-                    <span style={{ fontSize: 9, fontWeight: 700, fontFamily: 'monospace', color: '#374151', letterSpacing: '0.08em' }}>
-                      command360.co.uk/join
-                    </span>
-                  </div>
-                </div>
+                )}
 
-                {/* Title */}
-                <h2 style={{ fontSize: 22, fontWeight: 700, color: '#111827', marginBottom: 16, lineHeight: 1.2 }}>
-                  {slide.title || 'Untitled slide'}
-                </h2>
+                {/* Title — content slides carry their title as a movable box. */}
+                {slide.slide_type !== 'content' && (
+                  <h2 style={{ fontSize: 22, fontWeight: 700, color: '#111827', marginBottom: 16, lineHeight: 1.2 }}>
+                    {slide.title || 'Untitled slide'}
+                  </h2>
+                )}
 
                 {/* Canvas elements (text/images) */}
                 {(() => {
-                  const canvasEls = (slide.content as Record<string, unknown>)?._canvas_elements as Array<{
+                  const canvasEls = slideRenderElements(slide) as Array<{
                     id: string; type: string; x: number; y: number; width: number; height: number;
                     content: string; style?: Record<string, unknown>; rotation?: number;
-                  }> | undefined
+                  }>
                   if (!canvasEls || canvasEls.length === 0) return null
                   return (
                     <div key={slide.id} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 5, overflow: 'hidden' }}>
@@ -1149,10 +1155,10 @@ function buildStudioInitialStates(layers: StudioLayer[]): Record<string, StudioL
 /* Live (static) render of a slide's canvas elements for the grid-overview
    thumbnails, so the grid shows the actual images/text on each slide. */
 function MiniCanvasEls({ slide }: { slide: Slide }) {
-  const els = (slide.content as Record<string, unknown>)?._canvas_elements as Array<{
+  const els = slideRenderElements(slide) as Array<{
     id: string; type: string; x: number; y: number; width: number; height: number;
     content: string; style?: Record<string, unknown>; rotation?: number;
-  }> | undefined
+  }>
   if (!els || els.length === 0) return null
   return (
     <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 12, pointerEvents: 'none', zIndex: 1 }}>
