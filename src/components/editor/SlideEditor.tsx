@@ -489,6 +489,15 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   // they can be copied/duplicated (into real, independent text elements).
   const getSelectableEls = (slide: Slide | null): CanvasElement[] =>
     !slide ? [] : slide.slide_type === 'content' ? slideRenderElements(slide, true) : getCanvasEls(slide)
+  // Persist an edited element list, routing content-slide bound boxes back to
+  // title/body and everything else into _canvas_elements.
+  const persistElements = (slide: Slide, els: CanvasElement[]) => {
+    if (slide.slide_type === 'content') {
+      handleSlideChange(applyEditedElements(slide, els))
+    } else {
+      handleSlideChange({ content: { ...slide.content, _canvas_elements: els } as unknown as Slide['content'] })
+    }
+  }
   const newElId = () => `el_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
   const clampPct = (v: number) => Math.max(0, Math.min(92, v))
 
@@ -1312,7 +1321,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
               )}>
                 <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
                   <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {selectedElementId && getCanvasElements().find(e => e.id === selectedElementId) ? 'Element settings' : 'Slide settings'}
+                    {selectedElementId && getSelectableEls(selectedSlide).find(e => e.id === selectedElementId) ? 'Element settings' : 'Slide settings'}
                   </h3>
                   <div className="flex items-center gap-1">
                     {selectedElementId && (
@@ -1329,22 +1338,20 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                   </div>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4 settings-scroll">
-                  {selectedElementId && getCanvasElements().find(e => e.id === selectedElementId) ? (
+                  {selectedElementId && getSelectableEls(selectedSlide).find(e => e.id === selectedElementId) ? (
                     <ElementSettings
-                      element={getCanvasElements().find(e => e.id === selectedElementId)!}
+                      element={getSelectableEls(selectedSlide).find(e => e.id === selectedElementId)!}
                       onUpdate={(updates) => {
-                        const els = getCanvasElements()
-                        const updated = els.map(e => e.id === selectedElementId ? { ...e, ...updates } : e)
-                        handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: updated } as unknown as Slide['content'] })
+                        const updated = getSelectableEls(selectedSlide).map(e => e.id === selectedElementId ? { ...e, ...updates } : e)
+                        persistElements(selectedSlide, updated)
                       }}
                       onUpdateStyle={(styleUpdates) => {
-                        const els = getCanvasElements()
-                        const updated = els.map(e => e.id === selectedElementId ? { ...e, style: { ...e.style, ...styleUpdates } } : e)
-                        handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: updated } as unknown as Slide['content'] })
+                        const updated = getSelectableEls(selectedSlide).map(e => e.id === selectedElementId ? { ...e, style: { ...e.style, ...styleUpdates } } : e)
+                        persistElements(selectedSlide, updated)
                       }}
                       onDelete={() => {
-                        const els = getCanvasElements().filter(e => e.id !== selectedElementId)
-                        handleSlideChange({ content: { ...selectedSlide.content, _canvas_elements: els } as unknown as Slide['content'] })
+                        const updated = getSelectableEls(selectedSlide).filter(e => e.id !== selectedElementId)
+                        persistElements(selectedSlide, updated)
                         setSelectedElementId(null)
                       }}
                       onDuplicate={duplicateSelectedElement}
