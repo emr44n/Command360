@@ -58,7 +58,22 @@ export function SlideElementsRaw({ elements, radius = 0 }: { elements: CanvasEle
 
   if (elements.length === 0) return null
   return (
-    <div ref={ref} style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius, pointerEvents: 'none' }}>
+    // `overflow:hidden` + `border-radius` does NOT clip a child that has a CSS
+    // transform (the scaled stage below) to the rounded corners — the child's
+    // square corners poke past the rounded edge (a known Chrome/Safari bug, and
+    // exactly the "pointy white corner" artefact). Promoting this container to
+    // its own layer (translateZ/isolate) makes it clip the transformed stage's
+    // corners properly.
+    <div
+      ref={ref}
+      style={{
+        position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius,
+        // `clip-path` (unlike overflow+border-radius) reliably clips the
+        // transformed stage below to the rounded corners in Chrome/Safari.
+        clipPath: `inset(0 round ${radius}px)`,
+        pointerEvents: 'none', transform: 'translateZ(0)', isolation: 'isolate',
+      }}
+    >
       <div style={{ position: 'absolute', top: 0, left: 0, width: STAGE_W, height: STAGE_H, transform: `scale(${scale})`, transformOrigin: 'top left' }}>
         {elements.map((el) => (
           <SlideElement key={el.id} element={el} />

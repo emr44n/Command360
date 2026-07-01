@@ -11,11 +11,12 @@ import {
   MessageCircle, ClipboardList, FileText, Star, AlignLeft, Monitor,
   Smartphone, Grid3X3, StickyNote, Timer, Maximize, Minimize,
   ChevronLeft, ChevronRight, Keyboard, Pause, Play, QrCode, Wifi,
-  Zap, Vote,
+  Zap, Vote, RotateCw,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { BrandMark } from '@/components/site/BrandMark'
+import { BrandHover } from '@/components/site/BrandHover'
 import { buildEdgeFadeMasks, type EdgeFade } from '@/lib/editor/edge-fade'
 import { slideRenderElements, contentSlideHasLayout } from '@/lib/editor/content-layers'
 import { SlideElementsView } from '@/components/slides/SlideElementsView'
@@ -52,6 +53,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
   const [showGrid, setShowGrid] = useState(false)
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [phoneLandscape, setPhoneLandscape] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const slide = slides[current] || null
@@ -157,10 +159,10 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
           <TBtn icon={X} title="Back to editor (Esc)" onClick={() => router.push(`/presentations/${presentation.id}/edit`)} />
           <span className="text-[13px] text-muted-foreground font-medium">{presentation.title}</span>
         </div>
-        {/* Center logo */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5">
-          <BrandMark size={20} />
-          <span className="ff-wordmark text-xs text-muted-foreground tracking-tight uppercase">Command 360</span>
+        {/* Center logo — hovering the wordmark spins the mark; white on the
+            dark chrome. */}
+        <div className="absolute left-1/2 -translate-x-1/2">
+          <BrandHover size={20} wordmarkText="COMMAND 360" wordmarkClassName="ff-wordmark text-xs text-white tracking-tight uppercase" />
         </div>
         <div className="flex items-center gap-1">
           <div className="px-2.5 py-1 rounded-none bg-muted text-xs text-muted-foreground font-semibold">
@@ -352,15 +354,27 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
 
           {/* Right: Audience Phone (iPhone-style) */}
           <div className="flex flex-col items-center shrink-0">
-            {/* Label */}
-            <div className="flex items-center gap-1.5 mb-2.5">
-              <Smartphone className="w-[13px] h-[13px] text-muted-foreground/50" />
-              <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/50">
-                Audience View
-              </span>
+            {/* Label + orientation toggle */}
+            <div className="flex items-center gap-2 mb-2.5">
+              <div className="flex items-center gap-1.5">
+                <Smartphone className="w-[13px] h-[13px] text-muted-foreground/50" />
+                <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/50">
+                  Audience View
+                </span>
+              </div>
+              <button
+                onClick={() => setPhoneLandscape((v) => !v)}
+                title={phoneLandscape ? 'Rotate to portrait' : 'Rotate to landscape (full-screen slide)'}
+                className={cn('flex items-center justify-center w-5 h-5 rounded-none transition-colors', phoneLandscape ? 'text-primary bg-primary/10' : 'text-muted-foreground/60 hover:text-foreground hover:bg-muted')}
+              >
+                <RotateCw className="w-3 h-3" />
+              </button>
             </div>
 
-            {/* iPhone frame */}
+            {/* Reserve room so the rotated phone doesn't overlap neighbours. */}
+            <div style={{ position: 'relative', width: phoneLandscape ? 400 : 185, height: 390, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'width 0.5s cubic-bezier(0.65,0,0.35,1)' }}>
+
+            {/* iPhone frame — physically rotates to landscape with a smooth turn */}
             <div style={{
               width: 185,
               height: 390,
@@ -371,6 +385,8 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
               display: 'flex',
               flexDirection: 'column',
               position: 'relative',
+              transform: phoneLandscape ? 'rotate(90deg)' : 'rotate(0deg)',
+              transition: 'transform 0.7s cubic-bezier(0.65,0,0.35,1)',
             }}>
               {/* Side buttons (decorative) */}
               <div style={{ position: 'absolute', right: -2.5, top: 76, width: 3, height: 36, background: '#2a2a2a', borderRadius: '0 2px 2px 0' }} />
@@ -384,6 +400,12 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                 flex: 1, background: '#ffffff', borderRadius: 31,
                 overflow: 'hidden', display: 'flex', flexDirection: 'column',
               }}>
+                {phoneLandscape ? (
+                  /* Landscape = full-screen presentation. Counter-rotated so the
+                     slide stays upright after the frame's 90° turn. */
+                  <PhoneLandscapeSlide slide={slide} />
+                ) : (
+                <>
                 {/* Status bar + Dynamic Island */}
                 <div style={{
                   padding: '6px 14px 0', flexShrink: 0, display: 'flex',
@@ -405,8 +427,8 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
 
                 {/* Logo bar */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3, padding: '5px 14px 4px', flexShrink: 0, borderBottom: '1px solid #f0f0f0' }}>
-                  <BrandMark size={12} />
-                  <span className="ff-wordmark" style={{ fontSize: 8, fontWeight: 700, color: '#374151', letterSpacing: '0.02em', textTransform: 'uppercase' }}>Command 360</span>
+                  <BrandMark size={12} animated={false} />
+                  <span className="ff-wordmark" style={{ fontSize: 8, fontWeight: 700, color: '#111827', letterSpacing: '0.02em', textTransform: 'uppercase' }}>Command 360</span>
                 </div>
 
                 {/* Phone header — interactive slides show the question; content
@@ -446,7 +468,10 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                   width: 60, height: 3, borderRadius: 2, background: '#d4d4d4',
                   margin: '2px auto 4px',
                 }} />
+                </>
+                )}
               </div>
+            </div>
             </div>
           </div>
         </div>
@@ -743,6 +768,43 @@ function PresenterSlideContent({ slide }: { slide: Slide }) {
 }
 
 /* Audience Slide Content — always on white phone screen */
+/**
+ * Full-screen slide shown when the audience phone is rotated to landscape. The
+ * frame is rotated +90°, so this box is counter-rotated -90° (and its w/h
+ * swapped) to sit upright and fill the now-landscape screen, letterboxing the
+ * 16:9 slide on black — like turning a real phone to watch full-screen.
+ */
+function PhoneLandscapeSlide({ slide }: { slide: Slide | null }) {
+  // Portrait screen inner size (frame 185×390 minus padding); swapped here.
+  const SW = 175, SH = 380
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: '#000', overflow: 'hidden' }}>
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%',
+        width: SH, height: SW,
+        transform: 'translate(-50%, -50%) rotate(-90deg)',
+        transformOrigin: 'center',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: '#000',
+      }}>
+        {/* 16:9 slide, letterboxed to the landscape screen height */}
+        <div style={{ position: 'relative', height: '100%', aspectRatio: '16 / 9', background: '#fff', overflow: 'hidden' }}>
+          {slide && (slide.slide_type === 'content'
+            ? <SlideElementsView slide={slide} />
+            : (
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', padding: '10px 14px' }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: '#111827', lineHeight: 1.2, marginBottom: 6, flexShrink: 0 }}>{slide.title || 'Untitled'}</p>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  <PresenterSlideContent slide={slide} />
+                </div>
+              </div>
+            ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function AudienceSlideContent({ slide }: { slide: Slide }) {
   switch (slide.slide_type) {
     case 'poll': {
