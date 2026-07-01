@@ -155,8 +155,10 @@ export function CanvasElementsLayer({ elements, onChange, containerRef, selected
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
           {elements.map(el => el.id === editingId ? null : <ElementContent key={el.id} element={el} ghost />)}
         </div>
-        {/* on-canvas crisp, clipped to the slide */}
-        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+        {/* on-canvas crisp, clipped to the slide (rounded corners match the
+            slide card's 10px radius so an image filling a corner doesn't show a
+            sharp rectangular overhang past the rounded edge) */}
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 10, pointerEvents: 'none' }}>
           {elements.map(el => el.id === editingId ? null : <ElementContent key={el.id} element={el} />)}
         </div>
         {/* interactive frames + handles */}

@@ -17,7 +17,8 @@ import { cn } from '@/lib/utils'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { BrandMark } from '@/components/site/BrandMark'
 import { buildEdgeFadeMasks, type EdgeFade } from '@/lib/editor/edge-fade'
-import { slideRenderElements } from '@/lib/editor/content-layers'
+import { slideRenderElements, contentSlideHasLayout } from '@/lib/editor/content-layers'
+import { SlideElementsView } from '@/components/slides/SlideElementsView'
 
 interface Props {
   presentation: { id: string; title: string }
@@ -159,7 +160,7 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
         {/* Center logo */}
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5">
           <BrandMark size={20} />
-          <span className="text-xs font-semibold text-muted-foreground tracking-tight">Command 360</span>
+          <span className="ff-wordmark text-xs text-muted-foreground tracking-tight uppercase">Command 360</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="px-2.5 py-1 rounded-none bg-muted text-xs text-muted-foreground font-semibold">
@@ -222,7 +223,11 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                 style={{
                   width: '100%', aspectRatio: '16/9',
                   background: '#ffffff', borderRadius: 14,
-                  padding: '28px 36px', display: 'flex', flexDirection: 'column',
+                  // Content slides project as a full-bleed composed canvas (no
+                  // padding), so an image in a corner reaches the rounded edge
+                  // instead of leaving a white border.
+                  padding: slide.slide_type === 'content' ? 0 : '28px 36px',
+                  display: 'flex', flexDirection: 'column',
                   color: '#111827', overflow: 'hidden', position: 'relative',
                   boxShadow: '0 20px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)',
                 }}
@@ -259,8 +264,15 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                   </h2>
                 )}
 
-                {/* Canvas elements (text/images) */}
-                {(() => {
+                {/* Content slides project as a full-bleed composed canvas that
+                    scales to the surface (WYSIWYG on any screen). */}
+                {slide.slide_type === 'content' && (
+                  <SlideElementsView slide={slide} radius={14} />
+                )}
+
+                {/* Canvas elements (text/images) — interactive slides may still
+                    carry author-added overlays. */}
+                {slide.slide_type !== 'content' && (() => {
                   const canvasEls = slideRenderElements(slide) as Array<{
                     id: string; type: string; x: number; y: number; width: number; height: number;
                     content: string; style?: Record<string, unknown>; rotation?: number;
@@ -327,10 +339,13 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                   )
                 })()}
 
-                {/* Content */}
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                  <PresenterSlideContent slide={slide} />
-                </div>
+                {/* Content — interactive slide bodies. Content slides are drawn
+                    by the composed canvas above, so this is skipped for them. */}
+                {slide.slide_type !== 'content' && (
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                    <PresenterSlideContent slide={slide} />
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -363,8 +378,9 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
               <div style={{ position: 'absolute', left: -2.5, top: 82, width: 3, height: 28, background: '#2a2a2a', borderRadius: '2px 0 0 2px' }} />
               <div style={{ position: 'absolute', left: -2.5, top: 116, width: 3, height: 28, background: '#2a2a2a', borderRadius: '2px 0 0 2px' }} />
 
-              {/* Screen */}
-              <div style={{
+              {/* Screen — `.c360-light` scope so the brand mark shows the
+                  light-mode logo against the white phone screen. */}
+              <div className="c360-light" style={{
                 flex: 1, background: '#ffffff', borderRadius: 31,
                 overflow: 'hidden', display: 'flex', flexDirection: 'column',
               }}>
@@ -390,24 +406,28 @@ export function PreviewMode({ presentation, slides, startSlide = 0 }: Props) {
                 {/* Logo bar */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3, padding: '5px 14px 4px', flexShrink: 0, borderBottom: '1px solid #f0f0f0' }}>
                   <BrandMark size={12} />
-                  <span style={{ fontSize: 8, fontWeight: 700, color: '#374151', letterSpacing: '-0.01em' }}>Command 360</span>
+                  <span className="ff-wordmark" style={{ fontSize: 8, fontWeight: 700, color: '#374151', letterSpacing: '0.02em', textTransform: 'uppercase' }}>Command 360</span>
                 </div>
 
-                {/* Phone header */}
-                <div style={{ padding: '8px 14px 8px', flexShrink: 0, borderBottom: '1px solid #f0f0f0' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
-                    <Icon style={{ width: 9, height: 9, color: typeColor }} />
-                    <span style={{ fontSize: 7, fontWeight: 600, textTransform: 'uppercase', color: typeColor, letterSpacing: '0.05em' }}>
-                      {TYPE_LABELS[slide?.slide_type || 'content']}
-                    </span>
+                {/* Phone header — interactive slides show the question; content
+                    slides project the whole composed slide instead (no duplicate
+                    title bar), so the header is skipped for them. */}
+                {slide?.slide_type !== 'content' && (
+                  <div style={{ padding: '8px 14px 8px', flexShrink: 0, borderBottom: '1px solid #f0f0f0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+                      <Icon style={{ width: 9, height: 9, color: typeColor }} />
+                      <span style={{ fontSize: 7, fontWeight: 600, textTransform: 'uppercase', color: typeColor, letterSpacing: '0.05em' }}>
+                        {TYPE_LABELS[slide?.slide_type || 'content']}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: '#111827', lineHeight: 1.2 }}>
+                      {slide?.title || 'Untitled'}
+                    </p>
                   </div>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: '#111827', lineHeight: 1.2 }}>
-                    {slide?.title || 'Untitled'}
-                  </p>
-                </div>
+                )}
 
                 {/* Phone content */}
-                <div style={{ flex: 1, padding: '10px 12px', overflowY: 'auto', overflowX: 'hidden' }}>
+                <div style={{ flex: 1, padding: slide?.slide_type === 'content' ? 0 : '10px 12px', overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: slide?.slide_type === 'content' ? 'center' : 'flex-start' }}>
                   {slide && <AudienceSlideContent slide={slide} />}
                 </div>
 
@@ -806,13 +826,19 @@ function AudienceSlideContent({ slide }: { slide: Slide }) {
         </div>
       )
     case 'content': {
-      const c = slide.content as ContentSlideContent
-      if (c.body && c.body.startsWith('<')) {
-        return <div style={{ fontSize: 11, lineHeight: 1.4, color: '#374151' }} dangerouslySetInnerHTML={{ __html: c.body }} />
+      // Content slides are passive — render the actual composed slide (title,
+      // body and images) as a 16:9 card scaled to the phone, exactly what's on
+      // the big screen, rather than a stripped text block.
+      if (contentSlideHasLayout(slide)) {
+        return (
+          <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9', background: '#fff', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 6px rgba(0,0,0,0.12)' }}>
+            <SlideElementsView slide={slide} radius={8} />
+          </div>
+        )
       }
       return (
-        <div style={{ fontSize: 11, whiteSpace: 'pre-wrap', lineHeight: 1.4, color: '#374151' }}>
-          {c.body || 'Content slide'}
+        <div style={{ padding: '10px 12px', fontSize: 11, lineHeight: 1.4, color: '#9ca3af', textAlign: 'center' }}>
+          Content slide
         </div>
       )
     }
