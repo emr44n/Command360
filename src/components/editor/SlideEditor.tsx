@@ -17,6 +17,11 @@ import { ExerciseDebrief } from '@/components/studio/ExerciseDebrief'
 import { ActiveModeEntry } from '@/components/studio/ActiveModeEntry'
 import { defaultStudioCanvasBg } from '@/lib/studio/default-canvas'
 import { applyEditedElements, slideRenderElements } from '@/lib/editor/content-layers'
+import {
+  type SlideMaster, loadMasters, saveMasters, applyMasterToContent,
+  restampMasterOnSlides, defaultMasterId, slideMasterId, NO_MASTER,
+} from '@/lib/editor/slide-masters'
+import { SlideMastersDialog } from '@/components/editor/SlideMastersDialog'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,7 +31,7 @@ import {
   ChevronLeft, ChevronRight, ChevronDown, ChevronUp,
   Maximize2, StickyNote, QrCode, Type, ImageIcon,
   Download, Upload, Save, FolderOpen, FilePlus, Clock,
-  MoreHorizontal, FileDown,
+  MoreHorizontal, FileDown, LayoutTemplate,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -37,6 +42,7 @@ interface Presentation {
   id: string
   title: string
   description?: string
+  slide_masters?: unknown[]
 }
 
 interface SlideEditorProps {
@@ -69,7 +75,18 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
   const [studioFileMenu, setStudioFileMenu] = useState(false)
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
   const [showExportDialog, setShowExportDialog] = useState(false)
+  const [showMasters, setShowMasters] = useState(false)
   const [slideListWidth, setSlideListWidth] = useState(220)
+
+  // Slide masters (reusable branded layouts). Loaded from the presentation's
+  // slide_masters column, with a per-device localStorage fallback until that
+  // column exists (see MIGRATIONS_TODO.md).
+  const [masters, setMasters] = useState<SlideMaster[]>(() => loadMasters(presentation.id, presentation.slide_masters))
+  const [mastersPersisted, setMastersPersisted] = useState(true)
+  const handleMastersChange = useCallback((next: SlideMaster[]) => {
+    setMasters(next)
+    saveMasters(presentation.id, next).then(({ persisted }) => setMastersPersisted(persisted))
+  }, [presentation.id])
   const fileMenuRef = useRef<HTMLDivElement>(null)
   const studioFileMenuRef = useRef<HTMLDivElement>(null)
   const importInputRef = useRef<HTMLInputElement>(null)
@@ -320,8 +337,20 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
     })
     if (res.ok) {
       const data = await res.json()
-      setSlides((prev) => [...prev, data.slide])
-      setSelectedSlideId(data.slide.id)
+      let newSlide: Slide = data.slide
+      // New content slides inherit the default master so every deck is branded
+      // out of the box.
+      if (type === 'content') {
+        const def = masters.find((m) => m.id === defaultMasterId(masters))
+        if (def) {
+          newSlide = { ...newSlide, content: applyMasterToContent(newSlide.content, def) }
+          pendingUpdatesRef.current[newSlide.id] = { ...pendingUpdatesRef.current[newSlide.id], content: newSlide.content }
+          if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+          saveTimerRef.current = setTimeout(() => { flushSaves() }, 800)
+        }
+      }
+      setSlides((prev) => [...prev, newSlide])
+      setSelectedSlideId(newSlide.id)
       setSaveStatus('saved')
       toast.success('Slide added', { duration: 2000 })
     } else {
@@ -342,7 +371,7 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
         toast.error(errData.error || 'Failed to add slide', { duration: 2000 })
       }
     }
-  }, [slides.length, presentation.id])
+  }, [slides.length, presentation.id, masters, flushSaves])
 
   const handleDuplicateSlide = useCallback(async () => {
     if (!selectedSlide) return
@@ -456,6 +485,30 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
       flushSaves()
     }, 800)
   }, [selectedSlideId, flushSaves])
+
+  // Persist an update to ANY slide (not just the selected one) — used when
+  // applying / re-stamping slide masters across the deck.
+  const queueSlideUpdate = useCallback((slideId: string, updates: Partial<Slide>) => {
+    setSlides((prev) => prev.map((s) => (s.id === slideId ? { ...s, ...updates } : s)))
+    pendingUpdatesRef.current[slideId] = { ...pendingUpdatesRef.current[slideId], ...updates }
+    setSaveStatus('saving')
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+    saveTimerRef.current = setTimeout(() => { flushSaves() }, 800)
+  }, [flushSaves])
+
+  // Apply a master (or NO_MASTER to detach) to the selected slide.
+  const applyMasterToSelected = useCallback((masterId: string) => {
+    if (!selectedSlide) return
+    const master = masterId === NO_MASTER ? null : masters.find((m) => m.id === masterId) || null
+    handleSlideChange({ content: applyMasterToContent(selectedSlide.content, master) })
+  }, [selectedSlide, masters, handleSlideChange])
+
+  // After a master is edited, refresh its stored snapshot on every slide using
+  // it so the change shows (and persists) immediately.
+  const handleMasterEdited = useCallback((master: SlideMaster) => {
+    const changed = restampMasterOnSlides(slidesRef.current, master)
+    changed.forEach((c) => queueSlideUpdate(c.id, { content: c.content }))
+  }, [queueSlideUpdate])
 
   // Add text element to the active slide's canvas
   const handleAddTextElement = useCallback(() => {
@@ -962,6 +1015,19 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
           slides={slides}
         />
 
+        {/* Slide masters manager */}
+        {showMasters && (
+          <SlideMastersDialog
+            masters={masters}
+            onChange={handleMastersChange}
+            slides={slides}
+            selectedSlide={selectedSlide}
+            onMasterEdited={handleMasterEdited}
+            persisted={mastersPersisted}
+            onClose={() => setShowMasters(false)}
+          />
+        )}
+
         {/* Active Mode Entry */}
         {showActiveEntry && (
           <ActiveModeEntry
@@ -1089,6 +1155,12 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
             <ImageIcon className="w-4 h-4" />
           </button>
           </TooltipTrigger><TooltipContent>Add image</TooltipContent></Tooltip>
+          <Tooltip><TooltipTrigger asChild>
+          <button onClick={() => setShowMasters(true)}
+            className={cn('p-1.5 rounded-none transition-all', showMasters ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-background')}>
+            <LayoutTemplate className="w-4 h-4" />
+          </button>
+          </TooltipTrigger><TooltipContent>Slide masters (branded layouts)</TooltipContent></Tooltip>
           <div className="w-px h-4 bg-border mx-1" />
           <Tooltip><TooltipTrigger asChild>
           <button onClick={() => setNotesOpen(v => !v)}
@@ -1357,7 +1429,35 @@ export function SlideEditor({ presentation, initialSlides }: SlideEditorProps) {
                       onDuplicate={duplicateSelectedElement}
                     />
                   ) : (
-                    <SlideSettings slide={selectedSlide} onChange={handleSlideChange} />
+                    <div className="space-y-4">
+                      {selectedSlide.slide_type === 'content' && (
+                        <div className="space-y-1.5">
+                          <label className="text-muted-foreground text-xs uppercase tracking-wide font-medium flex items-center gap-1.5">
+                            <LayoutTemplate className="w-3 h-3" /> Slide master
+                          </label>
+                          <div className="flex items-center gap-1.5">
+                            <select
+                              value={slideMasterId(selectedSlide)}
+                              onChange={(e) => applyMasterToSelected(e.target.value)}
+                              className="flex-1 h-8 px-2 rounded-none bg-background border border-border text-foreground text-xs"
+                            >
+                              <option value={NO_MASTER}>None (blank)</option>
+                              {masters.map((m) => (
+                                <option key={m.id} value={m.id}>{m.name}{m.isDefault ? ' · default' : ''}</option>
+                              ))}
+                            </select>
+                            <button
+                              onClick={() => setShowMasters(true)}
+                              title="Manage masters"
+                              className="h-8 px-2 rounded-none border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                            >
+                              <LayoutTemplate className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      <SlideSettings slide={selectedSlide} onChange={handleSlideChange} />
+                    </div>
                   )}
                 </div>
               </div>

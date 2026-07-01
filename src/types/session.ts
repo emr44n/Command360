@@ -24,4 +24,12 @@ export interface Presentation {
   is_archived: boolean
   created_at: string
   updated_at: string
+  /**
+   * Reusable branded slide masters for this presentation. Persisted in the
+   * `slide_masters` jsonb column (see supabase/migrations — MIGRATIONS_TODO).
+   * Optional so the app runs before that column exists (it falls back to
+   * per-device localStorage). Typed loosely here to avoid a types→lib cycle;
+   * the concrete shape is `SlideMaster` in `@/lib/editor/slide-masters`.
+   */
+  slide_masters?: unknown[]
 }
