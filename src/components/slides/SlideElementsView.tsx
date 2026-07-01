@@ -7,12 +7,22 @@
  * out in Command Studio is exactly what the audience (and the presenter) see.
  *
  * It fills its positioned parent (`position: absolute; inset: 0`) and clips to
- * it, so the parent decides the slide's aspect/size. Pointer events are off —
- * this is a pure visual layer.
+ * it. To stay WYSIWYG at every size (a phone, a tablet, a projector), the
+ * elements are laid out on a fixed-size 16:9 "stage" (STAGE_W×STAGE_H, the same
+ * reference the editor authors in) and the whole stage is uniformly scaled to
+ * fit the container with a CSS transform — so absolute px font sizes shrink and
+ * grow with the slide instead of overflowing a small screen. This is the same
+ * fixed-stage-then-scale technique reveal.js / Google Slides use.
  */
+import { useEffect, useRef, useState } from 'react'
 import type { CanvasElement, Slide } from '@/types/slide'
 import { buildEdgeFadeMasks, type EdgeFade } from '@/lib/editor/edge-fade'
 import { slideRenderElements } from '@/lib/editor/content-layers'
+
+// Reference stage — 16:9. Element %-positions map onto this, and px font sizes
+// are authored in this space, so scaling the stage scales everything together.
+const STAGE_W = 960
+const STAGE_H = 540
 
 /** Everything to render for a slide: the author's images/text plus, for content
  *  slides, the bound title/body boxes. */
@@ -26,12 +36,27 @@ export function hasCanvasElements(slide: Slide): boolean {
 
 export function SlideElementsView({ slide, radius = 0 }: { slide: Slide; radius?: number }) {
   const elements = slideCanvasElements(slide)
+  const ref = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(1)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const measure = () => setScale(el.clientWidth / STAGE_W || 1)
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
   if (elements.length === 0) return null
   return (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius, pointerEvents: 'none' }}>
-      {elements.map((el) => (
-        <SlideElement key={el.id} element={el} />
-      ))}
+    <div ref={ref} style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: radius, pointerEvents: 'none' }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, width: STAGE_W, height: STAGE_H, transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+        {elements.map((el) => (
+          <SlideElement key={el.id} element={el} />
+        ))}
+      </div>
     </div>
   )
 }

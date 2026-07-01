@@ -57,7 +57,12 @@ export function contentBoundElements(slide: Slide, includeEmpty = false): Canvas
       style: { ...TITLE_STYLE, ...(titleBox.style || {}) },
     })
   }
-  if (!isEmptyBody(bodyRaw) || includeEmpty) {
+  // The body box only appears once there's body text. (Unlike the title — which
+  // every slide conceptually has, so an empty grabbable title box stays in the
+  // editor — an empty body box would just reappear right after a delete and read
+  // as "it won't delete". Re-add body text from the side CONTENT field to bring
+  // the box back.)
+  if (!isEmptyBody(bodyRaw)) {
     out.push({
       id: BODY_EL_ID, type: 'text', rotation: bodyBox.rotation || 0,
       x: bodyBox.x, y: bodyBox.y, width: bodyBox.width, height: bodyBox.height,
@@ -106,7 +111,11 @@ export function applyEditedElements(
       content._titleBox = { x: el.x, y: el.y, width: el.width, height: el.height, rotation: el.rotation, style: el.style }
     } else if (el.id === BODY_EL_ID) {
       bodySeen = true
-      content.body = el.content
+      // The box holds plain text; the side CONTENT field holds rich HTML. Only
+      // overwrite the stored body when the *text* actually changed — moving or
+      // restyling the box must not strip the author's formatting.
+      const prevBody = (content.body as string) || ''
+      if (plainTextFromHtml(prevBody) !== el.content) content.body = el.content
       content._bodyBox = { x: el.x, y: el.y, width: el.width, height: el.height, rotation: el.rotation, style: el.style }
     } else {
       real.push(el)
