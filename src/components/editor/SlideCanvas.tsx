@@ -11,6 +11,8 @@ import {
 import { CanvasElementsLayer, StaticCanvasElements } from './CanvasElementsLayer'
 import { isEmptyBody, isHtmlBody } from '@/lib/slide-content'
 import { slideRenderElements, realCanvasElements } from '@/lib/editor/content-layers'
+import { SlideElementsRaw } from '@/components/slides/SlideElementsView'
+import { masterElementsForSlide } from '@/lib/editor/slide-masters'
 
 interface SlideCanvasProps {
   slide: Slide | null
@@ -172,6 +174,12 @@ export function SlideCanvas({ slide, slides, selectedIndex, onTitleChange, onCan
                   transition: 'box-shadow 0.2s ease',
                 }}
               >
+                {/* Slide master — branded background + fixed furniture, painted
+                    behind everything and non-interactive. */}
+                <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none' }}>
+                  <SlideElementsRaw elements={masterElementsForSlide(s)} radius={10} />
+                </div>
+
                 {/* Clipping layer for slide content. Content slides are a pure
                     canvas of movable text/image boxes (title + body are bound
                     boxes), so they skip the fixed header + centred body. */}

@@ -18,16 +18,17 @@ import { useEffect, useRef, useState } from 'react'
 import type { CanvasElement, Slide } from '@/types/slide'
 import { buildEdgeFadeMasks, type EdgeFade } from '@/lib/editor/edge-fade'
 import { slideRenderElements } from '@/lib/editor/content-layers'
+import { masterElementsForSlide } from '@/lib/editor/slide-masters'
 
 // Reference stage — 16:9. Element %-positions map onto this, and px font sizes
 // are authored in this space, so scaling the stage scales everything together.
 const STAGE_W = 960
 const STAGE_H = 540
 
-/** Everything to render for a slide: the author's images/text plus, for content
- *  slides, the bound title/body boxes. */
+/** Everything to render for a slide: the slide's master (behind), then the
+ *  author's images/text plus, for content slides, the bound title/body boxes. */
 export function slideCanvasElements(slide: Slide): CanvasElement[] {
-  return slideRenderElements(slide)
+  return [...masterElementsForSlide(slide), ...slideRenderElements(slide)]
 }
 
 export function hasCanvasElements(slide: Slide): boolean {
@@ -35,7 +36,13 @@ export function hasCanvasElements(slide: Slide): boolean {
 }
 
 export function SlideElementsView({ slide, radius = 0 }: { slide: Slide; radius?: number }) {
-  const elements = slideCanvasElements(slide)
+  return <SlideElementsRaw elements={slideCanvasElements(slide)} radius={radius} />
+}
+
+/** Render an explicit element list on the scaled 16:9 stage. Used for the master
+ *  background layer in the editor, where the master must paint separately behind
+ *  the interactive elements. */
+export function SlideElementsRaw({ elements, radius = 0 }: { elements: CanvasElement[]; radius?: number }) {
   const ref = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(1)
 
