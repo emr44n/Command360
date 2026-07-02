@@ -63,13 +63,13 @@
 | **FX** | Filters on an asset. |
 | **Effects** | Live action effects. |
 | **Thermal** | The TIC (thermal imaging camera) view of an asset. |
-| **Atmosphere** | Weather/time-of-day overlay (was XVR "weather"). |
+| **Weather** | Weather/time-of-day — the library category AND the whole-scene action. **Stays generic (rule: rename only where it adds meaning).** |
 | **Tasking** | Variable crew assignment (was "Task"). |
 | **Objectives** | Assessment criteria (was "Skills"). Optional. |
 
 ## 7. Action catalogue (the inject building blocks)
 
-`Reveal · Hide · Move · Place · Rotate · Tween · Switch Look · Effects · Wait · Sound · Card · Question · Fire Hotspot · Chain · Atmosphere · Thermal · Pin`
+`Reveal · Hide · Move · Place · Rotate · Tween · Switch Look · Effects · Wait · Sound · Card · Question · Fire Hotspot · Chain · Weather · Thermal · Pin`
 
 (Full behaviour in file 11.)
 
@@ -90,7 +90,7 @@
 | Connect-as-one | **Combo** |
 | Show pop-up | **Card** |
 | MC pop-up (branching) | **Question** |
-| Weather | **Atmosphere** |
+| Weather | **Weather** (unchanged — generic stays generic) |
 | Skills | **Objectives** |
 | Completed | **Played** |
 

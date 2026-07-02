@@ -46,7 +46,29 @@ A **browser-based, 2D, AI-assisted incident-command training and assessment plat
 | 14 | `14_TECH_STACK_AND_ARCHITECTURE.md` | Stack, hosting, realtime, repo state |
 | 15 | `15_UI_DESIGN_SYSTEM_AND_EDITOR_UX.md` | Visual system, editor UX patterns |
 | 16 | `16_BUILD_PHASES.md` | Phased build order |
+| 17 | `17_EMAIL_SYSTEM_AND_RESEND.md` | Transactional + marketing email (Resend) |
+| 18 | `18_PORTABLE_FILE_FORMAT.md` | `.c360` v2 ZIP package format |
+| 19 | `19_TEMPLATES_AND_COMMUNITY.md` | My Templates, sharing, Community library |
+| 20 | `20_EDITOR_CONVENTIONS_UNDO_AND_POLISH.md` | File menu, undo/redo (zundo), autosave |
+| 21 | `21_RESPONSIVE_AND_DEVICE_TARGETS.md` | Desktop/tablet full; phone limited |
+| 22 | `22_SLIDE_MASTERS.md` | Account-level slide masters + page numbers |
+| 23 | `23_PERSISTENCE_MIGRATIONS_AND_QA.md` | Migrations, persistence gates, integration QA |
+| 24 | `24_REPO_REALITY_MAP.md` | **READ FIRST** — what exists vs what the spec calls it |
+| 25 | `25_DATA_FLOW_AND_CHANGE_IMPACT.md` | **READ FIRST** — downstream flow + change checklists |
+| 26 | `26_VIDEO_MEDIA_UPLOAD_AND_EXPORT.md` | Video upload/compression/quota/WebM/export player |
+| 27 | `27_NEWS_TICKER_ELEMENT.md` | Lower-third news ticker element |
+| 28 | `28_CLASSROOM_SCENE.md` | Click-driven Studio scenes for Classroom + CCTV |
+| 29 | `29_MARKETING_SITE_CONTENT_UPDATE.md` | Public-site copy refresh (no design change) |
+| 30 | `30_ADMIN_LICENSING_CMS_AND_ANALYTICS.md` | Super-admin: licences, trial lockout, quotas, asset taxonomy, news CMS, analytics |
+| 31 | `31_ACCOUNTS_TEAMS_AUTH_AND_LICENCE_PROFILES.md` | Org accounts, teams, invites, MFA/passkeys/Microsoft sign-in, Licence Profiles + quote generator |
+| 32 | `32_STANDARD_SOFTWARE_BASICS_AND_PPTX_EXPORT.md` | Trash/search/audit-log/notifications basics + PPTX export |
+| 33 | `33_ASSET_STATES_AND_ACTION_SEQUENCES.md` | Asset Looks + Inject action sequencing |
+| 34 | `34_LIBRARY_UX_AUDIO_FX_AND_ACTION_VALIDITY.md` | Library browsing UX, micro-loops, audio FX, red-action rule, Tween ghost frames |
+| — | `command360-fire-service-sizing-and-pricing.md` | Market sizing + cost modelling (sales reference; seeds Licence Profiles) |
 | — | `MASTER_GOAL_BUILD_PROMPT.md` | The big `/goal` prompt for the agent |
+| — | `MASTER_GOAL_CONDITIONS.md` | Per-phase DONE-WHEN gates (0 → 9) |
+| — | `HOSTING_DECISION.md` | LOCKED hosting: Supabase+Vercel London, Cloudflare front |
+| — | `START_HERE.md` / `SETUP_EXTERNAL_SERVICES.md` / `CHROME_SETUP_RUNBOOK.md` / `DEPLOY_AND_BOOTSTRAP.md` | Operator run sheets |
 
 ---
 

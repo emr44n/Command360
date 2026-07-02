@@ -49,7 +49,7 @@ already has a `.claude/` folder.)
 **Cloudflare** in front for DNS/CDN/WAF/DDoS/Turnstile. Set it up via
 `SETUP_EXTERNAL_SERVICES.md` or run `CHROME_SETUP_RUNBOOK.md` in Claude-for-Chrome.
 3. `.env.local` filled + `npm install` + `npm run dev` works locally.
-4. `/goal` → agent builds **Phase 0 → 7**, stopping at each gate in
+4. `/goal` → agent builds **Phase 0 → 9**, stopping at each gate in
 `MASTER_GOAL_CONDITIONS.md` for your review.
 5. **Email (launch phase, file 17):** wire **Resend** + `RESEND_API_KEY`, verify the
 sending subdomains in DNS, build the file-17 emails. Add Resend to your

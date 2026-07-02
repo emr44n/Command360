@@ -42,7 +42,7 @@ The instructor runs the Scenario live. Firing an **Inject** runs its **Actions**
 | **Question** | Show a branching multiple-choice question |
 | **Fire Hotspot** | Trigger a hotspot's behaviour |
 | **Chain** | Fire another Inject |
-| **Atmosphere** | Apply weather/time-of-day |
+| **Weather** | Apply weather/time-of-day to the whole View |
 | **Thermal** | Switch to the TIC (thermal) view of an asset |
 | **Pin** | Drop a map pin / marker |
 

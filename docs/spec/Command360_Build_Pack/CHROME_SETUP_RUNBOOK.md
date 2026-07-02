@@ -22,7 +22,11 @@ chat — when you reach one, tell me which field it is and tell me to copy it.
 
 ### 1 · Supabase
 - supabase.com → dashboard. ⏸ PAUSE for login (+2FA).
-- New project. **Region MUST be London (eu-west-2).** Strong DB password.
+- **ALREADY SET UP — verify, do NOT create a new project.** Open the existing Command 360 project and check:
+  - ⚠️ **Region = London (eu-west-2)?** Settings → General. If it's NOT a UK region, STOP and tell me — UK data residency is a contract requirement and we'd plan a migration before onboarding clients (not tonight).
+  - Keys: confirm the 5 values in `.env.local` match Settings → API (anon key, service role, URL) + the pooled `DATABASE_URL` (port 6543). Don't echo secrets.
+  - **Pending migrations:** the build agent will apply everything in `migrations/`, `supabase/migrations/` + `MIGRATIONS_TODO.md` during Phase 1 — the runbook does NOT apply schema.
+  - Auth → enable TOTP MFA; Backups → confirm daily backups on (Pro).
   ⏸ PAUSE while it provisions.
 - Settings → API: point me to **Project URL**, **anon public** key, **service_role**
   key. Tell me to copy each (don't echo).
@@ -37,7 +41,7 @@ chat — when you reach one, tell me which field it is and tell me to copy it.
 
 ### 2 · Google AI Studio (Gemini)
 - aistudio.google.com. ⏸ PAUSE for login.
-- **Get API key** → create. Tell me to copy as GEMINI_API_KEY (don't echo).
+- **ALREADY HAVE ONE** — verify `GEMINI_API_KEY` is in `.env.local` and works (the app's AI features respond). Only create a new key if it's missing/invalid.
 
 ### 3 · Vercel (hosting + domain origin)
 - vercel.com → Add New → Project → import GitHub repo **Command360**.
